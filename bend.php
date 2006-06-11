@@ -172,13 +172,13 @@
 	#print_r($arr_config);
 	#die;
 
-	// Create the DVD object
-	$dvd =& new DVD();
-
 	if(substr($argv[0], -7, 7) == 'dvd2mkv')
 		$dvd2mkv = true;
 	else
 		$dvd2mkv = false;
+		
+	// Create the DVD object
+	$dvd =& new DVD($dvd2mkv);
 
 	// Set the configuration flags
 	$dvd->config = $arr_config;

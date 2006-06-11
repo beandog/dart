@@ -6,8 +6,9 @@
 		 *
 		 * Creaates database connection, and default values
 		 */
-		function DVD() {
-			$this->db = pg_connect('host=charlie dbname=movies user=steve') or die(pg_last_error());
+		function DVD($dvd2mkv = false) {
+			if($dvd2mkv == false)
+				$this->db = pg_connect('host=charlie dbname=movies user=steve') or die(pg_last_error());
 			$this->min_len = 20;
 			$this->max_len = 59;
 		}
