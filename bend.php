@@ -518,9 +518,4 @@
 		#print_r($chapters);
 
 	}
-
-	print_r($dvd);
-	
-	$dvd->getChapters(1);
-
 ?>
