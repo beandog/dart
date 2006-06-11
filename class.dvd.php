@@ -276,7 +276,7 @@
 			#echo $config_dir;
 
 			#$this->transcode($vob, $avi, $mkv, $chapters, $txt, $log, $config_dir, $this->arr_encode['fps'], $this->args['debug']);
-			#$this->transcode($vob, $avi, '', $mkv, $config_dir, $this->arr_encode['fps']);
+			$this->transcode($vob, $avi, '', $mkv, $config_dir, $this->arr_encode['fps']);
 
 			$this->createMatroska($avi, $mkv, $txt);
 
