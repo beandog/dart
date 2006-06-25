@@ -29,14 +29,23 @@
 	 * - dvdxchap (part of ogmtools)
 	 * - PHP 5 with psql support
 	 * - lsdvd >= v.0.16
+	 * - transcode >= 1.0.2
+	 * - eject
 	 */
-
+	 
+	// Check for system requirements
+	
+	exec("which mencoder", $foo, $return_var);
+	
+	if($return_var == 1) {
+		die('You must have mencoder installed to use this program.');
+	}
+	exec("which lsdvd", $foo, $return_var);
+	if($return_var == 1)
+		die('You must have lsdvd v0.16 installed to use this program.');
+	
 	require_once 'inc.pgsql.php';
 	require_once 'class.dvd.php';
-
-	$stdout = fopen('php://stdout', 'w');
-	$stdin = fopen('php://stdin', 'r');
-	$stderr = fopen('php://stderr', 'w');
 
 	/**
 	 * Echo debugging info
@@ -66,35 +75,6 @@
 			$home = "/home/$whoami";
 
 		return $home;
-	}
-
-	/**
-	 * Parse CLI arguments
-	 *
-	 * If a value is unset, it will be set to 1
-	 *
-	 * @param $argc argument count (system variable)
-	 * @param $argv argument array (system variable)
-	 * @return array
-	 */
-	function parseArguments($argc, $argv) {
-		if($argc > 1) {
-			array_shift($argv);
-
-			for($x = 0; $x < count($argv); $x++) {
-				if(preg_match('/^(-\w$|--\w+)/', $argv[$x]) > 0) {
-					$argv[$x] = preg_replace('/^-{1,2}/', '', $argv[$x]);
-					$args[$argv[$x]] = 1;
-				}
-				else {
-					if(in_array($argv[($x-1)], array_keys($args))) {
-						$args[$argv[($x-1)]] = $argv[$x];
-					}
-				}
-			}
-
-			return $args;
-		}
 	}
 
 	/**
@@ -137,7 +117,7 @@
 					return false;
 			}
 			else {
-				trigger_error("Not a directory: $dir", E_WARNING);
+				trigger_error("Not a directory: $dir", E_USER_WARNING);
 				return false;
 			}
 		}
@@ -145,12 +125,12 @@
 
 	// TODO: write this for php4 users
 	if(!function_exists('simplexml_load_string')) {
-		trigger_error("Sorry, you need PHP5 with SimpleXML support to run bend / dvd2mkv", E_ERROR);
+		trigger_error("Sorry, you need PHP5 with SimpleXML support to run bend / dvd2mkv", E_USER_ERROR);
 	}
 
 	// Read the config file
 	$home = getHomeDirectory();
-	$bendrc = "$home/.bendrc";
+	$bendrc = "$home/.bend";
 
 	// Default configuration
 	$arr_config = array(
@@ -161,40 +141,21 @@
 		'device' => '/dev/dvd'
 	);
 
+	/** Get the configuration options */
 	if(file_exists($bendrc)) {
 		#$arr_config = parseConfigFile($bendrc);
 		$arr_config = parse_ini_file($bendrc);
 	}
 	else {
-		trigger_error("No config file found, using defaults", E_WARNING);
+		trigger_error("No config file found, using defaults", E_USER_WARNING);
 	}
-
-	#print_r($arr_config);
-	#die;
-
-	if(substr($argv[0], -7, 7) == 'dvd2mkv')
-		$dvd2mkv = true;
-	else
-		$dvd2mkv = false;
-		
+	
 	// Create the DVD object
 	$dvd =& new DVD($dvd2mkv);
 
-	// Set the configuration flags
-	$dvd->config = $arr_config;
+	// Set the configuration options
+	$dvd->setConfig($argc, $argv, $arr_config);
 	
-	// Grab the commandline arguments
-	$dvd->args = parseArguments($argc, $argv);
-	
-	#print_r($dvd->args);
-	#die;
-
-	// Set min, max length
-	if(isset($dvd->args['min']))
-		$dvd->min_len = $dvd->args['min'];
-	if(isset($dvd->args['max']))
-		$dvd->max_len = $dvd->args['max'];
-
 	$arr_cmd = array(
 		'h' => array('help', 'Display this help'),
 		'a' => array('archive', 'Archive a disc and title in the database'),
@@ -207,6 +168,7 @@
 
 
 	// Display help if no arguments are passed
+	/*
 	if(($argc == 1 && $dvd2mkv == false) || $dvd->args['h'] == 1 || $dvd->args['help'] == 1) {
 
 		$output = "bend is a DVD archiving, ripping, queueing and encoding tool.\n\n";
@@ -243,9 +205,12 @@
 		echo $output;
 		die;
 	}
+	*/
+	
+	// $arr = $dvd->getTrackStats($dvd->arr_tracks);
 
 	// Clear the queue
-	if($dvd->args['clear'] == 1) {
+	if($dvd->args['clear'] == 1 || $dvd->args['c'] == 1) {
 		$dvd->emptyQueue();
 	}
 
@@ -258,61 +223,209 @@
 	// Otherwise (encoding) everything is already in the database
 	if($dvd->args['archive'] == 1 || $dvd->args['rip'] == 1) {
 
-		$dvd->lsdvd();
-
-		$matches = $dvd->getMatches();
+		$dvd->disc_id = $dvd->getDiscID($dvd->config['dvd_device']);
 		
-		if(count($matches) == 1) {
-		 	echo "Found an exact match!!\n";
-		 	$dvd->tv_show = $matches[0];
-		}
-		elseif(count($matches) > 1 && !isset($dvd->args['tv_show'])) {
-			die("There is more than one matching title.  Pass --id <id> to continue.\n");
-		}
-		elseif(count($matches) > 1 && isset($dvd->args['id']) && is_numeric($dvd->args['id'])) {
-			$dvd->tv_show = $dvd->args['id'];
-		}
-		elseif(count($matches) == 0 && !isset($dvd->args['title'])) {
-			die("This is a new tv_show.  Pass --title <title> to create a new record, or --id <id> to use an existing.\n");
-		}
-
-		if($dvd->args['archive'] == 1) {
-
-			// Archive the title
-			if(count($matches) == 0 && isset($dvd->args['title']) && !empty($dvd->args['title'])) {
-				decho("Archiving title.");
-				$dvd->archiveTitle();
+		$query_disc = $dvd->queryDisc($dvd->disc_id);
+		
+		// If disc is not in the database, it needs to be archived
+		if($query_disc === false) {
+			$dvd->msg("Your DVD is not in the database.");
+			
+			if(!isset($dvd->args['archive'])) {
+				$archive = $dvd->ask("Would you like to archive it now? [Y/n]", 'y');
+				$archive = strtolower($archive);
 			}
-
-			// Archive the disc
-			$disc = $dvd->getDisc();
-			if($disc === false) {
-				$dvd->archiveDisc();
-				echo "Archived disc: {$dvd->disc_title}\n";
-				$disc = $dvd->getDisc();
-			}
-
-			// Archive the episodes
-			if($disc === true) {
-				$sql_episodes = "SELECT 1 FROM episodes WHERE disc = {$dvd->disc} AND ignore = FALSE;";
-				$rs_episodes = pg_query($sql_episodes) or die(pg_last_error());
-				$dvd->num_episodes = pg_num_rows($rs_episodes);
-
-				if($dvd->num_episodes == 0) {
-					$dvd->archiveEpisodes();
+			
+			if($archive == 'y' || $archive == 'yes' || isset($dvd->args['archive'])) {
+			
+				if(isset($dvd->args['show'])) {
+					$show = intval($dvd->args['show']);
+					
+					if($show > 0) {
+						$sql = "SELECT id, title, min_len, max_len, fps, cartoon FROM tv_shows WHERE id = $show;";
+						$rs = pg_query($sql) or die(pg_last_error());
+						if(pg_num_rows($rs) == 1)
+							$dvd->tv_show = pg_fetch_assoc($rs);
+					}
 				}
+				
+				if(!isset($dvd->tv_show['id'])) {
+				
+					// Get the current TV show titles
+					$sql = "SELECT id, title, min_len, max_len, fps, cartoon FROM tv_shows ORDER BY title;";
+					$rs = pg_query($sql) or die(pg_last_error());
+					$num_rows = pg_num_rows($rs);
+					
+					// If no rows, then we are creating a new title
+					if($num_rows == 0) {
+						$new_title = true;
+						$dvd->msg("There aren't any TV shows in the database.");
+					}
+					
+					// Otherwise, display menu, let them pick the show
+					else {
+						
+						// Build associative array
+						for($x = 0; $x < $num_rows; $x++)
+							$arr[$x] = pg_fetch_assoc($rs);
+							
+						// Split the output into pages for the terminal (24 lines per display)
+						$arr_chunk = array_chunk($arr, 22, true);
+						
+						// Keep looping through the selection until they pick one
+						do {
+							// Display only 24 lines per selection at a time:
+							for($x = 0, $y = 1; $x < count($arr_chunk); $x++) {
+							
+								$dvd->msg("Current TV shows:");
+								for($z = 0; $z < count($arr_chunk[$x]); $z++) {
+									$dvd->msg("\t$y. {$arr_chunk[$x][($y - 1)]['title']}");
+									$y++;
+								}
+								
+								$msg = '';
+								if(count($arr_chunk) > 1)
+									$msg = "[Page ".($x + 1)."/".count($arr_chunk)."]  Select TV show [NEXT PAGE/#/new]:";
+								else
+									$msg = "Select TV show [#/new]:";
+									
+								$input = $dvd->ask($msg, '');
+								
+								if(strtolower(trim($input)) != 'new')
+									$input = intval($input);
+								else {
+									$new_title = true;
+									break 2;
+								}
+								
+								// Break out once they have their selection
+								if($input > 0) {
+									if($input > $num_rows) {
+										$dvd->msg("Please enter a valid selection.", true);
+										$input = 0;
+									}
+									else
+										break 1;
+								}
+							}
+						} while($input == 0);
+						
+						// Put the selected TV show array into the object
+						$dvd->tv_show = $arr[($input - 1)];
+					}
+					
+					// Create a new TV show record
+					if($new_title === true) {
+						$dvd->lsdvd();
+						
+						$dvd->msg('');
+						if($dvd->debug == false)
+							$dvd->msg("Disc Title: ".$dvd->disc_title);
+						$title = $dvd->ask("What is the title of this TV show?");
+						$min_len = $dvd->ask("What is the minimum TV show length (in minutes)? [20]", 20);
+						$max_len = $dvd->ask("What is the maximum TV show length (in minutes)? [60]", 60);
+						$cartoon = $dvd->ask("Is this series animated? [y/N]", 0);
+						// TODO:
+						// Ask for the framerate (PAL, NTSC, Autodetect);
+						$fps = 0;
+						// Ask "is this correct"
+						
+						$dvd->addTVShow($title, $min_len, $max_len, $fps, $cartoon);
+					}
+				
+				}
+				
+				
+				$dvd->msg('');
+				$dvd->msg("New disc for '".$dvd->tv_show['title']."'");
+				
+				/** Disc Season */
+				
+				// If they didn't pass the CLI argument, ask for it
+				if(!isset($dvd->args['season']) || intval($dvd->args['season'] == 0)) {
+					do {
+						$season = $dvd->ask("What season is this disc? [1]", 1);
+						$season = intval($season);
+					} while($season == 0);
+				}
+				// Use the CLI variable if provided
+				else {
+					$dvd->disc['season'] = $season = intval($dvd->args['season']);
+					if($dvd->debug)
+						$dvd->msg("[Debug] Season: $season");
+				}
+				
+				/** Disc # */
+				
+				// Find out which other discs they already have archived
+				$sql = "SELECT disc FROM discs WHERE tv_show = {$dvd->tv_show['id']} AND season = $season ORDER BY disc;";
+				$rs = pg_query($sql) or die(pg_last_error());
+				
+				$arr = array();
+				for($x = 0; $x < pg_num_rows($rs); $x++)
+					$arr[] = current(pg_fetch_row($rs));
+				
+				$list = implode(', ', $arr);
+				
+				// Display currently archived discs, if any
+				if(count($arr) > 0)
+					$dvd->msg("Discs archived for Season $season: $list");
+				
+				// See if they passed it in the CLI
+				if(!isset($dvd->args['disc']) || intval($dvd->args['disc'] == 0)) {
+					// First, see if there are any other discs in the database.
+					// If there are, assume this new one is the next in line
+					// and default the answer to the incremented value.
+					
+					$sql = "SELECT MAX(disc) FROM discs WHERE tv_show = {$dvd->tv_show['id']} AND season = $season;";
+					$rs = pg_query($sql) or die(pg_last_error());
+					if(pg_num_rows($rs) == 1) {
+						$max = current(pg_fetch_row($rs));
+					}
+					else
+						$max = 0;
+					
+					// Increment by one -- our starting point
+					$max++;
+					
+					do {
+						$disc = $dvd->ask("What number is this disc? [$max]", $max);
+						$dvd->disc['number'] = $disc = intval($disc);
+						
+						if(in_array($disc, $arr)) {
+							$dvd->msg("Disc #$disc is already archived.  Choose another number.");
+							$disc = 0;
+						}
+						
+					} while($disc == 0);
+					
+				}
+				else {
+					$dvd->disc['number'] = $disc = intval($dvd->args['disc']);
+					if($dvd->debug)
+						$dvd->msg("[Debug] Disc: $disc");
+				}
+				
+				// Archive the disc
+				$dvd->msg("Archiving your DVD ...");
+				$dvd->lsdvd();
+				
+				$dvd->addDisc($dvd->tv_show['id'], $season, $disc, $dvd->disc_id, $dvd->disc_title, $start);
+				
+				
 			}
+			// Just exit gracefully if they don't want to archive it
+			else
+				die;
 		}
 	}
-
+	
+	die;
+	
 	// Rip DVD tracks to the harddrive
 	if($dvd->args['rip'] == 1) {
 
 		@exec("mount /mnt/dvd 2> /dev/null;");
-		$dvd->getDisc();
-
-		// Set the export directory (where to save ripped files)
-		$dvd->export_dir = $dvd->getExportDir($dvd->title, $dvd->season);
 
 		// Create the export directory if it doesn't already exist
 		if(!is_dir($dvd->export_dir)) {
@@ -328,11 +441,11 @@
 
 		// Pull out the tracks that haven't been flagged to ignore in the database frontend
 		// This query has nothing to do with what has / hasn't been encoded
-		$sql_rip = "SELECT track, len FROM episodes WHERE disc = {$dvd->disc} AND ignore = FALSE ORDER BY track;";
-		$rs_rip = pg_query($sql_rip) or die(pg_last_error());
-		$num_rips = pg_num_rows($rs_rip);
+		$sql = "SELECT track, len FROM episodes WHERE disc = {$dvd->disc['id']} AND ignore = FALSE ORDER BY track;";
+		$rs = pg_query($sql) or die(pg_last_error());
+		$num_rows = pg_num_rows($rs);
 
-		if($num_rips > 0) {
+		if($num_rows > 0) {
 
 			// By passing the --tracks flag, you can rip certain tracks only
 			if(isset($dvd->args['tracks'])) {

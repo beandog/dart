@@ -12,181 +12,178 @@
 			$this->min_len = 20;
 			$this->max_len = 59;
 		}
-
-		/*
-		 * Archives a disc in the database
-		 *
-		 */
-		function archiveDisc() {
-
-			if(!isset($this->args['disc']) || intval($this->args['disc']) == 0)
-				die("You need to pass a valid disc # with the --disc argument.\n");
-			if(!isset($this->args['season']) || intval($this->args['season']) == 0)
-				die("You need to pass a valid season # with the --season argument.\n");
-
-			$arr_insert = array(
-				'tv_show' => $this->tv_show,
-				'season' => $this->args['season'],
-				'disc' => $this->args['disc'],
-				'disc_id' => $this->disc_id,
-				'disc_title' => $this->disc_title
-			);
-			
-			#print_r($arr_insert);
-			#die;
-
-			if(isset($this->args['chapters'])) {
-				$arr_insert['chapters'] = 't';
-				$arr_insert['chapters_track'] = intval($this->args['tracks']);
-			}
-
-			$sql_insert = pg_insert($this->db, 'discs', $arr_insert, PGSQL_DML_STRING);
-
-			if($sql_insert === false) {
-				print_r($arr_insert);
-				trigger_error("Cannot build query", E_USER_ERROR);
-			}
-			elseif(is_string($sql_insert)) {
-				decho("Query: $sql_insert");
-				pg_query($sql_insert) or die(pg_last_error());
-				return true;
-			}
-		}
-
-		function archiveEpisodes() {
-
-			// Calculate the starting episode # for this disc
-			// Also, always update it each time, since the title orders may have changed
-			$sql_start = "SELECT discs.disc, episodes.episode, episodes.title FROM episodes, discs WHERE discs.tv_show = {$this->tv_show} AND season = {$this->season} AND discs.disc < {$this->disc_number} AND episodes.disc = discs.id AND episodes.ignore = FALSE ORDER BY discs.disc, episodes.episode;";
-			#decho($sql_start);
-			$rs_start = pg_query($sql_start) or die(pg_last_error());
-			$this->start = pg_num_rows($rs_start);
-
-			// Now that we have the count of episodes before this disc, add one
-			$this->start++;
-			// ... and update the database
-			$sql_update = "UPDATE discs SET start = {$this->start} WHERE id = {$this->disc};";
-			decho($sql_update);
-			pg_query($sql_update) or die(pg_last_error());
-
-			$i = 1;
-
-			#decho($this->arr_tracks);
-			#die;
-
-			if(isset($this->args['chapters'])) {
-
-				$chapters = $this->getChapters(key($this->arr_tracks));
-				
-				$arr_chapters = explode("\n", $chapters);
-				$this->chapters = (count($arr_chapters) / 2);
-
-				#decho($arr_chapters);
-
-				$i = 1;
-				foreach($arr_chapters as $key => $value) {
-					if($key % 2 === 0) {
-						$value = preg_replace('/(CHAPTER\d+=|\.\d{3}$)/', '', $value);
-						#$value = preg_replace('/\.\d{3}$/', '', $value);
-						$value = str_replace(':', '.', $value);
-						$arr[$i] = $this->correctLength($value);
-						$i++;
-					}
-				}
-
-
-				foreach($arr as $key => $value) {
-					if($key == count($arr))
-						$arr[$key] = current($this->arr_tracks) - $arr[$key];
-					else
-						$arr[$key] = $arr[($key + 1)] - $value;
-
-					$arr_insert = array(
-						'disc' => $this->disc,
-						'episode' => $key,
-						'len' => $arr[$key],
-						'track' => $key
-					);
-
-					$this->num_episodes++;
-					$sql_insert = pg_insert($this->db, 'episodes', $arr_insert, PGSQL_DML_STRING) or die("archiveEpisodes() couldn't build the query");
-					pg_query($sql_insert) or die(pg_last_error());
-				}
+		
+		function addTVShow($title = 'TV Show', $min_len = 30, $max_len = 60, $fps = 0, $cartoon = false) {
+			$title = pg_escape_string(trim($title));
+			$min_len = intval($min_len);
+			$max_len = intval($max_len);
+			$fps = intval($fps);
+			if(substr(trim(strtolower($cartoon)), 0, 1) == 'y') {
+				$pg_cartoon = 'TRUE';
+				$cartoon = true;
 			}
 			else {
-				// Insert the episodes
-				foreach($this->arr_tracks as $track => $len) {
-
-					$chapters = $this->getChapters($track);
-
-					$arr_insert = array(
-						'disc' => $this->disc,
-						'episode' => $i,
-						'len' => $len,
-						'chapters' => $chapters,
-						'track' => $track
-					);
-					$i++;
-					$this->num_episodes++;
-
-					$sql_insert = pg_insert($this->db, 'episodes', $arr_insert, PGSQL_DML_STRING) or die("archiveEpisodes() couldn't build the query");
-					pg_query($sql_insert) or die(pg_last_error());
-				}
+				$pg_cartoon = 'FALSE';
+				$cartoon = false;
 			}
-
-			if($this->num_episodes > 0)
-				echo("Archived {$this->num_episodes} episodes, be sure to set the titles in the frontend.\n");
-
-			/*
-			// Legacy code: update old database schema to include tracks
-			if($args['update'] == 1) {
-				$i = 1;
-				foreach($dvd->arr_tracks as $key => $value) {
-					$sql_update = "UPDATE episodes SET track = $key WHERE disc = {$dvd->disc} AND episode = $i;";
-					decho($sql_update);
-					pg_query($sql_update) or die(pg_last_error());
-					$i++;
-				}
-
-			}
-			*/
+			
+			$sql = "SELECT NEXTVAL('public.tv_shows_id_seq');";
+			$id = current(pg_fetch_row(pg_query($sql))) or die(pg_last_error());
+			
+			$sql = "INSERT INTO tv_shows (id, title, min_len, max_len, fps, cartoon) VALUES ($id, '$title', $min_len, $max_len, $fps, $pg_cartoon);";
+			pg_query($sql) or die(pg_last_error());
+			
+			$this->tv_show = compact('id', 'title', 'min_len', 'max_len', 'fps', 'cartoon');
+			return true;
 		}
-
-		function archiveTitle() {
-
-			$title = trim($this->args['title']);
-
-			$arr_insert = array(
-				'title' => $title
-			);
-
-			if(empty($this->args['pattern'])) {
-				$arr_insert['pattern'] = $this->disc_title;
-				echo "No --pattern argument, setting to disc title: '{$this->disc_title}'\n";
+		
+		function addDisc($tv_show, $season, $disc, $disc_id, $disc_title) {
+		
+			if(!isset($this->arr_tracks))
+				$this->lsdvd();
+			
+			$arr_tracks = $this->getValidTracks($this->arr_tracks, $this->tv_show['min_len'], $this->tv_show['max_len'], false);
+			
+			/*
+			if($disc > 1) {
+				$this->disc['start'] = $this->getStartingEpisode();
 			}
 			else
-				$arr_insert['pattern'] = $this->args['pattern'];
+				$this->disc['start'] = 1;
+			
+			$start = $this->disc['start'];
+			*/
+				
+			// Insert disc into database
+			$sql = "SELECT NEXTVAL('public.discs_id_seq');";
+			$id = current(pg_fetch_row(pg_query($sql))) or die(pg_last_error());
+			
+			$sql = "INSERT INTO discs (id, tv_show, season, disc, disc_id, disc_title) VALUES ($id, $tv_show, $season, $disc, '$disc_id', '$disc_title');";
+			#echo $sql;
+			pg_query($sql) or die(pg_last_error());
+			
+			// Rebuild disc object array
+			$this->disc = compact('id', 'tv_show', 'season', 'disc', 'disc_id', 'disc_title', 'start');
+			
+			#print_r($this->disc);
+			
+			$episode = 0;
+			
+			foreach($arr_tracks as $track => $valid) {
+				$chapters = $this->getChapters($track, $this->config['dvd_device']);
+				
+				if($valid)
+					$episode++;
+				
+				// Don't insert tracks with zero length
+				if($this->arr_tracks[$track] != '0.00')
+					$this->archiveEpisode($this->disc['id'], $episode, $this->arr_tracks[$track], $chapters, $this->config['queue_id'], $track, $valid);
+			}
+			
+			if($this->num_episodes > 0)
+				echo("Archived {$this->num_episodes} episodes, be sure to set the titles in the frontend.\n");
+			
+		}
+		
+		function getValidTracks($arr_tracks = null, $min_len = 20, $max_len = 60, $chapters = false) {
+		
+			if(!is_array($arr_tracks))
+				return false;
+			
+			$min_len = intval($min_len);
+			$max_len = intval($max_len);
 
-			if(isset($this->args['min']) && is_numeric($this->args['min']))
-				$arr_insert['min_len'] = $this->args['min'];
-			if(isset($this->args['max']) && is_numeric($this->args['max']))
-				$arr_insert['max_len'] = $this->args['max'];
-			if(isset($this->args['cartoon']))
-				$arr_insert['cartoon'] = 't';
+			$add = $ignore = 0;
 
+			// If we are ripping only one track as chapters, then ignore the length
+			// FIXME, not used
+			if($chapters === true) {
+				/*
+				foreach($this->arr_tracks as $key => $value) {
+					if($key != $arr_disc['chapters_track'])
+						unset($this->arr_tracks[$key]);
+				}
+				*/
+			}
+			else {
+				// Trim the tracks that do not meet the min and max length criteria
+				foreach($arr_tracks as $key => $value) {
 
-			decho($arr_insert);
+					if($value > $max_len || $value < $min_len) {
+						if($this->debug)
+							$this->msg("[Debug] - Track $key ($value)", true);
+						$arr_valid[$key] = false;
+						$ignore++;
+					}
+					else {
+						if($this->debug)
+							$this->msg("[Debug] + Track $key ($value)", true);
+						$add++;
+						$arr_valid[$key] = true;
+					}
+				}
+			}
 
-			$sql_title = pg_insert($this->db, 'tv_shows', $arr_insert, PGSQL_DML_STRING);
+			decho("$add tracks will be added to the database");
+			decho("$ignore tracks ignored because of length");
+			
+			return $arr_valid;
+		}
+		
 
-			decho($sql_title);
+		function getStartingEpisode() {
+			// Calculate the starting episode # for this disc
+			// Also, always update it each time, since the title orders may have changed
+			echo $sql = "SELECT discs.disc, episodes.episode, episodes.title FROM episodes, discs WHERE discs.tv_show = {$this->tv_show['id']} AND season = {$this->disc['season']} AND discs.disc < {$this->disc['number']} AND episodes.disc = discs.id AND episodes.ignore = FALSE ORDER BY discs.disc, episodes.episode;";
+			$rs = pg_query($sql) or die(pg_last_error());
+			$start = pg_num_rows($rs);
+			
+			$start++;
 
-			pg_query($sql_title) or die(pg_last_error());
-			echo("Inserting new title.  Be sure to set the titles before ripping!\n");
+			return($start);
+		}
 
-			$sql_title = "SELECT id FROM tv_shows ORDER BY id desc LIMIT 1;";
-			$rs_title = pg_query($sql_title);
-			$this->tv_show = current(pg_fetch_assoc($rs_title));
+		function archiveEpisode($disc_id, $episode, $len, $chapters, $queue = null, $track, $valid = false) {
+		
+			$disc_id = intval($disc_id);
+			$episode = intval($episode);
+			$len = pg_escape_string($len);
+			$chapters = pg_escape_string(trim($chapters));
+			
+			if(!is_null($queue))
+				$queue = intval($queue);
+				
+			$track = intval($track);
+			$valid = intval($valid);
+			
+			if($valid == 0) {
+				$episode = 'NULL';
+				$ignore = 't';
+			}
+			else
+				$ignore = 'f';
+				
+			$sql = "INSERT INTO episodes (disc, episode, len, chapters, queue, track, ignore) VALUES ($disc_id, $episode, $len, '$chapters', $queue, $track, '$ignore');";
+			pg_query($sql) or die(pg_last_error());
+			#die;
+		
+		}
+
+		function ask($string, $default = false) {
+			if(is_string($string)) {
+				#$handle = fopen('php://stdin', 'r');
+				fwrite(STDOUT, "$string ");
+				$input = fread(STDIN, 255);
+				#fclose($handle);
+				
+				if($input == "\n") {
+					return $default;
+				}
+				else {
+					$input = trim($input);
+					return $input;
+				}
+			}
 		}
 
 		function createMatroska($avi, $mkv, $txt) {
@@ -222,9 +219,16 @@
 		}
 
 		function displayQueue() {
-			$sql_queue = "SELECT episodes.episode, episodes.title, episodes.len, tv_shows.title AS tv_show_title FROM episodes, discs, tv_shows WHERE queue = {$this->config['queue']} AND episodes.disc = discs.id AND discs.tv_show = tv_shows.id AND ignore = FALSE ORDER BY tv_shows.title, episodes.disc, episodes.id;";
+			$sql_queue = "SELECT episodes.episode, episodes.title, episodes.len, tv_shows.title AS tv_show_title FROM episodes, discs, tv_shows WHERE queue = {$this->config['queue_id']} AND episodes.disc = discs.id AND discs.tv_show = tv_shows.id AND ignore = FALSE ORDER BY tv_shows.title, episodes.disc, episodes.id;";
 			#decho($sql_queue);
 			$rs_queue = pg_query($sql_queue) or die(pg_last_error());
+			
+			if($this->debug)
+				$this->decho("Queue ID: {$this->config['queue_id']}", true);
+			
+			if(pg_num_rows($rs_queue) == 0)
+				$this->msg("Your encoding queue is empty.", true);
+			
 			while($arr_queue = pg_fetch_assoc($rs_queue)) {
 				echo "$i. ".$arr_queue['tv_show_title'].": ".$arr_queue['title']." (".$arr_queue['len'].")\n";
 			}
@@ -298,7 +302,7 @@
 		}
 
 		function emptyQueue() {
-			$sql_queue = "DELETE FROM episodes WHERE queue = {$this->config['queue']};";
+			$sql_queue = "DELETE FROM episodes WHERE queue = {$this->config['queue_id']};";
 			pg_query($sql_queue) or die(pg_last_error());
 		}
 
@@ -335,14 +339,18 @@
 			}
 		}
 
-		function getChapters($track) {
+		function getChapters($track, $dvd_device = '/dev/dvd') {
 
 			$track = intval($track);
-			if($track == 0)
-				die("Passed an invalid track # to get chapters from!!\n");
+			if($track == 0) {
+				$this->msg("Passed an invalid track # to get chapters from!", true);
+				die;
+			}
 			else {
-				$exec = "dvdxchap {$this->config['device']} -t $track 2> /dev/null";
-				decho($exec);
+				$exec = "dvdxchap $dvd_device -t $track 2> /dev/null";
+				if($this->verbose)
+					$this->msg($exec, true);
+				
 				exec($exec, $arr);
 				#decho($arr);
 
@@ -352,123 +360,15 @@
 			}
 		}
 
-		function getDisc() {
 
-			// Get min, max length for tv_show
-			$sql_tv_show = "SELECT min_len, max_len, title FROM tv_shows WHERE tv_shows.id = {$this->tv_show};";
-			$rs_tv_show = pg_query($sql_tv_show) or die(pg_last_error());
-			$arr_tv_show = pg_fetch_assoc($rs_tv_show);
-
-			if(!is_null($arr_tv_show['min_len'])) {
-				$this->min_len = $arr_tv_show['min_len'];
-			}
-			if(!is_null($arr_tv_show['max_len'])) {
-				$this->max_len = $arr_tv_show['max_len'];
-			}
-
-
-			// Get disc ID
-			#$this->disc_id = $this->getDiscId($this->config['device']);
-			//$sql_disc = "SELECT discs.*, tv_shows.title AS tv_show_title, discs.min_len, discs.max_len FROM discs, tv_shows WHERE tv_show = {$this->tv_show} AND disc_title = '{$this->disc_title}' AND md5 = '{$this->md5sum}' AND tv_shows.id = discs.tv_show;";
-
-			$sql_where = '';
-			if(isset($this->args['tv_show'])) {
-				$sql_where .= " AND tv_show = {$this->args['tv_show']} ";
-			}
-			if(isset($this->args['season'])) {
-				$sql_where .= " AND season = {$this->args['season']} ";
-			}
-			if(isset($this->args['disc'])) {
-				$sql_where .= " AND disc = {$this->args['disc']} ";
-			}
-
-			$sql_disc = "SELECT discs.*, tv_shows.title AS tv_show_title, discs.min_len, discs.max_len FROM discs, tv_shows WHERE tv_show = {$this->tv_show} AND disc_title = '{$this->disc_title}' AND tv_shows.id = discs.tv_show $sql_where;";
-			#$sql_disc = "SELECT discs.*, tv_shows.title AS tv_show_title, discs.min_len, discs.max_len FROM discs, tv_shows WHERE disc_id = '{$this->disc_id}' AND tv_shows.id = discs.tv_show;";
-			decho($sql_disc);
-			$rs_disc = pg_query($sql_disc) or die(pg_last_error());
-			$num_rows = pg_num_rows($rs_disc);
-
-			decho("Found $num_rows discs");
-
-			if($num_rows == 1) {
-
-				echo "Found your disc. :)\n";
-
-				$this->arr_disc = $arr_disc = pg_fetch_assoc($rs_disc);
-
-				if(!is_null($arr_disc['min_len']))
-					$this->min_len = $arr_disc['min_len'];
-				if(!is_null($arr_disc['max_len']))
-					$this->max_len = $arr_disc['max_len'];
-					
-				if(is_null($arr_disc['disc_id'])) {
-					decho("Updating Disc ID");
-					$this->updateDiscId($arr_disc['id'], $this->disc_id);
-				}
-				else
-					decho("Disc ID already logged. :)");
-
-				#decho($this);
-
-				$add = $ignore = 0;
-
-				// If we are ripping only one track as chapters, then ignore the length
-				if($arr_disc['chapters'] == 't') {
-
-					foreach($this->arr_tracks as $key => $value) {
-						if($key != $arr_disc['chapters_track'])
-							unset($this->arr_tracks[$key]);
-					}
-				}
-				else {
-					// Trim the tracks that do not meet the min and max length criteria
-					foreach($this->arr_tracks as $key => $value) {
-
-						// On lsdvd 0.15, for XML output, track length is reported
-						// in minutes
-						#$value = ($value / 60);
-						if($value > $this->max_len || $value < $this->min_len) {
-							decho(" - Ignoring track $key, length $value");
-							unset($this->arr_tracks[$key]);
-							$ignore++;
-						}
-						else {
-							decho(" + Adding track $key, length $value");
-							$add++;
-						}
-					}
-				}
-
-				decho("$add tracks will be added to the database");
-				decho("$ignore tracks ignored because of length");
-
-				// Build on the DVD object a bit more
-				$this->title = $arr_disc['tv_show_title'];
-				$this->disc = $arr_disc['id'];
-				$this->season = $arr_disc['season'];
-				$this->disc_number = $arr_disc['disc'];
-
-				// The min/max lengths in the disc table override the tv_show settings
-				if(!is_null($arr_disc['min_len']))
-					$this->min_len = $arr_disc['min_len'];
-				if(!is_null($arr_disc['max_len']))
-					$this->max_len = $arr_disc['max_len'];
-
-				return true;
-			}
-			elseif($num_rows > 1) {
-				echo "Found more than one disc, couldn't find the _unique_ one.\n";
-				echo "Pass any combination of --tv_show <id>, --season <#> and --disc <#> to help narrow the search.\n";
-
-				return false;
-			}
-			else
-				return false;
-		}
 		
 		function getDiscID($device = '/dev/dvd', $disc_id_binary = '/usr/bin/disc_id') {
 			if(!empty($device)) {
 				$disc_id = exec("$disc_id_binary $device");
+				
+				if($this->debug)
+					$this->msg("[Debug] Disc ID: $disc_id", true);
+				
 				return $disc_id;
 			}
 			else
@@ -496,37 +396,9 @@
 			return $export_dir;
 		}
 
-		function getMatches() {
-
-			// Find the tv_show ID
-			$sql_pattern = "SELECT id AS tv_show, pattern, title FROM tv_shows WHERE pattern IS NOT NULL;";
-			$rs_pattern = pg_query($sql_pattern);
-
-			while($arr_pattern = pg_fetch_row($rs_pattern)) {
-				if(preg_match("/\b{$arr_pattern[1]}\w*\b/i", $this->disc_title) == 1) {
-					echo "Found a match!\n";
-					$matches[] = $arr_pattern[0];
-				}
-			 }
-
-			 return $matches;
-			 
-			 /*
-			 echo "Disc ID: ".$this->disc_id."\n";
-			 $sql_match = "SELECT id FROM discs WHERE disc_id = '{$this->disc_id}' LIMIT 1;";
-			 $rs_match = pg_query($sql_match);
-			 if(pg_num_rows($rs_match) == 0)
-			 	return false;
-			 else {
-			 	$id = current(pg_fetch_row($rs_matches));
-			 	return $id;
-			 }
-			 */
-		}
-
 		function getQueue() {
 
-			$sql_queue = "SELECT episodes.id AS episode_id, episodes.episode, episodes.title, episodes.chapters, episodes.track, discs.id AS disc_id, discs.tv_show AS tv_show, discs.season, discs.disc AS disc_number, discs.start, discs.chapters AS one_chapter, discs.chapters_track, tv_shows.title AS tv_show_title, tv_shows.cartoon, tv_shows.fps FROM episodes, discs, tv_shows WHERE queue = {$this->config['queue']} AND episodes.disc = discs.id AND discs.tv_show = tv_shows.id AND ignore = FALSE ORDER BY tv_shows.title, episodes.disc, episodes.id LIMIT 1;";
+			$sql_queue = "SELECT episodes.id AS episode_id, episodes.episode, episodes.title, episodes.chapters, episodes.track, discs.id AS disc_id, discs.tv_show AS tv_show, discs.season, discs.disc AS disc_number, discs.start, discs.chapters AS one_chapter, discs.chapters_track, tv_shows.title AS tv_show_title, tv_shows.cartoon, tv_shows.fps FROM episodes, discs, tv_shows WHERE queue = {$this->config['queue_id']} AND episodes.disc = discs.id AND discs.tv_show = tv_shows.id AND ignore = FALSE ORDER BY tv_shows.title, episodes.disc, episodes.id LIMIT 1;";
 
 			$rs_queue = pg_query($sql_queue) or die(pg_last_error());
 			$arr_queue = pg_fetch_assoc($rs_queue);
@@ -543,7 +415,45 @@
 
 			return $num_encode;
 		}
-
+		
+		/** 
+		 * Calculate stats about the tracks
+		 * Experimental
+		 * @param array
+		 * @return array
+		 */
+		function getTrackStats($arr) {
+			$arr = preg_grep('/0\.00/', $arr, PREG_GREP_INVERT);
+			
+			
+			
+			$arr_count = array_count_values($arr);
+			#print_r($arr_count);
+			
+			foreach($arr as $value) {
+				
+			
+				$group = ceil($value / 10);
+				$len = floor($value);
+				if($group > 0) {
+					$count[$group]++;
+				}
+				
+			}
+			
+			arsort($count);
+			
+			#print_r($count);
+			#die;
+			
+			$max = max($arr);
+			$min = min($arr);
+			$avg = round(array_sum($arr) / count($arr), 2);
+			
+			return array($max, $min, $avg);
+		}
+			
+	
 		function lsdvd() {
 			#exec('lsdvd -q 2> /dev/null', $arr);
 			$xml = `lsdvd -Ox 2> /dev/null`;
@@ -552,11 +462,13 @@
 
 			// Get the "Disc Title:" string
 			$this->disc_title = (string)$lsdvd->title;
-
-			echo "Disc Title: ".$this->disc_title."\n";
+			
+			if($this->debug)
+				$this->msg("[Debug] Disc Title: ".$this->disc_title);
 			
 			// Get the disc ID (libdvdread)
-			$this->disc_id = $this->getDiscId($this->config['device']);
+			if(!isset($this->disc_id))
+				$this->disc_id = $this->getDiscId($this->config['dvd_device']);
 			
 			// Longest track
 			$this->longest_track = (int)$lsdvd->longest_track;
@@ -582,10 +494,109 @@
 			return $arr;
 
 		}
+		
+		function msg($string, $stderr = false) {
+			if($stderr === true) {
+				#$handle = fopen('php://stderr', 'w');
+				fwrite(STDERR, "$string\n");
+				#fclose($handle);
+			}
+			else {
+				fwrite(STDOUT, "$string\n");
+			}
+		}
+
+		/**
+		* Parse CLI arguments
+		*
+		* If a value is unset, it will be set to 1
+		*
+		* @param $argc argument count (system variable)
+		* @param $argv argument array (system variable)
+		* @return array
+		*/
+		function parseArguments($argc, $argv) {
+			if($argc > 1) {
+				array_shift($argv);
+	
+				for($x = 0; $x < count($argv); $x++) {
+					if(preg_match('/^(-\w$|--\w+)/', $argv[$x]) > 0) {
+						$argv[$x] = preg_replace('/^-{1,2}/', '', $argv[$x]);
+						$args[$argv[$x]] = 1;
+					}
+					else {
+						if(in_array($argv[($x-1)], array_keys($args))) {
+							$args[$argv[($x-1)]] = $argv[$x];
+						}
+					}
+				}
+	
+				return $args;
+			}
+			else
+				return array();
+		}
+		
+		/**
+		 * Query a Disc ID to see if it's in the database
+		 *
+		 * @param string Disc ID
+		 * @return bool
+		 */
+		function queryDisc($disc_id) {
+			$disc_id = pg_escape_string(trim($disc_id));
+			
+			$sql = "SELECT 1 FROM discs WHERE disc_id = '$disc_id';";
+			$rs = pg_query($sql) or die(pg_last_error());
+			
+			if(pg_num_rows($rs) == 1)
+				return true;
+			else
+				return false;
+		}
 
 		function ripTrack($track = '', $vob = 'movie.vob', $flags = '') {
 			$exec = "mplayer dvd://$track $flags -dumpstream -dumpfile $vob";
 			$this->executeCommand($exec);
+		}
+		
+		/**
+		 * Set configuration options
+		 *
+		 * @param int Argument count
+		 * @param array Argument array
+		 * @param array Configuration options
+		 */
+		function setConfig($argc, $argv, $arr_config) {
+			if(is_int($argc) && is_array($argv) && is_array($arr_config)) {
+			
+				$this->config = $arr_config;
+			
+				if(substr($argv[0], -7, 7) == 'dvd2mkv')
+					$this->dvd2mkv = true;
+				else
+					$this->dvd2mkv = false;
+					
+				$this->args = $this->parseArguments($argc, $argv);
+					
+				if(isset($this->args['min']))
+					$this->min_len = $this->args['min'];
+				if(isset($this->args['max']))
+					$this->max_len = $this->args['max'];
+				
+				if(isset($this->args['debug']))
+					$this->debug = true;
+				else
+					$this->debug = false;
+					
+				#print_r($this);
+				
+				return true;
+			}
+			else {
+				trigger_error("Couldn't parse your configuration options", E_USER_WARNING);
+				return false;
+			}
 		}
 
 		function tidyUp($vob, $avi, $mkv, $txt) {
@@ -632,17 +643,6 @@
 				$exec = "transcode -a 0 -b 128,0,0 -i $vob -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 2 -x vob -y xvid4 $flags -o $avi";
 				$this->executeCommand($exec);
 			}
-		}
-		
-		/**
-		 * Update Disc ID
-		 * Should be a temporary function, as the IDs get updated
-		 * for old records
-		 */
-		function updateDiscId($id, $disc_id) {
-			$sql = "UPDATE discs SET disc_id = '$disc_id' WHERE id = $id;";
-			decho("Query: $sql");
-			pg_query($sql);
 		}
 
 		function writeChapters($txt = 'movie.txt') {
