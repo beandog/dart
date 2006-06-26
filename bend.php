@@ -501,8 +501,9 @@
 				$count++;
 			}
 
-			if($count > 0)
-				$dvd->msg("Added $count episodes to the queue.");
+			$dvd->msg("Finished ripping files to $dir");
+			$dvd->msg("Added $count episodes to the queue.");
+			
 
 			if($dvd->config['eject'] === true) {
 				$dvd->msg("Attempting to eject disc.", true, true);

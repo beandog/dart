@@ -318,17 +318,17 @@
 
 			if($this->args['debug'] == 1) {
 				$str .= ';';
-				echo "Executing command: '$str'\n";
+				$this->msg("Executing command: '$str'", false, true);
 				exec($str);
 			}
 			elseif($this->args['debug'] == 2) {
 				$str .= ';';
-				echo "Executing command: '$str'\n";
+				$this->msg("Executing command: '$str'", false, true);
 				system($str);
 			}
 			elseif($this->args['debug'] == 3) {
 				$str .= ';';
-				echo "Executing command: '$str'\n";
+				$this->msg("Executing command: '$str'", false, true);
 				passthru($str);
 			}
 			else {
@@ -574,8 +574,9 @@
 		}
 
 		function ripTrack($track, $vob = 'movie.vob') {
+			$this->msg("Ripping to $vob", false, true);
 			$exec = "mplayer -dvd-device {$this->config['dvd_device']} dvd://$track -dumpstream -dumpfile $vob";
-			#$this->executeCommand($exec);
+			$this->executeCommand($exec);
 		}
 		
 		/**
