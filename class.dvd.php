@@ -504,20 +504,22 @@
 
 		}
 		
-		function msg($string, $stderr = false, $debug = false) {
+		function msg($string = '', $stderr = false, $debug = false) {
 		
 			if($debug === true) {
-				$string = "[Debug] $string";
+				if($this->debug == true)
+					$string = "[Debug] $string";
+				else
+					$string = '';
 			}
 		
-			if($stderr === true) {
-				#$handle = fopen('php://stderr', 'w');
-				fwrite(STDERR, "$string\n");
-				#fclose($handle);
-			}
-			else {
-				if(($this->debug === true && $debug === true) || ($this->debug === false && $debug === false))
+			if(!empty($string)) {
+				if($stderr === true) {
+					fwrite(STDERR, "$string\n");
+				}
+				else {
 					fwrite(STDOUT, "$string\n");
+				}
 			}
 			return true;
 		}
@@ -573,7 +575,7 @@
 
 		function ripTrack($track, $vob = 'movie.vob') {
 			$exec = "mplayer -dvd-device {$this->config['dvd_device']} dvd://$track -dumpstream -dumpfile $vob";
-			$this->executeCommand($exec);
+			#$this->executeCommand($exec);
 		}
 		
 		/**

@@ -219,8 +219,7 @@
 		$dvd->displayQueue();
 	}
 
-	// If the disc is in the drive, for archiving or ripping, then get some basic disc info
-	// Otherwise (encoding) everything is already in the database
+	/** Archive Disc */
 	if($dvd->args['archive'] == 1 || $dvd->args['rip'] == 1) {
 
 		$dvd->disc_id = $dvd->getDiscID($dvd->config['dvd_device']);
@@ -421,17 +420,22 @@
 		}
 	}
 	
-	// Rip DVD tracks to the harddrive
+	/** Rip DVD tracks to the harddrive */
 	if($dvd->args['rip'] == 1) {
 	
+		// Get some disc information
 		if(!isset($dvd->disc)) {
 			if($dvd->getDisc() === false) {
 				$dvd->msg("I couldn't find your disc in the database.  You need to run --archive first.", true);
 			}
 		}
 		
-		if($dvd->config['mount'] === true)
+		// Mount disc (decreases readtime)
+		// TODO see if its already mounted ... somehow?
+		if($dvd->config['mount'] === true) {
+			$dvd->msg("Attempting to mount disc.", true, true);
 			@exec("mount {$dvd->config['dvd_device']} 2> /dev/null;");
+		}
 
 		// Create the export directory if it doesn't already exist
 		if(!is_dir($dvd->config['export_dir'])) {
@@ -452,25 +456,12 @@
 		$num_rows = pg_num_rows($rs);
 
 		if($num_rows > 0) {
-
-			// By passing the --tracks flag, you can rip certain tracks only
-			/*
-			if(isset($dvd->args['tracks'])) {
-				$tmp = explode('-', $dvd->args['tracks']);
-
-				// This is a little excessive
-				foreach($tmp as $key => $value)
-					if(!is_int($key))
-						unset($tmp['key']);
-
-				if(count($tmp) == 1)
-					$tmp[] = $tmp[0];
-			}
-			*/
+		
+			$dvd->msg("$num_rows total to rip and enqueue.");
 
 			$count = 0;
 			
-			for($x = 0; $x < pg_num_rows($rs); $x++)
+			for($x = 0; $x < $num_rows; $x++)
 				$arr[$x] = pg_fetch_assoc($rs);
 				
 			$title = preg_replace('/[^A-Za-z ]/', '', $arr[0]['title']);
@@ -478,98 +469,74 @@
 			
 			$dir = $dvd->config['export_dir'].$title;
 			
-			
-			
-			
-			
+			// TODO die with $dvd->msg
 			if(!is_dir($dir))
 				mkdir($dir) or die("Can't create export directory!");
-			else {
-				$arr_dir = preg_grep('/vob$/', scandir($dir));
-			}
-			
-			foreach($arr as $tmp) {
-				/*
-				if($dvd->arr_disc['chapters'] == 't') {
-					$track = key($dvd->arr_tracks);
-					$chapter = $arr_rip['track'];
-				}
-				else
-					$track = $arr_rip['track'];
-				*/
 				
+			
+			/** Rip the tracks */
+			foreach($arr as $tmp) {
+						
 				extract($tmp);
 				$file = "season_{$season}_disc_{$disc}_track_{$track}.vob";
 				$vob = "$dir/$file";
 				
+				// Get the directory list each time, so that you can rip the same disc
+				// in two sessions at once.  Possible, but definately not advised.  It
+				// slows down the ripping horribly.
+				$arr_dir = preg_grep('/vob$/', scandir($dir));
+				
+				// Check to see if file exists, if not, rip it
 				if(!in_array($file, $arr_dir)) {
-					$dvd->msg("Ripping $title: season $season, disc $disc, track $track");
+					$dvd->msg("[".($count +1 )."/$num_rows] Ripping $title: season $season, disc $disc, track $track");
 					$dvd->ripTrack($track, $vob);
-					
-					
-					
 				}
+				else
+					$dvd->msg("[".($count +1 )."/$num_rows] Skipping track $track, file already exists.");
 				
 				// Put the episodes in the queue (even if they are already ripped)
 				$sql = "UPDATE episodes SET queue = {$dvd->config['queue_id']} WHERE disc = {$dvd->disc['id']} AND track = $track AND ignore = FALSE;";
 				pg_query($sql) or die(pg_last_error());
 				
-				
-				/*
-
-				if( !isset($dvd->args['tracks']) || ($track >= $tmp[0] && $track <= $tmp[1]) ) {
-					if(isset($chapter))
-						$vob = "season_".$dvd->arr_disc['season']."_disc_".$dvd->disc_number."_track_{$track}_chapter_{$chapter}.vob";
-					else
-						$vob = "season_".$dvd->arr_disc['season']."_disc_".$dvd->disc_number."_track_$track.vob";
-					$export_vob = $dvd->export_dir.$vob;
-
-					// If we haven't ripped the disc's VOB already, do so now
-
-					if(!file_exists($export_vob)) {
-						echo "Ripping track #$track (Length: {$arr_rip['len']}) to $vob ...\n";
-						if(isset($chapter))
-							$chapter_flags = "-chapter $chapter-$chapter";
-						else
-							$chapter_flags = '';
-						#$exec = "mplayer dvd://$track $chapter_flags -dumpstream -dumpfile $export_vob ";
-						#$dvd->executeCommand($exec);
-						$dvd->ripTrack($track, $export_vob, $chapter_flags);
-					}
-
-					// Put the episodes in the queue (even if they are already ripped)
-					if(isset($chapter))
-						$track = $chapter;
-					$sql_queue = "UPDATE episodes SET queue = {$dvd->config['queue']} WHERE disc = {$dvd->disc} AND track = $track AND ignore = FALSE;";
-					#decho($sql_queue);
-					pg_query($sql_queue) or die(pg_last_error());
-				}
-				*/
-
 				$count++;
-
 			}
 
 			if($count > 0)
-				echo "Adding $count episodes to the queue.\n";
+				$dvd->msg("Added $count episodes to the queue.");
 
-			if($dvd->config['eject'] === true)
+			if($dvd->config['eject'] === true) {
+				$dvd->msg("Attempting to eject disc.", true, true);
 				system('eject '.$dvd->config['dvd_device']);
+			}
 		}
 		else {
 			$dvd->msg("There aren't any archived tracks to rip for this disc.  You might want to try running --archive instead.", true);
 		}
 	}
 
-
-
-
+	/** Encoding */
 	if($dvd->args['encode'] == 1) {
 
 		$num_encode = $dvd->getQueueTotal($dvd->config['queue']);
 		echo "$num_encode episode(s) total to encode.\n";
 
 		if($num_encode > 0) {
+			$dvd->encodeMovie();
+		}
+	}
+
+	/** Encoding daemon mode */
+	// This will sleep while there is nothing to encode, waiting for something to
+	// be updated to the queue.
+	while($dvd->args['daemon'] == 1) {
+
+		$num_encode = $dvd->getQueueTotal($dvd->config['queue']);
+
+		if($num_encode == 0) {
+			#echo "I'm out of things to encode, and I'm running in daemon mode, so I'm going to sleep ...\n";
+			sleep(200);
+		}
+		else {
 			$dvd->encodeMovie();
 		}
 	}
