@@ -40,9 +40,9 @@
 		function addDisc($tv_show, $season, $disc, $disc_id, $disc_title) {
 		
 			if(!isset($this->arr_tracks))
-				$this->lsdvd();
+				$this->lsdvd($this->config['dvd_device']);
 			
-			$arr_tracks = $this->getValidTracks($this->arr_tracks, $this->tv_show['min_len'], $this->tv_show['max_len'], false);
+			$arr_tracks = $this->getValidTracks($this->arr_tracks, $this->tv_show['min_len'], $this->tv_show['max_len']);
 			
 			/*
 			if($disc > 1) {
@@ -77,7 +77,7 @@
 				
 				// Don't insert tracks with zero length
 				if($this->arr_tracks[$track] != '0.00')
-					$this->archiveEpisode($this->disc['id'], $episode, $this->arr_tracks[$track], $chapters, $this->config['queue_id'], $track, $valid);
+					$this->archiveEpisode($this->disc['id'], $episode, $this->arr_tracks[$track], $chapters, $track, $valid);
 			}
 			
 			if($this->num_episodes > 0)
@@ -110,14 +110,12 @@
 				foreach($arr_tracks as $key => $value) {
 
 					if($value > $max_len || $value < $min_len) {
-						if($this->debug)
-							$this->msg("[Debug] - Track $key ($value)", true);
+						$this->msg("- Track $key ($value)", true, true);
 						$arr_valid[$key] = false;
 						$ignore++;
 					}
 					else {
-						if($this->debug)
-							$this->msg("[Debug] + Track $key ($value)", true);
+						$this->msg("+ Track $key ($value)", true, true);
 						$add++;
 						$arr_valid[$key] = true;
 					}
@@ -143,7 +141,7 @@
 			return($start);
 		}
 
-		function archiveEpisode($disc_id, $episode, $len, $chapters, $queue = null, $track, $valid = false) {
+		function archiveEpisode($disc_id, $episode, $len, $chapters, $track, $valid = false) {
 		
 			$disc_id = intval($disc_id);
 			$episode = intval($episode);
@@ -163,7 +161,7 @@
 			else
 				$ignore = 'f';
 				
-			$sql = "INSERT INTO episodes (disc, episode, len, chapters, queue, track, ignore) VALUES ($disc_id, $episode, $len, '$chapters', $queue, $track, '$ignore');";
+			$sql = "INSERT INTO episodes (disc, episode, len, chapters, track, ignore) VALUES ($disc_id, $episode, $len, '$chapters', $track, '$ignore');";
 			pg_query($sql) or die(pg_last_error());
 			#die;
 		
@@ -361,13 +359,24 @@
 		}
 
 
+		function getDisc() {
+			if(!isset($this->disc_id))
+				$this->getDiscID();
+			$sql = "SELECT id, tv_show, season, disc, disc_title FROM discs WHERE disc_id = '{$this->disc_id}' LIMIT 1;";
+			$rs = pg_query($sql) or die(pg_last_error());
+			if(pg_num_rows($rs) == 1) {
+				$this->disc = pg_fetch_assoc($rs);
+				return true;
+			}
+			else
+				return false;
+		}
 		
 		function getDiscID($device = '/dev/dvd', $disc_id_binary = '/usr/bin/disc_id') {
 			if(!empty($device)) {
 				$disc_id = exec("$disc_id_binary $device");
 				
-				if($this->debug)
-					$this->msg("[Debug] Disc ID: $disc_id", true);
+				$this->msg("Disc ID: $disc_id", false, true);
 				
 				return $disc_id;
 			}
@@ -396,14 +405,15 @@
 			return $export_dir;
 		}
 
-		function getQueue() {
+		function getQueue($id) {
 
-			$sql_queue = "SELECT episodes.id AS episode_id, episodes.episode, episodes.title, episodes.chapters, episodes.track, discs.id AS disc_id, discs.tv_show AS tv_show, discs.season, discs.disc AS disc_number, discs.start, discs.chapters AS one_chapter, discs.chapters_track, tv_shows.title AS tv_show_title, tv_shows.cartoon, tv_shows.fps FROM episodes, discs, tv_shows WHERE queue = {$this->config['queue_id']} AND episodes.disc = discs.id AND discs.tv_show = tv_shows.id AND ignore = FALSE ORDER BY tv_shows.title, episodes.disc, episodes.id LIMIT 1;";
+			$sql = "SELECT episodes.id AS episode_id, episodes.title, episodes.chapters, episodes.track, discs.id AS disc_id, discs.tv_show AS tv_show, discs.season, discs.disc AS disc_number, discs.chapters AS one_chapter, discs.chapters_track, tv_shows.title AS tv_show_title, tv_shows.cartoon, tv_shows.fps FROM episodes, discs, tv_shows WHERE queue = $id AND episodes.disc = discs.id AND discs.tv_show = tv_shows.id AND ignore = FALSE ORDER BY tv_shows.title, episodes.disc, episodes.id;";
 
-			$rs_queue = pg_query($sql_queue) or die(pg_last_error());
-			$arr_queue = pg_fetch_assoc($rs_queue);
+			$rs = pg_query($sql) or die(pg_last_error());
+			for($x = 0; $x < pg_num_rows($rs); $x++)
+				$arr[$x] = pg_fetch_assoc($rs);
 
-			return $arr_queue;
+			return $arr;
 		}
 
 		function getQueueTotal($queue_id) {
@@ -454,21 +464,20 @@
 		}
 			
 	
-		function lsdvd() {
+		function lsdvd($dvd = '/dev/dvd') {
 			#exec('lsdvd -q 2> /dev/null', $arr);
-			$xml = `lsdvd -Ox 2> /dev/null`;
+			$xml = `lsdvd -Ox $dvd 2> /dev/null`;
 
 			$lsdvd = simplexml_load_string($xml);
 
 			// Get the "Disc Title:" string
 			$this->disc_title = (string)$lsdvd->title;
 			
-			if($this->debug)
-				$this->msg("[Debug] Disc Title: ".$this->disc_title);
+			$this->msg("Disc Title: ".$this->disc_title, false, true);
 			
 			// Get the disc ID (libdvdread)
 			if(!isset($this->disc_id))
-				$this->disc_id = $this->getDiscId($this->config['dvd_device']);
+				$this->disc_id = $this->getDiscId($dvd);
 			
 			// Longest track
 			$this->longest_track = (int)$lsdvd->longest_track;
@@ -495,15 +504,22 @@
 
 		}
 		
-		function msg($string, $stderr = false) {
+		function msg($string, $stderr = false, $debug = false) {
+		
+			if($debug === true) {
+				$string = "[Debug] $string";
+			}
+		
 			if($stderr === true) {
 				#$handle = fopen('php://stderr', 'w');
 				fwrite(STDERR, "$string\n");
 				#fclose($handle);
 			}
 			else {
-				fwrite(STDOUT, "$string\n");
+				if(($this->debug === true && $debug === true) || ($this->debug === false && $debug === false))
+					fwrite(STDOUT, "$string\n");
 			}
+			return true;
 		}
 
 		/**
@@ -555,8 +571,8 @@
 				return false;
 		}
 
-		function ripTrack($track = '', $vob = 'movie.vob', $flags = '') {
-			$exec = "mplayer dvd://$track $flags -dumpstream -dumpfile $vob";
+		function ripTrack($track, $vob = 'movie.vob') {
+			$exec = "mplayer -dvd-device {$this->config['dvd_device']} dvd://$track -dumpstream -dumpfile $vob";
 			$this->executeCommand($exec);
 		}
 		
@@ -571,6 +587,16 @@
 			if(is_int($argc) && is_array($argv) && is_array($arr_config)) {
 			
 				$this->config = $arr_config;
+				
+				// Fix some stuff about the 'parse_ini_file' php function I don't like
+				if($this->config['mount'] == '1')
+					$this->config['mount'] = true;
+				else
+					$this->config['mount'] = false;
+				if($this->config['eject'] == '1')
+					$this->config['eject'] = true;
+				else
+					$this->config['eject'] = false;
 			
 				if(substr($argv[0], -7, 7) == 'dvd2mkv')
 					$this->dvd2mkv = true;
@@ -649,6 +675,22 @@
 			$handle = fopen($txt, 'w') or die('error');
 			fwrite($handle, $this->arr_encode['chapters']);
 			fclose($handle);
+		}
+	}
+	
+		// Daemon mode
+	// This will sleep while there is nothing to encode, waiting for something to
+	// be updated to the queue.
+	while($dvd->args['daemon'] == 1) {
+
+		$num_encode = $dvd->getQueueTotal($dvd->config['queue']);
+
+		if($num_encode == 0) {
+			#echo "I'm out of things to encode, and I'm running in daemon mode, so I'm going to sleep ...\n";
+			sleep(200);
+		}
+		else {
+			$dvd->encodeMovie();
 		}
 	}
 ?>

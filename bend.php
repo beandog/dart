@@ -316,7 +316,7 @@
 					
 					// Create a new TV show record
 					if($new_title === true) {
-						$dvd->lsdvd();
+						$dvd->lsdvd($dvd->config['dvd_device']);
 						
 						$dvd->msg('');
 						if($dvd->debug == false)
@@ -341,6 +341,9 @@
 				
 				/** Disc Season */
 				
+				// TODO
+				// Query old seasons to guess which one this is
+				
 				// If they didn't pass the CLI argument, ask for it
 				if(!isset($dvd->args['season']) || intval($dvd->args['season'] == 0)) {
 					do {
@@ -351,8 +354,7 @@
 				// Use the CLI variable if provided
 				else {
 					$dvd->disc['season'] = $season = intval($dvd->args['season']);
-					if($dvd->debug)
-						$dvd->msg("[Debug] Season: $season");
+					$dvd->msg("Season: $season", false, true);
 				}
 				
 				/** Disc # */
@@ -402,13 +404,12 @@
 				}
 				else {
 					$dvd->disc['number'] = $disc = intval($dvd->args['disc']);
-					if($dvd->debug)
-						$dvd->msg("[Debug] Disc: $disc");
+					$dvd->msg("Disc: $disc", false, true);
 				}
 				
 				// Archive the disc
 				$dvd->msg("Archiving your DVD ...");
-				$dvd->lsdvd();
+				$dvd->lsdvd($dvd->config['dvd_device']);
 				
 				$dvd->addDisc($dvd->tv_show['id'], $season, $disc, $dvd->disc_id, $dvd->disc_title, $start);
 				
@@ -420,20 +421,25 @@
 		}
 	}
 	
-	die;
-	
 	// Rip DVD tracks to the harddrive
 	if($dvd->args['rip'] == 1) {
-
-		@exec("mount /mnt/dvd 2> /dev/null;");
+	
+		if(!isset($dvd->disc)) {
+			if($dvd->getDisc() === false) {
+				$dvd->msg("I couldn't find your disc in the database.  You need to run --archive first.", true);
+			}
+		}
+		
+		if($dvd->config['mount'] === true)
+			@exec("mount {$dvd->config['dvd_device']} 2> /dev/null;");
 
 		// Create the export directory if it doesn't already exist
-		if(!is_dir($dvd->export_dir)) {
-			@mkdir($dvd->dir, 755); # or die("I couldn't create the export directory: {$dvd->export_dir}");
+		if(!is_dir($dvd->config['export_dir'])) {
+			@mkdir($dvd->config['export_dir'], 755); # or die("I couldn't create the export directory: {$dvd->export_dir}");
 
 			// If PHP can't create it, try with `mkdir -p`
 			if($bool == false) {
-				@exec("mkdir -p {$dvd->export_dir};", $output, $return);
+				@exec("mkdir -p {$dvd->config['export_dir']};", $output, $return);
 				// TODO: Die on bad return code
 				unset($output, $return);
 			}
@@ -441,13 +447,14 @@
 
 		// Pull out the tracks that haven't been flagged to ignore in the database frontend
 		// This query has nothing to do with what has / hasn't been encoded
-		$sql = "SELECT track, len FROM episodes WHERE disc = {$dvd->disc['id']} AND ignore = FALSE ORDER BY track;";
+		$sql = "SELECT tv.title, d.season, d.disc, e.track FROM episodes e INNER JOIN discs d ON e.disc = d.id AND d.id = {$dvd->disc['id']} INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE ignore = FALSE ORDER BY track;";
 		$rs = pg_query($sql) or die(pg_last_error());
 		$num_rows = pg_num_rows($rs);
 
 		if($num_rows > 0) {
 
 			// By passing the --tracks flag, you can rip certain tracks only
+			/*
 			if(isset($dvd->args['tracks'])) {
 				$tmp = explode('-', $dvd->args['tracks']);
 
@@ -459,18 +466,56 @@
 				if(count($tmp) == 1)
 					$tmp[] = $tmp[0];
 			}
+			*/
 
-
-			#decho($dvd);
 			$count = 0;
-			while($arr_rip = pg_fetch_assoc($rs_rip)) {
-				#decho($arr_rip);
+			
+			for($x = 0; $x < pg_num_rows($rs); $x++)
+				$arr[$x] = pg_fetch_assoc($rs);
+				
+			$title = preg_replace('/[^A-Za-z ]/', '', $arr[0]['title']);
+			$title = str_replace(' ', '_', $title);
+			
+			$dir = $dvd->config['export_dir'].$title;
+			
+			
+			
+			
+			
+			if(!is_dir($dir))
+				mkdir($dir) or die("Can't create export directory!");
+			else {
+				$arr_dir = preg_grep('/vob$/', scandir($dir));
+			}
+			
+			foreach($arr as $tmp) {
+				/*
 				if($dvd->arr_disc['chapters'] == 't') {
 					$track = key($dvd->arr_tracks);
 					$chapter = $arr_rip['track'];
 				}
 				else
 					$track = $arr_rip['track'];
+				*/
+				
+				extract($tmp);
+				$file = "season_{$season}_disc_{$disc}_track_{$track}.vob";
+				$vob = "$dir/$file";
+				
+				if(!in_array($file, $arr_dir)) {
+					$dvd->msg("Ripping $title: season $season, disc $disc, track $track");
+					$dvd->ripTrack($track, $vob);
+					
+					
+					
+				}
+				
+				// Put the episodes in the queue (even if they are already ripped)
+				$sql = "UPDATE episodes SET queue = {$dvd->config['queue_id']} WHERE disc = {$dvd->disc['id']} AND track = $track AND ignore = FALSE;";
+				pg_query($sql) or die(pg_last_error());
+				
+				
+				/*
 
 				if( !isset($dvd->args['tracks']) || ($track >= $tmp[0] && $track <= $tmp[1]) ) {
 					if(isset($chapter))
@@ -499,6 +544,7 @@
 					#decho($sql_queue);
 					pg_query($sql_queue) or die(pg_last_error());
 				}
+				*/
 
 				$count++;
 
@@ -507,10 +553,11 @@
 			if($count > 0)
 				echo "Adding $count episodes to the queue.\n";
 
-			system('eject /dev/dvd');
+			if($dvd->config['eject'] === true)
+				system('eject '.$dvd->config['dvd_device']);
 		}
 		else {
-			die("There aren't any archived tracks to rip for this disc.  You might want to try running --archive instead.\n");
+			$dvd->msg("There aren't any archived tracks to rip for this disc.  You might want to try running --archive instead.", true);
 		}
 	}
 
@@ -527,108 +574,4 @@
 		}
 	}
 
-
-
-	// Daemon mode
-	// This will sleep while there is nothing to encode, waiting for something to
-	// be updated to the queue.
-	while($dvd->args['daemon'] == 1) {
-
-		$num_encode = $dvd->getQueueTotal($dvd->config['queue']);
-
-		if($num_encode == 0) {
-			#echo "I'm out of things to encode, and I'm running in daemon mode, so I'm going to sleep ...\n";
-			sleep(200);
-		}
-		else {
-			$dvd->encodeMovie();
-		}
-	}
-
-	if($dvd->args['movie'] == 1 || $dvd2mkv === true) {
-
-		if(empty($dvd->args['title'])) {
-			echo "Enter a movie title: ";
-			$title = fgets($stdin, 255);
-
-			echo "Is this movie an animated cartoon? [y/N] ";
-			$cartoon = fgets($stdin, 2);
-		}
-		else {
-			$title = $dvd->args['title'];
-			$cartoon = $dvd->args['cartoon'];
-		}
-
-		$title = $dvd->escapeTitle($title);
-		$vob = "$title.vob";
-		$txt = "$title.txt";
-		$avi = "$title.avi";
-		$mkv = "$title.mkv";
-
-		if(strtolower($cartoon) == 'y' || $cartoon == 1)
-			$dvd->arr_encode['cartoon'] = 't';
-
-		$scandir = preg_grep('/(avi|mkv|vob)$/', scandir('./'));
-
-		// Mount/read DVD contents if we need to
-		if(!file_exists($txt) || !in_array($vob, $scandir)) {
-
-			$dvd->executeCommand('mount /mnt/dvd');
-			$dvd->lsdvd();
-
-			if(!file_exists($txt)) {
-				$dvd->arr_encode['chapters'] = $dvd->getChapters($dvd->longest_track);
-				$dvd->writeChapters($txt);
-			}
-
-			// file_exists doesn't work on LARGE files (such as VOB files over 2gb)
-			// so we use scandir and in_array instead
-			if(!in_array($vob, $scandir)) {
-				echo("Ripping movie track to VOB...\n");
-				$dvd->ripTrack($dvd->longest_track, $vob);
-				#$exec = "mencoder dvd://{$dvd->longest_track} -ovc copy -oac copy -ofps 24000/1001 -o $vob";
-				$dvd->executeCommand('eject');
-			}
-		}
-
-		$midentify = $dvd->midentify($vob);
-		#print_r($midentify);
-
-		switch($midentify['ID_VIDEO_ASPECT']) {
-			case '1.7778':
-				$arr_ratio = array('640x352', '512x288', '384x208', '256x144');
-			break;
-		}
-
-		if(count($arr_ratio) > 0) {
-			echo "Select an aspect ratio to encode to:\n";
-			foreach($arr_ratio as $key => $value) {
-				echo " [$key] $value\n";
-			}
-			echo "Your choice: ";
-		}
-
-#$exec = "transcode -a 0 -b 128,0,0 -i $vob -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 1 -x vob -y xvid4,null $flags -o /dev/null";
-		#$exec = "transcode -a 0 -b 128,0,0 -i $vob -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -x vob -y xvid4,null $flags -o /dev/null";
-		#$exec = "transcode -a 0 -b 128,0,0 -i $vob -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -Z 640x360,fast -x vob -y xvid4 $flags -o $avi";
-		#$exec = "transcode -a 0 -b 128,0,0 -i $vob -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -Z 854x480,fast -x vob -y xvid4 $flags -o $avi";
-		#$dvd->executeCommand($exec);
-		if(!file_exists($avi) && !file_exists($mkv)) {
-			$dvd->transcode($vob, $avi, '-Z 640x360,fast', $mkv);
-		}
-
-		if(!file_exists($mkv) && file_exists($avi)) {
-			$dvd->createMatroska($avi, $mkv, $txt);
-		}
-
-		if(file_exists($mkv)) {
-			unlink($vob);
-			unlink($avi);
-			unlink($txt);
-		}
-
-		#print_r($dvd);
-		#print_r($chapters);
-
-	}
 ?>
