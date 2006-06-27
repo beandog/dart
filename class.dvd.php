@@ -184,24 +184,11 @@
 			}
 		}
 
-		function createMatroska($avi, $mkv, $txt) {
-
-			// Wrap the encoded episode into Matroska, add chapters
-			if(!file_exists($mkv) && file_exists($avi)) {
-
-				// Create the chapters file
-				if(!file_exists($txt) && !is_null($this->arr_encode['chapters'])) {
-					$this->writeChapters($txt);
-					$flags = "--chapters $txt";
-				}
-				else
-					$flags = '';
-
-				echo "Wrapping AVI and chapters into Matroska ...\n";
-				$exec = "mkvmerge -o \"$mkv\" $flags $avi";
+		function mkvmerge($avi = 'movie.avi', $txt = 'chapters.txt', $mkv = 'movie.mkv') {
+				$this->msg("Wrapping AVI and chapters into Matroska");
+				$exec = "mkvmerge -o \"$mkv\" --chapters $txt $avi";
 				decho($exec);
 				$this->executeCommand($exec);
-			}
 		}
 
 		function createSnapshot($input, $output) {
@@ -231,16 +218,22 @@
 				echo "$i. ".$arr_queue['tv_show_title'].": ".$arr_queue['title']." (".$arr_queue['len'].")\n";
 			}
 		}
-
+		
+		function formatTitle($title = 'TV Show Title') {
+			$title = preg_replace('/[^A-Za-z ]/', '', $title);
+			$title = str_replace(' ', '_', $title);
+			return $title;
+		}
+		
 		function encodeMovie() {
+			
+			#$this->export_dir = $this->getExportDir($this->arr_encode['tv_show_title'], $this->arr_encode['season']);
 
-			$this->arr_encode = $this->getQueue();
-			$this->export_dir = $this->getExportDir($this->arr_encode['tv_show_title'], $this->arr_encode['season']);
+			echo $trunk = $this->export_dir."season_".$this->arr_encode['season']."_disc_".$this->arr_encode['disc_number']."_track_".$this->arr_encode['track'];
+			die;
 
-			$trunk = $this->export_dir."season_".$this->arr_encode['season']."_disc_".$this->arr_encode['disc_number']."_track_".$this->arr_encode['track'];
-
-			if($this->arr_encode['one_chapter'] == 't')
-				$trunk = $this->export_dir."season_".$this->arr_encode['season']."disc_".$this->arr_encode['disc_number']."_track_".$this->arr_encode['chapters_track']."_chapter_{$this->arr_encode['track']}";
+			#if($this->arr_encode['one_chapter'] == 't')
+			#	$trunk = $this->export_dir."season_".$this->arr_encode['season']."disc_".$this->arr_encode['disc_number']."_track_".$this->arr_encode['chapters_track']."_chapter_{$this->arr_encode['track']}";
 
 			// Ripped DVD title
 			$this->arr_encode['vob'] = $vob = "$trunk.vob";
@@ -647,12 +640,12 @@
 
 		#$this->transcode($vob, $avi, '', $mkv, $config_dir, $this->arr_encode['fps']);
 
-		function transcode($vob, $avi, $flags = '', $mkv, $config_dir = '', $fps = 0) {
+		function transcode($vob, $avi, $fps = 0) {
 
-			$flags = " $flags ";
+			$flags = '';
 
 			if($fps == 1)
-				$flags .= "-f 24,1 ";
+				$flags = "-f 24,1 ";
 
 			// Two-pass encoding the VOB to AVI
 			// By default, use XviD for excellent results
@@ -664,36 +657,21 @@
 					$flags .= "--config_dir $config_dir ";
 				}
 
-				echo "*** Encoding to AVI, pass 1 of 2 ...\n";
-				$exec = "transcode -a 0 -b 128,0,0 -i $vob -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 1 -x vob -y xvid4,null $flags -o /dev/null";
+				$this->msg("*** Encoding to AVI, pass 1 of 2 ...");
+				echo $exec = "transcode -a 0 -b 128,0,0 -i $vob -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 1 -x vob -y xvid4,null $flags -o /dev/null";
 				$this->executeCommand($exec);
 
-				echo "*** Encoding to AVI, pass 2 of 2 ...\n";
+				$this->msg("*** Encoding to AVI, pass 2 of 2 ...");
 				$exec = "transcode -a 0 -b 128,0,0 -i $vob -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 2 -x vob -y xvid4 $flags -o $avi";
 				$this->executeCommand($exec);
 			}
 		}
 
-		function writeChapters($txt = 'movie.txt') {
+		function writeChapters($chapters = '', $txt = 'movie.txt') {
 			$handle = fopen($txt, 'w') or die('error');
-			fwrite($handle, $this->arr_encode['chapters']);
+			fwrite($handle, $chapters);
 			fclose($handle);
 		}
 	}
 	
-		// Daemon mode
-	// This will sleep while there is nothing to encode, waiting for something to
-	// be updated to the queue.
-	while($dvd->args['daemon'] == 1) {
-
-		$num_encode = $dvd->getQueueTotal($dvd->config['queue']);
-
-		if($num_encode == 0) {
-			#echo "I'm out of things to encode, and I'm running in daemon mode, so I'm going to sleep ...\n";
-			sleep(200);
-		}
-		else {
-			$dvd->encodeMovie();
-		}
-	}
 ?>

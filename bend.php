@@ -464,8 +464,7 @@
 			for($x = 0; $x < $num_rows; $x++)
 				$arr[$x] = pg_fetch_assoc($rs);
 				
-			$title = preg_replace('/[^A-Za-z ]/', '', $arr[0]['title']);
-			$title = str_replace(' ', '_', $title);
+			$title = $dvd->formatTitle($arr[0]['title']);
 			
 			$dir = $dvd->config['export_dir'].$title;
 			
@@ -522,7 +521,60 @@
 		echo "$num_encode episode(s) total to encode.\n";
 
 		if($num_encode > 0) {
-			$dvd->encodeMovie();
+			$dvd->arr_encode = $dvd->getQueue($dvd->config['queue_id']);
+			
+			foreach($dvd->arr_encode as $tmp) {
+				extract($tmp);
+				$title = $dvd->formatTitle($tv_show_title);
+				$dir = $dvd->config['export_dir'].'/'.$title.'/';
+				
+				$arr_dir = preg_grep('/vob$/', scandir($dir));
+				
+
+				$file = "season_{$season}_disc_{$disc_number}_track_{$track}";
+				
+				$vob = "$file.vob";
+				$avi = "$file.avi";
+				$txt = "$file.txt";
+				$mkv = "$file.mkv";
+				
+				// Not critical that we are in that directory, but that's where
+				// it will dump divx4 stats for 2-pass
+				chdir($dir);
+				
+				
+				if(in_dir($vob, $dir) && !in_dir($avi, $dir)) {
+					$dvd->msg("Encoding $tv_show_title");
+					$dvd->transcode($vob, $avi, $fps);
+				}
+				
+				// Dump the chapters to a text file
+				if(in_dir($avi, $dir) && !in_dir($txt, $dir)) {
+					$dvd->writeChapters($chapters, $txt);
+				}
+					
+				// Create the Matroska file
+				if(in_dir($avi, $dir) && !in_dir($mkv, $dir)) {	
+					$dvd->mkvmerge($avi, $txt, $mkv);
+				}
+				
+				// Remove the VOB, AVI and chapters file
+				if(in_dir($mkv, $dir)) {
+					if(in_dir($vob, $dir))
+						unlink($vob);
+					if(in_dir($avi, $dir))
+						unlink($avi);
+					if(in_dir($txt, $dir))
+						unlink($txt);
+					
+					$sql = "UPDATE episodes SET queue = NULL WHERE id = $episode_id;";
+					pg_query($sql) or die(pg_last_error());
+				}
+					
+				die;
+				
+				
+			}
 		}
 	}
 
@@ -540,6 +592,14 @@
 		else {
 			$dvd->encodeMovie();
 		}
+	}
+	
+	function in_dir($file, $dir) {
+		$arr = scandir($dir);
+		if(in_array($file, $arr))
+			return true;
+		else
+			return false;
 	}
 
 ?>
