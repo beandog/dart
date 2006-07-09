@@ -48,21 +48,6 @@
 	require_once 'class.dvd.php';
 
 	/**
-	 * Echo debugging info
-	 *
-	 * @param $mixed debug string
-	 * @return string
-	 */
-	function decho($mixed) {
-		global $dvd;
-		if($dvd->args['debug'] == 1)
-			if(is_array($mixed) || is_object($mixed))
-				print_r($mixed);
-			else
-				print_r("Debug: $mixed\n");
-	}
-
-	/**
 	 * Hack to find the user's home directory
 	 *
 	 * @return string
@@ -77,55 +62,10 @@
 		return $home;
 	}
 
-	/**
-	 * Parse a config file
-	 *
-	 * Format is in param=value
-	 *
-	 * @param string $file configuration file
-	 * @return array
-	 */
-	function parseConfigFile($file) {
-		$readfile = file($file);
-		$readfile = preg_grep('/^\w+=(\w|\/)+$/', $readfile);
-
-		foreach($readfile as $key => $value) {
-			$arr_split = preg_split('/\s*=\s*/', $value);
-			$arr_config[trim($arr_split[0])] = trim($arr_split[1]);
-		}
-
-		return $arr_config;
-	}
-
-	/**
-	 * scandir function, backwards compatible for php4
-	 *
-	 * @param string $dir directory
-	 * @return array
-	 */
-	if(!function_exists('scandir')) {
-		function scandir($dir = './') {
-			if(is_dir($dir)){
-				if($opendir = opendir($dir)) {
-					while (($file = readdir($opendir)) !== false) {
-						$arr[] = $file;
-					}
-					closedir($opendir);
-					return $arr;
-				}
-				else
-					return false;
-			}
-			else {
-				trigger_error("Not a directory: $dir", E_USER_WARNING);
-				return false;
-			}
-		}
-	}
-
 	// TODO: write this for php4 users
 	if(!function_exists('simplexml_load_string')) {
-		trigger_error("Sorry, you need PHP5 with SimpleXML support to run bend / dvd2mkv", E_USER_ERROR);
+		trigger_error("Sorry, you need PHP5 with SimpleXML support to run bend", E_USER_ERROR);
+		die;
 	}
 
 	// Read the config file
@@ -143,7 +83,6 @@
 
 	/** Get the configuration options */
 	if(file_exists($bendrc)) {
-		#$arr_config = parseConfigFile($bendrc);
 		$arr_config = parse_ini_file($bendrc);
 	}
 	else {
@@ -151,7 +90,7 @@
 	}
 	
 	// Create the DVD object
-	$dvd =& new DVD($dvd2mkv);
+	$dvd =& new DVD();
 
 	// Set the configuration options
 	$dvd->setConfig($argc, $argv, $arr_config);
@@ -168,10 +107,22 @@
 
 
 	// Display help if no arguments are passed
-	/*
-	if(($argc == 1 && $dvd2mkv == false) || $dvd->args['h'] == 1 || $dvd->args['help'] == 1) {
+	if($argc == 1 || $dvd->args['h'] == 1 || $dvd->args['help'] == 1) {
 
-		$output = "bend is a DVD archiving, ripping, queueing and encoding tool.\n\n";
+		$dvd->msg("Usage: bend [OPTIONS]");
+		$dvd->msg(' ');
+		$dvd->msg("\t-h, --help\tThis help message");
+		$dvd->msg("\t-a, --archive\tArchive a disc in the database");
+		$dvd->msg("\t-r, --rip\tRip tracks to the harddrive");
+		$dvd->msg("\t-e, --encode\tEncode all files in my queue to Matroska");
+		$dvd->msg("\t-q, --queue\tDisplay my queue");
+		$dvd->msg("\t-d, --debug\tDisplay debugging output");
+		
+		$dvd->msg(' ');
+		
+		$dvd->msg('The standard way to rip a series is 1) archive the disc(s), 2) set the names in the frontend 3) rip the tracks to the harddrive and 4) finally encode them.');
+		
+		/*
 		$output .= "Main\n";
 		$output .= "====\n";
 		$output .= "\n";
@@ -201,11 +152,12 @@
 		$output .= "\n";
 		$output .= "  --movie\t\tArchive DVD as a movie, not a TV show\n";
 		$output .= "  --track\t\tOptional: Rip track # as movie, instead of longest track found\n";
+		*/
 
-		echo $output;
+		$dvd->msg($output);
 		die;
+		
 	}
-	*/
 	
 	// $arr = $dvd->getTrackStats($dvd->arr_tracks);
 
@@ -457,9 +409,9 @@
 
 		if($num_rows > 0) {
 		
-			$dvd->msg("$num_rows total to rip and enqueue.");
+			$dvd->msg("$num_rows track(s) total to rip and enqueue.");
 
-			$count = 0;
+			$count = $q = 0;
 			
 			for($x = 0; $x < $num_rows; $x++)
 				$arr[$x] = pg_fetch_assoc($rs);
@@ -477,31 +429,47 @@
 			foreach($arr as $tmp) {
 						
 				extract($tmp);
-				$file = "season_{$season}_disc_{$disc}_track_{$track}.vob";
-				$vob = "$dir/$file";
+				$file = "season_{$season}_disc_{$disc}_track_{$track}";
+				$avi = "$file.avi";
+				$mkv = "$file.mkv";
+				$vob = "$file.vob";
+				
+				$count++;
 				
 				// Get the directory list each time, so that you can rip the same disc
 				// in two sessions at once.  Possible, but definately not advised.  It
 				// slows down the ripping horribly.
-				$arr_dir = preg_grep('/vob$/', scandir($dir));
 				
 				// Check to see if file exists, if not, rip it
-				if(!in_array($file, $arr_dir)) {
-					$dvd->msg("[".($count +1 )."/$num_rows] Ripping $title: season $season, disc $disc, track $track");
-					$dvd->ripTrack($track, $vob);
+				if(!in_dir($vob, $dir) && !in_dir($avi, $dir) && !in_dir($mkv, $dir)) {
+				
+					$episode_title = $dvd->getEpisodeTitle($dvd->disc['id'], $track);
+					
+					if(!$episode_title)
+						$episode_title = "season $season, disc $disc, track $track";
+					
+					$filename = "$dir/$vob";
+					
+					$dvd->msg("[$count/$num_rows] Ripping $title: $episode_title");
+					$dvd->ripTrack($track, $filename);
+					
+					// Put the episodes in the queue
+					$sql = "UPDATE episodes SET queue = {$dvd->config['queue_id']} WHERE disc = {$dvd->disc['id']} AND track = $track AND ignore = FALSE;";
+					pg_query($sql) or die(pg_last_error());
+				
+					$q++;
+					
 				}
 				else
-					$dvd->msg("[".($count +1 )."/$num_rows] Skipping track $track, file already exists.");
+					$dvd->msg("[$count/$num_rows] Skipping track $track, file already exists.");
 				
-				// Put the episodes in the queue (even if they are already ripped)
-				$sql = "UPDATE episodes SET queue = {$dvd->config['queue_id']} WHERE disc = {$dvd->disc['id']} AND track = $track AND ignore = FALSE;";
-				pg_query($sql) or die(pg_last_error());
 				
-				$count++;
 			}
 
-			$dvd->msg("Finished ripping files to $dir");
-			$dvd->msg("Added $count episodes to the queue.");
+			if($q > 0) {
+				$dvd->msg("Finished ripping files to $dir");
+				$dvd->msg("Added $q episodes to the queue.");
+			}
 			
 
 			if($dvd->config['eject'] === true) {
@@ -518,63 +486,17 @@
 	if($dvd->args['encode'] == 1) {
 
 		$num_encode = $dvd->getQueueTotal($dvd->config['queue']);
-		echo "$num_encode episode(s) total to encode.\n";
+		$dvd->msg("$num_encode episode(s) total to encode.");
 
-		if($num_encode > 0) {
+		while($num_encode > 0) {
 			$dvd->arr_encode = $dvd->getQueue($dvd->config['queue_id']);
 			
-			foreach($dvd->arr_encode as $tmp) {
-				extract($tmp);
-				$title = $dvd->formatTitle($tv_show_title);
-				$dir = $dvd->config['export_dir'].'/'.$title.'/';
-				
-				$arr_dir = preg_grep('/vob$/', scandir($dir));
-				
-
-				$file = "season_{$season}_disc_{$disc_number}_track_{$track}";
-				
-				$vob = "$file.vob";
-				$avi = "$file.avi";
-				$txt = "$file.txt";
-				$mkv = "$file.mkv";
-				
-				// Not critical that we are in that directory, but that's where
-				// it will dump divx4 stats for 2-pass
-				chdir($dir);
-				
-				
-				if(in_dir($vob, $dir) && !in_dir($avi, $dir)) {
-					$dvd->msg("Encoding $tv_show_title");
-					$dvd->transcode($vob, $avi, $fps);
-				}
-				
-				// Dump the chapters to a text file
-				if(in_dir($avi, $dir) && !in_dir($txt, $dir)) {
-					$dvd->writeChapters($chapters, $txt);
-				}
-					
-				// Create the Matroska file
-				if(in_dir($avi, $dir) && !in_dir($mkv, $dir)) {	
-					$dvd->mkvmerge($avi, $txt, $mkv);
-				}
-				
-				// Remove the VOB, AVI and chapters file
-				if(in_dir($mkv, $dir)) {
-					if(in_dir($vob, $dir))
-						unlink($vob);
-					if(in_dir($avi, $dir))
-						unlink($avi);
-					if(in_dir($txt, $dir))
-						unlink($txt);
-					
-					$sql = "UPDATE episodes SET queue = NULL WHERE id = $episode_id;";
-					pg_query($sql) or die(pg_last_error());
-				}
-					
-				die;
-				
-				
+			foreach($dvd->arr_encode as $arr) {
+			
+				$dvd->encodeMovie($arr);
 			}
+			
+			$num_encode = $dvd->getQueueTotal($dvd->config['queue']);
 		}
 	}
 

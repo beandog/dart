@@ -6,9 +6,8 @@
 		 *
 		 * Creaates database connection, and default values
 		 */
-		function DVD($dvd2mkv = false) {
-			if($dvd2mkv == false)
-				$this->db = pg_connect('host=charlie dbname=movies user=steve') or die(pg_last_error());
+		function DVD() {
+			$this->db = pg_connect('host=charlie dbname=movies user=steve') or die(pg_last_error());
 			$this->min_len = 20;
 			$this->max_len = 59;
 		}
@@ -122,8 +121,8 @@
 				}
 			}
 
-			decho("$add tracks will be added to the database");
-			decho("$ignore tracks ignored because of length");
+			$this->msg("$add tracks will be added to the database");
+			$this->msg("$ignore tracks ignored because of length");
 			
 			return $arr_valid;
 		}
@@ -169,7 +168,6 @@
 
 		function ask($string, $default = false) {
 			if(is_string($string)) {
-				#$handle = fopen('php://stdin', 'r');
 				fwrite(STDOUT, "$string ");
 				$input = fread(STDIN, 255);
 				#fclose($handle);
@@ -185,14 +183,16 @@
 		}
 
 		function mkvmerge($avi = 'movie.avi', $txt = 'chapters.txt', $mkv = 'movie.mkv') {
-				$this->msg("Wrapping AVI and chapters into Matroska");
 				$exec = "mkvmerge -o \"$mkv\" --chapters $txt $avi";
-				decho($exec);
 				$this->executeCommand($exec);
 		}
 
-		function createSnapshot($input, $output) {
-			$exec = "mplayer $input -vo png:z=9 -ss 440 -frames 1 -vf scale=360:240 -ao null; mv 00000001.png $output";
+		function createSnapshot($input, $output, $ss = 60) {
+			$ss = intval($ss);
+			if($ss > 0) {
+				$exec = "mplayer $input -vo png:z=9 -ss $ss -frames 1 -vf scale=360:240 -ao null; mv 00000001.png $output";
+				$this->executeCommand($exec);
+			}
 		}
 
 		function correctLength($len) {
@@ -205,31 +205,97 @@
 
 		function displayQueue() {
 			$sql_queue = "SELECT episodes.episode, episodes.title, episodes.len, tv_shows.title AS tv_show_title FROM episodes, discs, tv_shows WHERE queue = {$this->config['queue_id']} AND episodes.disc = discs.id AND discs.tv_show = tv_shows.id AND ignore = FALSE ORDER BY tv_shows.title, episodes.disc, episodes.id;";
-			#decho($sql_queue);
 			$rs_queue = pg_query($sql_queue) or die(pg_last_error());
 			
-			if($this->debug)
-				$this->decho("Queue ID: {$this->config['queue_id']}", true);
+			$this->msg("Queue ID: {$this->config['queue_id']}", true);
 			
 			if(pg_num_rows($rs_queue) == 0)
 				$this->msg("Your encoding queue is empty.", true);
-			
+			$i = 1;
 			while($arr_queue = pg_fetch_assoc($rs_queue)) {
-				echo "$i. ".$arr_queue['tv_show_title'].": ".$arr_queue['title']." (".$arr_queue['len'].")\n";
+				$this->msg("$i. ".$arr_queue['tv_show_title'].": ".$arr_queue['title']." (".$arr_queue['len'].")");
+				$i++;
 			}
 		}
 		
 		function formatTitle($title = 'TV Show Title') {
-			$title = preg_replace('/[^A-Za-z ]/', '', $title);
+			$title = preg_replace('/[^A-Za-z -,.]/', '', $title);
 			$title = str_replace(' ', '_', $title);
 			return $title;
 		}
 		
-		function encodeMovie() {
+		function encodeMovie($arr = array()) {
 			
-			#$this->export_dir = $this->getExportDir($this->arr_encode['tv_show_title'], $this->arr_encode['season']);
-
-			echo $trunk = $this->export_dir."season_".$this->arr_encode['season']."_disc_".$this->arr_encode['disc_number']."_track_".$this->arr_encode['track'];
+			extract($arr);
+			
+			$episode = $this->getEpisodeNumber($tv_show, $season, $disc_number, $track);
+			
+			$title = $this->formatTitle($tv_show_title);
+			$dir = $this->config['export_dir'].'/'.$title.'/';
+			
+			$file = "season_{$season}_disc_{$disc_number}_track_{$track}";
+			
+			$vob = "$file.vob";
+			$log = "$file.log";
+			$avi = "$file.avi";
+			$txt = "$file.txt";
+			$mkv = "$file.mkv";
+			$filename = $episode.'._'.$this->formatTitle($episode_title = $this->getEpisodeTitle($disc_id, $track)).'.mkv';
+			$png = basename($filename, '.mkv').'.png';
+			
+			// Not critical that we are in that directory, but that's where
+			// it will dump divx4 stats for 2-pass
+			chdir($dir);
+			if(in_dir($vob, $dir) && !in_dir($avi, $dir)) {
+				$msg = " $tv_show_title";
+				if($episode_title)
+					$msg .= ": $episode_title";
+				$this->msg($msg);
+				$this->transcode($vob, $fps);
+			}
+			
+			// Dump the chapters to a text file
+			if(in_dir($avi, $dir) && !in_dir($txt, $dir)) {
+				$this->writeChapters($chapters, $txt);
+			}
+				
+			// Create the Matroska file
+			if(in_dir($avi, $dir) && !in_dir($mkv, $dir)) {
+				$this->msg("Wrapping AVI and chapters into Matroska");
+				$this->mkvmerge($avi, $txt, $mkv);
+			}
+			
+			// Rename the matroska file from to Episode_Title.mkv
+			if(in_dir($mkv, $dir) && !in_dir($filename, $dir)) {
+				rename($mkv, $filename);
+			}
+			
+			// Create a snapshot
+			if(in_dir($mkv, $dir) && !in_dir($png, $dir)) {
+				$dvd->createSnapshot($mkv, $png);
+			}
+			
+			// Remove the VOB, AVI and chapters file if the Matroska exists
+			if(in_dir($filename, $dir) || in_dir($mkv, $dir)) {
+				if(in_dir($vob, $dir))
+					unlink($vob);
+				if(in_dir($log, $dir))
+					unlink($log);
+				if(in_dir($avi, $dir))
+					unlink($avi);
+				if(in_dir($txt, $dir))
+					unlink($txt);
+				
+				$sql = "UPDATE episodes SET queue = NULL WHERE id = $episode_id;";
+				pg_query($sql) or die(pg_last_error());
+			}
+				
+				#die;
+				
+				/*
+			
+			
+			$basename = $this->export_dir."season_".$this->arr_encode['season']."_disc_".$this->arr_encode['disc_number']."_track_".$this->arr_encode['track'];
 			die;
 
 			#if($this->arr_encode['one_chapter'] == 't')
@@ -244,12 +310,9 @@
 			// transcode divx4.log
 			$this->arr_encode['log'] = $log = "$trunk.log";
 
-			$episode = $this->getEpisodeNumber();
-
 			$mkv = $this->export_dir.$this->arr_encode['season'].$episode." ".$this->arr_encode['title'].".mkv";
 			$this->arr_encode['mkv'] = $mkv = str_replace(' ', '_', $mkv);
 
-			decho("Matroska file: $mkv");
 			#print_r($this->arr_encode);
 
 			$chapters = $this->arr_encode['chapters'];
@@ -274,8 +337,6 @@
 			$this->transcode($vob, $avi, '', $mkv, $config_dir, $this->arr_encode['fps']);
 
 			$this->createMatroska($avi, $mkv, $txt);
-
-			$this->tidyUp($vob, $avi, $mkv, $txt);
 
 			// Empty the queue for this episode
 			// Even if the transcode failed, we have to clear it, otherwise we'll get stuck in a loop
@@ -309,11 +370,12 @@
 
 			$str = escapeshellcmd($str);
 
-			if($this->args['debug'] == 1) {
-				$str .= ';';
+			if($this->debug) {
+				#$str .= ';';
 				$this->msg("Executing command: '$str'", false, true);
-				exec($str);
+				passthru($str);
 			}
+			/*
 			elseif($this->args['debug'] == 2) {
 				$str .= ';';
 				$this->msg("Executing command: '$str'", false, true);
@@ -324,6 +386,7 @@
 				$this->msg("Executing command: '$str'", false, true);
 				passthru($str);
 			}
+			*/
 			else {
 				$str .= ' 2> /dev/null;';
 				exec($str);
@@ -343,7 +406,6 @@
 					$this->msg($exec, true);
 				
 				exec($exec, $arr);
-				#decho($arr);
 
 				$chapters = implode("\n", $arr);
 
@@ -377,23 +439,52 @@
 				return false;
 		}
 
-		function getEpisodeNumber() {
-			$sql_start = "SELECT discs.disc, episodes.episode, episodes.title FROM episodes, discs WHERE discs.tv_show = {$this->arr_encode['tv_show']} AND season = {$this->arr_encode['season']} AND discs.disc < {$this->arr_encode['disc_number']} AND episodes.disc = discs.id AND episodes.ignore = FALSE ORDER BY discs.disc, episodes.episode;";
-			$rs_start = pg_query($sql_start) or die(pg_last_error());
-			$this->arr_encode['start'] = pg_num_rows($rs_start);
-
-			$episode = $this->arr_encode['start'] + $this->arr_encode['episode'];
-			// Pre-pad the files with 0 so that they will show in correct order by the filesystem
-			$episode = str_pad($episode, 2, 0, STR_PAD_LEFT);
+		function getEpisodeNumber($tv_show, $season, $disc_number, $track) {
+			#echo $sql = "SELECT discs.disc, episodes.episode, episodes.title FROM episodes, discs WHERE discs.tv_show = $tv_show AND season = $season AND discs.disc < $disc AND episodes.disc = discs.id AND episodes.ignore = FALSE ORDER BY discs.disc, episodes.episode;";
+			
+			// This query dynamically returns the correct episode # out of the entire season for a TV show based on its track #.
+			// It works by calculating the number of valid tracks that come before it
+			// So, you can archive discs outside of their order, just don't transcode them
+			// or your numbering scheme will be off.
+			$sql = "SELECT (COUNT(1) + 1) AS episode_number FROM episodes, discs WHERE episodes.disc = discs.id AND discs.tv_show = $tv_show AND episodes.ignore = false AND season = $season AND ((discs.disc < $disc_number) OR (discs.disc = $disc_number AND track < $track));";
+			$rs = pg_query($sql) or die(pg_last_error());
+			
+			$episode = current(pg_fetch_row($rs));
+			
+			// I'm not padding the seasons, because I'm assuming there's not
+			// going to be any show that has more than 9, of which
+			// something is going to prove me wrong, I know.
+			// Hmm ... Simpsons, anyone?  Meh.  Patch it yourself. :)
+			$episode = $season.str_pad($episode, 2, 0, STR_PAD_LEFT);
 
 			return $episode;
 
+		}
+		
+		function getEpisodeTitle($disc, $track) {
+			$disc = intval($disc);
+			$track = intval($track);
+			
+			if($disc == 0 || $track == 0)
+				return false;
+			
+			$sql = "SELECT title FROM episodes WHERE disc = $disc AND track = $track;";
+			$rs = pg_query($sql) or die(pg_last_error());
+			
+			if(pg_num_rows($rs) == 0)
+				return false;
+			
+			$title = current(pg_fetch_row($rs));
+			
+			if(empty($title))
+				return false;
+			else
+				return $title;
 		}
 
 		function getExportDir($title, $season) {
 
 			$export_dir = trim($this->config['export_dir']).preg_replace('/\W+/', '_', trim($title))."/";
-			decho("Setting export directory to: $export_dir");
 
 			return $export_dir;
 		}
@@ -428,20 +519,15 @@
 		function getTrackStats($arr) {
 			$arr = preg_grep('/0\.00/', $arr, PREG_GREP_INVERT);
 			
-			
-			
 			$arr_count = array_count_values($arr);
 			#print_r($arr_count);
 			
 			foreach($arr as $value) {
-				
-			
 				$group = ceil($value / 10);
 				$len = floor($value);
 				if($group > 0) {
 					$count[$group]++;
 				}
-				
 			}
 			
 			arsort($count);
@@ -621,50 +707,35 @@
 			}
 		}
 
-		function tidyUp($vob, $avi, $mkv, $txt) {
-			// Tidy up
-			if(file_exists($avi) && file_exists($vob))
-				unlink($vob);
-			if(file_exists($txt))
-				unlink($txt);
-
-			// Delete the AVI once we're sure the MKV is there. ;)
-			if(file_exists($mkv) && file_exists($avi)) {
-				unlink($avi);
-				if(file_exists('divx4.log')) {
-					#copy('divx4.log', $log);
-					unlink('divx4.log');
-				}
-			}
-		}
-
-		#$this->transcode($vob, $avi, '', $mkv, $config_dir, $this->arr_encode['fps']);
-
-		function transcode($vob, $avi, $fps = 0) {
-
+		function transcode($vob, $fps = 0) {
 			$flags = '';
+			
+			$basename = basename($vob, '.vob');
+			$avi = "$basename.avi";
+			$log = "$basename.log";
 
 			if($fps == 1)
 				$flags = "-f 24,1 ";
 
 			// Two-pass encoding the VOB to AVI
 			// By default, use XviD for excellent results
-			if(!file_exists($avi) && !file_exists($mkv)) {
 				$config_file = "{$config_dir}/xvid4.cfg";
 
 				if(!empty($config_dir) && file_exists($config_file)) {
-					decho("Reading configuration from '$config_file'\n");
+					$this->msg("Reading configuration from '$config_file'", true);
 					$flags .= "--config_dir $config_dir ";
 				}
+				
+				// Set transcode debug level
+				$q = intval($this->debug);
 
-				$this->msg("*** Encoding to AVI, pass 1 of 2 ...");
-				echo $exec = "transcode -a 0 -b 128,0,0 -i $vob -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 1 -x vob -y xvid4,null $flags -o /dev/null";
+				$this->msg("[Pass 1/2] VOB => AVI");
+				$exec = "transcode -a 0 -b 128,0,0 -i $vob -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 1,$log -x vob -y xvid4,null $flags -o /dev/null -q $q";
 				$this->executeCommand($exec);
 
-				$this->msg("*** Encoding to AVI, pass 2 of 2 ...");
-				$exec = "transcode -a 0 -b 128,0,0 -i $vob -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 2 -x vob -y xvid4 $flags -o $avi";
+				$this->msg("[Pass 2/2] VOB => AVI");
+				$exec = "transcode -a 0 -b 128,0,0 -i $vob -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 2,$log -x vob -y xvid4 $flags -o $avi -q $q";
 				$this->executeCommand($exec);
-			}
 		}
 
 		function writeChapters($chapters = '', $txt = 'movie.txt') {
