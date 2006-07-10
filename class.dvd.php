@@ -219,7 +219,7 @@
 		}
 		
 		function formatTitle($title = 'TV Show Title') {
-			$title = preg_replace('/[^A-Za-z -,.]/', '', $title);
+			$title = preg_replace('/[^A-Za-z0-9 -,.?\']/', '', $title);
 			$title = str_replace(' ', '_', $title);
 			return $title;
 		}
@@ -227,8 +227,6 @@
 		function encodeMovie($arr = array()) {
 			
 			extract($arr);
-			
-			$episode = $this->getEpisodeNumber($tv_show, $season, $disc_number, $track);
 			
 			$title = $this->formatTitle($tv_show_title);
 			$dir = $this->config['export_dir'].'/'.$title.'/';
@@ -240,7 +238,7 @@
 			$avi = "$file.avi";
 			$txt = "$file.txt";
 			$mkv = "$file.mkv";
-			$filename = $episode.'._'.$this->formatTitle($episode_title = $this->getEpisodeTitle($disc_id, $track)).'.mkv';
+			$filename = $this->getEpisodeFilename($disc_id, $track);
 			$png = basename($filename, '.mkv').'.png';
 			
 			// Not critical that we are in that directory, but that's where
@@ -289,68 +287,6 @@
 				$sql = "UPDATE episodes SET queue = NULL WHERE id = $episode_id;";
 				pg_query($sql) or die(pg_last_error());
 			}
-				
-				#die;
-				
-				/*
-			
-			
-			$basename = $this->export_dir."season_".$this->arr_encode['season']."_disc_".$this->arr_encode['disc_number']."_track_".$this->arr_encode['track'];
-			die;
-
-			#if($this->arr_encode['one_chapter'] == 't')
-			#	$trunk = $this->export_dir."season_".$this->arr_encode['season']."disc_".$this->arr_encode['disc_number']."_track_".$this->arr_encode['chapters_track']."_chapter_{$this->arr_encode['track']}";
-
-			// Ripped DVD title
-			$this->arr_encode['vob'] = $vob = "$trunk.vob";
-			// Encoded AVI
-			$this->arr_encode['avi'] = $avi = "$trunk.avi";
-			// Title chapters
-			$this->arr_encode['txt'] = $txt = "$trunk.txt";
-			// transcode divx4.log
-			$this->arr_encode['log'] = $log = "$trunk.log";
-
-			$mkv = $this->export_dir.$this->arr_encode['season'].$episode." ".$this->arr_encode['title'].".mkv";
-			$this->arr_encode['mkv'] = $mkv = str_replace(' ', '_', $mkv);
-
-			#print_r($this->arr_encode);
-
-			$chapters = $this->arr_encode['chapters'];
-
-			// Actually transcode the episode
-			if(empty($this->arr_encode['title']))
-				$this->arr_encode['title'] = "track_{$this->arr_encode['track']}";
-			$output = "Transcoding {$this->arr_encode['tv_show_title']}: {$this->arr_encode['title']}\n";
-			$strlen = strlen($output);
-			echo str_repeat('=', $strlen)."\n$output".str_repeat('=', $strlen)."\n";
-
-			// See if its flagged to encode as a cartoon
-			if($this->arr_encode['cartoon'] == 't')
-				$config_dir = "{$this->config['home_dir']}.transcode/cartoon";
-			// Get the config dir flag (overrides cartoon flag)
-			elseif(isset($this->args['config_dir']))
-				$config_dir = $this->args['config_dir'];
-
-			#echo $config_dir;
-
-			#$this->transcode($vob, $avi, $mkv, $chapters, $txt, $log, $config_dir, $this->arr_encode['fps'], $this->args['debug']);
-			$this->transcode($vob, $avi, '', $mkv, $config_dir, $this->arr_encode['fps']);
-
-			$this->createMatroska($avi, $mkv, $txt);
-
-			// Empty the queue for this episode
-			// Even if the transcode failed, we have to clear it, otherwise we'll get stuck in a loop
-			// since the script will see which one is next in line.
-			echo "Removing \"{$this->arr_encode['title']}\" from the queue.\n";
-			$sql_update = "UPDATE episodes SET queue = NULL WHERE id = {$this->arr_encode['episode_id']};";
-			pg_query($sql_update) or die(pg_last_error());
-
-			/*
-			if($args['daemon'] == 1) {
-				$num_encode = $this->getQueueTotal($arr_drip['queue_id']);
-				echo "$num_encode episode(s) total to encode.\n";
-			}
-			*/
 		}
 
 		function emptyQueue() {
@@ -438,15 +374,25 @@
 			else
 				return false;
 		}
+		
+		function getEpisodeFilename($disc_id, $track) {
+			$episode = $this->getEpisodeNumber($disc_id, $track);
+			$episode_title = $this->getEpisodeTitle($disc_id, $track);
+			$filename = $episode.'._'.$this->formatTitle($episode_title).'.mkv';
+			return $filename;
+		}
 
-		function getEpisodeNumber($tv_show, $season, $disc_number, $track) {
+		function getEpisodeNumber($disc_id, $track) {
 			#echo $sql = "SELECT discs.disc, episodes.episode, episodes.title FROM episodes, discs WHERE discs.tv_show = $tv_show AND season = $season AND discs.disc < $disc AND episodes.disc = discs.id AND episodes.ignore = FALSE ORDER BY discs.disc, episodes.episode;";
 			
 			// This query dynamically returns the correct episode # out of the entire season for a TV show based on its track #.
 			// It works by calculating the number of valid tracks that come before it
 			// So, you can archive discs outside of their order, just don't transcode them
 			// or your numbering scheme will be off.
-			$sql = "SELECT (COUNT(1) + 1) AS episode_number FROM episodes, discs WHERE episodes.disc = discs.id AND discs.tv_show = $tv_show AND episodes.ignore = false AND season = $season AND ((discs.disc < $disc_number) OR (discs.disc = $disc_number AND track < $track));";
+			
+			$season = current(pg_fetch_row(pg_query("SELECT season FROM discs WHERE id = $disc_id;")));
+			
+			$sql = "SELECT (COUNT(1) + 1) AS episode_number FROM episodes, discs WHERE episodes.disc = discs.id AND discs.tv_show = (SELECT tv_show FROM discs WHERE id = $disc_id) AND episodes.ignore = false AND season = (SELECT season FROM discs WHERE id = $disc_id) AND ((discs.disc < (SELECT disc FROM discs WHERE id = $disc_id)) OR (discs.disc = (SELECT disc FROM discs WHERE id = $disc_id) AND track < $track));";
 			$rs = pg_query($sql) or die(pg_last_error());
 			
 			$episode = current(pg_fetch_row($rs));
@@ -458,7 +404,6 @@
 			$episode = $season.str_pad($episode, 2, 0, STR_PAD_LEFT);
 
 			return $episode;
-
 		}
 		
 		function getEpisodeTitle($disc, $track) {

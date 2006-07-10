@@ -403,7 +403,7 @@
 
 		// Pull out the tracks that haven't been flagged to ignore in the database frontend
 		// This query has nothing to do with what has / hasn't been encoded
-		$sql = "SELECT tv.title, d.season, d.disc, e.track FROM episodes e INNER JOIN discs d ON e.disc = d.id AND d.id = {$dvd->disc['id']} INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE ignore = FALSE ORDER BY track;";
+		$sql = "SELECT tv.title, d.season, d.disc, e.track, d.id AS disc_id FROM episodes e INNER JOIN discs d ON e.disc = d.id AND d.id = {$dvd->disc['id']} INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE ignore = FALSE ORDER BY track;";
 		$rs = pg_query($sql) or die(pg_last_error());
 		$num_rows = pg_num_rows($rs);
 
@@ -429,10 +429,13 @@
 			foreach($arr as $tmp) {
 						
 				extract($tmp);
+				
 				$file = "season_{$season}_disc_{$disc}_track_{$track}";
 				$avi = "$file.avi";
 				$mkv = "$file.mkv";
 				$vob = "$file.vob";
+				
+				$efn = $dvd->getEpisodeFilename($disc_id, $track);
 				
 				$count++;
 				
@@ -441,7 +444,7 @@
 				// slows down the ripping horribly.
 				
 				// Check to see if file exists, if not, rip it
-				if(!in_dir($vob, $dir) && !in_dir($avi, $dir) && !in_dir($mkv, $dir)) {
+				if(!in_dir($vob, $dir) && !in_dir($avi, $dir) && !in_dir($mkv, $dir) && !in_dir($efn, $dir)) {
 				
 					$episode_title = $dvd->getEpisodeTitle($dvd->disc['id'], $track);
 					
@@ -462,8 +465,6 @@
 				}
 				else
 					$dvd->msg("[$count/$num_rows] Skipping track $track, file already exists.");
-				
-				
 			}
 
 			if($q > 0) {
