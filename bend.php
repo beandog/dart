@@ -178,6 +178,15 @@
 		
 		$query_disc = $dvd->queryDisc($dvd->disc_id);
 		
+		// Check for a max # to rip / encode
+		if(isset($dvd->args['total'])) {
+			$dvd->args['total'] = intval($dvd->args['total']);
+			if($dvd->args['total'] > 0)
+				$total = $dvd->args['total'];
+			else
+				$total = null;
+		}
+
 		// If disc is not in the database, it needs to be archived
 		if($query_disc === false) {
 			$dvd->msg("Your DVD is not in the database.");
@@ -406,7 +415,7 @@
 		$sql = "SELECT tv.title, d.season, d.disc, e.track, d.id AS disc_id FROM episodes e INNER JOIN discs d ON e.disc = d.id AND d.id = {$dvd->disc['id']} INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE ignore = FALSE ORDER BY track;";
 		$rs = pg_query($sql) or die(pg_last_error());
 		$num_rows = pg_num_rows($rs);
-
+		
 		if($num_rows > 0) {
 		
 			$dvd->msg("$num_rows track(s) total to rip and enqueue.");
@@ -438,6 +447,12 @@
 				$efn = $dvd->getEpisodeFilename($disc_id, $track);
 				
 				$count++;
+
+				// See if we've reached our total or not
+				if($q === $total) {
+					$dvd->msg("Reached total of $total episodes to rip.");
+					break;
+				}
 				
 				// Get the directory list each time, so that you can rip the same disc
 				// in two sessions at once.  Possible, but definately not advised.  It
@@ -472,7 +487,6 @@
 				$dvd->msg("Added $q episodes to the queue.");
 			}
 			
-
 			if($dvd->config['eject'] === true) {
 				$dvd->msg("Attempting to eject disc.", true, true);
 				system('eject '.$dvd->config['dvd_device']);
@@ -489,11 +503,20 @@
 		$num_encode = $dvd->getQueueTotal($dvd->config['queue']);
 		$dvd->msg("$num_encode episode(s) total to encode.");
 
+		$q = 0;
+
 		while($num_encode > 0) {
 			$dvd->arr_encode = $dvd->getQueue($dvd->config['queue_id']);
+
+			// See if we've reached our total or not
+			if($q === $total) {
+				$dvd->msg("Reached total of $total episodes to rip.");
+				break;
+			}
 			
 			foreach($dvd->arr_encode as $arr) {
 				$dvd->encodeMovie($arr);
+				$q++;
 			}
 			
 			$num_encode = $dvd->getQueueTotal($dvd->config['queue']);
@@ -524,7 +547,7 @@
 			return false;
 	}
 	
-	if($dvd->config['eject'])
-		system("eject {$dvd->config['dvd_device']};");
+#	if($dvd->config['eject'])
+#		system("eject {$dvd->config['dvd_device']};");
 
 ?>

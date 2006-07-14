@@ -675,12 +675,29 @@
 				// Set transcode debug level
 				$q = intval($this->debug);
 
+				/*
 				$this->msg("[Pass 1/2] VOB => AVI");
 				$exec = "transcode -a 0 -b 128,0,0 -i $vob -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 1,$log -x vob -y xvid4,null $flags -o /dev/null -q $q";
 				$this->executeCommand($exec);
 
 				$this->msg("[Pass 2/2] VOB => AVI");
 				$exec = "transcode -a 0 -b 128,0,0 -i $vob -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 2,$log -x vob -y xvid4 $flags -o $avi -q $q";
+				$this->executeCommand($exec);
+				*/
+				
+				// Doesn't work, av is way off, the lines arent very sharp
+				/*
+				$exec = "transcode -i $vob -x vob,vob -f 0,4 -M 2 -R 3 -w2 --export_fps 0,1 -J ivtc -J decimate -B 3,9,16 --hard_fps -J 32detect=force_mode=5:chromathres=2:chromadi=9 -y xvid4 -a 0 -b 128,0,0 -A -N 0x2000 -q $q -o $avi";
+				$this->executeCommand($exec);
+				*/
+				
+				// Kind of a mix between the two, adding everything but the external filters
+				$this->msg("[Pass 1/2] VOB => AVI");
+				$exec = "transcode -a 0 -b 128,0,0 -f 0,4 -i $vob -w 2200,250,100 --export_fps 0,1 --hard_fps -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 1,$log -x vob -y xvid4,null $flags -o /dev/null -q $q";
+				$this->executeCommand($exec);
+
+				$this->msg("[Pass 2/2] VOB => AVI");
+				$exec = "transcode -a 0 -b 128,0,0 -f 0,4 -i $vob -w 2200,250,100 --export_fps 0,1 --hard_fps -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 2,$log -x vob -y xvid4 $flags -o $avi -q $q";
 				$this->executeCommand($exec);
 		}
 
