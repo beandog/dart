@@ -493,7 +493,6 @@
 			$dvd->arr_encode = $dvd->getQueue($dvd->config['queue_id']);
 			
 			foreach($dvd->arr_encode as $arr) {
-			
 				$dvd->encodeMovie($arr);
 			}
 			
@@ -524,5 +523,8 @@
 		else
 			return false;
 	}
+	
+	if($dvd->config['eject'])
+		system("eject {$dvd->config['dvd_device']};");
 
 ?>

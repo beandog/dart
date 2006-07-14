@@ -238,6 +238,7 @@
 			$avi = "$file.avi";
 			$txt = "$file.txt";
 			$mkv = "$file.mkv";
+			$episode_title = $this->getEpisodeTitle($disc_id, $track);
 			$filename = $this->getEpisodeFilename($disc_id, $track);
 			$png = basename($filename, '.mkv').'.png';
 			
@@ -245,7 +246,7 @@
 			// it will dump divx4 stats for 2-pass
 			chdir($dir);
 			if(in_dir($vob, $dir) && !in_dir($avi, $dir)) {
-				$msg = " $tv_show_title";
+				$msg = "Encoding: $tv_show_title";
 				if($episode_title)
 					$msg .= ": $episode_title";
 				$this->msg($msg);
@@ -269,8 +270,8 @@
 			}
 			
 			// Create a snapshot
-			if(in_dir($mkv, $dir) && !in_dir($png, $dir)) {
-				$dvd->createSnapshot($mkv, $png);
+			if(in_dir($filename, $dir) && !in_dir($png, $dir)) {
+				$this->createSnapshot($filename, $png);
 			}
 			
 			// Remove the VOB, AVI and chapters file if the Matroska exists
