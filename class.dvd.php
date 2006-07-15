@@ -222,7 +222,7 @@
 		}
 		
 		function formatTitle($title = 'TV Show Title') {
-			$title = preg_replace('/[^A-Za-z0-9 -,.?\']/', '', $title);
+			$title = preg_replace('/[^A-Za-z0-9 \-,.?\']/', '', $title);
 			$title = str_replace(' ', '_', $title);
 			return $title;
 		}
