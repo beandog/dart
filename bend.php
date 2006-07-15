@@ -510,8 +510,8 @@
 
 			// See if we've reached our total or not
 			if($q === $total) {
-				$dvd->msg("Reached total of $total episodes to rip.");
-				break;
+				$dvd->msg("Reached total of $total episodes to encode.");
+				break 2;
 			}
 			
 			foreach($dvd->arr_encode as $arr) {

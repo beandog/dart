@@ -190,7 +190,10 @@
 		function createSnapshot($input, $output, $ss = 60) {
 			$ss = intval($ss);
 			if($ss > 0) {
-				$exec = "mplayer $input -vo png:z=9 -ss $ss -frames 1 -vf scale=360:240 -ao null; mv 00000001.png $output";
+				#$exec = "mplayer \"$input\" -vo png:z=9 -ss $ss -frames 1 -vf scale=360:240 -ao null; mv 00000001.png \"$output\"";
+				$exec = "transcode -i -o snapshot -T 1,-1 -x vob,null -F 90 -y jpg,null -c 900-901; mv snapshot000000.jpg \"$output\"";
+				echo $exec;
+				
 				$this->executeCommand($exec);
 			}
 		}
@@ -266,11 +269,13 @@
 			
 			// Rename the matroska file from to Episode_Title.mkv
 			if(in_dir($mkv, $dir) && !in_dir($filename, $dir)) {
+				$this->msg("Moving $mkv to $filename", false, true);
 				rename($mkv, $filename);
 			}
 			
 			// Create a snapshot
 			if(in_dir($filename, $dir) && !in_dir($png, $dir)) {
+				$this->msg("Creating a PNG snapshot", false, true);
 				$this->createSnapshot($filename, $png);
 			}
 			
@@ -659,9 +664,16 @@
 			$basename = basename($vob, '.vob');
 			$avi = "$basename.avi";
 			$log = "$basename.log";
+			
+			
+			
+			if($this->debug) {
+				$flags .= ' --print_status 10 ';
+				$verbose = ':verbose=1';
+			}
 
 			if($fps == 1)
-				$flags = "-f 24,1 ";
+				$flags .= " -f 24,1 ";
 
 			// Two-pass encoding the VOB to AVI
 			// By default, use XviD for excellent results
@@ -692,6 +704,7 @@
 				*/
 				
 				// Kind of a mix between the two, adding everything but the external filters
+				// Works really well :)
 				$this->msg("[Pass 1/2] VOB => AVI");
 				$exec = "transcode -a 0 -b 128,0,0 -f 0,4 -i $vob -w 2200,250,100 --export_fps 0,1 --hard_fps -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 1,$log -x vob -y xvid4,null $flags -o /dev/null -q $q";
 				$this->executeCommand($exec);
@@ -699,6 +712,18 @@
 				$this->msg("[Pass 2/2] VOB => AVI");
 				$exec = "transcode -a 0 -b 128,0,0 -f 0,4 -i $vob -w 2200,250,100 --export_fps 0,1 --hard_fps -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 2,$log -x vob -y xvid4 $flags -o $avi -q $q";
 				$this->executeCommand($exec);
+				
+				// Final test, same as 3rd, but with the filters
+				// didn't work :T
+				/*
+				$this->msg("[Pass 1/2] VOB => AVI");
+				$exec = "transcode -a 0 -b 128,0,0 -f 0,4 -i $vob -w 2200,250,100 --export_fps 0,1 --hard_fps -J ivtc -J decimate -B 3,9,16 -J 32detect=force_mode=5:chromathres=2:chromadi=9{$verbose} -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 1,$log -x vob -y xvid4,null $flags -o /dev/null -q $q";
+				$this->executeCommand($exec);
+
+				$this->msg("[Pass 2/2] VOB => AVI");
+				$exec = "transcode -a 0 -b 128,0,0 -f 0,4 -i $vob -w 2200,250,100 --export_fps 0,1 --hard_fps -J ivtc -J decimate -B 3,9,16 -J 32detect=force_mode=5:chromathres=2:chromadi=9{$verbose} -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 2,$log -x vob -y xvid4 $flags -o $avi -q $q";
+				$this->executeCommand($exec);
+				*/
 		}
 
 		function writeChapters($chapters = '', $txt = 'movie.txt') {
