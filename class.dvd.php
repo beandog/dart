@@ -673,8 +673,8 @@
 				$verbose = ':verbose=1';
 			}
 
-			if($fps == 1)
-				$flags .= " -f 24,1 ";
+			#if($fps == 1)
+			#	$flags .= " -f 24,1 ";
 
 			// Two-pass encoding the VOB to AVI
 			// By default, use XviD for excellent results
