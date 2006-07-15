@@ -222,7 +222,7 @@
 		}
 		
 		function formatTitle($title = 'TV Show Title') {
-			$title = preg_replace('/[^A-Za-z0-9 \-,.?\']/', '', $title);
+			$title = preg_replace('/[^A-Za-z0-9 \-,.?\':]/', '', $title);
 			$title = str_replace(' ', '_', $title);
 			return $title;
 		}
@@ -453,7 +453,7 @@
 
 		function getQueueTotal($queue_id) {
 
-			if(!is_numeric($queue_id) || empty($queue_id))
+			if(!is_numeric($queue_id) || is_null($queue_id))
 				return 0;
 
 			$sql_encode = "SELECT 1 FROM episodes WHERE queue = $queue_id AND ignore = FALSE;";
