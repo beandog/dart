@@ -453,7 +453,8 @@
 
 		function getQueueTotal($queue_id) {
 
-			$queue_id = intval($queue_id);
+			if(!is_numeric($queue_id) || empty($queue_id))
+				return 0;
 
 			$sql_encode = "SELECT 1 FROM episodes WHERE queue = $queue_id AND ignore = FALSE;";
 			$num_encode = pg_num_rows(pg_query($sql_encode));

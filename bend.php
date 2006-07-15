@@ -500,7 +500,7 @@
 	/** Encoding */
 	if($dvd->args['encode'] == 1) {
 
-		$num_encode = $dvd->getQueueTotal($dvd->config['queue']);
+		$num_encode = $dvd->getQueueTotal($dvd->config['queue_id']);
 		$dvd->msg("$num_encode episode(s) total to encode.");
 
 		$q = 0;
