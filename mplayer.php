@@ -75,6 +75,13 @@
 	 *	mplayer command is -ss to seek to resume a file, and
 	 *	-quiet so it can correctly grab the output.
 	 *
+	 * Bugs:
+	 *
+	 * 	No way to clear the playback position except by going
+	 *	to the end of the media file, or deleting the text file.
+	 *
+	 *	Won't play files with spaces in them
+	 *
 	 */
 
 	// Make sure I can save playback files
