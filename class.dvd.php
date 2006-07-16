@@ -78,8 +78,10 @@
 					$episode++;
 				
 				// Don't insert tracks with zero length
-				if($this->arr_tracks[$track] != '0.00')
+				if($this->arr_tracks[$track] != '0.00') {
 					$this->archiveEpisode($this->disc['id'], $episode, $this->arr_tracks[$track], $chapters, $track, $valid);
+					$this->enqueue($episode);
+				}
 			}
 			
 			if($this->num_episodes > 0)
@@ -148,12 +150,19 @@
 			}
 		}
 		
+		/**
+		 * displayQueue()
+		 *
+		 * Displays the episodes that are in the encoding queue
+		 * for the current client
+		 *
+		 */
 		function displayQueue() {
 			$sql = "SELECT e.id, tv.title AS tv_show_title, d.season, e.title AS episode_title, e.len AS episode_len FROM queue q INNER JOIN episodes e ON e.id = q.episode INNER JOIN discs d ON e.disc = d.id INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND q.queue = {$this->config['queue_id']} ORDER BY q.insert_date;";
 			
 			$rs = pg_query($sql) or die(pg_last_error());
 			
-			$this->msg("Queue ID: {$this->config['queue_id']}", true);
+			$this->msg("Queue ID: {$this->config['queue_id']}", false, true);
 			
 			if(pg_num_rows($rs) == 0)
 				$this->msg("Your encoding queue is empty.", true);
@@ -162,10 +171,11 @@
 				$this->msg("$i. ".$arr['tv_show_title']." (Season {$arr['season']}): ".$arr['episode_title']." (".$arr['episode_len'].")");
 				$i++;
 			}
+			return true;
 		}
 		
 		function emptyQueue() {
-			$sql_queue = "DELETE FROM episodes WHERE queue = {$this->config['queue_id']};";
+			$sql_queue = "DELETE FROM queue WHERE queue = {$this->config['queue_id']};";
 			pg_query($sql_queue) or die(pg_last_error());
 		}
 		
@@ -235,6 +245,26 @@
 				$sql = "UPDATE episodes SET queue = NULL WHERE id = $episode_id;";
 				pg_query($sql) or die(pg_last_error());
 			}
+		}
+		
+		/**
+		 * enqueue()
+		 *
+		 * Insert an episode into the queue
+		 *
+		 * @param int Episode ID
+		 */
+		function enqueue($episode) {
+			$episode = intval($episode);
+			
+			$num_rows = pg_num_rows(pg_query("SELECT 1 FROM queue WHERE queue = ".$this->config['queue_id']." AND episode = $episode;"));
+			
+			if($num_rows == 1)
+				return false;
+			
+			$sql = "INSERT INTO queue (queue, episode) VALUES (".$this->config['queue_id'].", $episode);";
+			pg_query($sql) or die(pg_last_error());
+			return true;
 		}
 		
 		function escapeTitle($str) {
@@ -329,10 +359,14 @@
 			$filename = $episode.'._'.$this->formatTitle($episode_title).'.mkv';
 			return $filename;
 		}
+		
+		function getEpisodeID($track) {
+			$sql = "SELECT id FROM episodes WHERE disc = {$this->disc['id']} AND track = $track LIMIT 1;";
+			$episode = current(pg_fetch_row(pg_query($sql)));
+			return $episode;
+		}
 
 		function getEpisodeNumber($disc_id, $track) {
-			#echo $sql = "SELECT discs.disc, episodes.episode, episodes.title FROM episodes, discs WHERE discs.tv_show = $tv_show AND season = $season AND discs.disc < $disc AND episodes.disc = discs.id AND episodes.ignore = FALSE ORDER BY discs.disc, episodes.episode;";
-			
 			// This query dynamically returns the correct episode # out of the entire season for a TV show based on its track #.
 			// It works by calculating the number of valid tracks that come before it
 			// So, you can archive discs outside of their order, just don't transcode them
@@ -340,7 +374,7 @@
 			
 			$season = current(pg_fetch_row(pg_query("SELECT season FROM discs WHERE id = $disc_id;")));
 			
-			$sql = "SELECT (COUNT(1) + 1) AS episode_number FROM episodes, discs WHERE episodes.disc = discs.id AND discs.tv_show = (SELECT tv_show FROM discs WHERE id = $disc_id) AND episodes.ignore = false AND season = (SELECT season FROM discs WHERE id = $disc_id) AND ((discs.disc < (SELECT disc FROM discs WHERE id = $disc_id)) OR (discs.disc = (SELECT disc FROM discs WHERE id = $disc_id) AND track < $track));";
+			$sql = "SELECT (COUNT(1) + 1) AS episode_number FROM episodes, discs WHERE episodes.disc = discs.id AND discs.tv_show = (SELECT tv_show FROM discs WHERE id = $disc_id) AND episodes.ignore = false AND season = (SELECT season FROM discs WHERE id = $disc_id) AND ((discs.disc < (SELECT disc FROM discs WHERE id = $disc_id)) OR (discs.disc = (SELECT disc FROM discs WHERE id = $disc_id) AND episode_order < (SELECT episode_order FROM episodes WHERE disc = $disc_id AND track = $track)));";
 			$rs = pg_query($sql) or die(pg_last_error());
 			
 			$episode = current(pg_fetch_row($rs));
@@ -382,9 +416,11 @@
 			return $export_dir;
 		}
 		
-		function getQueue($id) {
+		function getQueue() {
 
-			$sql = "SELECT episodes.id AS episode_id, episodes.title, episodes.chapters, episodes.track, discs.id AS disc_id, discs.tv_show AS tv_show, discs.season, discs.disc AS disc_number, discs.chapters AS one_chapter, discs.chapters_track, tv_shows.title AS tv_show_title, tv_shows.cartoon, tv_shows.fps FROM episodes, discs, tv_shows WHERE queue = $id AND episodes.disc = discs.id AND discs.tv_show = tv_shows.id AND ignore = FALSE ORDER BY tv_shows.title, episodes.disc, episodes.id;";
+			#$sql = "SELECT episodes.id AS episode_id, episodes.title, episodes.chapters, episodes.track, discs.id AS disc_id, discs.tv_show AS tv_show, discs.season, discs.disc AS disc_number, discs.chapters AS one_chapter, discs.chapters_track, tv_shows.title AS tv_show_title, tv_shows.cartoon, tv_shows.fps FROM episodes, discs, tv_shows WHERE queue =  AND episodes.disc = discs.id AND discs.tv_show = tv_shows.id AND ignore = FALSE ORDER BY tv_shows.title, episodes.disc, episodes.id;";
+			
+			$sql = "SELECT e.id AS episode_id, e.title, e.chapters, e.track, d.id AS disc_id, d.tv_show, d.season, d.disc AS disc_number, tv.title AS tv_show_title, tv.cartoon FROM queue q INNER JOIN episodes e ON e.id = q.episode INNER JOIN discs d ON e.disc = d.id INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND q.queue = {$this->config['queue_id']} ORDER BY q.insert_date;";
 
 			$rs = pg_query($sql) or die(pg_last_error());
 			for($x = 0; $x < pg_num_rows($rs); $x++)
@@ -393,13 +429,10 @@
 			return $arr;
 		}
 		
-		function getQueueTotal($queue_id) {
+		function getQueueTotal() {
 
-			if(!is_numeric($queue_id) || is_null($queue_id))
-				return 0;
-
-			$sql_encode = "SELECT 1 FROM episodes WHERE queue = $queue_id AND ignore = FALSE;";
-			$num_encode = pg_num_rows(pg_query($sql_encode));
+			$sql_encode = "SELECT COUNT(1) FROM queue q INNER JOIN episodes e ON q.episode_id = e.id AND e.ignore = false WHERE q.queue_id = ".$this->config['queue_id'].";";
+			$num_encode = current(pg_fetch_row(pg_query($sql_encode)));
 
 			return $num_encode;
 		}
@@ -522,6 +555,11 @@
 		function mkvmerge($avi = 'movie.avi', $txt = 'chapters.txt', $mkv = 'movie.mkv') {
 				$exec = "mkvmerge -o \"$mkv\" --chapters $txt $avi";
 				$this->executeCommand($exec);
+		}
+		
+		function mount() {
+			$exec = "mount {$dvd->config['dvd_device']}";
+			$this->executeCommand($exec);
 		}
 		
 		function msg($string = '', $stderr = false, $debug = false) {
@@ -687,8 +725,8 @@
 			$q = intval($this->debug);
 
 			if($vfr == false) {
-				echo $pass1 = "transcode -a 0 -b 128,0,0 -i $vob -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 1,$log -x vob -y xvid4,null $flags -o /dev/null -q $q";
-				echo $pass2 = "transcode -a 0 -b 128,0,0 -i $vob -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 2,$log -x vob -y xvid4 $flags -o $avi -q $q";
+				$pass1 = "transcode -a 0 -b 128,0,0 -i $vob -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 1,$log -x vob -y xvid4,null $flags -o /dev/null -q $q";
+				$pass2 = "transcode -a 0 -b 128,0,0 -i $vob -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 2,$log -x vob -y xvid4 $flags -o $avi -q $q";
 			}
 			elseif($vfr == true) {
 				$pass1 = "transcode -a 0 -b 128,0,0 -f 0,4 -i $vob -w 2200,250,100 --export_fps 0,1 --hard_fps -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 1,$log -x vob -y xvid4,null $flags -o /dev/null -q $q";

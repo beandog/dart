@@ -73,6 +73,7 @@
 	$bendrc = "$home/.bend";
 
 	// Default configuration
+	/*
 	$arr_config = array(
 		'bitrate' => 2200,
 		'export_dir' => "$home/dvd/",
@@ -80,6 +81,7 @@
 		'queue' => 3,
 		'device' => '/dev/dvd'
 	);
+	*/
 
 	/** Get the configuration options */
 	if(file_exists($bendrc)) {
@@ -97,12 +99,13 @@
 	
 	$arr_cmd = array(
 		'h' => array('help', 'Display this help'),
-		'a' => array('archive', 'Archive a disc and title in the database'),
-		'r' => array('rip', 'Rip the current DVD in the drive to VOBs'),
-		'e' => array('encode', 'Encode the first ripped VOB in my queue'),
-		'd' => array('daemon', 'Run in the background, encoding everything in my queue'),
+		'a' => array('archive', 'Save disc details in the database'),
+		'x' => array('admin', 'Edit disc details, set episode titles, etc.'),
+		'r' => array('rip', 'Copy DVD tracks from disc to the harddrive'),
+		'e' => array('encode', 'Encode everything in my queue'),
 		'q' => array('queue', 'Display the titles in my queue'),
-		'c' => array('clear', 'Clear my queue')
+		'c' => array('clear', 'Clear my encoding queue'),
+		'v' => array('debug', 'Display debugging information')
 	);
 
 
@@ -111,56 +114,26 @@
 
 		$dvd->msg("Usage: bend [OPTIONS]");
 		$dvd->msg(' ');
-		$dvd->msg("\t-h, --help\tThis help message");
-		$dvd->msg("\t-a, --archive\tArchive a disc in the database");
-		$dvd->msg("\t-r, --rip\tRip tracks to the harddrive");
-		$dvd->msg("\t-e, --encode\tEncode all files in my queue to Matroska");
-		$dvd->msg("\t-q, --queue\tDisplay my queue");
-		$dvd->msg("\t-d, --debug\tDisplay debugging output");
+		
+		foreach($arr_cmd as $key => $arr) {
+			$dvd->msg("\t-{$key}, --{$arr[0]}\t{$arr[1]}");
+		}
 		
 		$dvd->msg(' ');
 		
-		$dvd->msg('The standard way to rip a series is 1) archive the disc(s), 2) set the names in the frontend 3) rip the tracks to the harddrive and 4) finally encode them.');
+		$dvd->msg('You can pass more than one option at a time:');
+		$dvd->msg(' ');
+		$dvd->msg("\t$ bend --archive --rip --encode");
+		$dvd->msg(' ');
 		
-		/*
-		$output .= "Main\n";
-		$output .= "====\n";
-		$output .= "\n";
-		$output .= "  -h, --help\t\tDisplay this help\n";
-		$output .= "  -a, --archive\t\tArchive a title in the database\n";
-		$output .= "  -r, --rip\t\tRip the current DVD in the drive to VOB files\n";
-		$output .= "  -e, --encode\t\tEncode the first ripped VOB in my queue\n";
-		$output .= "  -d, --daemon\t\tRun as a daemon in the background, encoding everything in my queue\n";
-		$output .= "  -q, --queue\t\tDisplay the titles, episodes in my queue\n";
-
-		$output .= "\n";
-
-		$output .= "Archiving (TV Shows)\n";
-		$output .= "====================\n";
-		$output .= "\n";
-		$output .= "  --season n\t\tTV Season # (Ex: --season 2)\n";
-		$output .= "  --disc n\t\tDisc # (Ex: --disc 1)\n";
-		$output .= "  --title 'TV Show'\tTitle of TV show (Ex: --title 'Mary Tyler Moore'\n";
-		$output .= "  --min n\t\tOptional: minimum track length, in minutes\n";
-		$output .= "  --max n\t\tOptional: maximum track length, in minutes\n";
-
-
-		$output .= "\n";
-
-		$output .= "Archiving (Movies)\n";
-		$output .= "==================\n";
-		$output .= "\n";
-		$output .= "  --movie\t\tArchive DVD as a movie, not a TV show\n";
-		$output .= "  --track\t\tOptional: Rip track # as movie, instead of longest track found\n";
-		*/
-
+		$dvd->msg("The simplest way to rip a series is:\n\t1) archive the disc(s),\n\t2) set the episode titles in the frontend\n\t3) rip the tracks to the harddrive and\n\t4) finally encode them.");
+	
 		$dvd->msg($output);
+		// Goodbye! :)
 		die;
 		
 	}
 	
-	// $arr = $dvd->getTrackStats($dvd->arr_tracks);
-
 	// Clear the queue
 	if($dvd->args['clear'] == 1 || $dvd->args['c'] == 1) {
 		$dvd->emptyQueue();
@@ -372,8 +345,6 @@
 				$dvd->lsdvd($dvd->config['dvd_device']);
 				
 				$dvd->addDisc($dvd->tv_show['id'], $season, $disc, $dvd->disc_id, $dvd->disc_title);
-				
-				
 			}
 			// Just exit gracefully if they don't want to archive it
 			else
@@ -395,7 +366,7 @@
 		// TODO see if its already mounted ... somehow?
 		if($dvd->config['mount'] === true) {
 			$dvd->msg("Attempting to mount disc.", true, true);
-			@exec("mount {$dvd->config['dvd_device']} 2> /dev/null;");
+			$dvd->mount();
 		}
 
 		// Create the export directory if it doesn't already exist
@@ -412,7 +383,7 @@
 
 		// Pull out the tracks that haven't been flagged to ignore in the database frontend
 		// This query has nothing to do with what has / hasn't been encoded
-		$sql = "SELECT tv.title, d.season, d.disc, e.track, d.id AS disc_id FROM episodes e INNER JOIN discs d ON e.disc = d.id AND d.id = {$dvd->disc['id']} INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE ignore = FALSE ORDER BY track;";
+		$sql = "SELECT tv.title, d.season, d.disc, e.track, d.id AS disc_id FROM episodes e INNER JOIN discs d ON e.disc = d.id AND d.id = {$dvd->disc['id']} INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE ignore = FALSE ORDER BY episode_order, track;";
 		$rs = pg_query($sql) or die(pg_last_error());
 		$num_rows = pg_num_rows($rs);
 		
@@ -432,7 +403,8 @@
 			// TODO die with $dvd->msg
 			if(!is_dir($dir))
 				mkdir($dir) or die("Can't create export directory!");
-				
+			
+			$dvd->msg("Ripping {$arr[0]['title']}: Season {$arr[0]['season']}, Disc {$arr[0]['disc']}");
 			
 			/** Rip the tracks */
 			foreach($arr as $tmp) {
@@ -468,23 +440,35 @@
 					
 					$filename = "$dir/$vob";
 					
-					$dvd->msg("[$count/$num_rows] Ripping $title: $episode_title");
+					$dvd->msg("[$count/$num_rows] + Track $track: $episode_title");
 					$dvd->ripTrack($track, $filename);
 					
-					// Put the episodes in the queue
-					$sql = "UPDATE episodes SET queue = {$dvd->config['queue_id']} WHERE disc = {$dvd->disc['id']} AND track = $track AND ignore = FALSE;";
-					pg_query($sql) or die(pg_last_error());
-				
 					$q++;
 					
 				}
 				else
-					$dvd->msg("[$count/$num_rows] Skipping track $track, file already exists.");
+					$dvd->msg("[$count/$num_rows] - Track $track: File exists.");
+					
+				// Put the episodes in the queue
+				$episode = $dvd->getEpisodeID($track);
+				if($dvd->enqueue($episode)) {
+					$enqueue++;
+				}
+				else {
+					$in_queue++;
+				}
 			}
 
 			if($q > 0) {
 				$dvd->msg("Finished ripping files to $dir");
+			}
+			
+			if($enqueue) {
 				$dvd->msg("Added $q episodes to the queue.");
+			}
+			
+			if($in_queue) {
+				$dvd->msg("$in_queue episodes already in your queue", false, true);
 			}
 			
 			if($dvd->config['eject'] === true) {
