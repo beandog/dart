@@ -116,7 +116,8 @@
 	$str_args = implode(' ', $argv);
 	
 	// Where the seek position will be saved
-	$txt = $save_files_to."$movie.txt";
+	$txt = $save_files_to.basename($movie).".txt";
+	print_r($txt);
 
 	// If there is already a playback file, read it and start
 	// from that position.
