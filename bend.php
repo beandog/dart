@@ -464,7 +464,7 @@
 			}
 			
 			if($enqueue) {
-				$dvd->msg("Added $q episodes to the queue.");
+				$dvd->msg("Added $enqueue episodes to the queue.");
 			}
 			
 			if($in_queue) {
@@ -479,6 +479,9 @@
 		else {
 			$dvd->msg("There aren't any archived tracks to rip for this disc.  You might want to try running --archive instead.", true);
 		}
+		
+		$dvd->createSnapshot($vob, "$vob.png", 120);
+		
 	}
 
 	/** Encoding */

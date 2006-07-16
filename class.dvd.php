@@ -142,11 +142,18 @@
 		function createSnapshot($input, $output, $ss = 60) {
 			$ss = intval($ss);
 			if($ss > 0) {
-				$exec = "mplayer \"$input\" -vo png:z=9 -ss $ss -frames 1 -vf scale=360:240 -ao null; mv 00000001.png \"$output\"";
-				#$exec = "transcode -i \"$input\" -o snapshot -T 1,-1 -x vob,null -F 90 -y jpg,null -c 900-901; mv snapshot000000.jpg \"$output\"";
-				echo $exec;
-				
+			
+				/*
+				$exec = "mplayer \"$input\" -vo png:z=9 -ss $ss -frames 1 -vf scale=360:240 -ao null";
 				$this->executeCommand($exec);
+				rename("00000001.png", "$output");
+				*/
+				
+				$exec = "transcode -i \"$input\" -o snapshot -T 1,-1 -x vob,null -F 90 -y jpg,null -c 5400-5401";
+				$this->executeCommand($exec);
+				rename("snapshot000000.jpg", "$output");
+				
+				$this->msg($exec);
 			}
 		}
 		
@@ -259,12 +266,13 @@
 			
 			$num_rows = pg_num_rows(pg_query("SELECT 1 FROM queue WHERE queue = ".$this->config['queue_id']." AND episode = $episode;"));
 			
-			if($num_rows == 1)
+			if($num_rows === 1)
 				return false;
-			
-			$sql = "INSERT INTO queue (queue, episode) VALUES (".$this->config['queue_id'].", $episode);";
-			pg_query($sql) or die(pg_last_error());
-			return true;
+			else {
+				$sql = "INSERT INTO queue (queue, episode) VALUES (".$this->config['queue_id'].", $episode);";
+				pg_query($sql) or die(pg_last_error());
+				return true;
+			}
 		}
 		
 		function escapeTitle($str) {
