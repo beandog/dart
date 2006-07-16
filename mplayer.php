@@ -7,7 +7,7 @@
 	 * @author Steve Dibb <steve dot dibb at gmail dot com>
 	 * @copyright public-domain
 	 * @date 2006-07-16
-	 * @version 1.0
+	 * @version 1.1
 	 * @homepage http://wonkabar.org/bend/
 	 * 
 	 * Run time dependencies: PHP 5
@@ -64,21 +64,18 @@
 	 * 	To execute this program, either call it using the PHP
 	 * 	binary, or make it executable.  Whichever you like best. :)
 	 *
-	 *	$ php mplayer-playback.php foo-bar.avi
+	 *	$ php mplayer.php foo-bar.avi
 	 *
 	 *	The script should parses any arguments that you want to send
 	 * 	mplayer at the same time.
 	 *
-	 *	$ php mplayer-playback.php foo-bar.avi -vo xv
+	 *	$ php mplayer.php foo-bar.avi -vo xv
 	 * 
 	 *	The *only* extra arguments that this script will add to your
 	 *	mplayer command is -ss to seek to resume a file, and
 	 *	-quiet so it can correctly grab the output.
 	 *
 	 * Bugs:
-	 *
-	 * 	No way to clear the playback position except by going
-	 *	to the end of the media file, or deleting the text file.
 	 *
 	 *	Won't play files with spaces in them
 	 *
@@ -129,7 +126,7 @@
 	}
 	
 	// Build the execution string
-	$exec = "mplayer $movie $flags $str_args -quiet";
+	$exec = "mplayer $flags $str_args -quiet";
 
 	// Execute the command, save output to an array
 	exec($exec, $arr);
