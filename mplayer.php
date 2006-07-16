@@ -71,9 +71,9 @@
 	 *
 	 *	$ php mplayer-playback.php foo-bar.avi -vo xv
 	 * 
-	 *	The *only* extra argument that this script will add to your
-	 *	mplayer command is -ss to seek to resume a file.
-	 *
+	 *	The *only* extra arguments that this script will add to your
+	 *	mplayer command is -ss to seek to resume a file, and
+	 *	-quiet so it can correctly grab the output.
 	 *
 	 */
 
@@ -121,7 +121,7 @@
 	}
 	
 	// Build the execution string
-	$exec = "mplayer $movie $flags $str_args";
+	$exec = "mplayer $movie $flags $str_args -quiet";
 
 	// Execute the command, save output to an array
 	exec($exec, $arr);
@@ -138,12 +138,12 @@
 	// the endpos when quitting
 	$endpos = str_replace("ANS_TIME_POSITION=", '', end($arr));
 
-	// Seeking isn't perfect, so throw it back 3 seconds to correct it
-	$endpos -= 3;
+	// Seeking isn't perfect, so throw it back a little to correct it
+	$endpos -= 2.5;
 
 	// If it's a negative value, that means you've seeked
 	// past/to the end of the file, so just remove the old one.
-	if($endpos < 1)
+	if($endpos < 1 && file_exists($txt))
 		unlink($txt);
 	// Save the (positive) playback position to the file
 	else
