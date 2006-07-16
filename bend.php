@@ -371,7 +371,7 @@
 				$dvd->msg("Archiving your DVD ...");
 				$dvd->lsdvd($dvd->config['dvd_device']);
 				
-				$dvd->addDisc($dvd->tv_show['id'], $season, $disc, $dvd->disc_id, $dvd->disc_title, $start);
+				$dvd->addDisc($dvd->tv_show['id'], $season, $disc, $dvd->disc_id, $dvd->disc_title);
 				
 				
 			}

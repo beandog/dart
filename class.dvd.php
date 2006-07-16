@@ -1,15 +1,28 @@
 <?
 	class DVD {
 
-		/*
+		/**
 		 * DVD construct
 		 *
 		 * Creaates database connection, and default values
 		 */
-		function DVD() {
+		function __construct() {
 			$this->db = pg_connect('host=charlie dbname=movies user=steve') or die(pg_last_error());
 			$this->min_len = 20;
 			$this->max_len = 59;
+			
+			// Default config settings
+			$this->config = array(
+				'queue_id' => 0,
+				'transcode_video_codec' => 'xvid4',
+				'transcode_video_bitrate' => 2200,
+				'transcode_audio_codec' => 'copy',
+				'transcode_audio_bitrate' => 128,
+				'export_dir' => './',
+				'dvd_device' => '/dev/dvd',
+				'mount' => true,
+				'eject' => true
+			);
 		}
 		
 		function addTVShow($title = 'TV Show', $min_len = 30, $max_len = 60, $fps = 0, $cartoon = false) {
@@ -42,16 +55,6 @@
 				$this->lsdvd($this->config['dvd_device']);
 			
 			$arr_tracks = $this->getValidTracks($this->arr_tracks, $this->tv_show['min_len'], $this->tv_show['max_len']);
-			
-			/*
-			if($disc > 1) {
-				$this->disc['start'] = $this->getStartingEpisode();
-			}
-			else
-				$this->disc['start'] = 1;
-			
-			$start = $this->disc['start'];
-			*/
 				
 			// Insert disc into database
 			$sql = "SELECT NEXTVAL('public.discs_id_seq');";
@@ -84,62 +87,6 @@
 			
 		}
 		
-		function getValidTracks($arr_tracks = null, $min_len = 20, $max_len = 60, $chapters = false) {
-		
-			if(!is_array($arr_tracks))
-				return false;
-			
-			$min_len = intval($min_len);
-			$max_len = intval($max_len);
-
-			$add = $ignore = 0;
-
-			// If we are ripping only one track as chapters, then ignore the length
-			// FIXME, not used
-			if($chapters === true) {
-				/*
-				foreach($this->arr_tracks as $key => $value) {
-					if($key != $arr_disc['chapters_track'])
-						unset($this->arr_tracks[$key]);
-				}
-				*/
-			}
-			else {
-				// Trim the tracks that do not meet the min and max length criteria
-				foreach($arr_tracks as $key => $value) {
-
-					if($value > $max_len || $value < $min_len) {
-						$this->msg("- Track $key ($value)", true, true);
-						$arr_valid[$key] = false;
-						$ignore++;
-					}
-					else {
-						$this->msg("+ Track $key ($value)", true, true);
-						$add++;
-						$arr_valid[$key] = true;
-					}
-				}
-			}
-
-			$this->msg("$add tracks will be added to the database");
-			$this->msg("$ignore tracks ignored because of length");
-			
-			return $arr_valid;
-		}
-		
-
-		function getStartingEpisode() {
-			// Calculate the starting episode # for this disc
-			// Also, always update it each time, since the title orders may have changed
-			echo $sql = "SELECT discs.disc, episodes.episode, episodes.title FROM episodes, discs WHERE discs.tv_show = {$this->tv_show['id']} AND season = {$this->disc['season']} AND discs.disc < {$this->disc['number']} AND episodes.disc = discs.id AND episodes.ignore = FALSE ORDER BY discs.disc, episodes.episode;";
-			$rs = pg_query($sql) or die(pg_last_error());
-			$start = pg_num_rows($rs);
-			
-			$start++;
-
-			return($start);
-		}
-
 		function archiveEpisode($disc_id, $episode, $len, $chapters, $track, $valid = false) {
 		
 			$disc_id = intval($disc_id);
@@ -181,23 +128,7 @@
 				}
 			}
 		}
-
-		function mkvmerge($avi = 'movie.avi', $txt = 'chapters.txt', $mkv = 'movie.mkv') {
-				$exec = "mkvmerge -o \"$mkv\" --chapters $txt $avi";
-				$this->executeCommand($exec);
-		}
-
-		function createSnapshot($input, $output, $ss = 60) {
-			$ss = intval($ss);
-			if($ss > 0) {
-				#$exec = "mplayer \"$input\" -vo png:z=9 -ss $ss -frames 1 -vf scale=360:240 -ao null; mv 00000001.png \"$output\"";
-				$exec = "transcode -i -o snapshot -T 1,-1 -x vob,null -F 90 -y jpg,null -c 900-901; mv snapshot000000.jpg \"$output\"";
-				echo $exec;
-				
-				$this->executeCommand($exec);
-			}
-		}
-
+		
 		function correctLength($len) {
 			$hours = substr($len, 0, 2);
 			$len = substr($len, 3);
@@ -205,26 +136,37 @@
 
 			return $len;
 		}
-
+		
+		function createSnapshot($input, $output, $ss = 60) {
+			$ss = intval($ss);
+			if($ss > 0) {
+				$exec = "mplayer \"$input\" -vo png:z=9 -ss $ss -frames 1 -vf scale=360:240 -ao null; mv 00000001.png \"$output\"";
+				#$exec = "transcode -i \"$input\" -o snapshot -T 1,-1 -x vob,null -F 90 -y jpg,null -c 900-901; mv snapshot000000.jpg \"$output\"";
+				echo $exec;
+				
+				$this->executeCommand($exec);
+			}
+		}
+		
 		function displayQueue() {
-			$sql_queue = "SELECT episodes.episode, episodes.title, episodes.len, tv_shows.title AS tv_show_title FROM episodes, discs, tv_shows WHERE queue = {$this->config['queue_id']} AND episodes.disc = discs.id AND discs.tv_show = tv_shows.id AND ignore = FALSE ORDER BY tv_shows.title, episodes.disc, episodes.id;";
-			$rs_queue = pg_query($sql_queue) or die(pg_last_error());
+			$sql = "SELECT e.id, tv.title AS tv_show_title, d.season, e.title AS episode_title, e.len AS episode_len FROM queue q INNER JOIN episodes e ON e.id = q.episode INNER JOIN discs d ON e.disc = d.id INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND q.queue = {$this->config['queue_id']} ORDER BY q.insert_date;";
+			
+			$rs = pg_query($sql) or die(pg_last_error());
 			
 			$this->msg("Queue ID: {$this->config['queue_id']}", true);
 			
-			if(pg_num_rows($rs_queue) == 0)
+			if(pg_num_rows($rs) == 0)
 				$this->msg("Your encoding queue is empty.", true);
 			$i = 1;
-			while($arr_queue = pg_fetch_assoc($rs_queue)) {
-				$this->msg("$i. ".$arr_queue['tv_show_title'].": ".$arr_queue['title']." (".$arr_queue['len'].")");
+			while($arr = pg_fetch_assoc($rs)) {
+				$this->msg("$i. ".$arr['tv_show_title']." (Season {$arr['season']}): ".$arr['episode_title']." (".$arr['episode_len'].")");
 				$i++;
 			}
 		}
 		
-		function formatTitle($title = 'TV Show Title') {
-			$title = preg_replace('/[^A-Za-z0-9 \-,.?\':]/', '', $title);
-			$title = str_replace(' ', '_', $title);
-			return $title;
+		function emptyQueue() {
+			$sql_queue = "DELETE FROM episodes WHERE queue = {$this->config['queue_id']};";
+			pg_query($sql_queue) or die(pg_last_error());
 		}
 		
 		function encodeMovie($arr = array()) {
@@ -294,12 +236,7 @@
 				pg_query($sql) or die(pg_last_error());
 			}
 		}
-
-		function emptyQueue() {
-			$sql_queue = "DELETE FROM episodes WHERE queue = {$this->config['queue_id']};";
-			pg_query($sql_queue) or die(pg_last_error());
-		}
-
+		
 		function escapeTitle($str) {
 			$str = trim($str);
 			$arr_pattern = array('/\s+/', '/\W/');
@@ -307,7 +244,7 @@
 			$str = preg_replace($arr_pattern, $arr_replace, $str);
 			return $str;
 		}
-
+		
 		function executeCommand($str) {
 
 			$str = escapeshellcmd($str);
@@ -334,7 +271,13 @@
 				exec($str);
 			}
 		}
-
+		
+		function formatTitle($title = 'TV Show Title') {
+			$title = preg_replace('/[^A-Za-z0-9 \-,.?\':]/', '', $title);
+			$title = str_replace(' ', '_', $title);
+			return $title;
+		}
+		
 		function getChapters($track, $dvd_device = '/dev/dvd') {
 
 			$track = intval($track);
@@ -354,9 +297,8 @@
 				return $chapters;
 			}
 		}
-
-
-		function getDisc() {
+		
+				function getDisc() {
 			if(!isset($this->disc_id))
 				$this->getDiscID();
 			$sql = "SELECT id, tv_show, season, disc, disc_title FROM discs WHERE disc_id = '{$this->disc_id}' LIMIT 1;";
@@ -439,7 +381,7 @@
 
 			return $export_dir;
 		}
-
+		
 		function getQueue($id) {
 
 			$sql = "SELECT episodes.id AS episode_id, episodes.title, episodes.chapters, episodes.track, discs.id AS disc_id, discs.tv_show AS tv_show, discs.season, discs.disc AS disc_number, discs.chapters AS one_chapter, discs.chapters_track, tv_shows.title AS tv_show_title, tv_shows.cartoon, tv_shows.fps FROM episodes, discs, tv_shows WHERE queue = $id AND episodes.disc = discs.id AND discs.tv_show = tv_shows.id AND ignore = FALSE ORDER BY tv_shows.title, episodes.disc, episodes.id;";
@@ -450,7 +392,7 @@
 
 			return $arr;
 		}
-
+		
 		function getQueueTotal($queue_id) {
 
 			if(!is_numeric($queue_id) || is_null($queue_id))
@@ -493,7 +435,49 @@
 			
 			return array($max, $min, $avg);
 		}
+		
+		function getValidTracks($arr_tracks = null, $min_len = 20, $max_len = 60, $chapters = false) {
+		
+			if(!is_array($arr_tracks))
+				return false;
 			
+			$min_len = intval($min_len);
+			$max_len = intval($max_len);
+
+			$add = $ignore = 0;
+
+			// If we are ripping only one track as chapters, then ignore the length
+			// FIXME, not used
+			if($chapters === true) {
+				/*
+				foreach($this->arr_tracks as $key => $value) {
+					if($key != $arr_disc['chapters_track'])
+						unset($this->arr_tracks[$key]);
+				}
+				*/
+			}
+			else {
+				// Trim the tracks that do not meet the min and max length criteria
+				foreach($arr_tracks as $key => $value) {
+
+					if($value > $max_len || $value < $min_len) {
+						$this->msg("- Track $key ($value)", true, true);
+						$arr_valid[$key] = false;
+						$ignore++;
+					}
+					else {
+						$this->msg("+ Track $key ($value)", true, true);
+						$add++;
+						$arr_valid[$key] = true;
+					}
+				}
+			}
+
+			$this->msg("$add tracks will be added to the database");
+			$this->msg("$ignore tracks ignored because of length");
+			
+			return $arr_valid;
+		}
 	
 		function lsdvd($dvd = '/dev/dvd') {
 			#exec('lsdvd -q 2> /dev/null', $arr);
@@ -533,6 +517,11 @@
 
 			return $arr;
 
+		}
+		
+		function mkvmerge($avi = 'movie.avi', $txt = 'chapters.txt', $mkv = 'movie.mkv') {
+				$exec = "mkvmerge -o \"$mkv\" --chapters $txt $avi";
+				$this->executeCommand($exec);
 		}
 		
 		function msg($string = '', $stderr = false, $debug = false) {
@@ -672,59 +661,46 @@
 				$flags .= ' --print_status 10 ';
 				$verbose = ':verbose=1';
 			}
-
-			#if($fps == 1)
-			#	$flags .= " -f 24,1 ";
+			
+			// If the video is a constant 23.97 or 29.97, then encode with the first option
+			if($fps == 0 || $fps == 1)
+				$vfr = false;
+			// For variable framerate, use completely different transcode options
+			elseif($fps == 2)
+				$vfr = true;
+			
+			// For 23.97, specify the framerate
+			if($fps == 1)
+				$flags .= " -f 24,1 ";
+			
 
 			// Two-pass encoding the VOB to AVI
 			// By default, use XviD for excellent results
-				$config_file = "{$config_dir}/xvid4.cfg";
+			$config_file = "{$config_dir}/xvid4.cfg";
 
-				if(!empty($config_dir) && file_exists($config_file)) {
-					$this->msg("Reading configuration from '$config_file'", true);
-					$flags .= "--config_dir $config_dir ";
-				}
-				
-				// Set transcode debug level
-				$q = intval($this->debug);
+			if(!empty($config_dir) && file_exists($config_file)) {
+				$this->msg("Reading configuration from '$config_file'", true);
+				$flags .= "--config_dir $config_dir ";
+			}
+			
+			// Set transcode debug level
+			$q = intval($this->debug);
 
-				/*
-				$this->msg("[Pass 1/2] VOB => AVI");
-				$exec = "transcode -a 0 -b 128,0,0 -i $vob -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 1,$log -x vob -y xvid4,null $flags -o /dev/null -q $q";
-				$this->executeCommand($exec);
+			if($vfr == false) {
+				echo $pass1 = "transcode -a 0 -b 128,0,0 -i $vob -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 1,$log -x vob -y xvid4,null $flags -o /dev/null -q $q";
+				echo $pass2 = "transcode -a 0 -b 128,0,0 -i $vob -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 2,$log -x vob -y xvid4 $flags -o $avi -q $q";
+			}
+			elseif($vfr == true) {
+				$pass1 = "transcode -a 0 -b 128,0,0 -f 0,4 -i $vob -w 2200,250,100 --export_fps 0,1 --hard_fps -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 1,$log -x vob -y xvid4,null $flags -o /dev/null -q $q";
+				$pass2 = "transcode -a 0 -b 128,0,0 -f 0,4 -i $vob -w 2200,250,100 --export_fps 0,1 --hard_fps -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 2,$log -x vob -y xvid4 $flags -o $avi -q $q";
+			}
+			
+			$this->msg("[Pass 1/2] VOB => AVI");
+			$this->executeCommand($pass1);
 
-				$this->msg("[Pass 2/2] VOB => AVI");
-				$exec = "transcode -a 0 -b 128,0,0 -i $vob -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 2,$log -x vob -y xvid4 $flags -o $avi -q $q";
-				$this->executeCommand($exec);
-				*/
-				
-				// Doesn't work, av is way off, the lines arent very sharp
-				/*
-				$exec = "transcode -i $vob -x vob,vob -f 0,4 -M 2 -R 3 -w2 --export_fps 0,1 -J ivtc -J decimate -B 3,9,16 --hard_fps -J 32detect=force_mode=5:chromathres=2:chromadi=9 -y xvid4 -a 0 -b 128,0,0 -A -N 0x2000 -q $q -o $avi";
-				$this->executeCommand($exec);
-				*/
-				
-				// Kind of a mix between the two, adding everything but the external filters
-				// Works really well :)
-				$this->msg("[Pass 1/2] VOB => AVI");
-				$exec = "transcode -a 0 -b 128,0,0 -f 0,4 -i $vob -w 2200,250,100 --export_fps 0,1 --hard_fps -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 1,$log -x vob -y xvid4,null $flags -o /dev/null -q $q";
-				$this->executeCommand($exec);
-
-				$this->msg("[Pass 2/2] VOB => AVI");
-				$exec = "transcode -a 0 -b 128,0,0 -f 0,4 -i $vob -w 2200,250,100 --export_fps 0,1 --hard_fps -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 2,$log -x vob -y xvid4 $flags -o $avi -q $q";
-				$this->executeCommand($exec);
-				
-				// Final test, same as 3rd, but with the filters
-				// didn't work :T
-				/*
-				$this->msg("[Pass 1/2] VOB => AVI");
-				$exec = "transcode -a 0 -b 128,0,0 -f 0,4 -i $vob -w 2200,250,100 --export_fps 0,1 --hard_fps -J ivtc -J decimate -B 3,9,16 -J 32detect=force_mode=5:chromathres=2:chromadi=9{$verbose} -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 1,$log -x vob -y xvid4,null $flags -o /dev/null -q $q";
-				$this->executeCommand($exec);
-
-				$this->msg("[Pass 2/2] VOB => AVI");
-				$exec = "transcode -a 0 -b 128,0,0 -f 0,4 -i $vob -w 2200,250,100 --export_fps 0,1 --hard_fps -J ivtc -J decimate -B 3,9,16 -J 32detect=force_mode=5:chromathres=2:chromadi=9{$verbose} -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 2,$log -x vob -y xvid4 $flags -o $avi -q $q";
-				$this->executeCommand($exec);
-				*/
+			$this->msg("[Pass 2/2] VOB => AVI");
+			$this->executeCommand($pass2);
+			
 		}
 
 		function writeChapters($chapters = '', $txt = 'movie.txt') {
