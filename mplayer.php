@@ -8,6 +8,7 @@
 	 * @copyright public-domain
 	 * @date 2006-07-16
 	 * @version 1.0
+	 * @homepage http://wonkabar.org/bend/
 	 * 
 	 * Run time dependencies: PHP 5
 	 *
