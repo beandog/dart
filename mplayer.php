@@ -83,14 +83,24 @@
 		fwrite(STDOUT, "Please make sure the directory exists and is both readable and writable by this user\n");
 		die;
 	}
+
+	// If they didn't pass any arguments, exit .. stage left
+	if($argc === 1)
+		die;
 	
 	// Correct *some* human error ;)
-	if(strpos($save_files_to, -1, 1) != '/')
+	if(substr($save_files_to, -1, 1) != '/')
 		$save_files_to .= '/';
 
 	// grep the filename to play
 	// add more extensions if you like :)
 	$movie = end(preg_grep('/\.(mk[av]|vob|mpeg|mp[34g]|og[gm]|avi|wav|midi?|wm[av]|mov|asf|yuv|ram?|aac|nuv|m4a)$/i', $argv));
+
+	// If we can't get the movie name, just quit
+	if(empty($movie)) {
+		fwrite(STDERR, "mplayer.php: No filename to playback.\n");
+		die;
+	}
 
 	// Drop the binary command
 	unset($argv[0]);
@@ -115,6 +125,12 @@
 
 	// Execute the command, save output to an array
 	exec($exec, $arr);
+
+	// If the file didn't even exist, mplayer will die, and so will me
+	if(!file_exists($movie)) {
+		fwrite(STDERR, "mplayer.php: Couldn't find the filename $movie\n");
+		die;
+	}
 	
 	// grep out the output we want
 	$arr = preg_grep('/^ANS_TIME_POSITION\b/', $arr);
