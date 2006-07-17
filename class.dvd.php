@@ -67,8 +67,6 @@
 			// Rebuild disc object array
 			$this->disc = compact('id', 'tv_show', 'season', 'disc', 'disc_id', 'disc_title', 'start');
 			
-			#print_r($this->disc);
-			
 			$episode = 0;
 			
 			foreach($arr_tracks as $track => $valid) {
@@ -111,8 +109,6 @@
 				
 			$sql = "INSERT INTO episodes (disc, episode, len, chapters, track, ignore) VALUES ($disc_id, $episode, $len, '$chapters', $track, '$ignore');";
 			pg_query($sql) or die(pg_last_error());
-			#die;
-		
 		}
 
 		function ask($string, $default = false) {
@@ -187,7 +183,7 @@
 		}
 		
 		function encodeMovie($arr = array()) {
-			
+		
 			extract($arr);
 			
 			$title = $this->formatTitle($tv_show_title);
@@ -235,7 +231,7 @@
 			// Create a snapshot
 			if(in_dir($filename, $dir) && !in_dir($png, $dir)) {
 				$this->msg("Creating a PNG snapshot", false, true);
-				$this->createSnapshot($filename, $png);
+				#$this->createSnapshot($filename, $png);
 			}
 			
 			// Remove the VOB, AVI and chapters file if the Matroska exists
@@ -249,7 +245,7 @@
 				if(in_dir($txt, $dir))
 					unlink($txt);
 				
-				$sql = "UPDATE episodes SET queue = NULL WHERE id = $episode_id;";
+				$sql = "DELETE FROM queue WHERE episode = $episode_id;";
 				pg_query($sql) or die(pg_last_error());
 			}
 		}
@@ -425,10 +421,7 @@
 		}
 		
 		function getQueue() {
-
-			#$sql = "SELECT episodes.id AS episode_id, episodes.title, episodes.chapters, episodes.track, discs.id AS disc_id, discs.tv_show AS tv_show, discs.season, discs.disc AS disc_number, discs.chapters AS one_chapter, discs.chapters_track, tv_shows.title AS tv_show_title, tv_shows.cartoon, tv_shows.fps FROM episodes, discs, tv_shows WHERE queue =  AND episodes.disc = discs.id AND discs.tv_show = tv_shows.id AND ignore = FALSE ORDER BY tv_shows.title, episodes.disc, episodes.id;";
-			
-			$sql = "SELECT e.id AS episode_id, e.title, e.chapters, e.track, d.id AS disc_id, d.tv_show, d.season, d.disc AS disc_number, tv.title AS tv_show_title, tv.cartoon FROM queue q INNER JOIN episodes e ON e.id = q.episode INNER JOIN discs d ON e.disc = d.id INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND q.queue = {$this->config['queue_id']} ORDER BY q.insert_date;";
+			$sql = "SELECT e.id AS episode_id, e.title, e.chapters, e.track, d.id AS disc_id, d.tv_show, d.season, d.disc AS disc_number, tv.title AS tv_show_title, tv.cartoon, tv.fps FROM queue q INNER JOIN episodes e ON e.id = q.episode INNER JOIN discs d ON e.disc = d.id INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND q.queue = {$this->config['queue_id']} ORDER BY q.insert_date;";
 
 			$rs = pg_query($sql) or die(pg_last_error());
 			for($x = 0; $x < pg_num_rows($rs); $x++)
@@ -439,7 +432,7 @@
 		
 		function getQueueTotal() {
 
-			$sql_encode = "SELECT COUNT(1) FROM queue q INNER JOIN episodes e ON q.episode_id = e.id AND e.ignore = false WHERE q.queue_id = ".$this->config['queue_id'].";";
+			$sql_encode = "SELECT COUNT(1) FROM queue q INNER JOIN episodes e ON q.episode = e.id AND e.ignore = false WHERE q.queue = ".$this->config['queue_id'].";";
 			$num_encode = current(pg_fetch_row(pg_query($sql_encode)));
 
 			return $num_encode;
@@ -455,7 +448,6 @@
 			$arr = preg_grep('/0\.00/', $arr, PREG_GREP_INVERT);
 			
 			$arr_count = array_count_values($arr);
-			#print_r($arr_count);
 			
 			foreach($arr as $value) {
 				$group = ceil($value / 10);
@@ -466,9 +458,6 @@
 			}
 			
 			arsort($count);
-			
-			#print_r($count);
-			#die;
 			
 			$max = max($arr);
 			$min = min($arr);
@@ -684,8 +673,6 @@
 				else
 					$this->debug = false;
 					
-				#print_r($this);
-				
 				return true;
 			}
 			else {
@@ -717,7 +704,7 @@
 			
 			// For 23.97, specify the framerate
 			if($fps == 1)
-				$flags .= " -f 24,1 ";
+				$flags .= " -f 0,1 ";
 			
 
 			// Two-pass encoding the VOB to AVI
@@ -733,12 +720,13 @@
 			$q = intval($this->debug);
 
 			if($vfr == false) {
-				$pass1 = "transcode -a 0 -b 128,0,0 -i $vob -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 1,$log -x vob -y xvid4,null $flags -o /dev/null -q $q";
-				$pass2 = "transcode -a 0 -b 128,0,0 -i $vob -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 2,$log -x vob -y xvid4 $flags -o $avi -q $q";
+				$pass1 = "transcode -a 0 -b 128,0,0 -i $vob -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 1,$log -x vob,vob -y xvid4,null $flags -o /dev/null";
+				$pass2 = "transcode -a 0 -b 128,0,0 -i $vob -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 2,$log -x vob,vob -y xvid4 $flags -o $avi";
 			}
 			elseif($vfr == true) {
-				$pass1 = "transcode -a 0 -b 128,0,0 -f 0,4 -i $vob -w 2200,250,100 --export_fps 0,1 --hard_fps -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 1,$log -x vob -y xvid4,null $flags -o /dev/null -q $q";
-				$pass2 = "transcode -a 0 -b 128,0,0 -f 0,4 -i $vob -w 2200,250,100 --export_fps 0,1 --hard_fps -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 2,$log -x vob -y xvid4 $flags -o $avi -q $q";
+				$pass1 = "transcode -a 0 -b 128,0,0 -f 0,4 -i $vob -w 2200,250,100 --export_fps 0,1 --hard_fps -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 1,$log -x vob,vob -y xvid4,null $flags -o /dev/null -q $q";
+				$pass2 = "transcode -a 0 -b 128,0,0 -f 0,4 -i $vob -w 2200,250,100 --export_fps 0,1 --hard_fps -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 2,$log -x vob,vob -y xvid4 $flags -o $avi -q $q";
+				#$pass1 = "transcode -i $vob -V -x vob,vob -f 0,4 -M2 -R3 -w2 --export_frc 1 -J ivtc -J decimate -B 3,9,16 --hard_fps -J 32detect=force_mode=5:chromathres=2:chromadi=9 -y xvid4 -o $avi -q $q";
 			}
 			
 			$this->msg("[Pass 1/2] VOB => AVI");

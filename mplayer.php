@@ -19,8 +19,16 @@
 	 * 	again, it will resume from last position.
 	 *
 	 * 	The *only* way this script will work is if you pass the
-	 * 	"get_time_pos" command to MPlayer, either through LIRC or
-	 * 	through the slave stdin.
+	 * 	"get_time_pos" command to MPlayer through LIRC.  The
+	 *	script captures the output and saves it to a file in
+	 *	the directory for each media file.
+	 *
+	 *	You can also do it manually using mplayer's slave mode,
+	 *	which might be useful for debugging:
+	 *
+	 *		$ mplayer -slave -quiet foo-bar.avi
+	 *		get_time_pos
+	 *		quit
 	 *
 	 *	See http://www.mplayerhq.hu/DOCS/tech/slave.txt for commands
 	 *	that work on both backends.
@@ -40,15 +48,6 @@
 	 *			button = exit
 	 *			config = quit
 	 *		end
-	 *
-	 * Slave:
-	 *
-	 * 	You can also use mplayer -slave.  Just send 'get_time_pos'
-	 * 	and then quit.  Useful for debugging.
-	 *
-	 *  		$ mplayer -slave -quiet foo-bar.avi
-	 *  		get_time_pos
-	 *  		quit
 	 *
 	 * Configuration:
 	 *
@@ -114,7 +113,6 @@
 	
 	// Where the seek position will be saved
 	$txt = $save_files_to.basename($movie).".txt";
-	print_r($txt);
 
 	// If there is already a playback file, read it and start
 	// from that position.

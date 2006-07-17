@@ -479,9 +479,6 @@
 		else {
 			$dvd->msg("There aren't any archived tracks to rip for this disc.  You might want to try running --archive instead.", true);
 		}
-		
-		$dvd->createSnapshot($vob, "$vob.png", 120);
-		
 	}
 
 	/** Encoding */
