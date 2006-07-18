@@ -695,18 +695,16 @@
 				$verbose = ':verbose=1';
 			}
 			
-			// If the video is a constant 23.97 or 29.97, then encode with the first option
-			if($fps == 0 || $fps == 1)
-				$vfr = false;
-			// For variable framerate, use completely different transcode options
-			elseif($fps == 2)
-				$vfr = true;
-			
 			// For 23.97, specify the framerate
 			if($fps == 1)
 				$flags .= " -f 0,1 ";
+			// Variable framerate
+			elseif($fps == 2) {
+				//$flags .= " -f 0,4 ";
+				$flags .= " --export_fps 0,1 --hard_fps ";
+			}
 			
-
+			
 			// Two-pass encoding the VOB to AVI
 			// By default, use XviD for excellent results
 			$config_file = "{$config_dir}/xvid4.cfg";
@@ -719,14 +717,14 @@
 			// Set transcode debug level
 			$q = intval($this->debug);
 
-			if($vfr == false) {
-				$pass1 = "transcode -a 0 -b 128,0,0 -i $vob -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 1,$log -x vob,vob -y xvid4,null $flags -o /dev/null";
-				$pass2 = "transcode -a 0 -b 128,0,0 -i $vob -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 2,$log -x vob,vob -y xvid4 $flags -o $avi";
+			if($fps < 3) {
+				$pass1 = "transcode -a 0 -b 128,0,0 -i $vob -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 1,$log -x vob,vob -y xvid4,null $flags -o /dev/null -q $q";
+				$pass2 = "transcode -a 0 -b 128,0,0 -i $vob -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 2,$log -x vob,vob -y xvid4 $flags -o $avi -q $q";
 			}
-			elseif($vfr == true) {
-				$pass1 = "transcode -a 0 -b 128,0,0 -f 0,4 -i $vob -w 2200,250,100 --export_fps 0,1 --hard_fps -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 1,$log -x vob,vob -y xvid4,null $flags -o /dev/null -q $q";
-				$pass2 = "transcode -a 0 -b 128,0,0 -f 0,4 -i $vob -w 2200,250,100 --export_fps 0,1 --hard_fps -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 2,$log -x vob,vob -y xvid4 $flags -o $avi -q $q";
-				#$pass1 = "transcode -i $vob -V -x vob,vob -f 0,4 -M2 -R3 -w2 --export_frc 1 -J ivtc -J decimate -B 3,9,16 --hard_fps -J 32detect=force_mode=5:chromathres=2:chromadi=9 -y xvid4 -o $avi -q $q";
+			// Incorrect framerate: specified as 29.97, but really 23.97
+			// Mencoder seems to handle these better, as far as A/V sync
+			elseif($fps == 3) {
+				$pass1 = "mencoder $vob -aid 128 -ovc lavc -oac copy -o $avi -mc 0 -noskip -fps 24000/1001";
 			}
 			
 			$this->msg("[Pass 1/2] VOB => AVI");
