@@ -697,11 +697,11 @@
 			
 			// For 23.97, specify the framerate
 			if($fps == 1)
-				$flags .= " -f 0,1 ";
+				$flags .= " -f 23.976,1 ";
 			// Variable framerate
 			elseif($fps == 2) {
 				//$flags .= " -f 0,4 ";
-				$flags .= " --export_fps 0,1 --hard_fps ";
+				$flags .= " --export_fps 23.9760,1 --hard_fps ";
 			}
 			
 			
