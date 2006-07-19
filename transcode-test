@@ -1,0 +1,25 @@
+#!/bin/sh
+if ! [ -a tc-test1.avi ]; then
+	transcode -a 0 -b 128,0,0 -i "$1" -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 0 -x vob,vob -y xvid4 -c 1-15000 -o tc-test1.avi
+fi
+if ! [ -a tc-test2.avi ]; then
+	transcode -a 0 -b 128,0,0 -i "$1" -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 0 -x vob,vob -y xvid4 -c 1-15000 -f 23.976,1 -o tc-test2.avi
+fi
+if ! [ -a tc-test3.avi ]; then
+	transcode -a 0 -b 128,0,0 -i "$1" -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 0 -x vob,vob -y xvid4 -c 1-15000 -f 23.976,1 --export_fps 23.976,1 -o tc-test3.avi
+fi
+if ! [ -a tc-test4.avi ]; then
+	transcode -a 0 -b 128,0,0 -i "$1" -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 0 -x vob,vob -y xvid4 -c 1-15000 -f 23.976,1 --export_fps 23.976,1 --hard_fps -o tc-test4.avi
+fi
+if ! [ -a tc-test5.avi ]; then
+	transcode -a 0 -b 128,0,0 -i "$1" -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 0 -x vob,vob -y xvid4 -c 1-15000 --hard_fps -o tc-test5.avi
+fi
+# vfr framerate redecimate, or something
+if ! [ -a tc-test6.avi ]; then
+	transcode -i "$1" -x vob,vob -f 0,4 -M 2 -R 3 -w 1 --export_frc 1 -J ivtc -J decimate -B 3,9,16 --hard_fps -J 32detect=force_mode=5:chromathres=2:chromadi=9 -y xvid -o tc-test6.avi
+fi
+# original two-pass encoding`
+if ! [ -a tc-test7.avi ]; then
+        transcode -a 0 -b 128,0,0 -i "$1" -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 1 -x vob,vob -y xvid4,null -o /dev/null
+	transcode -a 0 -b 128,0,0 -i "$1" -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 2 -x vob,vob -y xvid4 -o tc-test7.avi
+fi

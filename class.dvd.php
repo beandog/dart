@@ -701,7 +701,7 @@
 			// Variable framerate
 			elseif($fps == 2) {
 				//$flags .= " -f 0,4 ";
-				$flags .= " --export_fps 23.9760,1 --hard_fps ";
+				$flags .= " --export_fps 23.976,1 --hard_fps ";
 			}
 			
 			
@@ -724,7 +724,7 @@
 			// Incorrect framerate: specified as 29.97, but really 23.97
 			// Mencoder seems to handle these better, as far as A/V sync
 			elseif($fps == 3) {
-				$pass1 = "mencoder $vob -aid 128 -ovc lavc -oac copy -o $avi -mc 0 -noskip -fps 24000/1001";
+				$pass1 = "mencoder $vob -aid 128 -ovc xvid -oac copy -o $avi -mc 0 -noskip -fps 24000/1001";
 			}
 			
 			$this->msg("[Pass 1/2] VOB => AVI");
