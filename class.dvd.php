@@ -732,7 +732,7 @@
 			// This isn't a magic bullet, but sure does work most of the time
 			elseif($fps == 2) {
 				#$pass1 = "mencoder $vob -aid 128 -ovc xvid -oac copy -o $avi -mc 0 -noskip -fps 24000/1001";
-				$pass1 = "transcode -i $vob -x vob,vob -f 0,4 -M 2 -R 3 -w 2 --export_frc 1 -J ivtc -J decimate -B 3,9,16 --hard_fps -J 32detect=force_mode=5:chromathres=2:chromadi=9 -y xvid -o $avi -A -N 0x2000 -a 0 -b 128,0,0 -q $q";
+				$pass1 = "transcode -i $vob -x vob,vob -f 0,4 -M 2 -R 3 -w 2 --export_frc 1 -J ivtc -J decimate -B 3,9,16 --hard_fps -J 32detect=force_mode=5:chromathres=2:chromadi=9 -y xvid -o $avi -A -N 0x2000 -a 0 -b 128,0,0";
 				$max = 1;
 			}
 			
