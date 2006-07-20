@@ -200,9 +200,21 @@
 			$filename = $this->getEpisodeFilename($disc_id, $track);
 			$png = basename($filename, '.mkv').'.png';
 			
-			// Not critical that we are in that directory, but that's where
-			// it will dump divx4 stats for 2-pass
+			// Change to the directory so the 2 pass stats are dumped there,
+			// and so is xvid4.cfg
 			chdir($dir);
+			
+			// By default, use XviD for excellent results
+			$config_file = getenv('HOME').'/.transcode/xvid4.cfg';
+			$tmp_config_file = $dir.'xvid4.cfg';
+			if(file_exists($config_file) && $cartoon == 't') {
+				if(!file_exists($tmp_config_file)) {
+					copy($config_file, $tmp_config_file);
+				}
+				$exec = "sed --in-place -e s/cartoon\ =\ 0/cartoon\ =\ 1/ xvid4.cfg";
+				$this->executeCommand($exec, true);
+			}
+			
 			if(in_dir($vob, $dir) && !in_dir($avi, $dir)) {
 				$msg = "Encoding: $tv_show_title";
 				if($episode_title)
@@ -279,9 +291,10 @@
 			return $str;
 		}
 		
-		function executeCommand($str) {
+		function executeCommand($str, $do_not_escape = false) {
 
-			$str = escapeshellcmd($str);
+			if($do_not_escape === false)
+				$str = escapeshellcmd($str);
 
 			if($this->debug) {
 				#$str .= ';';
@@ -688,8 +701,6 @@
 			$avi = "$basename.avi";
 			$log = "$basename.log";
 			
-			
-			
 			if($this->debug) {
 				$flags .= ' --print_status 10 ';
 				$verbose = ':verbose=1';
@@ -699,16 +710,11 @@
 			if($fps == 1)
 				$flags .= " -f 23.976,1 ";
 			// Variable framerate
-			elseif($fps == 2) {
+			#elseif($fps == 2) {
 				//$flags .= " -f 0,4 ";
-				$flags .= " --export_fps 23.976,1 --hard_fps ";
-			}
+			#	$flags .= " --export_fps 23.976,1 --hard_fps ";
+			#}
 			
-			
-			// Two-pass encoding the VOB to AVI
-			// By default, use XviD for excellent results
-			$config_file = "{$config_dir}/xvid4.cfg";
-
 			if(!empty($config_dir) && file_exists($config_file)) {
 				$this->msg("Reading configuration from '$config_file'", true);
 				$flags .= "--config_dir $config_dir ";
@@ -717,22 +723,25 @@
 			// Set transcode debug level
 			$q = intval($this->debug);
 
-			if($fps < 3) {
+			if($fps < 2) {
 				$pass1 = "transcode -a 0 -b 128,0,0 -i $vob -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 1,$log -x vob,vob -y xvid4,null $flags -o /dev/null -q $q";
 				$pass2 = "transcode -a 0 -b 128,0,0 -i $vob -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 2,$log -x vob,vob -y xvid4 $flags -o $avi -q $q";
+				$max = 2;
 			}
-			// Incorrect framerate: specified as 29.97, but really 23.97
-			// Mencoder seems to handle these better, as far as A/V sync
-			elseif($fps == 3) {
-				$pass1 = "mencoder $vob -aid 128 -ovc xvid -oac copy -o $avi -mc 0 -noskip -fps 24000/1001";
+			// Variable framerate
+			// This isn't a magic bullet, but sure does work most of the time
+			elseif($fps == 2) {
+				#$pass1 = "mencoder $vob -aid 128 -ovc xvid -oac copy -o $avi -mc 0 -noskip -fps 24000/1001";
+				$pass1 = "transcode -i $vob -x vob,vob -f 0,4 -M 2 -R 3 -w 1 --export_frc 1 -J ivtc -J decimate --hard_fps -J 32detect=force_mode=5:chromathres=2:chromadi=9 -y xvid -o $avi -A -N 0x2000 -a 0 -b 128,0,0 -q $q";
+				$max = 1;
 			}
 			
-			$this->msg("[Pass 1/2] VOB => AVI");
+			$this->msg("[Pass 1/$max] VOB => AVI");
 			$this->executeCommand($pass1);
 
-			$this->msg("[Pass 2/2] VOB => AVI");
-			$this->executeCommand($pass2);
-			
+			$this->msg("[Pass 2/$max] VOB => AVI");
+			if($pass2)
+				$this->executeCommand($pass2);
 		}
 
 		function writeChapters($chapters = '', $txt = 'movie.txt') {
