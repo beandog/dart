@@ -16,7 +16,7 @@ if ! [ -a tc-test5.avi ]; then
 fi
 # vfr framerate redecimate, or something
 if ! [ -a tc-test6.avi ]; then
-	transcode -i "$1" -x vob,vob -f 0,4 -M 2 -R 3 -w 1 --export_frc 1 -J ivtc -J decimate -B 3,9,16 --hard_fps -J 32detect=force_mode=5:chromathres=2:chromadi=9 -y xvid -o tc-test6.avi -c 1-15000
+	transcode -x vob,vob -f 0,4 -M 2 -R 3 -w 1 --export_frc 1 -J ivtc -J decimate -B 3,9,16 --hard_fps -J 32detect=force_mode=5:chromathres=2:chromadi=9 -y xvid -o tc-test6.avi -c 1-15000 -i "$1"
 fi
 # original two-pass encoding`
 if ! [ -a tc-test7.avi ]; then
@@ -25,5 +25,5 @@ if ! [ -a tc-test7.avi ]; then
 fi
 # ac3
 if ! [ -a tc-test8.avi ]; then
-	transcode -i "$1" -x vob,vob -f 0,4 -M 2 -R 3 -w 1 --export_frc 1 -J ivtc -J decimate --hard_fps -J 32detect=force_mode=5:chromathres=2:chromadi=9 -y xvid,ac3 -o tc-test8.avi -A -N 0x2000 -a 0 -b 128,0,0 -c 1-15000
+	transcode -x vob,vob -f 0,4 -M 2 -R 3 -w 1 --export_frc 1 -J ivtc -J decimate --hard_fps -J 32detect=force_mode=5:chromathres=2:chromadi=9 -y xvid,ac3 -o tc-test8.avi -A -N 0x2000 -a 0 -b 128,0,0 -c 1-15000 -B 3,9,16 -i "$1"
 fi
