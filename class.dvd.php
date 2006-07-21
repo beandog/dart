@@ -568,7 +568,7 @@
 		}
 		
 		function mount() {
-			$exec = "mount {$dvd->config['dvd_device']}";
+			$exec = "mount {$this->config['dvd_device']}";
 			$this->executeCommand($exec);
 		}
 		
