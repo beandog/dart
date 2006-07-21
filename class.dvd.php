@@ -107,7 +107,7 @@
 			else
 				$ignore = 'f';
 				
-			$sql = "INSERT INTO episodes (disc, episode, len, chapters, track, ignore) VALUES ($disc_id, $episode, $len, '$chapters', $track, '$ignore');";
+			$sql = "INSERT INTO episodes (disc, episode_order, len, chapters, track, ignore) VALUES ($disc_id, $episode, $len, '$chapters', $track, '$ignore');";
 			pg_query($sql) or die(pg_last_error());
 		}
 

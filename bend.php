@@ -6,11 +6,9 @@
 	/**
 
 		todo:
-		- fix functions so they dont use file_exists on LARGE files (use scandir instead)
 		- update functions to use $this->variable less
 		- break up functions into smaller chunks
 		- functions shouldnt check to see if file_exists, it should just do its job
-		- lsdvd XML
 		- longest track, test arr_tracks
 
 		v2.0
@@ -19,7 +17,6 @@
 
 		bugs:
 		- cancelling the script doesn't kill transcode :(
-		- do I need -B 4,4,4,4?
 		- export ratio for 16:9 (so widescreen TV doesn't get confused)
 
 	**/
@@ -33,17 +30,14 @@
 	 * - eject
 	 */
 	 
-	// Check for system requirements
-	
-	exec("which mencoder", $foo, $return_var);
-	
-	if($return_var == 1) {
-		die('You must have mencoder installed to use this program.');
+	function which($binary) {
+		exec("which $binary", $foo, $return_var);
+		if($return_var == 0)
+			return true;
+		else
+			return false;
 	}
-	exec("which lsdvd", $foo, $return_var);
-	if($return_var == 1)
-		die('You must have lsdvd v0.16 installed to use this program.');
-	
+	 
 	require_once 'inc.pgsql.php';
 	require_once 'class.dvd.php';
 
@@ -62,26 +56,9 @@
 		return $home;
 	}
 
-	// TODO: write this for php4 users
-	if(!function_exists('simplexml_load_string')) {
-		trigger_error("Sorry, you need PHP5 with SimpleXML support to run bend", E_USER_ERROR);
-		die;
-	}
-
 	// Read the config file
 	$home = getHomeDirectory();
 	$bendrc = "$home/.bend";
-
-	// Default configuration
-	/*
-	$arr_config = array(
-		'bitrate' => 2200,
-		'export_dir' => "$home/dvd/",
-		'home_dir' => "$home/",
-		'queue' => 3,
-		'device' => '/dev/dvd'
-	);
-	*/
 
 	/** Get the configuration options */
 	if(file_exists($bendrc)) {
@@ -146,6 +123,33 @@
 
 	/** Archive Disc */
 	if($dvd->args['archive'] == 1 || $dvd->args['rip'] == 1) {
+	
+		// Check for system requirements on archiving / ripping
+		if(!function_exists('simplexml_load_string')) {
+			trigger_error("Sorry, you need PHP5 with SimpleXML support to run bend", E_USER_ERROR);
+			$need_deps = true;
+		}
+		elseif(!function_exists('preg_grep')) {
+			trigger_error("PHP must be compiled with PREG support for bend to run correctly", E_USER_ERROR);
+			$need_deps = true;
+		}
+		elseif(!which('mplayer')) {
+			trigger_error("You need MPlayer with DVD support installed to rip or archive DVDs", E_USER_ERROR);
+			$need_deps = true;
+		}
+		elseif(!which('transcode')) {
+			trigger_error("You need Transcode installed to encode DVDs", E_USER_ERROR);
+			$need_deps = true;
+		}
+		elseif(!which('lsdvd')) {
+			trigger_error("You need lsdvd v0.16 or higher installed to rip or archive discs", E_USER_ERROR);
+			$need_deps = true;
+		}
+		else
+			$need_deps = false;
+			
+		if($need_deps)
+			die("One or more script dependencies failed.");
 
 		$dvd->disc_id = $dvd->getDiscID($dvd->config['dvd_device']);
 		
