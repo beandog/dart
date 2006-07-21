@@ -1,5 +1,6 @@
 #!/usr/bin/php
 <?
+
 	$save_files_to = "/home/steve/.mplayer/playback/";
 
 	/**
@@ -19,9 +20,11 @@
 	 * 	again, it will resume from last position.
 	 *
 	 * 	The *only* way this script will work is if you pass the
-	 * 	"get_time_pos" command to MPlayer through LIRC.  The
-	 *	script captures the output and saves it to a file in
-	 *	the directory for each media file.
+	 * 	"get_time_pos" command to MPlayer through a keypress event,
+	 *	mapped by either LIRC or the keyboard.
+	 *	
+	 *	The script captures the output and saves it to a file in
+	 *	for each media file.
 	 *
 	 *	You can also do it manually using mplayer's slave mode,
 	 *	which might be useful for debugging:
@@ -48,6 +51,20 @@
 	 *			button = exit
 	 *			config = quit
 	 *		end
+	 *
+	 * Keyboard:
+	 *
+	 *	Just map a key with ~/.mplayer/input.conf to run 'get_time_pos'
+	 *
+	 *	Sample entry:
+	 *
+	 *		g get_time_pos
+	 *
+	 *	Then when you want to save the position, hit 'g', and then 'q'
+	 *	to quit playback.
+	 *
+	 *	Note that if you use it this way, the script willy only save
+	 *	the playback position when you hit 'g', not when you quit.
 	 *
 	 * Configuration:
 	 *
@@ -124,8 +141,8 @@
 	}
 	
 	// Build the execution string
-	$exec = "mplayer $flags $str_args -quiet";
-
+	$exec = escapeshellcmd("mplayer $flags $str_args -quiet");
+	
 	// Execute the command, save output to an array
 	exec($exec, $arr);
 
