@@ -1,21 +1,18 @@
 #!/bin/sh
 # Normal 2-pass encode
-if [ ! -a tc-test1.avi ]
-then
+if ! [ -f tc-test1.avi ]; then
 	transcode -a 0 -b 128,0,0 -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 1 -x vob,vob -y xvid4,null $FLAGS -o /dev/null -i "$1"
 	transcode -a 0 -b 128,0,0 -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 2 -x vob,vob -y xvid4 $FLAGS -o tc-test1.avi -i "$1"
 fi
 
-# Second two pass try
-if [ ! -a tc-test2.avi ]
-then
-	transcode -a 0 -b 128,0,0 -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 1 -x vob,vob -y xvid4,null $FLAGS -o /dev/null -I 3 -i "$1" --hard_fps -J ivtc -J decimate -J 32detect=force_mode=5:chromathres=2:chromadi=9
-	transcode -a 0 -b 128,0,0 -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 2 -x vob,vob -y xvid4 $FLAGS -o tc-test2.avi -I 3 -i "$1" --hard_fps -J ivtc -J decimate -J 32detect=force_mode=5:chromathres=2:chromadi=9
+# Second two pass try, with deinterlacing :D
+if ! [ -f tc-test2.avi ]; then
+	transcode -a 0 -b 128,0,0 -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 1 -x vob,vob -y xvid4,null $FLAGS -o /dev/null -i "$1" --hard_fps -J ivtc -J decimate -J 32detect=force_mode=5:chromathres=2:chromadi=9
+	transcode -a 0 -b 128,0,0 -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 2 -x vob,vob -y xvid4 $FLAGS -o tc-test2.avi -i "$1" --hard_fps -J ivtc -J decimate -J 32detect=force_mode=5:chromathres=2:chromadi=9
 fi
 
 # Variable framerate encode
-if [ ! -a tc-test3.avi ]
-then
+if ! [ -f tc-test3.avi ]; then
 	transcode -x vob,vob -f 0,4 --export_frc 1 -M 2 -R 3 -w 2 -J ivtc -J decimate -B 3,9,16 --hard_fps -J 32detect=force_mode=5:chromathres=2:chromadi=9 -y xvid -o tc-test3.avi -A -N 0x2000 -a 0 -b 128,0,0 -i "$1"
 fi
 
