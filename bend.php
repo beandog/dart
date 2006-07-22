@@ -145,6 +145,14 @@
 			trigger_error("You need lsdvd v0.16 or higher installed to rip or archive discs", E_USER_ERROR);
 			$need_deps = true;
 		}
+		elseif($dvd->args['archive'] == 1 && !which('dvdxchap')) {
+			trigger_error("You need ogmtools installed to archive discs", E_USER_ERROR);
+			$need_deps = true;
+		}
+		elseif($dvd->args['encode'] == 1 && !which('mkvtoolnix')) {
+			trigger_error("You need mkvtoolnix installed for encoding", E_USER_ERROR);
+			$need_deps = true;
+		}
 		else
 			$need_deps = false;
 			
