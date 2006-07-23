@@ -1,8 +1,8 @@
 #!/bin/sh
 # Normal 2-pass encode
 
-if [[ "$3" = "1" ]]; then
-	FLAGS=" -I 1 "
+if [[ "$2" = "1" ]]; then
+	FLAGS=" -f 23.976,1 "
 else
 	FLAGS=""
 fi
@@ -22,7 +22,7 @@ fi
 if [[ "$2" = "1" ]]; then
 	FLAGS=" -f 0,4 --export_frc 1 -J ivtc -J decimate -J 32detect=force_mode=5:chromathres=2:chromadi=9 "
 else
-	FLAGS=" -J 32detect=force_mode=5:chromathres=2:chromadi=9 "
+	FLAGS=" -J 32detect=force_mode=5:chromathres=2:chromadi=9 -I 1 "
 fi
 
 # Variable framerate encode
