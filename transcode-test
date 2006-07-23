@@ -1,16 +1,12 @@
 #!/bin/sh
 # Normal 2-pass encode
 
-if [[ "$2" = "1" ]]; then
-	FLAGS=" -f 23.976,1 ";
-fi
-
 if [[ ! -f tc-test1.avi ]]; then
-	transcode -a 0 -b 128,0,0 -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 1,tc-test1.log -x vob,vob -y xvid4,null $FLAGS -o /dev/null --write_pid transcode.pid -i $1
-	transcode -a 0 -b 128,0,0 -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 2,tc-test1.log -x vob,vob -y xvid4 $FLAGS -o tc-test1.avi --write_pid transcode.pid -i $1
+	transcode -a 0 -b 128,0,0 -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 1,tc-test1.log -x vob,vob -y xvid4,null -o /dev/null --write_pid transcode.pid -i $1
+	transcode -a 0 -b 128,0,0 -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 2,tc-test1.log -x vob,vob -y xvid4 -o tc-test1.avi --write_pid transcode.pid -i $1
 fi
 
-if [[ "$2" = "2" ]]; then
+if [[ "$2" = "1" ]]; then
 	FLAGS=" -f 0,4 --export_frc 1 -J ivtc -J decimate -J 32detect=force_mode=5:chromathres=2:chromadi=9 "
 else
 	FLAGS=" -J 32detect=force_mode=5:chromathres=2:chromadi=9 "
