@@ -8,8 +8,8 @@ else
 fi
 
 if [[ ! -f tc-test1.avi ]]; then
-	transcode -a 0 -b 128,0,0 -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 1,tc-test1.log -x vob,vob -y xvid4,null -o /dev/null --write_pid transcode.pid -i $1 $FLAGS
-	transcode -a 0 -b 128,0,0 -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 2,tc-test1.log -x vob,vob -y xvid4 -o tc-test1.avi --write_pid transcode.pid -i $1 $FLAGS
+	transcode -a 0 -b 128,0,0 -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 1,tc-test1.log -x mpeg2,ac3 -y xvid4,null -o /dev/null --write_pid transcode.pid -i $1 $FLAGS
+	transcode -a 0 -b 128,0,0 -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 2,tc-test1.log -x mpeg2,ac3 -y xvid4 -o tc-test1.avi --write_pid transcode.pid -i $1 $FLAGS
 	
 	if [[ -f tc-test1.log ]]; then
 		rm tc-test1.log
