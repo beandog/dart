@@ -256,10 +256,11 @@
 					unlink($avi);
 				if(in_dir($txt, $dir))
 					unlink($txt);
-				
-				$sql = "DELETE FROM queue WHERE episode = $episode_id;";
-				pg_query($sql) or die(pg_last_error());
 			}
+			
+			// Delete from queue so we don't get stuck in a loop
+			$sql = "DELETE FROM queue WHERE episode = $episode_id;";
+			pg_query($sql) or die(pg_last_error());
 		}
 		
 		/**
