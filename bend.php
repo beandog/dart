@@ -149,8 +149,8 @@
 			trigger_error("You need ogmtools installed to archive discs", E_USER_ERROR);
 			$need_deps = true;
 		}
-		elseif($dvd->args['encode'] == 1 && !which('mkvtoolnix')) {
-			trigger_error("You need mkvtoolnix installed for encoding", E_USER_ERROR);
+		elseif($dvd->args['encode'] == 1 && !which('mkvmerge')) {
+			trigger_error("You need mkvmerge installed for encoding", E_USER_ERROR);
 			$need_deps = true;
 		}
 		else
