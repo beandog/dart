@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?
 
-	$save_files_to = "/home/sdibb/.mplayer/playback/";
+	$save_files_to = "/home/steve/.mplayer/playback/";
 
 	/**
 	 *
@@ -77,9 +77,9 @@
 	 * 	To execute this program, either call it using the PHP
 	 * 	binary, or make it executable.  Whichever you like best. :)
 	 *
-	 *	$ php mplayer.php foo-bar.avi
+	 *	$ php mplayer-resume.php foo-bar.avi
 	 *
-	 *	# cp mplayer.php /usr/local/bin/mplayer-resume
+	 *	# cp mplayer-resume.php /usr/local/bin/mplayer-resume
 	 *	# chmod +x /usr/local/bin/mplayer-resume
 	 *	$ mplayer-resume foo-bar.avi
 	 *
@@ -87,7 +87,7 @@
 	 * 	mplayer at the same time, irregardless of whether you start
 	 *	it as a standalone program or with php.
 	 *
-	 *	$ php mplayer.php foo-bar.avi -vo xv
+	 *	$ php mplayer-resume.php foo-bar.avi -vo xv
 	 *
 	 *	$ mplayer-resume foo-bar.avi -vo xv
 	 * 
@@ -146,7 +146,7 @@
 
 	// If we can't get the movie name, just quit
 	if(empty($movie)) {
-		fwrite(STDERR, "mplayer.php: No filename to playback.\n");
+		fwrite(STDERR, "mplayer-resume.php: No filename to playback.\n");
 		die;
 	}
 
@@ -176,7 +176,7 @@
 
 	// If the file didn't even exist, mplayer will die, and so will me
 	if(!file_exists($movie)) {
-		fwrite(STDERR, "mplayer.php: Couldn't find the filename $movie\n");
+		fwrite(STDERR, "mplayer-resume.php: Couldn't find the filename $movie\n");
 		die;
 	}
 	
