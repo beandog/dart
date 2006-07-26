@@ -1,0 +1,2 @@
+#!/bin/sh
+mencoder -o `basename ${1} .vob`.avi ${1} -ovc xvid -xvidencopts bitrate=2400:vhq=1 -oac copy -aid 128
