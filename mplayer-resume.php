@@ -203,7 +203,6 @@
 			file_put_contents($txt, $endpos) or die($error_msg);
 		// Otherwise fallback on PHP 4's functions
 		else {
-			#$handle = fopen($txt, 'w') or die($error_msg);
 			fwrite(fopen($txt, 'w'), $endpos) or die($error_msg);
 		}	
 	}
