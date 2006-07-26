@@ -5,7 +5,7 @@ if [[ ! -f noindex.avi ]]; then
 fi
 
 if [[ ! -f index.avi ]]; then
-	mencoder -forceidx -ovc copy -oac copy -o index.avi $1
+	mencoder -forceidx -ovc copy -oac copy -o index.avi noindex.avi
 fi
 
 if [[ -f noindex.avi ]]; then
