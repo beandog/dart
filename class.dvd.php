@@ -222,7 +222,7 @@
 				$this->msg($msg);
 				
 				if($fps == 2 || $fps == 1)
-					$this->mencoder($vob, $cartoon);
+					$this->mencoder($vob, $cartoon, $mencoder_aid);
 				else
 					$this->transcode($vob, $fps);
 			}
@@ -439,7 +439,7 @@
 		}
 		
 		function getQueue() {
-			$sql = "SELECT e.id AS episode_id, e.title, e.chapters, e.track, d.id AS disc_id, d.tv_show, d.season, d.disc AS disc_number, tv.title AS tv_show_title, tv.cartoon, tv.fps FROM queue q INNER JOIN episodes e ON e.id = q.episode INNER JOIN discs d ON e.disc = d.id INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND q.queue = {$this->config['queue_id']} ORDER BY q.insert_date;";
+			$sql = "SELECT e.id AS episode_id, e.title, e.chapters, e.track, d.id AS disc_id, d.tv_show, d.season, d.disc AS disc_number, tv.title AS tv_show_title, tv.cartoon, tv.fps, tv.mencoder_aid FROM queue q INNER JOIN episodes e ON e.id = q.episode INNER JOIN discs d ON e.disc = d.id INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND q.queue = {$this->config['queue_id']} ORDER BY q.insert_date;";
 
 			$rs = pg_query($sql) or die(pg_last_error());
 			for($x = 0; $x < pg_num_rows($rs); $x++)
@@ -554,11 +554,11 @@
 			return true;
 		}
 		
-		function mencoder($vob, $cartoon = false, $aid = false) {
+		function mencoder($vob, $cartoon = false, $aid = null) {
 			$flags = '';
 			
-			if($aid == true)
-				$flags = ' -aid 128 ';
+			if(is_integer($aid))
+				$flags = " -aid $aid ";
 			if($cartoon == 't')
 				$xvidencopts = ':cartoon=1';
 			
