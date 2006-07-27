@@ -561,7 +561,7 @@
 				$flags = " -aid $aid ";
 			if($cartoon == 't') {
 				$xvidencopts = ':cartoon=1';
-				$vf = ",pullup,softskip";
+				#$vf = ",pullup,softskip";
 			}
 			
 			$basename = basename($vob, '.vob');
