@@ -559,7 +559,7 @@
 			
 			if($aid == true)
 				$flags = ' -aid 128 ';
-			if($cartoon == true)
+			if($cartoon == 't')
 				$xvidencopts = ':cartoon=1';
 			
 			$basename = basename($vob, '.vob');
