@@ -1,2 +1,5 @@
 #!/bin/sh
-mencoder -o `basename ${1} .vob`.avi ${1} -ovc xvid -xvidencopts bitrate=2400:vhq=1 -oac copy -aid 128
+FILE=`basename ${1} .vob`
+if [[ ! -f ${FILE}.avi ]]; then
+	mencoder -o `basename ${1} .vob`.avi ${1} -ovc xvid -xvidencopts bitrate=2400:vhq=1 -oac copy -vf scale=640:480
+fi;

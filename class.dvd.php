@@ -220,7 +220,11 @@
 				if($episode_title)
 					$msg .= ": $episode_title";
 				$this->msg($msg);
-				$this->transcode($vob, $fps);
+				
+				if($fps == 2 || $fps == 1)
+					$this->mencoder($vob, $cartoon);
+				else
+					$this->transcode($vob, $fps);
 			}
 			
 			// Dump the chapters to a text file
@@ -548,6 +552,27 @@
 			}
 
 			return true;
+		}
+		
+		function mencoder($vob, $cartoon = false, $aid = false) {
+			$flags = '';
+			
+			if($aid == true)
+				$flags = ' -aid 128 ';
+			if($cartoon == true)
+				$xvidencopts = ':cartoon=1';
+			
+			$basename = basename($vob, '.vob');
+			$avi = "$basename.avi";
+			$log = "$basename.log";
+			
+			$max = 1;
+			
+			$pass1 = "mencoder $vob -o $avi -ovc xvid -oac copy $flags -xvidencopts bitrate=2400{$xvidencopts} -vf dsize=1.5";
+			
+			$this->msg("[Pass 1/$max] VOB => AVI");
+			$this->executeCommand($pass1);
+
 		}
 
 		function midentify($file = 'movie.vob') {
