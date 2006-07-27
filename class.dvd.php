@@ -559,8 +559,10 @@
 			
 			if(is_numeric($aid))
 				$flags = " -aid $aid ";
-			if($cartoon == 't')
+			if($cartoon == 't') {
 				$xvidencopts = ':cartoon=1';
+				$vf = ",pullup,softskip";
+			}
 			
 			$basename = basename($vob, '.vob');
 			$avi = "$basename.avi";
@@ -568,7 +570,7 @@
 			
 			$max = 1;
 			
-			$pass1 = "mencoder $vob -o $avi -ovc xvid -oac copy $flags -xvidencopts bitrate=2400{$xvidencopts} -vf scale=640:480";
+			$pass1 = "mencoder $vob -o $avi -ovc xvid -oac copy $flags -xvidencopts vhq=1{$xvidencopts} -vf scale=640:480{$vf}";
 			
 			$this->msg("[Pass 1/$max] VOB => AVI");
 			$this->executeCommand($pass1);
