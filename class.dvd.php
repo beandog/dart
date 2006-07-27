@@ -557,7 +557,7 @@
 		function mencoder($vob, $cartoon = false, $aid = null) {
 			$flags = '';
 			
-			if(is_integer($aid))
+			if(is_numeric($aid))
 				$flags = " -aid $aid ";
 			if($cartoon == 't')
 				$xvidencopts = ':cartoon=1';
