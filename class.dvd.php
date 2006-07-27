@@ -220,7 +220,7 @@
 				if($episode_title)
 					$msg .= ": $episode_title";
 				$this->msg($msg);
-
+				
 				if($fps == 2 || $fps == 1)
 					$this->mencoder($vob, $cartoon, $mencoder_aid);
 				else
@@ -556,8 +556,8 @@
 		
 		function mencoder($vob, $cartoon = false, $aid = null) {
 			$flags = '';
-
-			if(is_numeric($aid))
+			
+			if(is_integer($aid))
 				$flags = " -aid $aid ";
 			if($cartoon == 't')
 				$xvidencopts = ':cartoon=1';
@@ -565,10 +565,10 @@
 			$basename = basename($vob, '.vob');
 			$avi = "$basename.avi";
 			$log = "$basename.log";
-
+			
 			$max = 1;
 			
-			$pass1 = "mencoder $vob -o $avi -ovc xvid -oac copy $flags -xvidencopts bitrate=2400{$xvidencopts} -vf dsize=1.5";
+			$pass1 = "mencoder $vob -o $avi -ovc xvid -oac copy $flags -xvidencopts bitrate=2400{$xvidencopts} -vf scale=640:480";
 			
 			$this->msg("[Pass 1/$max] VOB => AVI");
 			$this->executeCommand($pass1);
