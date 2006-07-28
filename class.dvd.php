@@ -570,7 +570,7 @@
 			
 			$max = 1;
 			
-			$pass1 = "mencoder $vob -o $avi -ovc xvid -oac copy $flags -xvidencopts bitrate=2200{$xvidencopts} -vf scale=640:480{$vf}";
+			$pass1 = "mencoder $vob -o $avi -ovc xvid -oac copy $flags -xvidencopts bitrate=2200{$xvidencopts} ";
 			
 			$this->msg("[Pass 1/$max] VOB => AVI");
 			$this->executeCommand($pass1);
@@ -591,7 +591,7 @@
 		}
 		
 		function mkvmerge($avi = 'movie.avi', $txt = 'chapters.txt', $mkv = 'movie.mkv') {
-				$exec = "mkvmerge -o \"$mkv\" --chapters $txt $avi";
+				$exec = "mkvmerge --aspect-ratio 0:4/3 $avi -o \"$mkv\" --chapters $txt";
 				$this->executeCommand($exec);
 		}
 		
