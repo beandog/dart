@@ -570,7 +570,7 @@
 			
 			$max = 1;
 			
-			$pass1 = "mencoder $vob -o $avi -ovc xvid -oac copy $flags -xvidencopts vhq=1{$xvidencopts} -vf scale=640:480{$vf}";
+			$pass1 = "mencoder $vob -o $avi -ovc xvid -oac copy $flags -xvidencopts bitrate=2200{$xvidencopts} -vf scale=640:480{$vf}";
 			
 			$this->msg("[Pass 1/$max] VOB => AVI");
 			$this->executeCommand($pass1);

@@ -395,7 +395,7 @@
 
 		// Pull out the tracks that haven't been flagged to ignore in the database frontend
 		// This query has nothing to do with what has / hasn't been encoded
-		$sql = "SELECT tv.title, d.season, d.disc, e.track, d.id AS disc_id FROM episodes e INNER JOIN discs d ON e.disc = d.id AND d.id = {$dvd->disc['id']} INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE ignore = FALSE ORDER BY episode_order, track;";
+		$sql = "SELECT tv.title, d.season, d.disc, e.track, d.id AS disc_id FROM episodes e INNER JOIN discs d ON e.disc = d.id AND d.id = {$dvd->disc['id']} INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE ignore = FALSE AND bad_track = FALSE ORDER BY episode_order, track;";
 		$rs = pg_query($sql) or die(pg_last_error());
 		$num_rows = pg_num_rows($rs);
 		
