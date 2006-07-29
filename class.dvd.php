@@ -78,7 +78,6 @@
 				// Don't insert tracks with zero length
 				if($this->arr_tracks[$track] != '0.00') {
 					$this->archiveEpisode($this->disc['id'], $episode, $this->arr_tracks[$track], $chapters, $track, $valid);
-					$this->enqueue($episode);
 				}
 			}
 			
