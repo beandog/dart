@@ -221,7 +221,7 @@
 				$this->msg($msg);
 				
 				#if($fps == 2 || $fps == 1)
-					$this->mencoder($vob, $cartoon, $greyscale, $mencoder_aid, $vob_only);
+					$this->mencoder($vob, $fps, $cartoon, $greyscale, $mencoder_aid, $vob_only);
 				#else
 				#	$this->transcode($vob, $fps);
 			}
@@ -553,14 +553,13 @@
 			return true;
 		}
 		
-		function mencoder($vob, $cartoon = 'f', $greyscale = 'f', $aid = null, $vob_only = 'f') {
+		function mencoder($vob, $fps, $cartoon = 'f', $greyscale = 'f', $aid = null, $vob_only = 'f') {
 			$flags = '';
 			
 			if(is_numeric($aid))
 				$flags = " -aid $aid ";
 			if($cartoon == 't') {
 				$xvidencopts .= ':cartoon=1';
-				$flags .= " -vf pullup,softskip ";
 			}
 			if($greyscale == 't')
 				$xvidencopts .= ':greyscale=1';
@@ -578,9 +577,12 @@
 				$flags .= " -xvidencopts bitrate=2200{$xvidencopts} ";
 			}
 			
+			if($fps > 0)
+				$flags .= " -vf pullup,softskip -ofps 24000/1001 ";
+			
 			$pass1 = "mencoder $vob -o $avi -ovc $ovc -oac copy $flags  ";
 			
-			$this->msg("[Pass 1/$max] VOB => AVI");
+			$this->msg("Encoding MPEG2 (VOB) to MPEG4 (AVI)");
 			$this->executeCommand($pass1);
 
 		}
