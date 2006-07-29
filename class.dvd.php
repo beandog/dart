@@ -220,10 +220,10 @@
 					$msg .= ": $episode_title";
 				$this->msg($msg);
 				
-				if($fps == 2 || $fps == 1)
-					$this->mencoder($vob, $cartoon, $mencoder_aid);
-				else
-					$this->transcode($vob, $fps);
+				#if($fps == 2 || $fps == 1)
+					$this->mencoder($vob, $cartoon, $greyscale, $mencoder_aid, $vob_only);
+				#else
+				#	$this->transcode($vob, $fps);
 			}
 			
 			// Dump the chapters to a text file
@@ -438,7 +438,7 @@
 		}
 		
 		function getQueue() {
-			$sql = "SELECT e.id AS episode_id, e.title, e.chapters, e.track, d.id AS disc_id, d.tv_show, d.season, d.disc AS disc_number, tv.title AS tv_show_title, tv.cartoon, tv.fps, tv.mencoder_aid FROM queue q INNER JOIN episodes e ON e.id = q.episode INNER JOIN discs d ON e.disc = d.id INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND q.queue = {$this->config['queue_id']} ORDER BY q.insert_date;";
+			$sql = "SELECT e.id AS episode_id, e.title, e.chapters, e.track, d.id AS disc_id, d.tv_show, d.season, d.disc AS disc_number, tv.title AS tv_show_title, tv.cartoon, tv.fps, tv.mencoder_aid, tv.greyscale, tv.vob_only FROM queue q INNER JOIN episodes e ON e.id = q.episode INNER JOIN discs d ON e.disc = d.id INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND q.queue = {$this->config['queue_id']} ORDER BY q.insert_date;";
 
 			$rs = pg_query($sql) or die(pg_last_error());
 			for($x = 0; $x < pg_num_rows($rs); $x++)
@@ -553,15 +553,17 @@
 			return true;
 		}
 		
-		function mencoder($vob, $cartoon = false, $aid = null) {
+		function mencoder($vob, $cartoon = 'f', $greyscale = 'f', $aid = null, $vob_only = 'f') {
 			$flags = '';
 			
 			if(is_numeric($aid))
 				$flags = " -aid $aid ";
 			if($cartoon == 't') {
-				$xvidencopts = ':cartoon=1';
+				$xvidencopts .= ':cartoon=1';
 				$flags .= " -vf pullup,softskip ";
 			}
+			if($greyscale == 't')
+				$xvidencopts .= ':greyscale=1';
 			
 			$basename = basename($vob, '.vob');
 			$avi = "$basename.avi";
@@ -569,7 +571,14 @@
 			
 			$max = 1;
 			
-			$pass1 = "mencoder $vob -o $avi -ovc xvid -oac copy $flags -xvidencopts bitrate=2200{$xvidencopts} ";
+			if($vob_only == 't')
+				$ovc = 'copy';
+			else {
+				$ovc = 'xvid';
+				$flags .= " -xvidencopts bitrate=2200{$xvidencopts} ";
+			}
+			
+			$pass1 = "mencoder $vob -o $avi -ovc $ovc -oac copy $flags  ";
 			
 			$this->msg("[Pass 1/$max] VOB => AVI");
 			$this->executeCommand($pass1);
