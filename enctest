@@ -1,15 +1,9 @@
 #!/bin/sh
 
-if [[ "$2" = "1" ]]; then
-	FLAGS=" -f 0,4 --export_frc 1 -J ivtc -J decimate -J 32detect=force_mode=5:chromathres=2:chromadi=9 "
-else
-	# Either one of these seem to work okay
-	# The first one doubles encode time, though.
-	#FLAGS=" -I 3 "
-	FLAGS=" -J 32detect=force_mode=5:chromathres=2:chromadi=9 "
-fi
+F=`basename $1 .vob`
 
-if [[ ! -f enctest.avi ]]; then
-	transcode -x vob,vob $FLAGS --hard_fps -M 2 -R 3 -w 2 -B 3,9,16 -y xvid -o enctest.avi -A -N 0x2000 -a 0 -b 128,0,0 --write_pid transcode.pid -i $1
-	rm transcode.pid
+AVI=${F}.avi
+
+if [[ ! -f ${AVI} ]]; then
+	echo mencoder $1 -o $AVI -ovc xvid -xvidencopts bitrate=2200 -oac copy -vf pullup,softskip -ofps 24000/1001
 fi
