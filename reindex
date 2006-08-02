@@ -1,7 +1,7 @@
 #!/bin/sh
 
 if [[ ! -f noindex.avi ]]; then
-	mencoder -ovc copy -oac copy -ofps 30000/1001 -o noindex.avi $1
+	mencoder -ovc copy -oac copy -ofps 24000/1001 -o noindex.avi $1
 fi
 
 if [[ ! -f index.avi ]]; then
