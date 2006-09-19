@@ -13,7 +13,7 @@
 	 * @version 1.3
 	 * @homepage http://wonkabar.org/bend/
 	 * 
-	 * Run time dependencies: PHP >= 4.3.0 with CLI
+	 * Run time dependencies: PHP >= 4.3.0 with CLI and PCRE
 	 *
 	 * See README for documentation on usage
 	 *
@@ -43,7 +43,7 @@
 
 	// grep the filename to play
 	// add more extensions if you like :)
-	$movie = end(preg_grep('/\.(mk[av]|vob|mpeg|mp[34g]|og[gm]|avi|wav|midi?|wm[av]|mov|asf|yuv|ram?|aac|nuv|m4a)$/i', $argv));
+	$movie = end(preg_grep('/\.(mk[av]|vob|mpeg|mp[34gc]|og[gm]|avi|wav|midi?|wm[av]|mov|asf|yuv|ram?|aac|nuv|m4[av]|flac|au|m2v|mp4v|qt|rm(vb)?|flv)$/i', $argv));
 
 	// If we can't get the movie name, just quit
 	if(empty($movie)) {
