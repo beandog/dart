@@ -55,7 +55,7 @@
 				$this->lsdvd($this->config['dvd_device']);
 			
 			$arr_tracks = $this->getValidTracks($this->arr_tracks, $this->tv_show['min_len'], $this->tv_show['max_len']);
-				
+			
 			// Insert disc into database
 			$sql = "SELECT NEXTVAL('public.discs_id_seq');";
 			$id = current(pg_fetch_row(pg_query($sql))) or die(pg_last_error());
@@ -67,23 +67,58 @@
 			// Rebuild disc object array
 			$this->disc = compact('id', 'tv_show', 'season', 'disc', 'disc_id', 'disc_title', 'start');
 			
-			$episode = 0;
+			$episode = 1;
 			
 			foreach($arr_tracks as $track => $valid) {
 				$chapters = $this->getChapters($track, $this->config['dvd_device']);
 				
-				if($valid)
-					$episode++;
-				
 				// Don't insert tracks with zero length
 				if($this->arr_tracks[$track] != '0.00') {
-					$this->archiveEpisode($this->disc['id'], $episode, $this->arr_tracks[$track], $chapters, $track, $valid);
+					#$this->archiveEpisode($this->disc['id'], $episode, $this->arr_tracks[$track], $chapters, $track, $valid);
+					$track_id = $this->archiveTrack($this->disc['id'], $episode, $this->arr_tracks[$track], $track, $chapters, $valid);
+					$this->archiveTrackChapters($track_id, $chapters);
+					
+					$episode++;
 				}
 			}
 			
-			if($this->num_episodes > 0)
-				echo("Archived {$this->num_episodes} episodes, be sure to set the titles in the frontend.\n");
+		}
+		
+		function archiveAudioVideoTracks($episode, $vob) {
+		
+			$episode = intval($episode);
 			
+			if(!$episode)
+				return false;
+			
+			// Find the audio/video tracks in the VOB
+			exec("mkvmerge -i $vob", $arr);
+			
+			// Strip out just track information
+			$arr = preg_grep('/^Track ID/', $arr);
+			
+			$sql = "DELETE FROM episode_tracks WHERE episode = $episode;";
+			pg_query($sql) or die(pg_last_error());
+
+			// Only archive the tracks if there's more than one audio + one video
+			if(count($arr) > 2) {
+				foreach($arr as $str) {
+					$tmp = explode(':', $str);
+					$track_id = str_replace('Track ID ', '', $tmp[0]);
+					
+					$av = 0;
+					
+					if(strpos($tmp[1], 'video') !== false)
+						$av = 1;
+					
+					// ONLY store audio tracks for now.  I think that I'll never see
+					// multiple video tracks, so I'm not going to check for it now.
+					if($av === 0) {
+						$sql = "INSERT INTO episode_tracks (episode, av, track_id) VALUES ($episode, $av, $track_id);";
+						pg_query($sql) or die(pg_last_error());
+					}
+				}
+			}
 		}
 		
 		function archiveEpisode($disc_id, $episode, $len, $chapters, $track, $valid = false) {
@@ -108,6 +143,65 @@
 				
 			$sql = "INSERT INTO episodes (disc, episode_order, len, chapters, track, ignore) VALUES ($disc_id, $episode, $len, '$chapters', $track, '$ignore');";
 			pg_query($sql) or die(pg_last_error());
+		}
+		
+		function archiveTrack($disc_id, $episode, $len, $track, $chapters = '', $valid = false) {
+		
+			$disc_id = intval($disc_id);
+			$len = pg_escape_string($len);
+			$chapters = pg_escape_string(trim($chapters));
+			
+			if(!is_null($queue))
+				$queue = intval($queue);
+				
+			$track = intval($track);
+			$valid = intval($valid);
+			
+			$ignore = ($valid == 0 ? 't' : 'f');
+			
+			$sql = "SELECT NEXTVAL('public.tracks_id_seq');";
+			$id = current(pg_fetch_row(pg_query($sql))) or die(pg_last_error());
+				
+			$sql = "INSERT INTO tracks (id, disc, track, len) VALUES ($id, $disc_id, $track, $len);";
+			pg_query($sql) or die(pg_last_error());
+			
+			// Create a blank episode for each track, assuming a one-to-one
+			// relationship for now, until the frontend corrects the data.
+			$sql = "INSERT INTO episodes (track, episode_order, chapters, ignore) VALUES ($id, $episode, '$chapters', '$ignore');";
+			pg_query($sql) or die(pg_last_error());
+			
+			return $id;
+		}
+		
+		function archiveTrackChapters($track, $chapters) {
+			
+			$track = intval($track);
+			$chapters = trim($chapters);
+			
+			$arr = explode("\n", $chapters);
+			$arr = preg_grep('/^CHAPTER\d+=/', $arr);
+			$arr = preg_replace('/^CHAPTER\d+=/', '', $arr);
+			$arr = array_unique($arr);
+			
+			if(count($arr) > 1) {
+				
+				$chapter = 1;
+				
+				foreach($arr as $start_time) {
+				
+					// Convert start times to seconds
+					$tmp = explode(':', $start_time);
+					
+					$seconds = ($tmp[0] * 60 * 60) + ($tmp[1] * 60);
+					$seconds = bcadd($seconds, $tmp[2], 3);
+				
+					$sql = "INSERT INTO track_chapters (track, start_time, chapter) VALUES ($track, $seconds, $chapter);";
+					pg_query($sql) or die(pg_last_error());
+					
+					$chapter++;
+				}
+			}
+			
 		}
 
 		function ask($string, $default = false) {
@@ -160,7 +254,7 @@
 		 *
 		 */
 		function displayQueue() {
-			$sql = "SELECT e.id, tv.title AS tv_show_title, d.season, e.title AS episode_title, e.len AS episode_len FROM queue q INNER JOIN episodes e ON e.id = q.episode INNER JOIN discs d ON e.disc = d.id INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND q.queue = {$this->config['queue_id']} ORDER BY q.insert_date;";
+			$sql = "SELECT e.id, tv.title AS tv_show_title, d.season, e.title AS episode_title, e.len AS episode_len FROM queue q INNER JOIN episodes e ON e.id = q.episode INNER JOIN discs d ON e.disc = d.id INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND e.title != '' AND q.queue = {$this->config['queue_id']} ORDER BY q.insert_date;";
 			
 			$rs = pg_query($sql) or die(pg_last_error());
 			
@@ -185,6 +279,7 @@
 		
 			extract($arr);
 			
+			$mkv_title = $this->formatTitle("$tv_show_title: $title", false);
 			$title = $this->formatTitle($tv_show_title);
 			$dir = $this->config['export_dir'].'/'.$title.'/';
 			
@@ -195,8 +290,8 @@
 			$avi = "$file.avi";
 			$txt = "$file.txt";
 			$mkv = "$file.mkv";
-			$episode_title = $this->getEpisodeTitle($disc_id, $track);
-			$filename = $this->getEpisodeFilename($disc_id, $track);
+			$episode_title = $this->getEpisodeTitle($episode_id);
+			$filename = $this->getEpisodeFilename($disc_id, $track, $chapter, $episode_id);
 			$png = basename($filename, '.mkv').'.png';
 			
 			// Change to the directory so the 2 pass stats are dumped there,
@@ -207,34 +302,43 @@
 			$config_file = getenv('HOME').'/.transcode/xvid4.cfg';
 			$tmp_config_file = $dir.'xvid4.cfg';
 			if(file_exists($config_file) && $cartoon == 't') {
-				if(!file_exists($tmp_config_file)) {
+				if(!file_exists($tmp_config_file) && $vob_only == 'f') {
 					copy($config_file, $tmp_config_file);
 				}
 				$exec = "sed --in-place -e s/cartoon\ =\ 0/cartoon\ =\ 1/ xvid4.cfg";
 				$this->executeCommand($exec, true);
 			}
 			
-			if(in_dir($vob, $dir) && !in_dir($avi, $dir)) {
-				$msg = "Encoding: $tv_show_title";
-				if($episode_title)
-					$msg .= ": $episode_title";
-				$this->msg($msg);
+			$msg = "Encoding: $tv_show_title";
+			if($episode_title)
+				$msg .= ": $episode_title";
+			$this->msg($msg);
+			
+			if($vob_only == 'f') {
+				if(in_dir($vob, $dir) && !in_dir($avi, $dir)) {
+					
+					#if($fps == 2 || $fps == 1)
+						$this->mencoder($vob, $fps, $cartoon, $greyscale, $mencoder_aid);
+					#else
+					#	$this->transcode($vob, $fps);
+				}
 				
-				#if($fps == 2 || $fps == 1)
-					$this->mencoder($vob, $fps, $cartoon, $greyscale, $mencoder_aid, $vob_only);
-				#else
-				#	$this->transcode($vob, $fps);
+				$display_format = 'AVI';
+				
+			} else {
+				$avi = $vob;
+				$display_format = 'MPEG2';
 			}
 			
 			// Dump the chapters to a text file
 			if(in_dir($avi, $dir) && !in_dir($txt, $dir)) {
 				$this->writeChapters($chapters, $txt);
 			}
-				
+			
 			// Create the Matroska file
 			if(in_dir($avi, $dir) && !in_dir($mkv, $dir)) {
-				$this->msg("Wrapping AVI and chapters into Matroska");
-				$this->mkvmerge($avi, $txt, $mkv);
+				$this->msg("Wrapping $display_format and chapters into Matroska format");
+				$this->mkvmerge($avi, $txt, $mkv, $mkv_title, $mkvmerge_atrack);
 			}
 			
 			// Rename the matroska file from to Episode_Title.mkv
@@ -255,7 +359,7 @@
 					unlink($vob);
 				if(in_dir($log, $dir))
 					unlink($log);
-				if(in_dir($avi, $dir))
+				if(in_dir($avi, $dir) && $vob_only == 'f')
 					unlink($avi);
 				if(in_dir($txt, $dir))
 					unlink($txt);
@@ -323,9 +427,9 @@
 			}
 		}
 		
-		function formatTitle($title = 'TV Show Title') {
+		function formatTitle($title = 'TV Show Title', $underlines = true) {
 			$title = preg_replace('/[^A-Za-z0-9 \-,.?\':]/', '', $title);
-			$title = str_replace(' ', '_', $title);
+			$underlines && $title = str_replace(' ', '_', $title);
 			return $title;
 		}
 		
@@ -374,9 +478,9 @@
 				return false;
 		}
 		
-		function getEpisodeFilename($disc_id, $track) {
-			$episode = $this->getEpisodeNumber($disc_id, $track);
-			$episode_title = $this->getEpisodeTitle($disc_id, $track);
+		function getEpisodeFilename($disc_id, $track, $chapter, $episode_id) {
+			$episode = $this->getEpisodeNumber($episode_id);
+			$episode_title = $this->getEpisodeTitle($episode_id);
 			$filename = $episode.'._'.$this->formatTitle($episode_title).'.mkv';
 			return $filename;
 		}
@@ -387,15 +491,23 @@
 			return $episode;
 		}
 
-		function getEpisodeNumber($disc_id, $track) {
+		function getEpisodeNumber($episode_id) {
 			// This query dynamically returns the correct episode # out of the entire season for a TV show based on its track #.
 			// It works by calculating the number of valid tracks that come before it
 			// So, you can archive discs outside of their order, just don't transcode them
 			// or your numbering scheme will be off.
 			
-			$season = current(pg_fetch_row(pg_query("SELECT season FROM discs WHERE id = $disc_id;")));
 			
-			$sql = "SELECT (COUNT(1) + 1) AS episode_number FROM episodes, discs WHERE episodes.disc = discs.id AND discs.tv_show = (SELECT tv_show FROM discs WHERE id = $disc_id) AND episodes.ignore = false AND season = (SELECT season FROM discs WHERE id = $disc_id) AND ((discs.disc < (SELECT disc FROM discs WHERE id = $disc_id)) OR (discs.disc = (SELECT disc FROM discs WHERE id = $disc_id) AND episode_order < (SELECT episode_order FROM episodes WHERE disc = $disc_id AND track = $track)));";
+			$sql = "SELECT d.tv_show, d.season, d.disc AS disc_number, e.episode_order FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id WHERE e.id = $episode_id;";
+			$rs = pg_query($sql) or die(pg_last_error());
+			$row = pg_fetch_assoc($rs);
+			extract($row);
+			
+			#$sql = "SELECT (COUNT(1) + 1) AS episode_number FROM episodes, tracks, discs WHERE episodes.track = tracks.id AND tracks.disc = discs.id AND discs.tv_show = (SELECT tv_show FROM discs WHERE id = $disc_id) AND episodes.ignore = false AND season = (SELECT season FROM discs WHERE id = $disc_id) AND ((discs.disc < (SELECT disc FROM discs WHERE id = $disc_id)) OR (discs.disc = (SELECT disc FROM discs WHERE id = $disc_id) AND episode_order < (SELECT episode_order FROM episodes e INNER JOIN tracks t ON e.track = t.id WHERE t.disc = $disc_id AND e.track = $track)));";
+			
+			
+			$sql = "SELECT (count(e.id) + 1) FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id WHERE d.tv_show = $tv_show AND d.season = $season AND t.bad_track = FALSE AND e.ignore = FALSE AND ( (d.disc < $disc_number) OR (d.disc = $disc_number AND e.episode_order < $episode_order ));";
+
 			$rs = pg_query($sql) or die(pg_last_error());
 			
 			$episode = current(pg_fetch_row($rs));
@@ -409,14 +521,13 @@
 			return $episode;
 		}
 		
-		function getEpisodeTitle($disc, $track) {
-			$disc = intval($disc);
-			$track = intval($track);
+		function getEpisodeTitle($episode_id) {
+			$episode_id = intval($episode_id );
 			
-			if($disc == 0 || $track == 0)
+			if($episode_id == 0)
 				return false;
 			
-			$sql = "SELECT title FROM episodes WHERE disc = $disc AND track = $track;";
+			$sql = "SELECT title FROM episodes WHERE id = $episode_id ;";
 			$rs = pg_query($sql) or die(pg_last_error());
 			
 			if(pg_num_rows($rs) == 0)
@@ -438,8 +549,10 @@
 		}
 		
 		function getQueue() {
-			$sql = "SELECT e.id AS episode_id, e.title, e.chapters, e.track, d.id AS disc_id, d.tv_show, d.season, d.disc AS disc_number, tv.title AS tv_show_title, tv.cartoon, tv.fps, tv.mencoder_aid, tv.greyscale, tv.vob_only FROM queue q INNER JOIN episodes e ON e.id = q.episode INNER JOIN discs d ON e.disc = d.id INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND q.queue = {$this->config['queue_id']} ORDER BY q.insert_date;";
-
+			#$sql = "SELECT e.id AS episode_id, e.title, e.chapters, e.track, e.mkvmerge_atrack, d.id AS disc_id, d.tv_show, d.season, d.disc AS disc_number, tv.title AS tv_show_title, tv.cartoon, tv.fps, tv.mencoder_aid, tv.greyscale, tv.vob_only FROM queue q INNER JOIN episodes e ON e.id = q.episode INNER JOIN discs d ON e.disc = d.id INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND e.title != '' AND q.queue = {$this->config['queue_id']} ORDER BY q.insert_date;";
+			
+			$sql = "SELECT e.id AS episode_id, e.title, e.chapters, t.track, t.multi, d.id AS disc_id, d.tv_show, d.season, d.disc AS disc_number, tv.title AS tv_show_title, tv.cartoon, tv.fps, tv.mencoder_aid, tv.greyscale, tv.vob_only FROM queue q INNER JOIN episodes e ON e.id = q.episode INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND e.title != '' AND q.queue = {$this->config['queue_id']} ORDER BY q.insert_date;";
+			
 			$rs = pg_query($sql) or die(pg_last_error());
 			for($x = 0; $x < pg_num_rows($rs); $x++)
 				$arr[$x] = pg_fetch_assoc($rs);
@@ -449,7 +562,7 @@
 		
 		function getQueueTotal() {
 
-			$sql_encode = "SELECT COUNT(1) FROM queue q INNER JOIN episodes e ON q.episode = e.id AND e.ignore = false WHERE q.queue = ".$this->config['queue_id'].";";
+			$sql_encode = "SELECT COUNT(1) FROM queue q INNER JOIN episodes e ON q.episode = e.id AND e.ignore = false WHERE e.title != '' AND q.queue = ".$this->config['queue_id'].";";
 			$num_encode = current(pg_fetch_row(pg_query($sql_encode)));
 
 			return $num_encode;
@@ -553,7 +666,7 @@
 			return true;
 		}
 		
-		function mencoder($vob, $fps, $cartoon = 'f', $greyscale = 'f', $aid = null, $vob_only = 'f') {
+		function mencoder($vob, $fps, $cartoon = 'f', $greyscale = 'f', $aid = null) {
 			$flags = '';
 			
 			if(is_numeric($aid))
@@ -570,12 +683,9 @@
 			
 			$max = 1;
 			
-			if($vob_only == 't')
-				$ovc = 'copy';
-			else {
-				$ovc = 'xvid';
-				$flags .= " -xvidencopts bitrate=2200{$xvidencopts} ";
-			}
+			// TODO: Get codec from preferences
+			$ovc = 'xvid';
+			$flags .= " -xvidencopts bitrate=2200{$xvidencopts} ";
 			
 			if($fps > 0)
 				$flags .= " -vf pullup,softskip -ofps 24000/1001 ";
@@ -600,9 +710,14 @@
 
 		}
 		
-		function mkvmerge($avi = 'movie.avi', $txt = 'chapters.txt', $mkv = 'movie.mkv') {
-				$exec = "mkvmerge --aspect-ratio 0:4/3 $avi -o \"$mkv\" --chapters $txt";
-				$this->executeCommand($exec);
+		function mkvmerge($avi = 'movie.avi', $txt = 'chapters.txt', $mkv = 'movie.mkv', $title = '', $atrack = 1) {
+				#$exec = "mkvmerge --aspect-ratio 0:4/3 $avi -o \"$mkv\" --chapters $txt";
+				
+				if(is_null($atrack))
+					$atrack = 1;
+				// Moving order around to work with audio tracks
+				$exec = "mkvmerge --aspect-ratio 0:4/3 -o \"$mkv\" -a $atrack $avi --title \"$title\" --chapters $txt";
+				$this->executeCommand($exec, true);
 		}
 		
 		function mount() {
@@ -679,9 +794,17 @@
 				return false;
 		}
 
-		function ripTrack($track, $vob = 'movie.vob') {
+		function ripTrack($track, $vob = 'movie.vob', $starting_chapter = 1) {
 			$this->msg("Ripping to $vob", false, true);
 			$exec = "mplayer -dvd-device {$this->config['dvd_device']} dvd://$track -dumpstream -dumpfile $vob";
+			
+			// For some reason, with MPlayer, adding even -chapter 1
+			// will fix buggy IDE + IRQ seek issues.
+			if(!is_null($starting_chapter)) {
+				$starting_chapter = intval($starting_chapter);
+				$exec .= " -chapter $starting_chapter";
+			}
+			
 			$this->executeCommand($exec);
 		}
 		

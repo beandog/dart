@@ -85,7 +85,6 @@
 		'v' => array('debug', 'Display debugging information')
 	);
 
-
 	// Display help if no arguments are passed
 	if($argc == 1 || $dvd->args['h'] == 1 || $dvd->args['help'] == 1) {
 
@@ -124,34 +123,35 @@
 	/** Archive Disc */
 	if($dvd->args['archive'] == 1 || $dvd->args['rip'] == 1) {
 	
+		$need_deps = true;
+	
 		// Check for system requirements on archiving / ripping
 		if(!function_exists('simplexml_load_string')) {
 			trigger_error("Sorry, you need PHP5 with SimpleXML support to run bend", E_USER_ERROR);
-			$need_deps = true;
 		}
 		elseif(!function_exists('preg_grep')) {
 			trigger_error("PHP must be compiled with PREG support for bend to run correctly", E_USER_ERROR);
-			$need_deps = true;
+		}
+		elseif(!function_exists('bcscale')) {
+			trigger_error("PHP must be compiled with BCMath support for bend to run correctly", E_USER_ERROR);
 		}
 		elseif(!which('mplayer')) {
 			trigger_error("You need MPlayer with DVD support installed to rip or archive DVDs", E_USER_ERROR);
-			$need_deps = true;
 		}
 		elseif(!which('transcode')) {
 			trigger_error("You need Transcode installed to encode DVDs", E_USER_ERROR);
-			$need_deps = true;
 		}
 		elseif(!which('lsdvd')) {
 			trigger_error("You need lsdvd v0.16 or higher installed to rip or archive discs", E_USER_ERROR);
-			$need_deps = true;
+		}
+		elseif(!which('mkvmerge')) {
+			trigger_error("You need mkvtoolnix (mkvmerge) installed to make Matroska files", E_USER_ERROR);
 		}
 		elseif($dvd->args['archive'] == 1 && !which('dvdxchap')) {
 			trigger_error("You need ogmtools installed to archive discs", E_USER_ERROR);
-			$need_deps = true;
 		}
 		elseif($dvd->args['encode'] == 1 && !which('mkvmerge')) {
 			trigger_error("You need mkvmerge installed for encoding", E_USER_ERROR);
-			$need_deps = true;
 		}
 		else
 			$need_deps = false;
@@ -395,11 +395,14 @@
 
 		// Pull out the tracks that haven't been flagged to ignore in the database frontend
 		// This query has nothing to do with what has / hasn't been encoded
-		$sql = "SELECT tv.title, d.season, d.disc, e.track, d.id AS disc_id FROM episodes e INNER JOIN discs d ON e.disc = d.id AND d.id = {$dvd->disc['id']} INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE ignore = FALSE AND bad_track = FALSE ORDER BY episode_order, track;";
+		
+		#SELECT t.id, t.disc, t.track, t.len,t.bad_track, t.num_atracks, t.multi, e.id AS episode, e.title, e.episode_order, e.starting_chapter, e.chapter, e.ignore FROM tracks t LEFT JOIN episodes e ON e.track = t.id WHERE t.disc = 347 ORDER BY t.track, e.chapter;
+		
+		$sql = "SELECT tv.title, d.season, d.disc, t.track, t.multi, d.id AS disc_id, e.starting_chapter, e.id AS episode_id, e.chapter FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id AND d.id = {$dvd->disc['id']} INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND t.bad_track = FALSE ORDER BY e.episode_order, t.track;";
 		$rs = pg_query($sql) or die(pg_last_error());
 		$num_rows = pg_num_rows($rs);
 		
-		if($num_rows > 0) {
+		if($num_rows) {
 		
 			$dvd->msg("$num_rows track(s) total to rip and enqueue.");
 
@@ -424,50 +427,81 @@
 				extract($tmp);
 				
 				$file = "season_{$season}_disc_{$disc}_track_{$track}";
+				
+				if($multi == 't')
+					$file .= "_chapter_{$chapter}";
+					
 				$avi = "$file.avi";
 				$mkv = "$file.mkv";
 				$vob = "$file.vob";
 				
-				$efn = $dvd->getEpisodeFilename($disc_id, $track);
+				$efn = $dvd->getEpisodeFilename($disc_id, $track, $chapter, $episode_id);
 				
 				$count++;
+				
+				$display_count = str_pad($count, strlen($num_rows), 0, STR_PAD_LEFT);
 
 				// See if we've reached our total or not
 				if($q === $total) {
-					$dvd->msg("Reached total of $total episodes to rip.");
+					$dvd->msg("Reached total of $total tracks + episodes to rip.");
 					break;
 				}
 				
-				// Get the directory list each time, so that you can rip the same disc
-				// in two sessions at once.  Possible, but definately not advised.  It
-				// slows down the ripping horribly.
+				// See if it was flagged to ignore after starting
+				$sql = "SELECT ignore, bad_track FROM episodes e INNER JOIN tracks t ON e.track = t.id WHERE e.id = $episode_id;";
+				$rs = pg_query($sql);
+				$row = pg_fetch_assoc($rs);
 				
-				// Check to see if file exists, if not, rip it
-				if(!in_dir($vob, $dir) && !in_dir($avi, $dir) && !in_dir($mkv, $dir) && !in_dir($efn, $dir)) {
+				if($row['ignore'] == 't' || $row['bad_track'] == 't') {
+					$dvd->msg("[$display_count/$num_rows] - Track $track: Updated to ignore / bad track.");
+				} else {
 				
-					$episode_title = $dvd->getEpisodeTitle($dvd->disc['id'], $track);
-					
-					if(!$episode_title)
-						$episode_title = "season $season, disc $disc, track $track";
+					// Get the directory list each time, so that you can rip the same disc
+					// in two sessions at once.  Possible, but definately not advised.  It
+					// slows down the ripping horribly.
 					
 					$filename = "$dir/$vob";
 					
-					$dvd->msg("[$count/$num_rows] + Track $track: $episode_title");
-					$dvd->ripTrack($track, $filename);
+					// Check to see if file exists, if not, rip it
+					if(!in_dir($vob, $dir) && !in_dir($avi, $dir) && !in_dir($mkv, $dir) && !in_dir($efn, $dir)) {
 					
-					$q++;
+						$episode_title = $dvd->getEpisodeTitle($episode_id);
+						
+						if(!$episode_title)
+							$episode_title = "season $season, disc $disc, track $track";
+						
+						$dvd->msg("[$display_count/$num_rows] + Track $track: $episode_title");
+						$dvd->ripTrack($track, $filename, $starting_chapter);
+						
+						$q++;
+						
+					} else {
 					
-				}
-				else
-					$dvd->msg("[$count/$num_rows] - Track $track: File exists.");
+						
+						$display_file_exists = '';
+						
+						if(in_dir($vob, $dir))
+							$display_file_exists = 'MPEG-2 (VOB)';
+						elseif(in_dir($avi, $dir))
+							$display_file_exists = 'encoded AVI';
+						elseif(in_dir($mkv, $dir))
+							$display_file_exists = 'Matroska';
+						elseif(in_dir($efn, $dir))
+							$display_file_exists = 'final Matroska';
 					
-				// Put the episodes in the queue
-				$episode = $dvd->getEpisodeID($track);
-				if($dvd->enqueue($episode)) {
-					$enqueue++;
-				}
-				else {
-					$in_queue++;
+						$dvd->msg("[$display_count/$num_rows] - Track $track: $display_file_exists file exists.");
+					}
+						
+					// Put the episodes in the queue
+					if(!in_dir($mkv, $dir) && in_dir($vob, $dir))
+						$dvd->archiveAudioVideoTracks($episode_id, $filename);
+					
+					if($dvd->enqueue($episode_id)) {
+						$enqueue++;
+					}
+					else {
+						$in_queue++;
+					}
 				}
 			}
 
@@ -498,10 +532,10 @@
 
 		$num_encode = $dvd->getQueueTotal($dvd->config['queue_id']);
 		$dvd->msg("$num_encode episode(s) total to encode.");
-
+		
 		$q = 0;
 
-		while($num_encode > 0) {
+		while($num_encode) {
 			$dvd->arr_encode = $dvd->getQueue($dvd->config['queue_id']);
 
 			// See if we've reached our total or not
@@ -511,6 +545,7 @@
 			}
 			
 			foreach($dvd->arr_encode as $arr) {
+			
 				$dvd->encodeMovie($arr);
 				$q++;
 			}
