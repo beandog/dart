@@ -283,6 +283,7 @@
 			extract($arr);
 			
 			#print_r($arr);
+			#die;
 			
 			$mkv_title = $this->formatTitle("$tv_show_title: $title", false);
 			$title = $this->formatTitle($tv_show_title);
@@ -340,9 +341,16 @@
 				$display_format = 'MPEG2';
 			}
 			
-			// Dump the chapters to a text file
-			if(in_dir($avi, $dir) && !in_dir($txt, $dir) && !empty($arr['chapters'])) {
-				$this->writeChapters($chapters, $txt);
+			if($multi == 'f') {
+				$arr['chapters'] = $this->getTrackChapters($track_id);
+				
+				#print_r($arr['chapters']);
+				
+				// Dump the chapters to a text file
+				if(in_dir($avi, $dir) && !in_dir($txt, $dir) && !empty($arr['chapters'])) {
+					$chapters = implode("\n", $arr['chapters']);
+					$this->writeChapters($chapters, $txt);
+				}
 			}
 			
 			// Create the Matroska file
@@ -466,7 +474,7 @@
 			}
 		}
 		
-				function getDisc() {
+		function getDisc() {
 			if(!isset($this->disc_id))
 				$this->getDiscID();
 			$sql = "SELECT id, tv_show, season, disc, disc_title FROM discs WHERE disc_id = '{$this->disc_id}' LIMIT 1;";
@@ -564,10 +572,12 @@
 			return $export_dir;
 		}
 		
+
+		
 		function getQueue() {
 			#$sql = "SELECT e.id AS episode_id, e.title, e.chapters, e.track, e.mkvmerge_atrack, d.id AS disc_id, d.tv_show, d.season, d.disc AS disc_number, tv.title AS tv_show_title, tv.cartoon, tv.fps, tv.mencoder_aid, tv.greyscale, tv.vob_only FROM queue q INNER JOIN episodes e ON e.id = q.episode INNER JOIN discs d ON e.disc = d.id INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND e.title != '' AND q.queue = {$this->config['queue_id']} ORDER BY q.insert_date;";
 			
-			$sql = "SELECT e.id AS episode_id, e.title, e.chapter, e.chapters, t.track, t.multi, d.id AS disc_id, d.tv_show, d.season, d.disc AS disc_number, tv.title AS tv_show_title, tv.cartoon, tv.fps, tv.mencoder_aid, tv.greyscale, tv.vob_only FROM queue q INNER JOIN episodes e ON e.id = q.episode INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND e.title != '' AND q.queue = {$this->config['queue_id']} ORDER BY q.insert_date;";
+			$sql = "SELECT e.id AS episode_id, e.title, e.chapter, e.chapters, t.track, t.multi, t.id AS track_id, d.id AS disc_id, d.tv_show, d.season, d.disc AS disc_number, tv.title AS tv_show_title, tv.cartoon, tv.fps, tv.mencoder_aid, tv.greyscale, tv.vob_only FROM queue q INNER JOIN episodes e ON e.id = q.episode INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND e.title != '' AND q.queue = {$this->config['queue_id']} ORDER BY q.insert_date;";
 			
 			$rs = pg_query($sql) or die(pg_last_error());
 			for($x = 0; $x < pg_num_rows($rs); $x++)
@@ -582,6 +592,79 @@
 			$num_encode = current(pg_fetch_row(pg_query($sql_encode)));
 
 			return $num_encode;
+		}
+		
+		function sec2hms ($sec, $padHours = false) {
+					
+						// holds formatted string
+						$hms = "";
+						
+						// there are 3600 seconds in an hour, so if we
+						// divide total seconds by 3600 and throw away
+						// the remainder, we've got the number of hours
+						$hours = intval(intval($sec) / 3600); 
+						
+						// add to $hms, with a leading 0 if asked for
+						$hms .= ($padHours) 
+							? str_pad($hours, 2, "0", STR_PAD_LEFT). ':'
+							: $hours. ':';
+						
+						// dividing the total seconds by 60 will give us
+						// the number of minutes, but we're interested in 
+						// minutes past the hour: to get that, we need to 
+						// divide by 60 again and keep the remainder
+						$minutes = intval(($sec / 60) % 60); 
+						
+						// then add to $hms (with a leading 0 if needed)
+						$hms .= str_pad($minutes, 2, "0", STR_PAD_LEFT). ':';
+						
+						// seconds are simple - just divide the total
+						// seconds by 60 and keep the remainder
+						$seconds = intval($sec % 60); 
+						
+						// add to $hms, again with a leading 0 if needed
+						$hms .= str_pad($seconds, 2, "0", STR_PAD_LEFT);
+						
+						// done!
+						return $hms;
+					
+					}
+		
+		function getTrackChapters($track) {
+		
+			$track = intval($track);
+		
+			$sql = "SELECT chapter, start_time FROM track_chapters WHERE track = $track ORDER BY chapter;";
+			$rs = pg_query($sql);
+			
+			$arr = array();
+			
+			if(pg_num_rows($rs) > 1) {
+				
+				$max_chapters = pg_num_rows($rs);
+				#$str_pad_len = strlen($max_chapters);
+				$str_pad_len = 2;
+				
+				while($row = pg_fetch_assoc($rs)) {
+				
+					$start_seconds = end(explode('.', $row['start_time']));
+				
+					$sec = intval($row['start_time']);
+					
+					// http://www.laughing-buddha.net/jon/php/sec2hms/
+					$start_time = $this->sec2hms($sec, true);
+				
+					$chapter = str_pad($row['chapter'], $str_pad_len, 0, STR_PAD_LEFT);
+					$chapter_num = "CHAPTER".$chapter."=$start_time.$start_seconds";
+					$chapter_name = "CHAPTER".$chapter."NAME=Chapter $chapter";
+					$arr[] = $chapter_num;
+					$arr[] = $chapter_name;
+				}
+			}
+			
+			
+			return($arr);
+		
 		}
 		
 		/** 
@@ -735,7 +818,7 @@
 				
 				if(file_exists($txt))
 					 $exec .= " --chapters $txt";
-				
+					 
 				$this->executeCommand($exec, true);
 		}
 		

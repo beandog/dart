@@ -599,7 +599,7 @@
 			return false;
 	}
 	
-#	if($dvd->config['eject'])
-#		system("eject {$dvd->config['dvd_device']};");
+	if($dvd->config['eject'])
+		system("eject {$dvd->config['dvd_device']};");
 
 ?>
