@@ -68,11 +68,16 @@
 		trigger_error("No config file found, using defaults", E_USER_WARNING);
 	}
 	
+	
 	// Create the DVD object
 	$dvd =& new DVD();
+	
+	
 
 	// Set the configuration options
 	$dvd->setConfig($argc, $argv, $arr_config);
+	
+	
 	
 	$arr_cmd = array(
 		'h' => array('help', 'Display this help'),
@@ -398,7 +403,7 @@
 		
 		#SELECT t.id, t.disc, t.track, t.len,t.bad_track, t.num_atracks, t.multi, e.id AS episode, e.title, e.episode_order, e.starting_chapter, e.chapter, e.ignore FROM tracks t LEFT JOIN episodes e ON e.track = t.id WHERE t.disc = 347 ORDER BY t.track, e.chapter;
 		
-		$sql = "SELECT tv.title, d.season, d.disc, t.track, t.multi, d.id AS disc_id, e.starting_chapter, e.id AS episode_id, e.chapter FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id AND d.id = {$dvd->disc['id']} INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND t.bad_track = FALSE ORDER BY e.episode_order, t.track;";
+		$sql = "SELECT tv.title, d.season, d.disc, t.id AS track_id, t.track, t.multi, d.id AS disc_id, e.starting_chapter, e.id AS episode_id, e.chapter FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id AND d.id = {$dvd->disc['id']} INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND t.bad_track = FALSE ORDER BY t.track, e.episode_order;";
 		$rs = pg_query($sql) or die(pg_last_error());
 		$num_rows = pg_num_rows($rs);
 		
@@ -422,7 +427,7 @@
 			$dvd->msg("Ripping {$arr[0]['title']}: Season {$arr[0]['season']}, Disc {$arr[0]['disc']}");
 			
 			/** Rip the tracks */
-			foreach($arr as $tmp) {
+			foreach($arr as $id => $tmp) {
 						
 				extract($tmp);
 				
@@ -435,7 +440,7 @@
 				$mkv = "$file.mkv";
 				$vob = "$file.vob";
 				
-				$efn = $dvd->getEpisodeFilename($disc_id, $track, $chapter, $episode_id);
+				$efn = $dvd->getEpisodeFilename($disc_id, $track, $episode_id);
 				
 				$count++;
 				
@@ -471,12 +476,27 @@
 							$episode_title = "season $season, disc $disc, track $track";
 						
 						$dvd->msg("[$display_count/$num_rows] + Track $track: $episode_title");
-						$dvd->ripTrack($track, $filename, $starting_chapter);
+						
+						// On multiple episodes per track, we need to know the starting
+						// and ending chapters.
+						if($multi) {
+							
+							// See if the next episode is on the same track
+// 							if($arr[$id + 1]['track'] == $track) {
+// 								
+// 							}
+
+							// The starting and stopping track are the same
+							$dvd->ripTrack($track_id, $track, $filename, $multi, $chapter, $chapter);
+							
+						// Otherwise, just the starting chapter (if set) for the track
+						} else {
+							$dvd->ripTrack($track_id, $track, $filename, $multi, $starting_chapter);
+						}
 						
 						$q++;
 						
 					} else {
-					
 						
 						$display_file_exists = '';
 						
@@ -493,14 +513,15 @@
 					}
 						
 					// Put the episodes in the queue
-					if(!in_dir($mkv, $dir) && in_dir($vob, $dir))
+					if(!in_dir($efn, $dir) && !in_dir($mkv, $dir) && in_dir($vob, $dir))
 						$dvd->archiveAudioVideoTracks($episode_id, $filename);
 					
-					if($dvd->enqueue($episode_id)) {
-						$enqueue++;
-					}
-					else {
-						$in_queue++;
+					if(!in_dir($efn, $dir)) {
+						if($dvd->enqueue($episode_id)) {
+							$enqueue++;
+						} else {
+							$in_queue++;
+						}
 					}
 				}
 			}

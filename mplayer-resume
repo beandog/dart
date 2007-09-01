@@ -47,7 +47,7 @@
 
 	// If we can't get the movie name, just quit
 	if(empty($movie)) {
-		fwrite(STDERR, "mplayer-resume.php: No filename to playback.\n");
+		fwrite(STDERR, "mplayer-resume: No filename to playback.\n");
 		die;
 	}
 
@@ -63,10 +63,10 @@
 	// If there is already a playback file, read it and start
 	// from that position.
 	if(file_exists($txt)) {
-		$ss = trim(file_get_contents($txt));
+		$sb = trim(file_get_contents($txt));
 		// One more check for garbage
-		if(is_numeric($ss) && $ss > 0)
-			$flags = " -ss $ss ";
+		if(is_numeric($sb) && $sb > 0)
+			$flags = " -sb $ss ";
 	}
 	
 	// Build the execution string
@@ -77,18 +77,15 @@
 
 	// If the file didn't even exist, mplayer will die, and so will me
 	if(!file_exists($movie)) {
-		fwrite(STDERR, "mplayer-resume.php: Couldn't find the filename $movie\n");
+		fwrite(STDERR, "mplayer-resume: Couldn't find the filename $movie\n");
 		die;
 	}
 	
 	// grep out the output we want
-	$arr = preg_grep('/^ANS_TIME_POSITION\b/', $arr);
+	$arr = preg_grep('/^ANS_stream_position\b/i', $arr);
 
 	// the endpos when quitting
-	$endpos = str_replace("ANS_TIME_POSITION=", '', end($arr));
-
-	// Seeking isn't perfect, so throw it back a little to correct it
-	$endpos -= 2.5;
+	$endpos = str_replace("ANS_stream_position=", '', end($arr));
 
 	// If it's a negative value, that means you've seeked
 	// past/to the end of the file, so just remove the old one.
