@@ -530,7 +530,7 @@
 			// # of epsiodes on previous discs plus 
 			// # of episodes on current disc plus earlier tracks plus
 			// # of episodes on current disc plus current track plus earlier episodes
-			$sql = "SELECT (count(e.id) + 1) FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id WHERE d.tv_show = $tv_show AND d.season = $season AND t.bad_track = FALSE AND e.ignore = FALSE AND ( (d.disc < $disc_number) OR (d.disc = $disc_number AND t.track < $track ) OR (d.disc = $disc_number AND t.track = $track AND e.episode_order < $episode_order ));";
+			z$sql = "SELECT (count(e.id) + 1) FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id WHERE d.tv_show = $tv_show AND d.season = $season AND t.bad_track = FALSE AND e.ignore = FALSE AND ( (d.disc < $disc_number) OR (d.disc = $disc_number AND t.track < $track ) OR (d.disc = $disc_number AND t.track = $track AND e.episode_order < $episode_order ));";
 
 			$rs = pg_query($sql) or die(pg_last_error());
 			
