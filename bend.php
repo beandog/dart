@@ -192,7 +192,7 @@
 					$show = intval($dvd->args['show']);
 					
 					if($show > 0) {
-						$sql = "SELECT id, title, min_len, max_len, fps, cartoon FROM tv_shows WHERE id = $show;";
+						$sql = "SELECT id, title, min_len, max_len, cartoon FROM tv_shows WHERE id = $show;";
 						$rs = pg_query($sql) or die(pg_last_error());
 						if(pg_num_rows($rs) == 1)
 							$dvd->tv_show = pg_fetch_assoc($rs);
@@ -202,7 +202,7 @@
 				if(!isset($dvd->tv_show['id'])) {
 				
 					// Get the current TV show titles
-					$sql = "SELECT id, title, min_len, max_len, fps, cartoon FROM tv_shows ORDER BY title;";
+					$sql = "SELECT id, title, min_len, max_len, cartoon FROM tv_shows ORDER BY title;";
 					$rs = pg_query($sql) or die(pg_last_error());
 					$num_rows = pg_num_rows($rs);
 					

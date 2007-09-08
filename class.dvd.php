@@ -309,15 +309,15 @@
 			chdir($dir);
 			
 			// By default, use XviD for excellent results
-			$config_file = getenv('HOME').'/.transcode/xvid4.cfg';
-			$tmp_config_file = $dir.'xvid4.cfg';
-			if(file_exists($config_file) && $cartoon == 't') {
-				if(!file_exists($tmp_config_file) && $vob_only == 'f') {
-					copy($config_file, $tmp_config_file);
-				}
-				$exec = "sed --in-place -e s/cartoon\ =\ 0/cartoon\ =\ 1/ xvid4.cfg";
-				#$this->executeCommand($exec, true);
-			}
+// 			$config_file = getenv('HOME').'/.transcode/xvid4.cfg';
+// 			$tmp_config_file = $dir.'xvid4.cfg';
+// 			if(file_exists($config_file) && $cartoon == 't') {
+// 				if(!file_exists($tmp_config_file) && $vob_only == 'f') {
+// 					copy($config_file, $tmp_config_file);
+// 				}
+// 				$exec = "sed --in-place -e s/cartoon\ =\ 0/cartoon\ =\ 1/ xvid4.cfg";
+// 				#$this->executeCommand($exec, true);
+// 			}
 			
 			$msg = "Encoding: $tv_show_title";
 			if($episode_title)
@@ -365,7 +365,7 @@
 					unlink($vob);
 				if(in_dir($log, $dir))
 					unlink($log);
-				if(in_dir($avi, $dir) && $vob_only == 'f')
+				if(in_dir($avi, $dir))
 					unlink($avi);
 				if(in_dir($txt, $dir))
 					unlink($txt);
@@ -564,7 +564,7 @@
 		
 		function getQueue() {
 			
-			$sql = "SELECT e.id AS episode_id, e.title, e.chapter, e.chapters, t.track, t.multi, t.id AS track_id, d.id AS disc_id, d.tv_show, d.season, d.disc AS disc_number, tv.title AS tv_show_title, tv.cartoon, tv.mencoder_aid, tv.greyscale, tv.vob_only FROM queue q INNER JOIN episodes e ON e.id = q.episode INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND e.title != '' AND q.queue = {$this->config['queue_id']} ORDER BY q.insert_date;";
+			$sql = "SELECT e.id AS episode_id, e.title, e.chapter, e.chapters, t.track, t.multi, t.id AS track_id, d.id AS disc_id, d.tv_show, d.season, d.disc AS disc_number, tv.title AS tv_show_title, tv.cartoon FROM queue q INNER JOIN episodes e ON e.id = q.episode INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND e.title != '' AND q.queue = {$this->config['queue_id']} ORDER BY q.insert_date;";
 			
 			$rs = pg_query($sql) or die(pg_last_error());
 			for($x = 0; $x < pg_num_rows($rs); $x++)
