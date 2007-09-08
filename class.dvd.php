@@ -896,32 +896,40 @@
 				return false;
 		}
 
-		function ripTrack($track_id, $track_number, $vob = 'movie.vob', $multi = false, $starting_chapter = 1, $ending_chapter) {
+		function ripTrack($track_id, $track_number, $vob = 'movie.vob', $multi = false, $starting_chapter = 1, $ending_chapter = null) {
 			$this->msg("Ripping to $vob", false, true);
-			
 			
 			// For some reason, with MPlayer, adding even -chapter 1
 			// will fix buggy IDE + IRQ seek issues.
-			if(is_null($starting_chapter))
+			
+			$starting_chapter = abs(intval($starting_chapter));
+			
+			
+			if(!$starting_chapter)
 				$starting_chapter = 1;
-			else
-				$starting_chapter = intval($starting_chapter);
 				
 			if(!is_null($ending_chapter)) {
-				$ending_chapter = intval($ending_chapter);
+				$ending_chapter = abs(intval($ending_chapter));
 				if($ending_chapter && $ending_chapter >= $starting_chapter)
 					$starting_chapter .= "-$ending_chapter";
 			}
 			
-			if(($starting_chapter > 1) && !$multi) {
+			if(($starting_chapter > 1) && $multi == 'f') {
 				// If there is a starting chapter (and not multiple episodes per track),
 				// we need to use mencoder to dump it, since dumpstream breaks mkvmerge's ability to read the # of audio
 				// tracks, since you are starting midstream and lose the AC3 headers
 				// We also output the file with a .vob extension, even though the
 				// format is AVI.
-				$exec = "mencoder -dvd-device {$this->config['dvd_device']} dvd://$track_number -chapter $starting_chapter -ovc copy -oac copy -o $vob -alang en";
-			} else
-				$exec = "mplayer -dvd-device {$this->config['dvd_device']} dvd://$track_number -dumpstream -dumpfile $vob -chapter $starting_chapter";
+				
+				// Seems to work with latest mplayer + mkvmerge 2.1.0 just fine
+				// $exec = "mencoder -dvd-device {$this->config['dvd_device']} dvd://$track_number -chapter $starting_chapter -ovc copy -oac copy -o $vob -alang en";
+			} else {
+				// $exec = "mplayer -dvd-device {$this->config['dvd_device']} dvd://$track_number -dumpstream -dumpfile $vob -chapter $starting_chapter";
+			}
+				
+			$exec = "mplayer -dvd-device {$this->config['dvd_device']} dvd://$track_number -chapter $starting_chapter -dumpstream -dumpfile $vob";
+				
+			#echo $exec; die;
 			
 			$this->executeCommand($exec);
 			

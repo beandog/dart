@@ -403,7 +403,7 @@
 		
 		#SELECT t.id, t.disc, t.track, t.len,t.bad_track, t.num_atracks, t.multi, e.id AS episode, e.title, e.episode_order, e.starting_chapter, e.chapter, e.ignore FROM tracks t LEFT JOIN episodes e ON e.track = t.id WHERE t.disc = 347 ORDER BY t.track, e.chapter;
 		
-		$sql = "SELECT tv.title, d.season, d.disc, t.id AS track_id, t.track, t.multi, d.id AS disc_id, e.starting_chapter, e.id AS episode_id, e.chapter FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id AND d.id = {$dvd->disc['id']} INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND t.bad_track = FALSE ORDER BY t.track, e.episode_order;";
+		$sql = "SELECT tv.title, d.season, d.disc, t.id AS track_id, t.track, t.multi, d.id AS disc_id, COALESCE(e.starting_chapter, tv.starting_chapter) AS starting_chapter, e.id AS episode_id, e.chapter FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id AND d.id = {$dvd->disc['id']} INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND t.bad_track = FALSE ORDER BY t.track, e.episode_order;";
 		$rs = pg_query($sql) or die(pg_last_error());
 		$num_rows = pg_num_rows($rs);
 		
@@ -467,19 +467,19 @@
 					
 					$filename = "$dir/$vob";
 					
+					$episode_title = $dvd->getEpisodeTitle($episode_id);
+						
+					if(!$episode_title)
+						$episode_title = "season $season, disc $disc, track $track";
+					
 					// Check to see if file exists, if not, rip it
 					if(!in_dir($vob, $dir) && !in_dir($avi, $dir) && !in_dir($mkv, $dir) && !in_dir($efn, $dir)) {
 					
-						$episode_title = $dvd->getEpisodeTitle($episode_id);
-						
-						if(!$episode_title)
-							$episode_title = "season $season, disc $disc, track $track";
-						
-						$dvd->msg("[$display_count/$num_rows] + Track $track: $episode_title");
+						$dvd->msg("[$display_count/$num_rows] + Track $track: \"$episode_title\"");
 						
 						// On multiple episodes per track, we need to know the starting
 						// and ending chapters.
-						if($multi) {
+						if($multi == 't') {
 							
 							// See if the next episode is on the same track
 // 							if($arr[$id + 1]['track'] == $track) {
@@ -509,7 +509,7 @@
 						elseif(in_dir($efn, $dir))
 							$display_file_exists = 'final Matroska';
 					
-						$dvd->msg("[$display_count/$num_rows] - Track $track: $display_file_exists file exists.");
+						$dvd->msg("[$display_count/$num_rows] - Track $track: \"$episode_title\" $display_file_exists file exists.");
 					}
 						
 					// Put the episodes in the queue
