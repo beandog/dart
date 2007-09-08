@@ -275,12 +275,8 @@
 						$min_len = $dvd->ask("What is the minimum TV show length (in minutes)? [20]", 20);
 						$max_len = $dvd->ask("What is the maximum TV show length (in minutes)? [60]", 60);
 						$cartoon = $dvd->ask("Is this series animated? [y/N]", 0);
-						// TODO:
-						// Ask for the framerate (PAL, NTSC, Autodetect);
-						$fps = 0;
-						// Ask "is this correct"
 						
-						$dvd->addTVShow($title, $min_len, $max_len, $fps, $cartoon);
+						$dvd->addTVShow($title, $min_len, $max_len, $cartoon);
 					}
 				
 				}

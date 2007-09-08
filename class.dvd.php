@@ -25,11 +25,10 @@
 			);
 		}
 		
-		function addTVShow($title = 'TV Show', $min_len = 30, $max_len = 60, $fps = 0, $cartoon = false) {
+		function addTVShow($title = 'TV Show', $min_len = 30, $max_len = 60, $cartoon = false) {
 			$title = pg_escape_string(trim($title));
 			$min_len = intval($min_len);
 			$max_len = intval($max_len);
-			$fps = intval($fps);
 			if(substr(trim(strtolower($cartoon)), 0, 1) == 'y') {
 				$pg_cartoon = 'TRUE';
 				$cartoon = true;
@@ -42,10 +41,10 @@
 			$sql = "SELECT NEXTVAL('public.tv_shows_id_seq');";
 			$id = current(pg_fetch_row(pg_query($sql))) or die(pg_last_error());
 			
-			$sql = "INSERT INTO tv_shows (id, title, min_len, max_len, fps, cartoon) VALUES ($id, '$title', $min_len, $max_len, $fps, $pg_cartoon);";
+			$sql = "INSERT INTO tv_shows (id, title, min_len, max_len, cartoon) VALUES ($id, '$title', $min_len, $max_len, $pg_cartoon);";
 			pg_query($sql) or die(pg_last_error());
 			
-			$this->tv_show = compact('id', 'title', 'min_len', 'max_len', 'fps', 'cartoon');
+			$this->tv_show = compact('id', 'title', 'min_len', 'max_len', 'cartoon');
 			return true;
 		}
 		
@@ -325,21 +324,10 @@
 				$msg .= ": $episode_title";
 			$this->msg($msg);
 			
-			if($vob_only == 'f') {
-				if(in_dir($vob, $dir) && !in_dir($avi, $dir)) {
-					
-					#if($fps == 2 || $fps == 1)
-						$this->mencoder($vob, $fps, $cartoon, $greyscale, $mencoder_aid);
-					#else
-					#	$this->transcode($vob, $fps);
-				}
-				
-				$display_format = 'AVI';
-				
-			} else {
-				$avi = $vob;
-				$display_format = 'MPEG2';
-			}
+			
+			// Someday, we'll use mencoder profiles to encode stuff
+			$avi = $vob;
+			$display_format = 'MPEG2';
 			
 			if($multi == 'f') {
 				$arr['chapters'] = $this->getTrackChapters($track_id);
@@ -575,9 +563,8 @@
 
 		
 		function getQueue() {
-			#$sql = "SELECT e.id AS episode_id, e.title, e.chapters, e.track, e.mkvmerge_atrack, d.id AS disc_id, d.tv_show, d.season, d.disc AS disc_number, tv.title AS tv_show_title, tv.cartoon, tv.fps, tv.mencoder_aid, tv.greyscale, tv.vob_only FROM queue q INNER JOIN episodes e ON e.id = q.episode INNER JOIN discs d ON e.disc = d.id INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND e.title != '' AND q.queue = {$this->config['queue_id']} ORDER BY q.insert_date;";
 			
-			$sql = "SELECT e.id AS episode_id, e.title, e.chapter, e.chapters, t.track, t.multi, t.id AS track_id, d.id AS disc_id, d.tv_show, d.season, d.disc AS disc_number, tv.title AS tv_show_title, tv.cartoon, tv.fps, tv.mencoder_aid, tv.greyscale, tv.vob_only FROM queue q INNER JOIN episodes e ON e.id = q.episode INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND e.title != '' AND q.queue = {$this->config['queue_id']} ORDER BY q.insert_date;";
+			$sql = "SELECT e.id AS episode_id, e.title, e.chapter, e.chapters, t.track, t.multi, t.id AS track_id, d.id AS disc_id, d.tv_show, d.season, d.disc AS disc_number, tv.title AS tv_show_title, tv.cartoon, tv.mencoder_aid, tv.greyscale, tv.vob_only FROM queue q INNER JOIN episodes e ON e.id = q.episode INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND e.title != '' AND q.queue = {$this->config['queue_id']} ORDER BY q.insert_date;";
 			
 			$rs = pg_query($sql) or die(pg_last_error());
 			for($x = 0; $x < pg_num_rows($rs); $x++)
@@ -765,16 +752,11 @@
 			return true;
 		}
 		
-		function mencoder($vob, $fps, $cartoon = 'f', $greyscale = 'f', $aid = null) {
+		function mencoder($vob, $aid = null) {
 			$flags = '';
 			
 			if(is_numeric($aid))
 				$flags = " -aid $aid ";
-			if($cartoon == 't') {
-				$xvidencopts .= ':cartoon=1';
-			}
-			if($greyscale == 't')
-				$xvidencopts .= ':greyscale=1';
 			
 			$basename = basename($vob, '.vob');
 			$avi = "$basename.avi";
@@ -786,8 +768,8 @@
 			$ovc = 'xvid';
 			$flags .= " -xvidencopts bitrate=2200{$xvidencopts} ";
 			
-			if($fps > 0)
-				$flags .= " -vf pullup,softskip -ofps 24000/1001 ";
+			#if($fps > 0)
+			#	$flags .= " -vf pullup,softskip -ofps 24000/1001 ";
 			
 			$pass1 = "mencoder $vob -o $avi -ovc $ovc -oac copy $flags  ";
 			
@@ -986,7 +968,7 @@
 			}
 		}
 
-		function transcode($vob, $fps = 0) {
+		function transcode($vob) {
 			$flags = '';
 			
 			$basename = basename($vob, '.vob');
@@ -999,8 +981,8 @@
 			}
 			
 			// For 23.97, specify the framerate
-			if($fps == 1)
-				$flags .= " -f 23.976,1 ";
+			#if($fps == 1)
+			#	$flags .= " -f 23.976,1 ";
 			// Variable framerate
 			#elseif($fps == 2) {
 				//$flags .= " -f 0,4 ";
@@ -1015,20 +997,20 @@
 			// Set transcode debug level
 			$q = intval($this->debug);
 
-			if($fps < 2) {
-				$pass1 = "transcode -a 0 -b 128,0,0 -i $vob -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 1,$log -x vob,vob -y xvid4,null $flags -o /dev/null -q $q";
-				$pass2 = "transcode -a 0 -b 128,0,0 -i $vob -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 2,$log -x vob,vob -y xvid4 $flags -o $avi -q $q";
-				$max = 2;
-			}
-			// Variable framerate
-			// This isn't a magic bullet, but sure does work most of the time
-			elseif($fps == 2) {
-				#$pass1 = "mencoder $vob -aid 128 -ovc xvid -oac copy -o $avi -mc 0 -noskip -fps 24000/1001";
-				$pass1 = "transcode -i $vob -x vob,vob -f 0,4 -M 2 -R 3 -w 2 --export_frc 1 -J ivtc -J decimate -B 3,9,16 --hard_fps -J 32detect=force_mode=5:chromathres=2:chromadi=9 -y xvid -o $avi -A -N 0x2000 -a 0 -b 128,0,0";
-				$max = 1;
-				if(isset($pass2))
-					unset($pass2);
-			}
+// 			if($fps < 2) {
+// 				$pass1 = "transcode -a 0 -b 128,0,0 -i $vob -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 1,$log -x vob,vob -y xvid4,null $flags -o /dev/null -q $q";
+// 				$pass2 = "transcode -a 0 -b 128,0,0 -i $vob -w 2200,250,100 -A -N 0x2000 -M 2 -Y 4,4,4,4 -B 1,11,8 -R 2,$log -x vob,vob -y xvid4 $flags -o $avi -q $q";
+// 				$max = 2;
+// 			}
+// 			// Variable framerate
+// 			// This isn't a magic bullet, but sure does work most of the time
+// 			elseif($fps == 2) {
+// 				#$pass1 = "mencoder $vob -aid 128 -ovc xvid -oac copy -o $avi -mc 0 -noskip -fps 24000/1001";
+// 				$pass1 = "transcode -i $vob -x vob,vob -f 0,4 -M 2 -R 3 -w 2 --export_frc 1 -J ivtc -J decimate -B 3,9,16 --hard_fps -J 32detect=force_mode=5:chromathres=2:chromadi=9 -y xvid -o $avi -A -N 0x2000 -a 0 -b 128,0,0";
+// 				$max = 1;
+// 				if(isset($pass2))
+// 					unset($pass2);
+// 			}
 			
 			$this->msg("[Pass 1/$max] VOB => AVI");
 			$this->executeCommand($pass1);
