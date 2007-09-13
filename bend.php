@@ -393,7 +393,7 @@
 		// Pull out the tracks that haven't been flagged to ignore in the database frontend
 		// This query has nothing to do with what has / hasn't been encoded
 		
-		$sql = "SELECT tv.title, d.season, d.disc, t.id AS track_id, t.track, t.multi, d.id AS disc_id, COALESCE(e.starting_chapter, tv.starting_chapter) AS starting_chapter, e.id AS episode_id, e.chapter FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id AND d.id = {$dvd->disc['id']} INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND t.bad_track = FALSE ORDER BY t.track, e.episode_order;";
+		$sql = "SELECT tv.title, tv.unordered, d.season, d.disc, t.id AS track_id, t.track, t.multi, d.id AS disc_id, COALESCE(e.starting_chapter, tv.starting_chapter) AS starting_chapter, e.id AS episode_id, e.chapter FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id AND d.id = {$dvd->disc['id']} INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND t.bad_track = FALSE ORDER BY t.track, e.episode_order;";
 		$rs = pg_query($sql) or die(pg_last_error());
 		$num_rows = pg_num_rows($rs);
 		
@@ -434,7 +434,7 @@
 				$mkv = "$file.mkv";
 				$vob = "$file.vob";
 				
-				$efn = $dvd->getEpisodeFilename($disc_id, $track, $episode_id);
+				$efn = $dvd->getEpisodeFilename($disc_id, $track, $episode_id, $unordered);
 				
 				$count++;
 				
