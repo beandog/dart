@@ -281,12 +281,13 @@
 		
 			extract($arr);
 			
-			#print_r($arr);
-			#die;
+			#print_r($arr); die;
 			
 			$mkv_title = $this->formatTitle("$tv_show_title: $title", false);
 			$title = $this->formatTitle($tv_show_title);
 			$dir = $this->config['export_dir'].$title.'/';
+			
+			chdir($dir);
 			
 			$file = "season_{$season}_disc_{$disc_number}_track_{$track}";
 			
@@ -301,28 +302,14 @@
 			$txt = "$file.txt";
 			$mkv = "$file.mkv";
 			$episode_title = $this->getEpisodeTitle($episode_id);
-			$filename = $this->getEpisodeFilename($disc_id, $track, $episode_id);
+			$filename = $this->getEpisodeFilename($disc_id, $track, $episode_id, $unordered);
 			$png = basename($filename, '.mkv').'.png';
-			
-			// Change to the directory so the 2 pass stats are dumped there,
-			// and so is xvid4.cfg
-			chdir($dir);
-			
-			// By default, use XviD for excellent results
-// 			$config_file = getenv('HOME').'/.transcode/xvid4.cfg';
-// 			$tmp_config_file = $dir.'xvid4.cfg';
-// 			if(file_exists($config_file) && $cartoon == 't') {
-// 				if(!file_exists($tmp_config_file) && $vob_only == 'f') {
-// 					copy($config_file, $tmp_config_file);
-// 				}
-// 				$exec = "sed --in-place -e s/cartoon\ =\ 0/cartoon\ =\ 1/ xvid4.cfg";
-// 				#$this->executeCommand($exec, true);
-// 			}
 			
 			$msg = "Encoding: $tv_show_title";
 			if($episode_title)
 				$msg .= ": $episode_title";
 			$this->msg($msg);
+			
 			
 			
 			// Someday, we'll use mencoder profiles to encode stuff
@@ -490,10 +477,15 @@
 				return false;
 		}
 		
-		function getEpisodeFilename($disc_id, $track, $episode_id) {
+		function getEpisodeFilename($disc_id, $track, $episode_id, $unordered) {
 			$episode = $this->getEpisodeNumber($episode_id);
 			$episode_title = $this->getEpisodeTitle($episode_id);
-			$filename = $episode.'._'.$this->formatTitle($episode_title).'.mkv';
+			
+			$filename = $this->formatTitle($episode_title).'.mkv';
+			
+			if($unordered != 't')
+				$filename = $episode.'._'.$filename;
+				
 			return $filename;
 		}
 		
@@ -558,7 +550,7 @@
 
 		function getQueue() {
 			
-			$sql = "SELECT e.id AS episode_id, e.title, e.chapter, e.chapters, t.track, t.multi, t.id AS track_id, d.id AS disc_id, d.tv_show, d.season, d.disc AS disc_number, tv.title AS tv_show_title, tv.cartoon FROM queue q INNER JOIN episodes e ON e.id = q.episode INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND e.title != '' AND q.queue = {$this->config['queue_id']} ORDER BY q.insert_date;";
+			$sql = "SELECT e.id AS episode_id, e.title, e.chapter, e.chapters, t.track, t.multi, t.id AS track_id, d.id AS disc_id, d.tv_show, d.season, d.disc AS disc_number, tv.title AS tv_show_title, tv.cartoon, tv.unordered FROM queue q INNER JOIN episodes e ON e.id = q.episode INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND e.title != '' AND q.queue = {$this->config['queue_id']} ORDER BY q.insert_date;";
 			
 			$rs = pg_query($sql) or die(pg_last_error());
 			for($x = 0; $x < pg_num_rows($rs); $x++)
