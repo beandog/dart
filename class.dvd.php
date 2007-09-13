@@ -477,7 +477,7 @@
 				return false;
 		}
 		
-		function getEpisodeFilename($disc_id, $track, $episode_id, $unordered) {
+		function getEpisodeFilename($disc_id, $track, $episode_id, $unordered = 'f') {
 			$episode = $this->getEpisodeNumber($episode_id);
 			$episode_title = $this->getEpisodeTitle($episode_id);
 			
