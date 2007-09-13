@@ -676,7 +676,7 @@
 			return array($max, $min, $avg);
 		}
 		
-		function getValidTracks($arr_tracks = null, $min_len = 20, $max_len = 60, $chapters = false) {
+		function getValidTracks($arr_tracks = null, $min_len = 20, $max_len = 60) {
 		
 			if(!is_array($arr_tracks))
 				return false;
@@ -686,32 +686,22 @@
 
 			$add = $ignore = 0;
 
-			// If we are ripping only one track as chapters, then ignore the length
-			// FIXME, not used
-			if($chapters === true) {
-				/*
-				foreach($this->arr_tracks as $key => $value) {
-					if($key != $arr_disc['chapters_track'])
-						unset($this->arr_tracks[$key]);
-				}
-				*/
-			}
-			else {
-				// Trim the tracks that do not meet the min and max length criteria
-				foreach($arr_tracks as $key => $value) {
+			
+			// Trim the tracks that do not meet the min and max length criteria
+			foreach($arr_tracks as $key => $value) {
 
-					if($value > $max_len || $value < $min_len) {
-						$this->msg("- Track $key ($value)", true, true);
-						$arr_valid[$key] = false;
-						$ignore++;
-					}
-					else {
-						$this->msg("+ Track $key ($value)", true, true);
-						$add++;
-						$arr_valid[$key] = true;
-					}
+				if($value > $max_len || $value < $min_len) {
+					$this->msg("- Track $key ($value)", true, true);
+					$arr_valid[$key] = false;
+					$ignore++;
+				}
+				else {
+					$this->msg("+ Track $key ($value)", true, true);
+					$add++;
+					$arr_valid[$key] = true;
 				}
 			}
+			
 
 			$this->msg("$add tracks will be added to the database");
 			$this->msg("$ignore tracks ignored because of length");
@@ -721,7 +711,7 @@
 	
 		function lsdvd($dvd = '/dev/dvd') {
 			#exec('lsdvd -q 2> /dev/null', $arr);
-			$xml = `lsdvd -Ox $dvd 2> /dev/null`;
+			$xml = `lsdvd -c -Ox $dvd 2> /dev/null`;
 
 			$lsdvd = simplexml_load_string($xml);
 
@@ -734,10 +724,6 @@
 			if(!isset($this->disc_id))
 				$this->disc_id = $this->getDiscId($dvd);
 			
-			// Longest track
-			$this->longest_track = (int)$lsdvd->longest_track;
-			$this->longest_track = 1;
-
 			// Build the array of tracks and their lengths
 			foreach($lsdvd->track as $obj) {
 				$this->arr_tracks[(int)$obj->ix] = number_format((float)$obj->length / 60, 2, '.', '');
