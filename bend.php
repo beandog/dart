@@ -421,6 +421,10 @@
 						
 				extract($tmp);
 				
+				// Delete the episode from the queue
+				$sql = "DELETE FROM queue WHERE episode = $episode_id;";
+				pg_query($sql) or die(pg_last_error());
+				
 				$file = "season_{$season}_disc_{$disc}_track_{$track}";
 				
 				if($multi == 't')

@@ -371,9 +371,12 @@
 					unlink($txt);
 			}
 			
-			// Delete from queue so we don't get stuck in a loop
-			$sql = "DELETE FROM queue WHERE episode = $episode_id;";
-			pg_query($sql) or die(pg_last_error());
+			// Don't delete from the queue if the file doesn't exist
+			// For daemon mode, delete from queue so we don't get stuck in a loop
+			if(in_dir($filename, $dir) || $dvd->args['daemon'] ) {
+				$sql = "DELETE FROM queue WHERE episode = $episode_id;";
+				pg_query($sql) or die(pg_last_error());
+			}
 		}
 		
 		/**
@@ -876,7 +879,6 @@
 			// will fix buggy IDE + IRQ seek issues.
 			
 			$starting_chapter = abs(intval($starting_chapter));
-			
 			
 			if(!$starting_chapter)
 				$starting_chapter = 1;
