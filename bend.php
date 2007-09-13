@@ -71,13 +71,9 @@
 	
 	// Create the DVD object
 	$dvd =& new DVD();
-	
-	
 
 	// Set the configuration options
 	$dvd->setConfig($argc, $argv, $arr_config);
-	
-	
 	
 	$arr_cmd = array(
 		'h' => array('help', 'Display this help'),

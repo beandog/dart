@@ -286,7 +286,7 @@
 			
 			$mkv_title = $this->formatTitle("$tv_show_title: $title", false);
 			$title = $this->formatTitle($tv_show_title);
-			$dir = $this->config['export_dir'].'/'.$title.'/';
+			$dir = $this->config['export_dir'].$title.'/';
 			
 			$file = "season_{$season}_disc_{$disc_number}_track_{$track}";
 			
@@ -553,15 +553,6 @@
 				return $title;
 		}
 
-		function getExportDir($title, $season) {
-
-			$export_dir = trim($this->config['export_dir']).preg_replace('/\W+/', '_', trim($title))."/";
-
-			return $export_dir;
-		}
-		
-
-		
 		function getQueue() {
 			
 			$sql = "SELECT e.id AS episode_id, e.title, e.chapter, e.chapters, t.track, t.multi, t.id AS track_id, d.id AS disc_id, d.tv_show, d.season, d.disc AS disc_number, tv.title AS tv_show_title, tv.cartoon FROM queue q INNER JOIN episodes e ON e.id = q.episode INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND e.title != '' AND q.queue = {$this->config['queue_id']} ORDER BY q.insert_date;";
@@ -959,6 +950,10 @@
 					$this->debug = true;
 				else
 					$this->debug = false;
+					
+				// Check export_dir
+				if(substr($this->config['export_dir'], -1) != '/')
+					$this->config['export_dir'] .= '/';
 					
 				return true;
 			}
