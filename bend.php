@@ -421,10 +421,6 @@
 						
 				extract($tmp);
 				
-				// Delete the episode from the queue
-				$sql = "DELETE FROM queue WHERE episode = $episode_id;";
-				pg_query($sql) or die(pg_last_error());
-				
 				$file = "season_{$season}_disc_{$disc}_track_{$track}";
 				
 				if($multi == 't')
@@ -468,6 +464,10 @@
 					
 					// Check to see if file exists, if not, rip it
 					if(!in_dir($vob, $dir) && !in_dir($avi, $dir) && !in_dir($mkv, $dir) && !in_dir($efn, $dir)) {
+					
+						// Delete the episode from the queue
+						$sql = "DELETE FROM queue WHERE episode = $episode_id;";
+						pg_query($sql) or die(pg_last_error());
 					
 						$dvd->msg("[$display_count/$num_rows] + Track $track: \"$episode_title\"");
 						
