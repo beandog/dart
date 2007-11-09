@@ -25,7 +25,7 @@
 		$disc_id = $dvd->getDiscID();
 		
 		if(strlen($disc_id) != '32')
-			die("Couldn't get disc ID!");
+			die("Couldn't get disc ID!\n");
 		
 		$dvd->lsdvd();
 		
