@@ -209,7 +209,10 @@
 		#print_r($dvd);
 		#print_r($chapters);
 		
-		#$dvd->executeCommand('eject');
+		if($dvd->config['eject']) {
+			$dvd->msg("Attempting to eject disc.", true, true);
+			$dvd->executeCommand('eject '.$dvd->config['dvd_device']);
+		}
 
 	}
 	
