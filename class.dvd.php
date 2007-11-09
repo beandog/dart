@@ -454,7 +454,7 @@
 		
 		function getDisc() {
 			if(!isset($this->disc_id))
-				$this->getDiscID();
+				$this->disc_id = $this->getDiscID();
 			$sql = "SELECT id, tv_show, season, disc, disc_title FROM discs WHERE disc_id = '{$this->disc_id}' LIMIT 1;";
 			$rs = pg_query($sql) or die(pg_last_error());
 			if(pg_num_rows($rs) == 1) {
@@ -703,9 +703,17 @@
 	
 		function lsdvd($dvd = '/dev/dvd') {
 			#exec('lsdvd -q 2> /dev/null', $arr);
-			$xml = `lsdvd -c -Ox $dvd 2> /dev/null`;
+			#$xml = `lsdvd -c -Ox $dvd 2> /dev/null`;
+			$xml = `lsdvd -Ox -v -a -s $dvd 2> /dev/null`;
+			
+			$xml = str_replace('Pan&Scan', 'Pan&amp;Scan', $xml);
+			
+			// Fix broken encoding on langcodes
+			$xml = preg_replace("/\<langcode\>\W+\<\/langcode\>/", "<langcode>und</langcode>", $xml);
+			
+			#print_r($xml); die;
 
-			$lsdvd = simplexml_load_string($xml);
+			$lsdvd = simplexml_load_string($xml) or die("Couldn't parse lsdvd XML output");
 
 			// Get the "Disc Title:" string
 			$this->disc_title = (string)$lsdvd->title;
@@ -717,8 +725,31 @@
 				$this->disc_id = $this->getDiscId($dvd);
 			
 			// Build the array of tracks and their lengths
-			foreach($lsdvd->track as $obj) {
-				$this->arr_tracks[(int)$obj->ix] = number_format((float)$obj->length / 60, 2, '.', '');
+			foreach($lsdvd->track as $track) {
+				// This is the original array created -- track lengths
+				// only.  Now I dump more information into a second array
+				// below (arr_lsdvd) for dvd2mkv, to store extra
+				// information about audio tracks, subtitles, aspect ratio
+				$this->arr_tracks[(int)$track->ix] = number_format((float)$track->length / 60, 2, '.', '');
+				
+				// Newer array
+				// Only add ones where length != 0
+				if($this->arr_tracks[(int)$track->ix] != '0.00') {
+					$this->arr_lsdvd[(int)$track->ix]['length'] = $this->arr_tracks[(int)$track->ix];
+					
+					$this->arr_lsdvd[(int)$track->ix]['aspect'] = (string)$track->aspect;
+					
+					// Get the audio streams
+					foreach($track->audio as $audio) {
+						$this->arr_lsdvd[(int)$track->ix]['audio'][] = array('lang' => (string)$audio->langcode, 'channels' => (int)$audio->channels, 'format' => (string)$audio->format);
+					}
+					
+					// Get the subtitle streams
+					foreach($track->subp as $subp) {
+						$this->arr_lsdvd[(int)$track->ix]['vobsub'][] = array('lang' => (string)$subp->langcode, 'language' => (string)$subp->language);
+					}
+				}
+				
 			}
 
 			return true;
@@ -753,25 +784,46 @@
 		function midentify($file = 'movie.vob') {
 
 			exec("midentify $file", $midentify);
+			
+			$a = 0;
 
 			foreach($midentify as $key => $value) {
 				$arr_split = preg_split('/\s*=\s*/', $value);
-				$arr[trim($arr_split[0])] = trim($arr_split[1]);
+				$key = trim($arr_split[0]);
+				$value = trim($arr_split[1]);
+				$arr[$key] = $value;
+				
+				// Use lsdvd instead .. cleaner
+				/*
+				if($key == 'ID_AUDIO_ID') {
+					$arr['audio_tracks'][$a] = array('id' => $value);
+				} elseif($key == "ID_AID_".$arr['audio_tracks'][$a]['id']."_LANG") {
+					$arr['audio_tracks'][$a]['lang'] = $value;
+					$a++;
+				}
+				*/
 			}
 
 			return $arr;
 
 		}
 		
-		function mkvmerge($avi = 'movie.avi', $txt = 'chapters.txt', $mkv = 'movie.mkv', $title = '', $atrack = 1) {
+		function mkvmerge($avi = 'movie.avi', $txt = 'chapters.txt', $mkv = 'movie.mkv', $title = '', $atrack = 1, $aspect = '4/3') {
 				
 				if(is_null($atrack))
 					$atrack = 1;
 				// Moving order around to work with audio tracks
-				$exec = "mkvmerge --aspect-ratio 0:4/3 -o \"$mkv\" -a $atrack $avi --title \"$title\"";
+				$exec = "mkvmerge --aspect-ratio 0:$aspect -o \"$mkv\" -a $atrack $avi --title \"$title\" --default-language en";
 				
 				if(file_exists($txt))
 					 $exec .= " --chapters $txt";
+				 
+				// Include VobSub subtitles if they exist
+				$idx = basename($avi, '.avi').".idx";
+				if(file_exists($idx))
+					 $exec .= " $idx";
+					 
+				#echo $exec; die;
 					 
 				$this->executeCommand($exec, true);
 		}
@@ -941,6 +993,19 @@
 				trigger_error("Couldn't parse your configuration options", E_USER_WARNING);
 				return false;
 			}
+		}
+		
+		function tcprobe($dvd = '/dev/dvd') {
+			exec("tcprobe -i /dev/dvd 2> /dev/null", $tcprobe);
+			
+			// Get the aspect ratio
+			$str = trim(current(preg_grep('/^\s*aspect/', $tcprobe)));
+			#print_r($arr);
+			$explode = preg_split('/\s+/', $str);
+			
+			$aspect_ratio = $explode[2];
+			
+			return($aspect_ratio);
 		}
 
 		function transcode($vob) {
