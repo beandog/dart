@@ -29,6 +29,9 @@
 		
 		$dvd->lsdvd();
 		
+		if(!$dvd->args['debug'])
+			$dvd->msg("Disc title: ".$dvd->disc_title);
+		
 		if($dvd->args['q']) {
 			print_r($dvd->arr_lsdvd); die;
 		}
@@ -138,7 +141,7 @@
 			}
 		
 			$title = pg_escape_string($title);
-			echo $sql = "INSERT INTO movies (disc_id, disc_title, track, aid) VALUES ('$disc_id', '$title', $track, $aid);";
+			$sql = "INSERT INTO movies (disc_id, disc_title, track, aid) VALUES ('$disc_id', '$title', $track, $aid);";
 			sqlite_query($sql, $db);
 		}
 		
