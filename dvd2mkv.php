@@ -151,7 +151,7 @@
 		// Make sure there is a subtitle track to rip
 		$slang = false;
 		
-		if($dvd->arr_lsdvd[$track]['vobsub']) {
+		if(array_key_exists('vobsub', $dvd->arr_lsdvd[$track])) {
 			foreach($dvd->arr_lsdvd[$track]['vobsub'] as $key => $tmp) {
 				if($slang == false && ($tmp['lang'] == 'en' || $tmp['language'] == 'English'))
 					$slang = true;
