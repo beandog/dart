@@ -156,43 +156,74 @@
 		$mkv = "$title.mkv";
 
 		$scandir = preg_grep('/(avi|mkv|vob)$/', scandir('./'));
+		
+// 		if($dvd->args['vob'] || $dvd->args['sub']) {
+// 			if(!in_array($vob, $scandir) && $dvd->args['vob']) {
+// 				$exec = "mplayer -dvd-device {$dvd->config['dvd_device']} dvd://$track -dumpstream -dumpfile $vob";
+// 				$dvd->executeCommand($exec);
+// 				$dvd->msg("VOB dumped");
+// 			}
+// 			
+// 			if(!in_array($idx, $scandir) && $dvd->args['sub']) {
+// 				$exec = "mencoder -dvd-device {$dvd->config['dvd_device']} dvd://$track -ovc frameno -nosound -vc dummy -vobsubout $title -o /dev/null -speed 90 -slang en";
+// 				$dvd->executeCommand($exec);
+// 				$dvd->msg("Subtitles dumped");
+// 			}
+// 			
+// 			if(!file_exists($txt)) {
+// 				$dvd->arr_encode['chapters'] = $dvd->getChapters($track);
+// 				
+// 				$chapters = $dvd->getChapters($track, $dvd->config['dvd_device']);
+// 				$dvd->writeChapters($chapters, $txt);
+// 			}
+// 			
+// 			die;
+// 		}
 
-		// Mount/read DVD contents if we need to
-		if(!file_exists($txt) || !in_array($mkv, $scandir)) {
-
-			#$dvd->executeCommand('mount /mnt/dvd');
-
-			if(!file_exists($txt)) {
-				$dvd->arr_encode['chapters'] = $dvd->getChapters($track);
-				
-				#print_r($dvd);
-				
-				$chapters = $dvd->getChapters($track, $dvd->config['dvd_device']);
-				$dvd->writeChapters($chapters, $txt);
-			}
-
+		if(!in_array($mkv, $scandir) && !in_array($vob, $scandir) && !in_array($avi, $scandir)) {
+		
 			// file_exists doesn't work on LARGE files (such as VOB files over 2gb)
 			// so we use scandir and in_array instead
-			if(!in_array($vob, $scandir) && !in_array($avi, $scandir) && !in_array($mkv, $scandir)) {
+			$dvd->msg("Ripping video track $track and audio track $aid");
+			$dvd->msg("Movie aspect ratio: $aspect");
 			
-				echo("Ripping video track $track and audio track $aid\n");
-				echo("Movie aspect ratio: $aspect\n");
-				#$exec = "mplayer -dvd-device {$dvd->config['dvd_device']} dvd://$track -dumpstream -dumpfile $vob";
-				$exec = "mencoder -dvd-device {$dvd->config['dvd_device']} dvd://$track -ovc copy -oac copy $str_aid -slang en -vobsubout $title -o $avi";
-				#echo $exec; die;
+			if($dvd->args['copy']) {
+				$exec = "mplayer -dvd-device {$dvd->config['dvd_device']} dvd://$track -dumpstream -dumpfile $vob";
 				$dvd->executeCommand($exec);
-				#$exec = "mencoder dvd://{$dvd->longest_track} -ovc copy -oac copy -ofps 24000/1001 -o $vob";
+				$dvd->msg("VOB dumped");
 				
-			}/* elseif($dvd->args['encode'] == 1 && !in_array($vob, $scandir)) {
-				$exec = "mencoder -dvd-device {$dvd->config['dvd_device']} dvd://$track -profile dvd2mkv -o $avi";
+				if(!$dvd->args['nosub']) {
+					$dvd->msg("Ripping subtitles");
+					$exec = "mencoder -dvd-device {$dvd->config['dvd_device']} dvd://$track -ovc copy -nosound -vobsubout $title -o /dev/null -slang en";
+					$dvd->executeCommand($exec);
+					$dvd->msg("Subtitles dumped");
+				}
+			} else {
+				$exec = "mencoder -dvd-device {$dvd->config['dvd_device']} dvd://$track -ovc copy -oac copy $str_aid -slang en -vobsubout $title -o $avi";
 				$dvd->executeCommand($exec);
-			}*/
+				$dvd->msg("A/V encoded");
+			}
+			
+		}
+		
+		// Get the chapters
+		if(!file_exists($txt)) {
+			$chapters = $dvd->getChapters($track, $dvd->config['dvd_device']);
+			$dvd->writeChapters($chapters, $txt);
+		}
+		
+		if($dvd->config['eject']) {
+			$dvd->msg("Attempting to eject disc.", true, true);
+			$dvd->executeCommand('eject '.$dvd->config['dvd_device']);
 		}
 		
 		if(file_exists($vob) && !file_exists($avi))
 			$avi =& $vob;
 		
 		if(!file_exists($mkv)) {
+		
+			
+		
 			echo "Creating Matroska file\n";
 			
 			$dvd->mkvmerge($avi, $txt, $mkv, $title, 1, $aspect);
@@ -208,11 +239,6 @@
 
 		#print_r($dvd);
 		#print_r($chapters);
-		
-		if($dvd->config['eject']) {
-			$dvd->msg("Attempting to eject disc.", true, true);
-			$dvd->executeCommand('eject '.$dvd->config['dvd_device']);
-		}
 
 	}
 	
