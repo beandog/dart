@@ -22,9 +22,9 @@
 	
 		$title =& $dvd->args['title'];
 	
-		$disc_id = $dvd->getDiscID();
+		$dvd->disc_id = $dvd->getDiscID();
 		
-		if(strlen($disc_id) != '32')
+		if(strlen($dvd->disc_id) != '32')
 			die("Couldn't get disc ID!\n");
 		
 		$dvd->lsdvd();
@@ -36,7 +36,7 @@
 			print_r($dvd->arr_lsdvd); die;
 		}
 		
-		$disc_id = pg_escape_string($disc_id);
+		$disc_id = pg_escape_string($dvd->disc_id);
 		$sql = "SELECT * FROM movies WHERE disc_id = '$disc_id';";
 		$rs = sqlite_query($sql, $db);
 		
@@ -143,6 +143,13 @@
 			$title = pg_escape_string($title);
 			$sql = "INSERT INTO movies (disc_id, disc_title, track, aid) VALUES ('$disc_id', '$title', $track, $aid);";
 			sqlite_query($sql, $db);
+			
+			// Make sure there is a subtitle track to rip
+			$slang = false;
+			foreach($dvd->arr_lsdvd[$track]['vobsub'] as $tmp) {
+				if($slang == false && ($tmp['lang'] == 'en' || $tmp['language'] == 'English'))
+					$slang = true;
+			}
 		}
 		
 		$aspect = $dvd->arr_lsdvd[$track]['aspect'];
@@ -192,7 +199,9 @@
 				$dvd->executeCommand($exec);
 				$dvd->msg("VOB dumped");
 				
-				if(!$dvd->args['nosub']) {
+				// Only rip the subtitles if they exist, or if
+				// they were not specifically disabled
+				if(!$dvd->args['nosub'] && $slang) {
 					$dvd->msg("Ripping subtitles");
 					$exec = "mencoder -dvd-device {$dvd->config['dvd_device']} dvd://$track -ovc copy -nosound -vobsubout $title -o /dev/null -slang en";
 					$dvd->executeCommand($exec);
