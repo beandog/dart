@@ -49,7 +49,7 @@
 		
 			// Default to the single track if its the only non-zero lengthed one
 			if(count($dvd->arr_lsdvd) == 1) {
-				$track = current($dvd->arr_lsdvd);
+				$track = key($dvd->arr_lsdvd);
 			// Check for user input
 			} elseif($dvd->args['track']) {
 				$track = abs(intval($dvd->args['track']));
@@ -81,6 +81,7 @@
 			// Only check if there is more than one to pick through
 			// otherwise, mencoder will get the default track fine
 			// with no arguments
+			
 			if(count($dvd->arr_lsdvd[$track]['audio']) > 1) {
 				$lang_track = array();
 				
