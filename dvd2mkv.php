@@ -136,7 +136,9 @@
 				$str_aid = "-aid $aid";
 			
 			if(empty($title)) {
-				$title = $dvd->ask("Enter a movie title:", 'Movie Title');
+				$title = ucwords(strtolower(str_replace('_', ' ', $dvd->disc_title)));
+				$title = str_replace(' And ', ' and ', $title);
+				$title = $dvd->ask("Enter a movie title: [$title]", $title);
 			} else {
 				$title = $dvd->args['title'];
 			}
