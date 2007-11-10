@@ -808,7 +808,7 @@
 
 		}
 		
-		function mkvmerge($avi = 'movie.avi', $txt = 'chapters.txt', $mkv = 'movie.mkv', $title = '', $atrack = 1, $aspect = '4/3') {
+		function mkvmerge($avi = 'movie.avi', $txt = 'chapters.txt', $mkv = 'movie.mkv', $title = '', $atrack = 1, $aspect = '4/3', $idx = 'movie.idx') {
 				
 				if(is_null($atrack))
 					$atrack = 1;
@@ -819,7 +819,6 @@
 					 $exec .= " --chapters $txt";
 				 
 				// Include VobSub subtitles if they exist
-				$idx = basename($avi, '.avi').".idx";
 				if(file_exists($idx))
 					 $exec .= " $idx";
 					 

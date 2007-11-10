@@ -144,12 +144,15 @@
 			$sql = "INSERT INTO movies (disc_id, disc_title, track, aid) VALUES ('$disc_id', '$title', $track, $aid);";
 			sqlite_query($sql, $db);
 			
-			// Make sure there is a subtitle track to rip
-			$slang = false;
-			foreach($dvd->arr_lsdvd[$track]['vobsub'] as $tmp) {
-				if($slang == false && ($tmp['lang'] == 'en' || $tmp['language'] == 'English'))
-					$slang = true;
-			}
+			
+		}
+		
+		// Make sure there is a subtitle track to rip
+		$slang = false;
+		foreach($dvd->arr_lsdvd[$track]['vobsub'] as $key => $tmp) {
+			print_r($tmp);
+			if($slang == false && ($tmp['lang'] == 'en' || $tmp['language'] == 'English'))
+				$slang = true;
 		}
 		
 		$aspect = $dvd->arr_lsdvd[$track]['aspect'];
@@ -187,27 +190,30 @@
 // 			die;
 // 		}
 
-		if(!in_array($mkv, $scandir) && !in_array($vob, $scandir) && !in_array($avi, $scandir)) {
+		if(!in_array($mkv, $scandir) || !in_array($vob, $scandir) || !in_array($avi, $scandir)) {
 		
 			// file_exists doesn't work on LARGE files (such as VOB files over 2gb)
 			// so we use scandir and in_array instead
 			$dvd->msg("Ripping video track $track and audio track $aid");
 			$dvd->msg("Movie aspect ratio: $aspect");
 			
-			if($dvd->args['copy']) {
-				$exec = "mplayer -dvd-device {$dvd->config['dvd_device']} dvd://$track -dumpstream -dumpfile $vob";
-				$dvd->executeCommand($exec);
-				$dvd->msg("VOB dumped");
+			if(!$dvd->args['encode']) {
+			
+				if(!in_array($vob, $scandir)) {
+					$exec = "mplayer -dvd-device {$dvd->config['dvd_device']} dvd://$track -dumpstream -dumpfile $vob";
+					$dvd->executeCommand($exec);
+					$dvd->msg("VOB dumped");
+				}
 				
 				// Only rip the subtitles if they exist, or if
 				// they were not specifically disabled
-				if(!$dvd->args['nosub'] && $slang) {
+				if(!$dvd->args['nosub'] && $slang && !in_array($idx, $scandir)) {
 					$dvd->msg("Ripping subtitles");
 					$exec = "mencoder -dvd-device {$dvd->config['dvd_device']} dvd://$track -ovc copy -nosound -vobsubout $title -o /dev/null -slang en";
 					$dvd->executeCommand($exec);
 					$dvd->msg("Subtitles dumped");
 				}
-			} else {
+			} elseif(!in_array($avi, $scandir)) {
 				$exec = "mencoder -dvd-device {$dvd->config['dvd_device']} dvd://$track -ovc copy -oac copy $str_aid -slang en -vobsubout $title -o $avi";
 				$dvd->executeCommand($exec);
 				$dvd->msg("A/V encoded");
@@ -231,11 +237,9 @@
 		
 		if(!file_exists($mkv)) {
 		
-			
-		
 			echo "Creating Matroska file\n";
 			
-			$dvd->mkvmerge($avi, $txt, $mkv, $title, 1, $aspect);
+			$dvd->mkvmerge($avi, $txt, $mkv, $title, 1, $aspect, $idx);
 		}
 
 		if(file_exists($mkv)) {
