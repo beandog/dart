@@ -239,7 +239,12 @@
 		
 			echo "Creating Matroska file\n";
 			
-			$dvd->mkvmerge($avi, $txt, $mkv, $title, 1, $aspect, $idx);
+			if($dvd->args['encode'])
+				$atrack = 1;
+			else
+				$atrack = ($aid - 127);
+			
+			$dvd->mkvmerge($avi, $txt, $mkv, $title, $atrack, $aspect, $idx);
 		}
 
 		if(file_exists($mkv)) {
