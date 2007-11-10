@@ -252,7 +252,7 @@
 			$dvd->mkvmerge($avi, $txt, $mkv, $title, $atrack, $aspect, $idx);
 		}
 
-		if(file_exists($mkv)) {
+		if(file_exists($mkv) && !$dvd->args['debug']) {
 			file_exists($vob) && unlink($vob);
 			file_exists($avi) && unlink($avi);
 			file_exists($txt) && unlink($txt);
