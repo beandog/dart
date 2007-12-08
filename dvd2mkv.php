@@ -30,7 +30,7 @@
 		$dvd->lsdvd();
 		
 		if(!$dvd->args['debug'])
-			$dvd->msg("Disc title: ".$dvd->disc_title);
+			$dvd->msg("[DVD] Disc title: ".$dvd->disc_title);
 		
 		if($dvd->args['q']) {
 			print_r($dvd->arr_lsdvd); die;
@@ -44,6 +44,7 @@
 			$arr = sqlite_fetch_array($rs);
 			extract($arr);
 			$title =& $arr['disc_title'];
+			$dvd->msg("[DVD] Movie title: $title");
 			
 		} else {
 		
@@ -161,6 +162,19 @@
 		}
 		
 		$aspect = $dvd->arr_lsdvd[$track]['aspect'];
+		$length = $dvd->arr_lsdvd[$track]['length'];
+		
+		$audio_track = $aid - 128;
+		$channels = $dvd->arr_lsdvd[$track]['audio'][$audio_track]['channels'];
+		$format = $dvd->arr_lsdvd[$track]['audio'][$audio_track]['format'];
+		if($format == 'ac3')
+			$format = 'Dolby Digital';
+		elseif($format == 'dts')
+			$format = 'DTS';
+		elseif($format == 'stereo')
+			$format = 'Stereo';
+		
+		$subtitles = ( $slang ? 'Present' : 'None' );
 
 		$title = $dvd->escapeTitle($title);
 		$vob = "$title.vob";
@@ -170,50 +184,35 @@
 		$avi = "$title.avi";
 		$mkv = "$title.mkv";
 
-		$scandir = preg_grep('/(avi|mkv|vob)$/', scandir('./'));
-		
-// 		if($dvd->args['vob'] || $dvd->args['sub']) {
-// 			if(!in_array($vob, $scandir) && $dvd->args['vob']) {
-// 				$exec = "mplayer -dvd-device {$dvd->config['dvd_device']} dvd://$track -dumpstream -dumpfile $vob";
-// 				$dvd->executeCommand($exec);
-// 				$dvd->msg("VOB dumped");
-// 			}
-// 			
-// 			if(!in_array($idx, $scandir) && $dvd->args['sub']) {
-// 				$exec = "mencoder -dvd-device {$dvd->config['dvd_device']} dvd://$track -ovc frameno -nosound -vc dummy -vobsubout $title -o /dev/null -speed 90 -slang en";
-// 				$dvd->executeCommand($exec);
-// 				$dvd->msg("Subtitles dumped");
-// 			}
-// 			
-// 			if(!file_exists($txt)) {
-// 				$dvd->arr_encode['chapters'] = $dvd->getChapters($track);
-// 				
-// 				$chapters = $dvd->getChapters($track, $dvd->config['dvd_device']);
-// 				$dvd->writeChapters($chapters, $txt);
-// 			}
-// 			
-// 			die;
-// 		}
+		$scandir = preg_grep('/(vob|sub|idx|txt|avi|mkv)$/', scandir('./'));
 
 		if(!in_array($mkv, $scandir) || !in_array($vob, $scandir) || !in_array($avi, $scandir)) {
 		
 			// file_exists doesn't work on LARGE files (such as VOB files over 2gb)
 			// so we use scandir and in_array instead
-			$dvd->msg("Ripping video track $track and audio track $aid");
-			$dvd->msg("Movie aspect ratio: $aspect");
+			$dvd->msg("[Video] Track number: $track");
+			$dvd->msg("[Video] Aspect ratio: $aspect");
+			$dvd->msg("[Video] Length: $length");
+			$dvd->msg("[Audio] Track: $aid");
+			$dvd->msg("[Audio] Format: $format");
+			$dvd->msg("[Audio] Channels: $channels");
+			$dvd->msg("[DVD] Subtitles: $subtitles");
 			
 			if(!$dvd->args['encode']) {
 			
 				if(!in_array($vob, $scandir)) {
+					$dvd->msg("[DVD] Ripping MPEG-2");
 					$exec = "mplayer -dvd-device {$dvd->config['dvd_device']} dvd://$track -dumpstream -dumpfile $vob";
 					$dvd->executeCommand($exec);
-					$dvd->msg("VOB dumped");
+					#$dvd->msg("VOB dumped");
 				}
 				
-				// Only rip the subtitles if they exist, or if
-				// they were not specifically disabled
-				if(!$dvd->args['nosub'] && $slang && !in_array($idx, $scandir)) {
-					$dvd->msg("Ripping subtitles");
+				// Rip subtitles if:
+				// 1) They exist and
+				// 2) there is one for the specified language and
+				// 3) They are not already ripped
+				if(!$dvd->args['nosub'] && $slang && (!in_array($idx, $scandir) && !in_array($sub, $scandir))) {
+					$dvd->msg("[DVD] Ripping subtitles");
 					$exec = "mencoder -dvd-device {$dvd->config['dvd_device']} dvd://$track -ovc copy -nosound -vobsubout $title -o /dev/null -slang en";
 					$dvd->executeCommand($exec);
 					$dvd->msg("Subtitles dumped");
@@ -228,6 +227,7 @@
 		
 		// Get the chapters
 		if(!file_exists($txt)) {
+			$dvd->msg("[DVD] Ripping chapters");
 			$chapters = $dvd->getChapters($track, $dvd->config['dvd_device']);
 			$dvd->writeChapters($chapters, $txt);
 		}
@@ -242,7 +242,7 @@
 		
 		if(!file_exists($mkv)) {
 		
-			echo "Creating Matroska file\n";
+			$dvd->msg("[MKV] Creating Matroska file");
 			
 			if($dvd->args['encode'])
 				$atrack = 1;
