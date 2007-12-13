@@ -395,7 +395,7 @@
 			return $str;
 		}
 		
-		function executeCommand($str, $do_not_escape = false) {
+		function executeCommand($str, $do_not_escape = false, $verbose = false) {
 
 			if($do_not_escape === false)
 				$str = escapeshellcmd($str);
@@ -403,6 +403,8 @@
 			if($this->debug) {
 				#$str .= ';';
 				$this->msg("Executing command: '$str'", false, true);
+				passthru($str);
+			} elseif($verbose) {
 				passthru($str);
 			}
 			/*
@@ -823,8 +825,12 @@
 					 $exec .= " $idx";
 					 
 				#echo $exec; die;
+				
+				$verbose = false;
+				if($this->args['v'] == 'mkv')
+					$verbose = true;
 					 
-				$this->executeCommand($exec, true);
+				$this->executeCommand($exec, true, $verbose);
 		}
 		
 		function mount() {

@@ -40,7 +40,7 @@
 		$sql = "SELECT * FROM movies WHERE disc_id = '$disc_id';";
 		$rs = sqlite_query($sql, $db);
 		
-		if(sqlite_num_rows($rs)) {
+		if(sqlite_num_rows($rs) && !$dvd->args['i']) {
 			$arr = sqlite_fetch_array($rs);
 			extract($arr);
 			$title =& $arr['disc_title'];
@@ -83,7 +83,7 @@
 			// otherwise, mencoder will get the default track fine
 			// with no arguments
 			
-			if(count($dvd->arr_lsdvd[$track]['audio']) > 1) {
+			if(count($dvd->arr_lsdvd[$track]['audio']) > 1 || $dvd->args['i']) {
 				$lang_track = array();
 				
 				// Should be customizable sometime
@@ -145,6 +145,8 @@
 			}
 		
 			$title = pg_escape_string($title);
+			$sql = "DELETE FROM movies WHERE disc_id = '$disc_id' AND track = $track;";
+			sqlite_query($sql, $db);
 			$sql = "INSERT INTO movies (disc_id, disc_title, track, aid) VALUES ('$disc_id', '$title', $track, $aid);";
 			sqlite_query($sql, $db);
 			
