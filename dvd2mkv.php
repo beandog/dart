@@ -88,7 +88,7 @@
 				
 				// Should be customizable sometime
 				$default_lang = 'en';
-				$preferred_audio_formats = array('ac3', 'stereo');
+				$preferred_audio_formats = array('dts', 'ac3', 'stereo');
 				
 				foreach($dvd->arr_lsdvd[$track]['audio'] as $key => $tmp) {
 					if($tmp['lang'] == $default_lang)
@@ -109,13 +109,40 @@
 					foreach($arr_possible_tracks as $key => $tmp) {
 						$atmp = $dvd->arr_lsdvd[$track]['audio'][$tmp];
 						if(in_array($atmp['format'], $preferred_audio_formats)) {
+						
+							#$max_channels = max(array($max_channels, $atmp['channels']));
+						
 							if($atmp['channels'] > $lang_track['channels']) {
 								$lang_track = $atmp;
 								$aid = 128 + $tmp;
 							}
 						}
 					}
-				
+					
+					// Possible code to pick the preferred audio track first
+					// really needs to be cleaned up / done right
+// 					foreach($arr_possible_tracks as $key => $tmp) {
+// 						$atmp = $dvd->arr_lsdvd[$track]['audio'][$tmp];
+// 						if(in_array($atmp['format'], $preferred_audio_formats) && $atmp['channels'] == $max_channels) {
+// 						
+// 							if($atmp['format'] == $preferred_audio_formats[0]) {
+// 								$lang_track = $atmp;
+//  								$aid = 128 + $tmp;
+//  								$audio_track = true;
+// 							}
+// 						
+// // 							if($atmp['channels'] > $lang_track['channels']) {
+// // 								$lang_track = $atmp;
+// // 								$aid = 128 + $tmp;
+// // 							}
+// 						}
+// 						
+// 						if(!$audio_track) {
+// 							$lang_track = $atmp;
+// 							$aid = 128 + $tmp;
+// 						}
+// 					}
+					
 					// Override interactively
 					if($dvd->args['i']) {
 					
