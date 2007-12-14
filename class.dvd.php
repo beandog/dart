@@ -389,7 +389,7 @@
 		
 		function escapeTitle($str) {
 			$str = trim($str);
-			$arr_pattern = array('/\s+/', '/\W/');
+			$arr_pattern = array('/\s+/', "/[^A-Za-z_0-9\-,.?':!]/");
 			$arr_replace = array('_', '');
 			$str = preg_replace($arr_pattern, $arr_replace, $str);
 			return $str;
@@ -426,7 +426,7 @@
 		}
 		
 		function formatTitle($title = 'TV Show Title', $underlines = true) {
-			$title = preg_replace('/[^A-Za-z0-9 \-,.?\':]/', '', $title);
+			$title = preg_replace("/[^A-Za-z0-9 \-,.?':!]/", '', $title);
 			$underlines && $title = str_replace(' ', '_', $title);
 			return $title;
 		}
@@ -815,14 +815,14 @@
 				if(is_null($atrack))
 					$atrack = 1;
 				// Moving order around to work with audio tracks
-				$exec = "mkvmerge --aspect-ratio 0:$aspect -o \"$mkv\" -a $atrack $avi --title \"$title\" --default-language en";
+				$exec = "mkvmerge --aspect-ratio 0:$aspect -o \"$mkv\" -a $atrack \"$avi\" --title \"$title\" --default-language en";
 				
 				if(file_exists($txt))
-					 $exec .= " --chapters $txt";
+					 $exec .= " --chapters \"$txt\"";
 				 
 				// Include VobSub subtitles if they exist
 				if(file_exists($idx))
-					 $exec .= " $idx";
+					 $exec .= " \"$idx\"";
 					 
 				#echo $exec; die;
 				

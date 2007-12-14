@@ -144,12 +144,14 @@
 				$title = $dvd->args['title'];
 			}
 		
-			$title = pg_escape_string($title);
-			$sql = "DELETE FROM movies WHERE disc_id = '$disc_id' AND track = $track;";
-			sqlite_query($sql, $db);
-			$sql = "INSERT INTO movies (disc_id, disc_title, track, aid) VALUES ('$disc_id', '$title', $track, $aid);";
-			sqlite_query($sql, $db);
+			$str_title = pg_escape_string($title);
 			
+			if(!$dvd->args['nodb']) {
+				$sql = "DELETE FROM movies WHERE disc_id = '$disc_id' AND track = $track;";
+				sqlite_query($sql, $db);
+				$sql = "INSERT INTO movies (disc_id, disc_title, track, aid) VALUES ('$disc_id', '$str_title', $track, $aid);";
+				sqlite_query($sql, $db);
+			}
 			
 		}
 		
