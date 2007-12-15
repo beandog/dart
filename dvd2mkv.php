@@ -8,9 +8,9 @@
 	$db = sqlite_open('/home/steve/.dvd2mkv/movies.db', 0666, $sqliteerror);
 	
 	/** Get the configuration options */
-	$bendrc = '/home/steve/.bend';
-	if(file_exists($bendrc)) {
-		$arr_config = parse_ini_file($bendrc);
+	$config = '/home/steve/.dvd2mkv/config';
+	if(file_exists($config)) {
+		$arr_config = parse_ini_file($config);
 	} else {
 		trigger_error("No config file found, using defaults", E_USER_WARNING);
 		$arr_config = array();
