@@ -166,6 +166,8 @@
 			if(empty($title)) {
 				$title = ucwords(strtolower(str_replace('_', ' ', $dvd->disc_title)));
 				$title = str_replace(' And ', ' and ', $title);
+				$title = str_replace(' Of ', ' of ', $title);
+				$title = str_replace(' The ', ' the ', $title);
 				$title = $dvd->ask("Enter a movie title: [$title]", $title);
 			} else {
 				$title = $dvd->args['title'];
