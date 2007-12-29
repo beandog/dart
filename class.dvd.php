@@ -709,6 +709,7 @@
 			$xml = `lsdvd -Ox -v -a -s $dvd 2> /dev/null`;
 			
 			$xml = str_replace('Pan&Scan', 'Pan&amp;Scan', $xml);
+			$xml = str_replace('P&S', 'P&amp;S', $xml);
 			
 			// Fix broken encoding on langcodes
 			$xml = preg_replace("/\<langcode\>\W+\<\/langcode\>/", "<langcode>und</langcode>", $xml);

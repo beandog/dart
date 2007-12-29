@@ -119,30 +119,6 @@
 						}
 					}
 					
-					// Possible code to pick the preferred audio track first
-					// really needs to be cleaned up / done right
-// 					foreach($arr_possible_tracks as $key => $tmp) {
-// 						$atmp = $dvd->arr_lsdvd[$track]['audio'][$tmp];
-// 						if(in_array($atmp['format'], $preferred_audio_formats) && $atmp['channels'] == $max_channels) {
-// 						
-// 							if($atmp['format'] == $preferred_audio_formats[0]) {
-// 								$lang_track = $atmp;
-//  								$aid = 128 + $tmp;
-//  								$audio_track = true;
-// 							}
-// 						
-// // 							if($atmp['channels'] > $lang_track['channels']) {
-// // 								$lang_track = $atmp;
-// // 								$aid = 128 + $tmp;
-// // 							}
-// 						}
-// 						
-// 						if(!$audio_track) {
-// 							$lang_track = $atmp;
-// 							$aid = 128 + $tmp;
-// 						}
-// 					}
-					
 					// Override interactively
 					if($dvd->args['i']) {
 					
@@ -209,13 +185,13 @@
 		
 		$subtitles = ( $slang ? 'Present' : 'None' );
 
-		$title = $dvd->escapeTitle($title);
-		$vob = "$title.vob";
-		$sub = "$title.sub";
-		$idx = "$title.idx";
-		$txt = "$title.txt";
-		$avi = "$title.avi";
-		$mkv = "$title.mkv";
+		$file = $dvd->escapeTitle($title);
+		$vob = "$file.vob";
+		$sub = "$file.sub";
+		$idx = "$file.idx";
+		$txt = "$file.txt";
+		$avi = "$file.avi";
+		$mkv = "$file.mkv";
 
 		$scandir = preg_grep('/(vob|sub|idx|txt|avi|mkv)$/', scandir('./'));
 
@@ -246,12 +222,12 @@
 				// 3) They are not already ripped
 				if(!$dvd->args['nosub'] && $slang && (!in_array($idx, $scandir) && !in_array($sub, $scandir))) {
 					$dvd->msg("[DVD] Ripping subtitles");
-					$exec = "mencoder -dvd-device {$dvd->config['dvd_device']} dvd://$track -ovc copy -nosound -vobsubout $title -o /dev/null -slang en";
+					$exec = "mencoder -dvd-device {$dvd->config['dvd_device']} dvd://$track -ovc copy -nosound -vobsubout $file -o /dev/null -slang en";
 					$dvd->executeCommand($exec);
 					$dvd->msg("Subtitles dumped");
 				}
 			} elseif(!in_array($avi, $scandir)) {
-				$exec = "mencoder -dvd-device {$dvd->config['dvd_device']} dvd://$track -ovc copy -oac copy $str_aid -slang en -vobsubout $title -o $avi";
+				$exec = "mencoder -dvd-device {$dvd->config['dvd_device']} dvd://$track -ovc copy -oac copy $str_aid -slang en -vobsubout $file -o $avi";
 				$dvd->executeCommand($exec);
 				$dvd->msg("A/V encoded");
 			}
