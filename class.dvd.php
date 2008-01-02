@@ -7,7 +7,7 @@
 		 * Creaates database connection, and default values
 		 */
 		function __construct() {
-			$this->db = pg_connect('host=charlie dbname=movies user=steve') or die(pg_last_error());
+			
 			$this->min_len = 20;
 			$this->max_len = 59;
 			
@@ -958,6 +958,7 @@
 		 * @param array Configuration options
 		 */
 		function setConfig($argc, $argv, $arr_config) {
+		
 			if(is_int($argc) && is_array($argv) && is_array($arr_config)) {
 			
 				$this->config = $arr_config;
@@ -974,8 +975,10 @@
 			
 				if(substr($argv[0], -7, 7) == 'dvd2mkv')
 					$this->dvd2mkv = true;
-				else
+				else {
 					$this->dvd2mkv = false;
+					$this->db = pg_connect('host=charlie dbname=movies user=steve') or die(pg_last_error());
+				}
 					
 				$this->args = $this->parseArguments($argc, $argv);
 					
