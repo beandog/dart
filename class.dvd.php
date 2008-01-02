@@ -13,13 +13,13 @@
 			
 			// Default config settings
 			$this->config = array(
-				'queue_id' => 0,
+				'queue' => 0,
 				'transcode_video_codec' => 'xvid4',
 				'transcode_video_bitrate' => 2200,
 				'transcode_audio_codec' => 'copy',
 				'transcode_audio_bitrate' => 128,
 				'export_dir' => './',
-				'dvd_device' => '/dev/dvd',
+				'device' => '/dev/dvd',
 				'mount' => true,
 				'eject' => true
 			);
@@ -51,7 +51,7 @@
 		function addDisc($tv_show, $season, $disc, $disc_id, $disc_title) {
 		
 			if(!isset($this->arr_tracks))
-				$this->lsdvd($this->config['dvd_device']);
+				$this->lsdvd($this->config['device']);
 			
 			$arr_tracks = $this->getValidTracks($this->arr_tracks, $this->tv_show['min_len'], $this->tv_show['max_len']);
 			
@@ -77,7 +77,7 @@
 					
 					$episode++;
 					
-					$chapters = $this->getChapters($track, $this->config['dvd_device']);
+					$chapters = $this->getChapters($track, $this->config['device']);
 					$this->archiveTrackChapters($track_id, $chapters);
 					
 				}
@@ -256,11 +256,11 @@
 		 *
 		 */
 		function displayQueue() {
-			$sql = "SELECT e.id, tv.title AS tv_show_title, d.season, e.title AS episode_title, t.len AS episode_len FROM queue q INNER JOIN episodes e ON e.id = q.episode INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND e.title != '' AND q.queue = {$this->config['queue_id']} ORDER BY q.insert_date;";
+			$sql = "SELECT e.id, tv.title AS tv_show_title, d.season, e.title AS episode_title, t.len AS episode_len FROM queue q INNER JOIN episodes e ON e.id = q.episode INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND e.title != '' AND q.queue = {$this->config['queue']} ORDER BY q.insert_date;";
 			
 			$rs = pg_query($sql) or die(pg_last_error());
 			
-			$this->msg("Queue ID: {$this->config['queue_id']}", false, true);
+			$this->msg("Queue ID: {$this->config['queue']}", false, true);
 			
 			if(pg_num_rows($rs) == 0)
 				$this->msg("Your encoding queue is empty.", true);
@@ -273,7 +273,7 @@
 		}
 		
 		function emptyQueue() {
-			$sql_queue = "DELETE FROM queue WHERE queue = {$this->config['queue_id']};";
+			$sql_queue = "DELETE FROM queue WHERE queue = {$this->config['queue']};";
 			pg_query($sql_queue) or die(pg_last_error());
 		}
 		
@@ -376,12 +376,12 @@
 		function enqueue($episode) {
 			$episode = intval($episode);
 			
-			$num_rows = pg_num_rows(pg_query("SELECT 1 FROM queue WHERE queue = ".$this->config['queue_id']." AND episode = $episode;"));
+			$num_rows = pg_num_rows(pg_query("SELECT 1 FROM queue WHERE queue = ".$this->config['queue']." AND episode = $episode;"));
 			
 			if($num_rows === 1)
 				return false;
 			else {
-				$sql = "INSERT INTO queue (queue, episode) VALUES (".$this->config['queue_id'].", $episode);";
+				$sql = "INSERT INTO queue (queue, episode) VALUES (".$this->config['queue'].", $episode);";
 				pg_query($sql) or die(pg_last_error());
 				return true;
 			}
@@ -431,7 +431,7 @@
 			return $title;
 		}
 		
-		function getChapters($track, $dvd_device = '/dev/dvd', $starting_chapter = 1) {
+		function getChapters($track, $device = '/dev/dvd', $starting_chapter = 1) {
 		
 			if(!is_null($starting_chapter))
 				$starting_chapter = intval($starting_chapter);
@@ -442,7 +442,7 @@
 				die;
 			}
 			else {
-				$exec = "dvdxchap $dvd_device -t $track -c $starting_chapter 2> /dev/null";
+				$exec = "dvdxchap $device -t $track -c $starting_chapter 2> /dev/null";
 				if($this->verbose)
 					$this->msg($exec, true);
 				
@@ -467,7 +467,7 @@
 				return false;
 		}
 		
-		function getDiscID($device = '/dev/dvd', $disc_id_binary = '/usr/bin/disc_id') {
+		function getDiscID($device, $disc_id_binary = '/usr/bin/disc_id') {
 			if(!empty($device)) {
 				$disc_id = exec("$disc_id_binary $device");
 				
@@ -552,7 +552,7 @@
 
 		function getQueue() {
 			
-			$sql = "SELECT e.id AS episode_id, e.title, e.chapter, e.chapters, t.track, t.multi, t.id AS track_id, d.id AS disc_id, d.tv_show, d.season, d.disc AS disc_number, tv.title AS tv_show_title, tv.cartoon, tv.unordered FROM queue q INNER JOIN episodes e ON e.id = q.episode INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND e.title != '' AND q.queue = {$this->config['queue_id']} ORDER BY q.insert_date;";
+			$sql = "SELECT e.id AS episode_id, e.title, e.chapter, e.chapters, t.track, t.multi, t.id AS track_id, d.id AS disc_id, d.tv_show, d.season, d.disc AS disc_number, tv.title AS tv_show_title, tv.cartoon, tv.unordered FROM queue q INNER JOIN episodes e ON e.id = q.episode INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND e.title != '' AND q.queue = {$this->config['queue']} ORDER BY q.insert_date;";
 			
 			$rs = pg_query($sql) or die(pg_last_error());
 			for($x = 0; $x < pg_num_rows($rs); $x++)
@@ -563,7 +563,7 @@
 		
 		function getQueueTotal() {
 
-			$sql_encode = "SELECT COUNT(1) FROM queue q INNER JOIN episodes e ON q.episode = e.id AND e.ignore = false WHERE e.title != '' AND q.queue = ".$this->config['queue_id'].";";
+			$sql_encode = "SELECT COUNT(1) FROM queue q INNER JOIN episodes e ON q.episode = e.id AND e.ignore = false WHERE e.title != '' AND q.queue = ".$this->config['queue'].";";
 			$num_encode = current(pg_fetch_row(pg_query($sql_encode)));
 
 			return $num_encode;
@@ -835,7 +835,7 @@
 		}
 		
 		function mount() {
-			$exec = "mount {$this->config['dvd_device']}";
+			$exec = "mount {$this->config['device']}";
 			$this->executeCommand($exec);
 		}
 		
@@ -933,12 +933,12 @@
 				// format is AVI.
 				
 				// Seems to work with latest mplayer + mkvmerge 2.1.0 just fine
-				// $exec = "mencoder -dvd-device {$this->config['dvd_device']} dvd://$track_number -chapter $starting_chapter -ovc copy -oac copy -o $vob -alang en";
+				// $exec = "mencoder -dvd-device {$this->config['device']} dvd://$track_number -chapter $starting_chapter -ovc copy -oac copy -o $vob -alang en";
 			} else {
-				// $exec = "mplayer -dvd-device {$this->config['dvd_device']} dvd://$track_number -dumpstream -dumpfile $vob -chapter $starting_chapter";
+				// $exec = "mplayer -dvd-device {$this->config['device']} dvd://$track_number -dumpstream -dumpfile $vob -chapter $starting_chapter";
 			}
 				
-			$exec = "mplayer -dvd-device {$this->config['dvd_device']} dvd://$track_number -chapter $starting_chapter -dumpstream -dumpfile $vob";
+			$exec = "mplayer -dvd-device {$this->config['device']} dvd://$track_number -chapter $starting_chapter -dumpstream -dumpfile $vob";
 				
 			#echo $exec; die;
 			
@@ -946,7 +946,7 @@
 			
 			// Rip chapters
 			// Copied from addDisc() since the frontend can change the starting chapter
-			$chapters = $this->getChapters($track_number, $this->config['dvd_device'], $starting_chapter);
+			$chapters = $this->getChapters($track_number, $this->config['device'], $starting_chapter);
 			$this->archiveTrackChapters($track_id, $chapters);
 		}
 		
@@ -988,6 +988,13 @@
 					$this->debug = true;
 				else
 					$this->debug = false;
+				
+				// Set defaults
+				if(!isset($this->config['queue']))
+					$this->config['queue'] = 0;
+					
+				if(empty($this->config['device']))
+					$this->config['device'] = '/dev/dvd';
 					
 				// Check export_dir
 				if(substr($this->config['export_dir'], -1) != '/')

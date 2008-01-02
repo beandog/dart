@@ -160,7 +160,7 @@
 		if($need_deps)
 			die("One or more script dependencies failed.");
 
-		$dvd->disc_id = $dvd->getDiscID($dvd->config['dvd_device']);
+		$dvd->disc_id = $dvd->getDiscID($dvd->config['device']);
 		
 		$query_disc = $dvd->queryDisc($dvd->disc_id);
 		
@@ -262,7 +262,7 @@
 					
 					// Create a new TV show record
 					if($new_title === true) {
-						$dvd->lsdvd($dvd->config['dvd_device']);
+						$dvd->lsdvd($dvd->config['device']);
 						
 						$dvd->msg('');
 						if($dvd->debug == false)
@@ -351,7 +351,7 @@
 				
 				// Archive the disc
 				$dvd->msg("Archiving your DVD ...");
-				$dvd->lsdvd($dvd->config['dvd_device']);
+				$dvd->lsdvd($dvd->config['device']);
 				
 				$dvd->addDisc($dvd->tv_show['id'], $season, $disc, $dvd->disc_id, $dvd->disc_title);
 			}
@@ -534,7 +534,7 @@
 			
 			if($dvd->config['eject']) {
 				$dvd->msg("Attempting to eject disc.", true, true);
-				system('eject '.$dvd->config['dvd_device']);
+				system('eject '.$dvd->config['device']);
 			}
 		}
 		else {
