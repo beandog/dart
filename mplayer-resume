@@ -9,11 +9,13 @@
 	 *
 	 * @author Steve Dibb <steve dot dibb at gmail dot com>
 	 * @copyright public-domain
-	 * @date 2006-09-15
-	 * @version 1.3
-	 * @homepage http://wonkabar.org/bend/
+	 * @date 2008-01-12
+	 * @version 1.5
+	 * @homepage http://spaceparanoids.org/trac/bend/wiki/mplayer-resume
 	 * 
-	 * Run time dependencies: PHP >= 4.3.0 with CLI and PCRE
+	 * Run time dependencies:
+	 * PHP >= 4.3.0 with CLI and PCRE - http://php.net/
+	 * MPlayer - http://mplayerhq.hu/
 	 *
 	 * See README for documentation on usage
 	 *
@@ -43,11 +45,11 @@
 
 	// grep the filename to play
 	// add more extensions if you like :)
-	$movie = end(preg_grep('/\.(mk[av]|vob|mpeg|mp[34gc]|og[gm]|avi|wav|midi?|wm[av]|mov|asf|yuv|ram?|aac|nuv|m4[av]|flac|au|m2v|mp4v|qt|rm(vb)?|flv)$/i', $argv));
+	$movie = end(preg_grep('/\.(mk[av]|vob|mpeg|mp[34gc]|og[gm]|avi|wav|midi?|wm[av]|mov|asf|yuv|ram?|aac|nuv|m4[av]|flac|au|m2v|mp4v|qt|rm(vb)?|flv|pls|m3u)$/i', $argv));
 
 	// If we can't get the movie name, just quit
 	if(empty($movie)) {
-		fwrite(STDERR, "mplayer-resume: No filename to playback.\n");
+		fwrite(STDERR, "mplayer-resume: No recognized filename to playback.\n");
 		die;
 	}
 
@@ -56,6 +58,10 @@
 	
 	// Put the arguments back together again
 	$str_args = implode(' ', $argv);
+
+	// Remove arguments which will break the script
+	// -really-quiet means no output to our slave commands
+	$str_args = str_replace('-really-quiet', '', $str_args);
 
 	// Keep the movie filename separate from args
 	$str_args = str_replace($movie, '', $str_args);
@@ -80,8 +86,8 @@
 	}
 	
 	// Build the execution string
-	$exec = escapeshellcmd("mplayer $flags $str_args -quiet $file");
-	
+	$exec = escapeshellcmd("mplayer $flags $str_args $file -quiet");
+
 	// Execute the command, save output to an array
 	exec($exec, $arr);
 
@@ -90,13 +96,29 @@
 		fwrite(STDERR, "mplayer-resume: Couldn't find the filename $movie\n");
 		die;
 	}
-	
-	// grep out the output we want
-	$arr = preg_grep('/^(ANS_TIME_POSITION|ANS_stream_position)\b/', $arr);
 
-	// the endpos when quitting
-	$tmp = explode('=', current($arr));
-	$endpos = end($tmp);
+	// Grep out the details we need from output
+	$key_position = current(preg_grep('/^ANS_TIME_POSITION\b/', $arr));
+	$key_filename = current(preg_grep('/^ANS_FILENAME\b/', $arr));
+
+	// Get the position (in seconds) of the movie
+	// Original format is ANS_TIME_POSITION=123.45
+	$endpos = preg_replace('/^ANS_TIME_POSITION\=/', '', $key_position);
+
+	// Get the filename of the movie we were playing
+	// Original format is ANS_FILENAME='Your_Movie.avi'
+	$slave_filename = preg_replace(
+		array('/^ANS_FILENAME\=\'/', '/\'$/'), 
+		array('', ''),
+		$key_filename);
+
+	// If we are playing from a playlist, then the two filenames
+	// will not match.  Change the filename to be what we were
+	// actually playing versus what we started out playing.
+	if($slave_filename != $movie && !empty($slave_filename)) {
+		$movie =& $slave_filename;
+		$txt = $save_files_to.basename($movie).".txt";
+	}
 
 	// If it's a negative value, that means you've seeked
 	// past/to the end of the file, so just remove the old one.
