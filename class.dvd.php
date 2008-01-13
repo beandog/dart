@@ -467,7 +467,7 @@
 				return false;
 		}
 		
-		function getDiscID($device, $disc_id_binary = '/usr/bin/disc_id') {
+		function getDiscID($device = '/dev/dvd', $disc_id_binary = '/usr/bin/disc_id') {
 			if(!empty($device)) {
 				$disc_id = exec("$disc_id_binary $device");
 				

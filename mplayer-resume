@@ -56,6 +56,9 @@
 	
 	// Put the arguments back together again
 	$str_args = implode(' ', $argv);
+
+	// Keep the movie filename separate from args
+	$str_args = str_replace($movie, '', $str_args);
 	
 	// Where the seek position will be saved
 	$txt = $save_files_to.basename($movie).".txt";
@@ -63,14 +66,21 @@
 	// If there is already a playback file, read it and start
 	// from that position.
 	if(file_exists($txt)) {
-		$sb = trim(file_get_contents($txt));
+		$ss = trim(file_get_contents($txt));
 		// One more check for garbage
-		if(is_numeric($sb) && $sb > 0)
-			$flags = " -sb $ss ";
+		if(is_numeric($ss) && $ss > 0)
+			$flags = " -ss $ss ";
+	}
+
+	// Add quotes around the movie filename if it has spaces in it
+	if(strpos($movie, ' ') !== false) {
+		$file = "\"$movie\"";
+	} else {
+		$file =& $movie;
 	}
 	
 	// Build the execution string
-	$exec = escapeshellcmd("mplayer $flags $str_args -quiet");
+	$exec = escapeshellcmd("mplayer $flags $str_args -quiet $file");
 	
 	// Execute the command, save output to an array
 	exec($exec, $arr);
@@ -82,10 +92,11 @@
 	}
 	
 	// grep out the output we want
-	$arr = preg_grep('/^ANS_stream_position\b/i', $arr);
+	$arr = preg_grep('/^ANS_TIME_POSITION|ANS_stream_position\b/', $arr);
 
 	// the endpos when quitting
-	$endpos = str_replace("ANS_stream_position=", '', end($arr));
+	$tmp = explode('=', $arr);
+	$endpos = end($tmp);
 
 	// If it's a negative value, that means you've seeked
 	// past/to the end of the file, so just remove the old one.
