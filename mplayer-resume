@@ -92,10 +92,10 @@
 	}
 	
 	// grep out the output we want
-	$arr = preg_grep('/^ANS_TIME_POSITION|ANS_stream_position\b/', $arr);
+	$arr = preg_grep('/^(ANS_TIME_POSITION|ANS_stream_position)\b/', $arr);
 
 	// the endpos when quitting
-	$tmp = explode('=', $arr);
+	$tmp = explode('=', current($arr));
 	$endpos = end($tmp);
 
 	// If it's a negative value, that means you've seeked
