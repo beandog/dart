@@ -399,7 +399,7 @@
 		
 		if($num_rows) {
 		
-			$dvd->msg("$num_rows track(s) total to rip and enqueue.");
+			#$dvd->msg("$num_rows track(s) total to rip and enqueue.");
 
 			$count = $q = 0;
 			
@@ -414,7 +414,8 @@
 			if(!is_dir($dir))
 				mkdir($dir) or die("Can't create export directory!");
 			
-			$dvd->msg("Ripping {$arr[0]['title']}: Season {$arr[0]['season']}, Disc {$arr[0]['disc']}");
+			$dvd->msg("{$arr[0]['title']}");
+			$dvd->msg("Season: {$arr[0]['season']}  Disc: {$arr[0]['disc']}  Episodes: $num_rows");
 			
 			/** Rip the tracks */
 			foreach($arr as $id => $tmp) {
@@ -448,7 +449,7 @@
 				$row = pg_fetch_assoc($rs);
 				
 				if($row['ignore'] == 't' || $row['bad_track'] == 't') {
-					$dvd->msg("[$display_count/$num_rows] - Track $track: Updated to ignore / bad track.");
+					$dvd->msg("[DB] ($display_count/$num_rows) Track: $track  Updated to ignore / bad track.");
 				} else {
 				
 					// Get the directory list each time, so that you can rip the same disc
@@ -468,8 +469,10 @@
 						// Delete the episode from the queue
 						$sql = "DELETE FROM queue WHERE episode = $episode_id;";
 						pg_query($sql) or die(pg_last_error());
-					
-						$dvd->msg("[$display_count/$num_rows] + Track $track: \"$episode_title\"");
+						
+						
+						$dvd->msg("[DVD] ($display_count/$num_rows) Track $track: $episode_title");
+						#$dvd->msg("[DVD] Ripping track $track");
 						
 						// On multiple episodes per track, we need to know the starting
 						// and ending chapters.
@@ -503,7 +506,8 @@
 						elseif(in_dir($efn, $dir))
 							$display_file_exists = 'final Matroska';
 					
-						$dvd->msg("[$display_count/$num_rows] - Track $track: \"$episode_title\" $display_file_exists file exists.");
+						$dvd->msg("[VOB] ($display_count/$num_rows) \"$episode_title\"");
+						$dvd->msg("[VOB] $display_file_exists file exists.");
 					}
 						
 					// Put the episodes in the queue

@@ -308,9 +308,7 @@
 			$msg = "Encoding: $tv_show_title";
 			if($episode_title)
 				$msg .= ": $episode_title";
-			$this->msg($msg);
-			
-			
+			#$this->msg($msg);
 			
 			// Someday, we'll use mencoder profiles to encode stuff
 			$avi = $vob;
@@ -330,7 +328,7 @@
 			
 			// Create the Matroska file
 			if(in_dir($avi, $dir) && !in_dir($mkv, $dir)) {
-				$this->msg("Wrapping $display_format and chapters into Matroska format");
+				$this->msg("[MKV] [$tv_show_title] $episode_title");
 				$this->mkvmerge($avi, $txt, $mkv, $mkv_title, $mkvmerge_atrack);
 			}
 			
