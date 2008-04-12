@@ -977,7 +977,7 @@
 					$this->dvd2mkv = true;
 				else {
 					$this->dvd2mkv = false;
-					$this->db = pg_connect('host=charlie dbname=movies user=steve') or die(pg_last_error());
+					$this->db = pg_connect('host=willy dbname=movies user=steve') or die(pg_last_error());
 				}
 					
 				$this->args = $this->parseArguments($argc, $argv);
