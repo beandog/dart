@@ -37,12 +37,14 @@
 	
 	require_once 'inc.mythtv.php';
 	
-	msg("[MythVideo Admin]");
 	
 	while(1) {
 	
-		msg(" 1. Update video database");
-		msg(" 2. Update episode covers");
+		#system('clear');
+		msg("[MythVideo Admin]");
+		msg(" 1. Cleanup video database of media files");
+		msg(" 2. Create episode covers");
+		msg(" 3. Check for deleted / recently added episode covers");
 		msg(" 0. Quit");
 		
 		$select = ask("Which action would you like to perform?", 2);
@@ -107,24 +109,7 @@
 				break;
 				
 			case 2:
-				
-				$count = 0;
-				$sql = "SELECT intid, filename, coverfile FROM videometadata WHERE coverfile != 'No Cover' AND coverfile != '' ORDER BY coverfile;";
-				$arr = $db->getAssoc($sql);
-				
-				#print_r($arr); die;
-				$arr_dirs = array();
-				foreach($arr as $id => $tmp) {
-				
-					if(!file_exists($tmp['filename'])) {
-						$sql = "UPDATE videometadata SET coverfile = '' WHERE intid = $id;";
-						$db->query($sql);
-						$count++;
-					}
-				}
-				
-				msg("Deleted $count cover files from the database");
-				
+
 				$arr_dirs = glob('/var/media/dvds/*', GLOB_ONLYDIR);
 				$arr_dirs = preg_replace('/\/var\/media\/dvds\//', '', $arr_dirs);
 				
@@ -132,6 +117,7 @@
 				
 				// Find directories that are missing files
 				$arr_update_dirs = array();
+				$x = 1;
 				foreach($arr_dirs as $dir) {
 				
 					if(!is_dir("/var/media/posters/".basename($dir)))
@@ -141,17 +127,21 @@
 					$count_posters = count(glob("/var/media/posters/$dir/*.jpg"));
 					
 					if($count_posters < $count_videos) {
-						$arr_update_dirs[] = $dir;
+						$arr_update_dirs[$x] = $dir;
+						$x++;
 					}
 				}
 				
-				for($x = 1; $x < count($arr_update_dirs) + 1; $x++) {
-					msg("\t$x. ".$arr_update_dirs[($x-1)]);
+				foreach($arr_update_dirs as $key => $value) {
+					msg("\t$key. $value");
 				}
+				msg("\t0. Return to main menu");
 				
 				$ask = ask("Which series do you want to update?", 1);
 				
 				$ask = abs(intval($ask));
+
+				print_r($arr_update_dirs);
 				
 				if($ask == 0 || !$arr_update_dirs[$ask])  {
 					continue 2;
@@ -160,34 +150,35 @@
 				$dir = $arr_update_dirs[$ask];
 				
 				$arr_videos = glob("/var/media/dvds/$dir/*.mkv");
-				
 				$arr_update_videos = array();
 				
 				foreach($arr_videos as $filename) {
 					$tmp1 = "/var/media/posters/".$dir."/".basename($filename).".jpg";
 					$tmp2 = "/var/media/posters/".$dir."/".basename($filename, ".mkv").".jpg";
 					
-					msg($tmp1);
-					msg($tmp2);
-					
 					if(!(file_exists($tmp1) || file_exists($tmp2))) {
 						$arr_update_videos[] = $filename;
 					}
 				}
-				
+
 				if(count($arr_update_videos)) {
 				
 					chdir("/var/media/dvds/$dir");
 				
 					foreach($arr_update_videos as $filename) {
 				
-						$exec = escapeshellcmd("mplayer -quiet -vf softskip,pullup,screenshot -lircconf /home/steve/.mplayer/myth-snapshot -input conf=/home/steve/.mplayer/snapshot.conf").addslashes($filename);
+						$exec = escapeshellcmd("mplayer -really-quiet -quiet -vf softskip,pullup,screenshot -lircconf /home/steve/.mplayer/admin.lircrc -input conf=/home/steve/.mplayer/admin.conf ").addslashes($filename);
+
+						if(file_exists('seconds.txt')) {
+							$seconds = trim(file_get_contents('seconds.txt'));
+							$exec .= " -ss $seconds";
+						}
 						
-						exec($exec);
+						$exec .= " 2> /dev/null";
+						
+						exec($exec, $tmp);
 						$arr = glob('shot*.png');
-						
-						print_r($arr); die;
-						
+
 						if(count($arr)) {
 							$img = end($arr);
 							
@@ -195,17 +186,12 @@
 					
 							$coverfile = "/var/media/posters/$dir/$jpg";
 							$exec = "convert -resize 360x $img $coverfile";
-							
-							msg($exec);
-							
+							exec($exec);	
 							unlink($img);
 					
-							$filename = getcwd().'/'.$slave_filename;
-					
 							$filename = mysql_escape_string($filename);
-							$coverfile = mysql_escape_string($coverfile);
-					
-							#$sql = "UPDATE videometadata SET coverfile = '$coverfile' WHERE filename = '$filename';";
+							$coverfile = mysql_escape_string("/var/media/posters/".$dir."/".basename($filename, ".mkv").".jpg");
+							echo $sql = "UPDATE videometadata SET coverfile = '$coverfile' WHERE filename = '$filename';";
 							
 							#$mysql->query($sql);
 						}
@@ -214,11 +200,27 @@
 				
 				}
 				
-				print_r($arr_update_videos);
+				break;
+
+			case 3:
+
+				$count = 0;
+				$sql = "SELECT intid, filename, coverfile FROM videometadata WHERE coverfile != 'No Cover' AND coverfile != '' ORDER BY coverfile;";
+				$arr = $db->getAssoc($sql);
 				
+				#print_r($arr); die;
+				$arr_dirs = array();
+				foreach($arr as $id => $tmp) {
 				
+					if(!file_exists($tmp['coverfile'])) {
+						$sql = "UPDATE videometadata SET coverfile = '' WHERE intid = $id;";
+						$db->query($sql);
+						$count++;
+					}
+				}
 				
-				
+				msg("Deleted $count cover files from the database");
+
 				break;
 				
 			default:
