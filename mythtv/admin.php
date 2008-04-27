@@ -131,7 +131,7 @@
 						$x++;
 					}
 				}
-				
+
 				foreach($arr_update_dirs as $key => $value) {
 					msg("\t$key. $value");
 				}
@@ -189,11 +189,12 @@
 							exec($exec);	
 							unlink($img);
 					
-							$filename = mysql_escape_string($filename);
 							$coverfile = mysql_escape_string("/var/media/posters/".$dir."/".basename($filename, ".mkv").".jpg");
+							$filename = mysql_escape_string($filename);
 							echo $sql = "UPDATE videometadata SET coverfile = '$coverfile' WHERE filename = '$filename';";
+
+							$db->query($sql);
 							
-							#$mysql->query($sql);
 						}
 					
 					}
