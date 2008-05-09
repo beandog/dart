@@ -89,7 +89,7 @@
 		$img = end($arr);
 
 		$coverfile = "/var/media/posters/$slave_filename.jpg";
-		exec("convert -resize 180x ".escapeshellcmd($img)." ".escapeshellcmd($coverfile));
+		exec("convert -resize 360x ".escapeshellcmd($img)." ".escapeshellcmd($coverfile));
 		unlink($img);
 
 		$filename = getcwd().'/'.$slave_filename;
