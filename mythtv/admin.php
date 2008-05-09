@@ -137,7 +137,7 @@
 				}
 				msg("\t0. Return to main menu");
 				
-				$ask = ask("Which series do you want to update?", 1);
+				$ask = ask("Which series do you want to update?", 2);
 				
 				$ask = abs(intval($ask));
 
@@ -150,20 +150,25 @@
 				$dir = $arr_update_dirs[$ask];
 				
 				$arr_videos = glob("/var/media/dvds/$dir/*.mkv");
+				
+				#print_r($arr_videos);
+				
 				$arr_update_videos = array();
 				
 				foreach($arr_videos as $filename) {
-					$tmp1 = "/var/media/posters/".$dir."/".basename($filename).".jpg";
-					$tmp2 = "/var/media/posters/".$dir."/".basename($filename, ".mkv").".jpg";
+					#$tmp1 = "/var/media/posters/".$dir."/".basename($filename).".jpg";
+					$jpg = "/var/media/posters/".$dir."/".basename($filename, ".mkv").".jpg";
 					
-					if(!(file_exists($tmp1) || file_exists($tmp2))) {
+					if(!file_exists($jpg)) {
 						$arr_update_videos[] = $filename;
 					}
 				}
-
+				
 				if(count($arr_update_videos)) {
 				
 					chdir("/var/media/dvds/$dir");
+					
+					msg(getcwd());
 				
 					foreach($arr_update_videos as $filename) {
 				
@@ -176,24 +181,29 @@
 						
 						$exec .= " 2> /dev/null";
 						
+						msg($exec); die;
+						
 						exec($exec, $tmp);
 						$arr = glob('shot*.png');
 
 						if(count($arr)) {
 							$img = end($arr);
 							
-							$jpg = addslashes(basename($filename, '.mkv')).".jpg";
+							$basename = basename($filename, '.mkv');
+							
+							$jpg = addslashes($filename).".jpg";
 					
 							$coverfile = "/var/media/posters/$dir/$jpg";
 							$exec = "convert -resize 360x $img $coverfile";
 							exec($exec);	
 							unlink($img);
 					
-							$coverfile = mysql_escape_string("/var/media/posters/".$dir."/".basename($filename, ".mkv").".jpg");
+							$coverfile = mysql_escape_string("/var/media/posters/".$dir."/${basename}.jpg");
 							$filename = mysql_escape_string($filename);
-							echo $sql = "UPDATE videometadata SET coverfile = '$coverfile' WHERE filename = '$filename';";
+							$sql = "UPDATE videometadata SET coverfile = '$coverfile' WHERE filename = '$filename';";
+							msg($sql); die;
 
-							$db->query($sql);
+							#$db->query($sql);
 							
 						}
 					
@@ -209,6 +219,8 @@
 				$sql = "SELECT intid, filename, coverfile FROM videometadata WHERE coverfile != 'No Cover' AND coverfile != '' ORDER BY coverfile;";
 				$arr = $db->getAssoc($sql);
 				
+				// Check for invalid / deleted cover files
+				
 				#print_r($arr); die;
 				$arr_dirs = array();
 				foreach($arr as $id => $tmp) {
@@ -221,6 +233,38 @@
 				}
 				
 				msg("Deleted $count cover files from the database");
+				
+				// Check for new cover files
+				
+				$arr = array();
+				$count = 0;
+				
+				$sql = "SELECT intid, filename FROM videometadata WHERE (coverfile = 'No Cover' OR coverfile = '') ORDER BY filename;";
+				$arr = $db->getAssoc($sql);
+				
+				foreach($arr as $id => $filename) {
+				
+					$filename = str_replace('/var/media/dvds/', '/var/media/posters/', $filename).'.jpg';
+					
+					#msg($filename);
+					
+					if(!file_exists($filename)) {
+						$filename = str_replace(".mkv.jpg", ".jpg", $filename);
+					}
+					
+					if(file_exists($filename)) {
+						$filename = mysql_escape_string($filename);
+						#msg($filename);
+						$sql = "UPDATE videometadata SET coverfile = '$filename' WHERE intid = $id;";
+						$db->query($sql);
+						$count++;
+					}
+					
+					$sql = "UPDATE videometadata SET coverfile = '$filename' WHERE intid = $id;";
+				
+				}
+				
+				msg("Added $count cover files into the database");
 
 				break;
 				
