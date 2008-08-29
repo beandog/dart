@@ -62,7 +62,23 @@
 	}
 	
 	// Build the execution string
-	$exec = escapeshellcmd("mplayer $flags $str_args $file -quiet -vf screenshot -lircconf /home/steve/.mplayer/myth-snapshot -input conf=/home/steve/.mplayer/snapshot.conf");
+	$exec = escapeshellcmd("mplayer $flags $str_args -quiet -vf screenshot -lircconf /home/steve/.mplayer/myth-snapshot -input conf=/home/steve/.mplayer/snapshot.conf ");
+
+	if(file_exists('seconds.txt')) {
+		$seconds = trim(file_get_contents('seconds.txt'));
+		if(intval($seconds)) {
+			$exec .= "-ss $seconds ";
+		}
+	}
+
+	// escapeshellcmd is worthless on files with " or '
+	#$file = escapeshellcmd($file);
+	$exec .= addslashes($file);
+
+	$dir = '/var/media/posters/'.basename(getcwd());
+
+	if(!is_dir($dir))
+		mkdir($dir);
 
 	// Execute the command, save output to an array
 	exec($exec, $arr);
@@ -88,7 +104,9 @@
 	if(count($arr)) {
 		$img = end($arr);
 
-		$coverfile = "/var/media/posters/$slave_filename.jpg";
+		$basename = basename($slave_filename, '.mkv');
+
+		$coverfile = "$dir/$basename.jpg";
 		exec("convert -resize 360x ".escapeshellcmd($img)." ".escapeshellcmd($coverfile));
 		unlink($img);
 

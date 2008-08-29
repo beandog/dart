@@ -35,6 +35,27 @@
 		return true;
 	}
 	
+	/**
+	 * Return the filename that the poster should be
+	 *
+	 * @param string movie filename
+	 * @return poster filename
+	 */
+	function posterFile($filename) {
+		
+		$filename = trim($filename);
+	
+		if(empty($filename))
+			return $filename;
+			
+		$dirname = dirname($filename);
+		$dirname = str_replace('/var/media/dvds', '/var/media/posters', $dirname);
+			
+		$jpg = $dirname.'/'.basename($filename, '.mkv').'.jpg';
+		
+		return $jpg;
+	}
+	
 	require_once 'inc.mythtv.php';
 	
 	
@@ -156,23 +177,22 @@
 				$arr_update_videos = array();
 				
 				foreach($arr_videos as $filename) {
-					#$tmp1 = "/var/media/posters/".$dir."/".basename($filename).".jpg";
-					$jpg = "/var/media/posters/".$dir."/".basename($filename, ".mkv").".jpg";
-					
-					if(!file_exists($jpg)) {
+					$jpg = posterFile($filename);
+					if(!file_exists($jpg))
 						$arr_update_videos[] = $filename;
-					}
 				}
+				
+				#print_r($arr_update_videos); die;
 				
 				if(count($arr_update_videos)) {
 				
 					chdir("/var/media/dvds/$dir");
 					
-					msg(getcwd());
+					#msg(getcwd());
 				
 					foreach($arr_update_videos as $filename) {
 				
-						$exec = escapeshellcmd("mplayer -really-quiet -quiet -vf softskip,pullup,screenshot -lircconf /home/steve/.mplayer/admin.lircrc -input conf=/home/steve/.mplayer/admin.conf ").addslashes($filename);
+						$exec = escapeshellcmd("mplayer -fs -really-quiet -quiet -vf softskip,pullup,screenshot -lircconf /home/steve/.mplayer/admin.lircrc -input conf=/home/steve/.mplayer/admin.conf ").addslashes($filename);
 
 						if(file_exists('seconds.txt')) {
 							$seconds = trim(file_get_contents('seconds.txt'));
@@ -181,7 +201,7 @@
 						
 						$exec .= " 2> /dev/null";
 						
-						msg($exec); die;
+						#msg($exec); die;
 						
 						exec($exec, $tmp);
 						$arr = glob('shot*.png');
@@ -189,21 +209,20 @@
 						if(count($arr)) {
 							$img = end($arr);
 							
-							$basename = basename($filename, '.mkv');
+							$coverfile = posterFile($filename);
 							
-							$jpg = addslashes($filename).".jpg";
+							$jpg = addslashes($coverfile);
 					
-							$coverfile = "/var/media/posters/$dir/$jpg";
-							$exec = "convert -resize 360x $img $coverfile";
+							$exec = "convert -resize 360x $img $jpg";
 							exec($exec);	
 							unlink($img);
 					
-							$coverfile = mysql_escape_string("/var/media/posters/".$dir."/${basename}.jpg");
+							$coverfile = mysql_escape_string($coverfile);
 							$filename = mysql_escape_string($filename);
 							$sql = "UPDATE videometadata SET coverfile = '$coverfile' WHERE filename = '$filename';";
-							msg($sql); die;
+							#msg($sql); die;
 
-							#$db->query($sql);
+							$db->query($sql);
 							
 						}
 					
