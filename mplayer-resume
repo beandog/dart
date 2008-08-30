@@ -20,24 +20,54 @@
 	 * See README for documentation on usage
 	 *
 	 */
+	
+	/**
+	 * Sends a string to stdout with a terminating line break
+	 *
+	 * @param string
+	 * 
+	 */
+	function stdout($str) {
+		if(!empty($str) && is_string($str)) {
+			$str = rtrim($str);
+			fwrite(STDOUT, "mplayer-resume: $str\n");
+			return true;
+		} else
+			return false;
+	}
+	
+	/**
+	 * Sends a string to stderr with a terminating line break
+	 *
+	 * @param string
+	 * 
+	 */
+	function stderr($str) {
+		if(!empty($str) && is_string($str)) {
+			$str = rtrim($str);
+			fwrite(STDERR, "mplayer-resume: $str\n");
+			return true;
+		} else
+			return false;
+	}
 
 	// Check to see the directory exists.  If not, try and create it.
 	if(!is_dir($save_files_to)) {
 		if(!mkdir($save_files_to)) {
-			fwrite(STDOUT, "Please make sure the directory $save_files_to exists and is both readable and writable by this user\n");
-			die;
+			stderr("Please make sure the directory $save_files_to exists and is both readable and writable by this user");
+			exit(1);
 		}
 	}
 
 	// Make sure I can save playback files
 	if(!is_writable($save_files_to) || !is_readable($save_files_to)) {
-		fwrite(STDOUT, "I can't read from and/or write to $save_files_to\n");
-		die;
+		stderr("I can't read from and/or write to $save_files_to");
+		exit(1);
 	}
 
 	// If they didn't pass any arguments, exit .. stage left
 	if($argc === 1)
-		die;
+		exit(1);
 	
 	// Correct *some* human error ;)
 	if(substr($save_files_to, -1, 1) != '/')
@@ -49,8 +79,8 @@
 
 	// If we can't get the movie name, just quit
 	if(empty($movie)) {
-		fwrite(STDERR, "mplayer-resume: No recognized filename to playback.\n");
-		die;
+		stderr("mplayer-resume: No recognized filename to playback.");
+		exit(1);
 	}
 
 	// Drop the binary command
@@ -86,15 +116,24 @@
 	}
 	
 	// Build the execution string
-	$exec = escapeshellcmd("mplayer $flags $str_args $file -quiet");
+	$exec = escapeshellcmd("mplayer -quiet $flags $str_args $file");
 
-	// Execute the command, save output to an array
-	exec($exec, $arr);
+	// Execute the command, save output to an array, and grab
+	// return code to see if mplayer throws an error.
+	exec($exec, $arr, $return);
+	
+	// If mplayer dies with a positive exit code, then it failed.
+	// Don't write to or delete the saved position, and die
+	// with the same exit code.
+	if($return !== 0) {
+		stderr("mplayer died unexpectedly");
+		exit($return);
+	}
 
 	// If the file didn't even exist, mplayer will die, and so will me
 	if(!file_exists($movie)) {
-		fwrite(STDERR, "mplayer-resume: Couldn't find the filename $movie\n");
-		die;
+		stderr("Couldn't find the filename $movie");
+		exit(1);
 	}
 
 	// Grep out the details we need from output
@@ -124,17 +163,22 @@
 	// past/to the end of the file, so just remove the old one.
 	if($endpos < 1 && file_exists($txt))
 		unlink($txt);
+	// No end position passed to mplayer-resume, so exit quietly
+	elseif(empty($endpos)) {
+		stderr("No end position sent to save.");
+		exit(0);
+	}
 	// Save the (positive) playback position to the file
 	else {
 		// Generic error message, fix your stupid permissions
 		$error_msg = "Cannot save file, please check write permissions for this user in $save_files_to";
-
+		
 		// Use PHP 5's fancy new functions, if possible. :)
 		if(function_exists('file_put_contents'))
-			file_put_contents($txt, $endpos) or die($error_msg);
+			file_put_contents($txt, $endpos) or stderr($error_msg);
 		// Otherwise fallback on PHP 4's functions
 		else {
-			fwrite(fopen($txt, 'w'), $endpos) or die($error_msg);
+			fwrite(fopen($txt, 'w'), $endpos) or stderr($error_msg);
 		}	
 	}
 ?>
