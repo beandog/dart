@@ -179,6 +179,17 @@
 			$sql = "SELECT min_len, max_len FROM tv_shows WHERE id = $series;";
 			$arr_len = $db->getRow($sql);
 			
+			foreach($dvd->dvd['tracks'] as $track => $arr) {
+				if(($len > $arr_len['max_len']) || ($len < $arr_len['min_len']))
+					$ignore = true;
+				else
+					$ignore = false;
+				
+				// Episodes originate as one track + one chapter,
+				// and can be expanded upon in the frontend admin
+				$dvd->newEpisode($arr['id'], $ignore);
+			}
+			
 			$dvd->chapters();
 			foreach($dvd->dvd['chapters'] as $track => $arr_chapter) {
 				foreach($arr_chapter as $chapter => $arr) {
@@ -187,13 +198,6 @@
 				
 					if($dvd->dvd['tracks'][$track]['id'] && $len) {
 						$dvd->newChapter($dvd->dvd['tracks'][$track]['id'], $arr['start'], $chapter);
-						
-						if(($len > $arr_len['max_len']) || ($len < $arr_len['min_len']))
-							$ignore = true;
-						else
-							$ignore = false;
-						
-						$dvd->newEpisode($dvd->dvd['tracks'][$track]['id'], $ignore);
 					}
 				}
 			}
@@ -255,8 +259,8 @@
 				// starting chapter for series
 				// one episode = one track w/ one chapter
 				// one episode = one track w/ multiple chapters
-				if($tmp['series_chapter']) {
-					$tmp['starting_chapter'] = $tmp['series_chapter'];
+				if($tmp['series_starting_chapter']) {
+					$tmp['starting_chapter'] = $tmp['series_starting_chapter'];
 				} elseif(!$tmp['ending_chapter']) {
 					$tmp['ending_chapter'] = $tmp['starting_chapter'];
 				}

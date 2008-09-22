@@ -118,6 +118,10 @@
 		 * @return boolean
 		 */
 		function in_dir($file, $dir) {
+		
+			if(!is_dir($dir))
+				return false;
+			
 			$arr = scandir($dir);
 			
 			$file = basename($file);

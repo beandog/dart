@@ -71,7 +71,7 @@
 	
 	// Create the DVD object
 	$dvd =& new DVD();
-
+	
 	// Set the configuration options
 	$dvd->setConfig($argc, $argv, $arr_config);
 	
@@ -83,7 +83,8 @@
 		'e' => array('encode', 'Encode everything in my queue'),
 		'q' => array('queue', 'Display the titles in my queue'),
 		'c' => array('clear', 'Clear my encoding queue'),
-		'v' => array('debug', 'Display debugging information')
+		'v' => array('debug', 'Display debugging information'),
+		's' => array('show [id]', 'Use exact TV Show ID from database')
 	);
 
 	// Display help if no arguments are passed
@@ -393,7 +394,9 @@
 		// Pull out the tracks that haven't been flagged to ignore in the database frontend
 		// This query has nothing to do with what has / hasn't been encoded
 		
-		$sql = "SELECT tv.title, tv.unordered, d.season, d.disc, t.id AS track_id, t.track, t.multi, d.id AS disc_id, COALESCE(e.starting_chapter, tv.starting_chapter) AS starting_chapter, e.id AS episode_id, e.chapter FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id AND d.id = {$dvd->disc['id']} INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND t.bad_track = FALSE ORDER BY t.track, e.episode_order;";
+		// Rip in sequential order on disc (track #), then by episode ID to get correct
+		// ending chapter (for multi-chapter, sequence discs)
+		$sql = "SELECT tv.title, tv.unordered, d.season, d.disc, t.id AS track_id, t.track, t.multi, d.id AS disc_id, COALESCE(e.starting_chapter, tv.starting_chapter) AS starting_chapter, e.id AS episode_id, e.chapter FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id AND d.id = {$dvd->disc['id']} INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND t.bad_track = FALSE ORDER BY t.track, e.id;";
 		$rs = pg_query($sql) or die(pg_last_error());
 		$num_rows = pg_num_rows($rs);
 		
@@ -462,6 +465,19 @@
 						
 					if(!$episode_title)
 						$episode_title = "season $season, disc $disc, track $track";
+						
+					// --confirm flag lets you selectively rip tracks
+					if($dvd->args['confirm']) {
+						$tmp = $dvd->ask("Rip this track? $episode_title [Y/n/all]", 'Y');
+						
+						if(strtolower($tmp) == 'n') {
+							continue 1;
+						} elseif(strtolower($tmp) == 'all') {
+							unset($dvd->args['confirm']);
+						}
+						
+						unset($tmp);
+					}
 					
 					// Check to see if file exists, if not, rip it
 					if(!in_dir($vob, $dir) && !in_dir($avi, $dir) && !in_dir($mkv, $dir) && !in_dir($efn, $dir)) {
@@ -511,10 +527,10 @@
 					}
 						
 					// Put the episodes in the queue
-					if(!in_dir($efn, $dir) && !in_dir($mkv, $dir) && in_dir($vob, $dir))
-						$dvd->archiveAudioVideoTracks($episode_id, $filename);
+// 					if(!in_dir($efn, $dir) && !in_dir($mkv, $dir) && in_dir($vob, $dir))
+// 						$dvd->archiveAudioVideoTracks($episode_id, $filename);
 					
-					if(!in_dir($efn, $dir)) {
+					if(!in_dir($efn, $dir) && (in_dir($vob, $dir) || in_dir($mkv, $dir))) {
 						if($dvd->enqueue($episode_id)) {
 							$enqueue++;
 						} else {
@@ -564,7 +580,7 @@
 			}
 			
 			foreach($dvd->arr_encode as $arr) {
-			
+				
 				$dvd->encodeMovie($arr);
 				$q++;
 			}

@@ -17,7 +17,7 @@
 	}
 	
 	$dvd->setConfig($argc, $argv, $arr_config);
-
+	
 	if($dvd->args['movie'] == 1 || $dvd->dvd2mkv === true) {
 	
 		$title =& $dvd->args['title'];
@@ -26,7 +26,7 @@
 		
 		if(strlen($dvd->disc_id) != '32')
 			die("Couldn't get disc ID!\n");
-		
+			
 		$dvd->lsdvd();
 		
 		if(!$dvd->args['debug'])

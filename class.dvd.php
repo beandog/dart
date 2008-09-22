@@ -85,42 +85,42 @@
 			
 		}
 		
-		function archiveAudioVideoTracks($episode, $vob) {
-		
-			$episode = intval($episode);
-			
-			if(!$episode)
-				return false;
-			
-			// Find the audio/video tracks in the VOB
-			exec("mkvmerge -i $vob", $arr);
-			
-			// Strip out just track information
-			$arr = preg_grep('/^Track ID/', $arr);
-			
-			$sql = "DELETE FROM episode_tracks WHERE episode = $episode;";
-			pg_query($sql) or die(pg_last_error());
-
-			// Only archive the tracks if there's more than one audio + one video
-			if(count($arr) > 2) {
-				foreach($arr as $str) {
-					$tmp = explode(':', $str);
-					$track_id = str_replace('Track ID ', '', $tmp[0]);
-					
-					$av = 0;
-					
-					if(strpos($tmp[1], 'video') !== false)
-						$av = 1;
-					
-					// ONLY store audio tracks for now.  I think that I'll never see
-					// multiple video tracks, so I'm not going to check for it now.
-					if($av === 0) {
-						$sql = "INSERT INTO episode_tracks (episode, av, track_id) VALUES ($episode, $av, $track_id);";
-						pg_query($sql) or die(pg_last_error());
-					}
-				}
-			}
-		}
+// 		function archiveAudioVideoTracks($episode, $vob) {
+// 		
+// 			$episode = intval($episode);
+// 			
+// 			if(!$episode)
+// 				return false;
+// 			
+// 			// Find the audio/video tracks in the VOB
+// 			exec("mkvmerge -i $vob", $arr);
+// 			
+// 			// Strip out just track information
+// 			$arr = preg_grep('/^Track ID/', $arr);
+// 			
+// 			$sql = "DELETE FROM episode_tracks WHERE episode = $episode;";
+// 			pg_query($sql) or die(pg_last_error());
+// 
+// 			// Only archive the tracks if there's more than one audio + one video
+// 			if(count($arr) > 2) {
+// 				foreach($arr as $str) {
+// 					$tmp = explode(':', $str);
+// 					$track_id = str_replace('Track ID ', '', $tmp[0]);
+// 					
+// 					$av = 0;
+// 					
+// 					if(strpos($tmp[1], 'video') !== false)
+// 						$av = 1;
+// 					
+// 					// ONLY store audio tracks for now.  I think that I'll never see
+// 					// multiple video tracks, so I'm not going to check for it now.
+// 					if($av === 0) {
+// 						$sql = "INSERT INTO episode_tracks (episode, av, track_id) VALUES ($episode, $av, $track_id);";
+// 						pg_query($sql) or die(pg_last_error());
+// 					}
+// 				}
+// 			}
+// 		}
 		
 		function archiveEpisode($disc_id, $episode, $len, $chapters, $track, $valid = false) {
 		
@@ -175,6 +175,13 @@
 		}
 		
 		function archiveTrackChapters($track, $chapters) {
+		
+			
+			// on DVDs where libdvdread can't read all the chapter start times,
+			// it will report them as a start time of 00:00:00.000 for each one
+			// Originally the code would run an array_unique to clean up the
+			// array, but this would wrongly insert the # of chapters into
+			// the database, so they couldn't be ripped.
 			
 			$track = intval($track);
 			$chapters = trim($chapters);
@@ -182,7 +189,6 @@
 			$arr = explode("\n", $chapters);
 			$arr = preg_grep('/^CHAPTER\d+=/', $arr);
 			$arr = preg_replace('/^CHAPTER\d+=/', '', $arr);
-			$arr = array_unique($arr);
 			
 			// Only store the chapters if there is more than one
 			if(count($arr) > 1) {
@@ -280,8 +286,6 @@
 		function encodeMovie($arr = array()) {
 		
 			extract($arr);
-			
-			#print_r($arr); die;
 			
 			$mkv_title = $this->formatTitle("$tv_show_title: $title", false);
 			$title = $this->formatTitle($tv_show_title);
@@ -438,8 +442,7 @@
 			if($track == 0) {
 				$this->msg("Passed an invalid track # to get chapters from!", true);
 				die;
-			}
-			else {
+			} else {
 				$exec = "dvdxchap $device -t $track -c $starting_chapter 2> /dev/null";
 				if($this->verbose)
 					$this->msg($exec, true);
@@ -513,7 +516,7 @@
 			// # of epsiodes on previous discs plus 
 			// # of episodes on current disc plus earlier tracks plus
 			// # of episodes on current disc plus current track plus earlier episodes
-			$sql = "SELECT (count(e.id) + 1) FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id WHERE d.tv_show = $tv_show AND d.season = $season AND t.bad_track = FALSE AND e.ignore = FALSE AND ( (d.disc < $disc_number) OR (d.disc = $disc_number AND t.track < $track ) OR (d.disc = $disc_number AND t.track = $track AND e.episode_order < $episode_order ));";
+			$sql = "SELECT (count(e.id) + 1) FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id WHERE d.tv_show = $tv_show AND d.season = $season AND t.bad_track = FALSE AND e.ignore = FALSE AND ( (d.disc < $disc_number) OR (d.disc = $disc_number AND t.track != $track AND e.episode_order <= $episode_order ));";
 
 			$rs = pg_query($sql) or die(pg_last_error());
 			
@@ -676,35 +679,61 @@
 			$min_len = intval($min_len);
 			$max_len = intval($max_len);
 
-			$add = $ignore = 0;
+			$add = $ignore = $empty = 0;
 
 			
 			// Trim the tracks that do not meet the min and max length criteria
 			foreach($arr_tracks as $key => $value) {
-
-				if($value > $max_len || $value < $min_len) {
+			
+				$arr_valid[$key] = false;
+			
+				if($value == '0.00' || intval($value) == 0) {
 					$this->msg("- Track $key ($value)", true, true);
-					$arr_valid[$key] = false;
+					$empty++;
+				} elseif($value > $max_len || $value < $min_len) {
+					$this->msg("- Track $key ($value)", true, true);
 					$ignore++;
-				}
-				else {
+				} else {
 					$this->msg("+ Track $key ($value)", true, true);
 					$add++;
 					$arr_valid[$key] = true;
 				}
 			}
 			
-
-			$this->msg("$add tracks will be added to the database");
+			$this->msg("$empty tracks of zero length");
 			$this->msg("$ignore tracks ignored because of length");
-			
+			$this->msg("$add tracks will be added to the database");
+					
 			return $arr_valid;
 		}
 	
 		function lsdvd($dvd = '/dev/dvd') {
 			#exec('lsdvd -q 2> /dev/null', $arr);
 			#$xml = `lsdvd -c -Ox $dvd 2> /dev/null`;
-			$xml = `lsdvd -Ox -v -a -s $dvd 2> /dev/null`;
+			
+			exec("lsdvd $dvd 2> /dev/null", $lsdvd, $return);
+			
+			if($return !== 0)
+				exit($return);
+			
+			$lsdvd = preg_grep("/^Title/", $lsdvd);
+			
+			$x = 1;
+			foreach($lsdvd as $row) {
+				$arr = explode(', ', $row);
+ 				$arr_track_num_chapters[$x] = intval(substr($arr[1], -2, 2));
+				$x++;
+			}
+			
+			if($return !== 0)
+				exit($return);
+			
+			exec("lsdvd -Ox -v -a -s $dvd 2> /dev/null", $xml, $return);
+			
+			$xml = implode("\n", $xml);
+			
+			if($return !== 0)
+				exit($return);
 			
 			$xml = str_replace('Pan&Scan', 'Pan&amp;Scan', $xml);
 			$xml = str_replace('P&S', 'P&amp;S', $xml);
@@ -712,7 +741,7 @@
 			// Fix broken encoding on langcodes
 			$xml = preg_replace("/\<langcode\>\W+\<\/langcode\>/", "<langcode>und</langcode>", $xml);
 			
-			#print_r($xml); die;
+// 			print_r($xml); die;
 
 			$lsdvd = simplexml_load_string($xml) or die("Couldn't parse lsdvd XML output");
 
@@ -867,10 +896,14 @@
 		* @return array
 		*/
 		function parseArguments($argc, $argv) {
+		
+			$args = array();
+			
 			if($argc > 1) {
 				array_shift($argv);
 	
 				for($x = 0; $x < count($argv); $x++) {
+				
 					if(preg_match('/^(-\w$|--\w+)/', $argv[$x]) > 0) {
 						$argv[$x] = preg_replace('/^-{1,2}/', '', $argv[$x]);
 						$args[$argv[$x]] = 1;

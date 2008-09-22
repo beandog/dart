@@ -661,7 +661,7 @@
 			if($audio_track)
 				$flags[] = "-a $audio_track";
 			
-			$flags[] = $source;
+			$flags[] = "\"$source\"";
 			
 			if($vobsub && file_exists($vobsub))
 				$flags[] = "\"$vobsub\"";
