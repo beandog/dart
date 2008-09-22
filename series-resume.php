@@ -81,15 +81,14 @@
 		$save_files_to .= '/';
 		
 	$key = array_search('-playlist', $argv);
-	
-	// If we can't get the movie name, just quit
-	if(empty($argv[$key])) {
-		stderr("mplayer-resume: No recognized filename to playback.");
-		exit(1);
-	}
-	
 	$movie = $argv[($key + 1)];
 	unset($argv[$key]);
+	
+	// If we can't get the movie name, just quit
+	if(!file_exists($movie)) {
+		stderr("Couldn't find file $movie");
+		exit(1);
+	}
 	
 // 	echo $movie; die;
 
