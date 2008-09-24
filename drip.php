@@ -1,3 +1,4 @@
+#!/usr/bin/php
 <?
 
 	require_once 'class.shell.php';
