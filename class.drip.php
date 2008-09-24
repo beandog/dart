@@ -406,10 +406,12 @@
 		 *
 		 * @param int track number
 		 * @param double length
+		 * @param string aspect ratio
+		 * @param array audio tracks
 		 * @return track id
 		 *
 		 */
-		function newTrack($track, $len) {
+		function newTrack($track, $len, $aspect, $audio_tracks) {
 		
 			global $db;
 		
@@ -422,8 +424,15 @@
 			$sql = "SELECT NEXTVAL('public.tracks_id_seq');";
 			$id = $db->getOne($sql);
 				
-			$sql = "INSERT INTO tracks(id, disc, track, len, track_order) VALUES ($id, ".$this->disc['id'].", $track, $len, $track);";
+			$sql = "INSERT INTO tracks(id, disc, track, len, track_order, aspect) VALUES ($id, ".$this->disc['id'].", $track, $len, $track, '$aspect');";
 			$db->query($sql);
+			
+			// Store audio tracks in the database
+			foreach($audio_tracks as $key => $arr) {
+				extract($arr);
+				$sql = "INSERT INTO audio_tracks (track, audio_track, lang, channels, format) VALUES ('$id', '$key', '$lang', '$channels', '$format');";
+				$db->query($sql);
+			}
 			
 			return $id;
 		
@@ -642,7 +651,7 @@
 		 * @param int audio track id
 		 *
 		 */
-		function mkvmerge($source, $target, $title = '', $aspect = '4/3', $chapters = '', $vobsub = '', $audio_track = null) {
+		function mkvmerge($source, $target, $title = '', $aspect = null, $chapters = null, $audio_track = 1, $vobsub = null) {
 		
 			$flags = array();
 			
@@ -650,7 +659,9 @@
 			$flags[] = "--default-language en";
 			if($title)
 				$flags[] = "--title \"$title\"";
-			$flags[] = "--aspect-ratio 0:$aspect";
+			
+			if($aspect)
+				$flags[] = "--aspect-ratio 0:$aspect";
 			
 			if($chapters) {
 				$tmp = tempnam('/tmp', 'chapters');
@@ -658,6 +669,7 @@
 				$flags[] = "--chapters $tmp";
 			}
 			
+			// Source must immediately follow atrack flag
 			if($audio_track)
 				$flags[] = "-a $audio_track";
 			
@@ -673,14 +685,45 @@
 		}
 		
 		/**
-		 * Fetch the array of episodes in the queue to encode
+		 * Fetch the array of episodes in the queue to encode,
+		 * along with all the information needed to encode them.
 		 *
 		 */
 		function getQueue() {
 		
 			global $db;
-			$sql = "SELECT e.id, tv.id AS series, tv.title AS series_title, e.title, d.season, d.disc, t.track, tv.unordered,  t.multi, COALESCE(e.starting_chapter, e.chapter, tv.starting_chapter) AS starting_chapter, e.ending_chapter, e.episode_order FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id INNER JOIN tv_shows tv ON d.tv_show = tv.id INNER JOIN queue q ON q.episode = e.id AND q.queue = '".pg_escape_string($this->hostname)."' WHERE e.ignore = FALSE AND t.bad_track = FALSE AND e.title != '' ORDER BY insert_date;";
+			$sql = "SELECT e.id, tv.id AS series, tv.title AS series_title, e.title, d.season, d.disc, t.id AS track_id, t.track, t.aspect, tv.unordered, t.multi, COALESCE(e.starting_chapter, e.chapter, tv.starting_chapter) AS starting_chapter, e.ending_chapter, e.episode_order FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id INNER JOIN tv_shows tv ON d.tv_show = tv.id INNER JOIN queue q ON q.episode = e.id AND q.queue = '".pg_escape_string($this->hostname)."' WHERE e.ignore = FALSE AND t.bad_track = FALSE AND e.title != '' ORDER BY insert_date;";
 			$arr = $db->getAssoc($sql);
+			
+			// TODO: Get chapters
+			// This query works to get the relevant chapters for that track,
+			// but it's not checking to see if they apply (one episode per track or not)
+			foreach($arr as $id => $arr_track) {
+// 				$sql = "SELECT start_time, chapter FROM track_chapters WHERE track = ".$arr_track['track_id'].";";
+// 				$arr_chapters = $db->getAll($sql);
+// 				$arr[$id]['chapters'] = $arr_chapters;
+
+				// Get audio tracks, find the first English one
+				$sql = "SELECT * FROM audio_tracks WHERE track = ".$arr_track['track_id']." ORDER BY audio_track;";
+				$arr_audio_tracks = $db->getAssoc($sql);
+				
+				if(count($arr_audio_tracks)) {
+					foreach($arr_audio_tracks as $arr_audio) {
+						if($arr_audio['lang'] == 'en') {
+							$atrack = ($arr_audio['audio_track'] + 1);
+							break;
+						}
+					}
+				} else
+					$atrack = 1;
+				
+				$arr[$id]['atrack'] = $atrack;
+
+				// Unused
+				unset($arr[$id]['track_id']);
+				
+			}
+			
 			return $arr;
 		
 		}

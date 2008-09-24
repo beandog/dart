@@ -28,7 +28,7 @@
 	if(($options['archive'] || $options['rip']) && !$dvd->inDatabase()) {
 		
 		// Bypass archive confirmation if --new is passed
-		if(!$options['new']) {
+		if(!$options['archive']) {
 			shell::msg("Your DVD is not in the database.");
 			$q = shell::ask("Would you like to archive it now? [Y/n]", 'y');
 			$q = strtolower($q);
@@ -169,8 +169,9 @@
 			$dvd->newDisc($series, $season, $disc);
 			
 			$dvd->tracks();
+			
 			foreach($dvd->dvd['tracks'] as $track => $arr) {
-				$dvd->newTrack($track, $arr['len']);
+				$dvd->newTrack($track, $arr['len'], $arr['aspect'], $arr['audio']);
 			}
 			
 			// Populate IDs
@@ -308,8 +309,6 @@
 	
 	if($options['encode']) {
 	
-		$arr_series_episode_number = array();
-	
 		$arr = $dvd->getQueue();
 		
 		$todo = $count = count($arr);
@@ -318,19 +317,13 @@
 		
 			shell::msg("$count episode(s) total to encode.");
 			
-// 			while($todo) {
-// 				
-// 				$tmp = current($arr);
-// 				print_r($tmp);
-// 				$todo--;
-// 				
-// 			}
-
 			foreach($arr as $episode => $tmp) {
 			
 				$series_title =& $tmp['series_title'];
 				$export = $dvd->export.$dvd->formatTitle($series_title).'/';
 				$title =& $tmp['title'];
+				$aspect =& $tmp['aspect'];
+				$atrack =& $tmp['atrack'];
 				
 				$basename = $dvd->formatTitle($title);
 				
@@ -347,8 +340,11 @@
 				// Check to see if file exists, if not, rip it
 				if(shell::in_dir($vob, $export) && !shell::in_dir($mkv, $export)) {
 				
+					// Temporary
+					$chapters = $vobsub = '';
+				
 					shell::msg("[MKV] $series_title: $e $title");
- 					$dvd->mkvmerge($vob, $mkv, $title);
+ 					$dvd->mkvmerge($vob, $mkv, $title, $aspect, $chapters, $atrack, $vobsub);
 					
 					if(shell::in_dir($vob, $export) && shell::in_dir($mkv, $export)) {
  						unlink($vob);
@@ -364,9 +360,6 @@
  					$db->query($sql);
 				}
 				
-				// Increment episode number
-				$arr_series_episode_number[$tmp['series']]++;
-					
 			}
 
 			
