@@ -18,6 +18,12 @@
 // 	$dvd->series();
 
 	$options = shell::parseArguments();
+	
+	$ini = array();
+	$config = getenv('HOME').'/.bend';
+	if(file_exists($config))
+		$ini = parse_ini_file($config);
+		
 // 	print_r($options);
 
 	if($options['p'])
@@ -26,7 +32,7 @@
 	
 	// Archive disc if not in the db
 	if(($options['archive'] || $options['rip']) && !$dvd->inDatabase()) {
-		
+	
 		// Bypass archive confirmation if --new is passed
 		if(!$options['archive']) {
 			shell::msg("Your DVD is not in the database.");
@@ -209,6 +215,9 @@
 	
 	if($options['rip']) {
 	
+		if($ini['mount'])
+			$dvd->mount();
+	
 		$dvd->disc();
 		$dvd->series();
 		
@@ -304,6 +313,9 @@
 			}
 		
 		}
+		
+		if($ini['eject'])
+			$dvd->eject();
 	
 	}
 	

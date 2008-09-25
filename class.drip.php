@@ -428,10 +428,12 @@
 			$db->query($sql);
 			
 			// Store audio tracks in the database
-			foreach($audio_tracks as $key => $arr) {
-				extract($arr);
-				$sql = "INSERT INTO audio_tracks (track, audio_track, lang, channels, format) VALUES ('$id', '$key', '$lang', '$channels', '$format');";
-				$db->query($sql);
+			if(count($audio_tracks)) {
+				foreach($audio_tracks as $key => $arr) {
+					extract($arr);
+					$sql = "INSERT INTO audio_tracks (track, audio_track, lang, channels, format) VALUES ('$id', '$key', '$lang', '$channels', '$format');";
+					$db->query($sql);
+				}
 			}
 			
 			return $id;
@@ -680,7 +682,7 @@
 				
 			$exec = "mkvmerge ".implode(' ', $flags);
 			
-			shell::cmd($exec);
+			shell::cmd($exec, true, true);
 		
 		}
 		
@@ -726,6 +728,18 @@
 			
 			return $arr;
 		
+		}
+		
+		function mount() {
+			shell::cmd("mount ".$this->device);
+		}
+		
+		function unmount() {
+			shell::cmd("umount ".$this->device);
+		}
+		
+		function eject() {
+			shell::cmd("eject ".$this->device);
 		}
 		 
 		

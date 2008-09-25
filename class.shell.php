@@ -10,9 +10,10 @@
 		*
 		* @param string execution string
 		* @param boolean drop stderr to /dev/null
+		* @param boolean ignore exit codes
 		* @return output array
 		*/
-		function cmd($str, $stderr_to_null = true) {
+		function cmd($str, $stderr_to_null = true, $ignore_exit_code = false) {
 			
 			if($stderr_to_null)
 				$exec = "$str 2> /dev/null";
@@ -21,7 +22,7 @@
 			
 			exec($exec, $arr, $return);
 			
-			if($return !== 0) {
+			if($return !== 0 && !$ignore_exit_code) {
 				shell::msg("execution died: $str");
 				die($return);
 			} else
