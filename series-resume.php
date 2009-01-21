@@ -90,8 +90,6 @@
 		exit(1);
 	}
 	
-// 	echo $movie; die;
-
 	// Drop the binary command
 	unset($argv[0]);
 	
@@ -107,7 +105,7 @@
 	
 	// Where the seek position will be saved
 	$txt = $save_files_to.basename($movie).".txt";
-	
+
 	// If there is already a playback file, read it and start
 	// from that position.
 	$key_start = 0;
@@ -115,31 +113,30 @@
 	
 		// Get filename and time position of last playback
 		// $filename and $time_pos
-		extract(parse_ini_file($txt));
+		$tmp = parse_ini_file($txt);
+		extract($tmp);
 		
 		$arr_playlist = trimArray(file($movie));
 		
-		$start = preg_grep("/$filename$/", $arr_playlist);
-		if($start) {
-			$key_start = key($start);
-			
-			// One more check for garbage
-			if(is_numeric($time_pos) && $time_pos > 0)
-				$flags = " -ss $time_pos ";
+		foreach($arr_playlist as $key => $value) {
+			if(strpos($value, $filename) !== false) {
+				$key_start = $key;
+				break;
+			}
 		}
+
+		// One more check for garbage
+		if(is_numeric($time_pos) && $time_pos > 0)
+			$flags = " -ss $time_pos ";
 	} else {
+		stderr("No series to resume, starting from position 0");
 		$arr_playlist = trimArray(file($movie));
 	}
 	
-//  	print_r($arr_playlist);
- 	
-//  	var_dump($key_start);
-	
 	$movie = $arr_playlist[$key_start];
-// 	var_dump($movie);
-		
+	
 	// Build the execution string
-	$exec = escapeshellcmd("mplayer -quiet $flags $str_args ").escapeshellarg($movie);
+	$exec = escapeshellcmd("mplayer -quiet $flags $str_args -profile series ").escapeshellarg($movie);
 	$flags = '';
 	
 // 	echo "$exec\n";
@@ -148,10 +145,17 @@
 	// return code to see if mplayer throws an error.
 	exec($exec, $arr, $return);
 	
+	// You can optionally pass "exit 255" to slave mode to mplayer,
+	// and this will reset the position of the series playback
+	// to the first file.
+	if($return == 255) {
+		unlink($txt);
+		exit(0);
+	}
 	// If mplayer dies with a positive exit code, then it failed.
 	// Don't write to or delete the saved position, and die
 	// with the same exit code.
-	if($return !== 0) {
+	elseif($return !== 0) {
 		stderr("mplayer died unexpectedly");
 		exit($return);
 	}
@@ -161,8 +165,6 @@
 		stderr("Couldn't find the filename $movie");
 		exit(1);
 	}
-	
-// 	print_r($arr);
 	
 	// Get the filename of the movie we were playing
 	// Original format is ANS_FILENAME='Your_Movie.avi'
@@ -201,6 +203,9 @@
 		fwrite(fopen($txt, 'w'), $contents) or stderr($error_msg);
 	}
 		
-	
+	// Notes
+	// Mplayer slave 'get_file_name' adds sinqle quotes around file
+	// 'movie.mkv'
+	// Use 'get_property filename' instead for no quotes.
 	
 ?>
