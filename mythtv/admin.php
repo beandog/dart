@@ -66,6 +66,7 @@
 		msg(" 1. Cleanup video database of media files");
 		msg(" 2. Create episode covers");
 		msg(" 3. Check for deleted / recently added episode covers");
+		msg(" 4. Generate series playlists, links");
 		msg(" 0. Quit");
 		
 		$select = ask("Which action would you like to perform?", 2);
@@ -285,6 +286,58 @@
 				
 				msg("Added $count cover files into the database");
 
+				break;
+				
+			case 4:
+			
+				$sql = "DELETE FROM videometadata WHERE filename LIKE '/var/media/mythvideo/%.sh';";
+				$db->query($sql);
+				
+				$arr_dirs = glob('/var/media/dvds/*', GLOB_ONLYDIR);
+				$arr_dirs = preg_replace('/\/var\/media\/dvds\//', '', $arr_dirs);
+				
+// 				print_r($arr_dirs);
+
+				$count = 0;
+				
+				$sth = $db->prepare("INSERT INTO videometadata (title,director,plot,rating,year,userrating,length,filename,showlevel,coverfile,inetref,browse) VALUES (?, '', '', 'NR', 1895, 0, 0, ?, 1, ?, '00000000', 1);");
+				
+				foreach($arr_dirs as $x) {
+				
+					$sh = "/var/media/mythvideo/${x}.sh";
+					if(file_exists($sh))
+						unlink($sh);
+				
+					$glob = "/var/media/dvds/${x}/*.mkv";
+					$tmp = glob($glob);
+					
+				
+					if(count($tmp)) {
+						$exec = "ln -s /var/media/bin/mkpls $sh";
+						$exec = escapeshellcmd($exec);
+// 						echo $exec."\n";
+						exec($exec);
+						$count++;
+						
+						// Insert new entry
+						// Clean title for display
+						$title = str_replace('_', ' ', $x);
+						
+						$coverfile = "/var/media/dvds/${x}/folder.jpg";
+						if(!file_exists($coverfile))
+							$coverfile = '';
+						
+// 						$db->execute($sth, array('Foo', $x, ''));
+						
+						$sql = "INSERT INTO videometadata (title, director, plot, rating, year, userrating, length, filename, showlevel, coverfile, inetref, browse) VALUES ('".mysql_escape_string($title)."', '', '', 'NR', 1895, 0, 0, '".mysql_escape_string($sh)."', 1, '".mysql_escape_string($coverfile)."', '00000000', 1);";
+// 						print_r($sql);
+						$db->query($sql);
+					}
+				}
+				
+				msg("Created $count new playlists");
+				
+			
 				break;
 				
 			default:

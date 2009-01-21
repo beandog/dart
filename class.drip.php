@@ -516,8 +516,14 @@
 				$start = abs(intval($start));
 				if(is_numeric($end))
 					$end = abs(intval($end));
-				else
-					$end =& $start;
+				// Ripping Highway to Heaven, need to rip
+				// -chapter 2-
+				// Why in the world would I have it rip
+				// only that one chapter by default?
+				// It overrides the function input (might
+				// as well not have a var)
+// 				else
+// 					$end =& $start;
 				
 				$flags[] = "-chapter $start-$end";
 			}
@@ -694,7 +700,7 @@
 		function getQueue() {
 		
 			global $db;
-			$sql = "SELECT e.id, tv.id AS series, tv.title AS series_title, e.title, d.season, d.disc, t.id AS track_id, t.track, t.aspect, tv.unordered, t.multi, COALESCE(e.starting_chapter, e.chapter, tv.starting_chapter) AS starting_chapter, e.ending_chapter, e.episode_order FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id INNER JOIN tv_shows tv ON d.tv_show = tv.id INNER JOIN queue q ON q.episode = e.id AND q.queue = '".pg_escape_string($this->hostname)."' WHERE e.ignore = FALSE AND t.bad_track = FALSE AND e.title != '' ORDER BY insert_date;";
+			$sql = "SELECT e.id, tv.id AS series, tv.title AS series_title, e.title, d.season, d.disc, t.id AS track_id, t.track, t.aspect, tv.unordered, t.multi, COALESCE(e.starting_chapter, e.chapter, tv.starting_chapter) AS starting_chapter, e.ending_chapter, e.chapters, e.episode_order FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id INNER JOIN tv_shows tv ON d.tv_show = tv.id INNER JOIN queue q ON q.episode = e.id AND q.queue = '".pg_escape_string($this->hostname)."' WHERE e.ignore = FALSE AND t.bad_track = FALSE AND e.title != '' ORDER BY insert_date;";
 			$arr = $db->getAssoc($sql);
 			
 			// TODO: Get chapters
@@ -731,7 +737,7 @@
 		}
 		
 		function mount() {
-			shell::cmd("mount ".$this->device);
+			shell::cmd("mount ".$this->device, true, true);
 		}
 		
 		function unmount() {

@@ -289,7 +289,12 @@
 				// Check to see if file exists, if not, rip it
 				if((!shell::in_dir($vob, $export) && !shell::in_dir($mkv, $export)) || $options['pretend']) {
 				
-					shell::msg("[DVD] ($x/$count) Track $track, chapter(s) ".$tmp['starting_chapter']."-".$tmp['ending_chapter'].": $title");
+					$msg = "[DVD] ($x/$count) Track $track";
+					if($tmp['starting_chapter'])
+						$msg .= ", chapter(s) ".$tmp['starting_chapter']."-".$tmp['ending_chapter'];
+					$msg .= ": $title";
+				
+					shell::msg($msg);
 					
 					if($options['pretend']) {
 						shell::msg("[VOB] $vob");
@@ -336,6 +341,7 @@
 				$title =& $tmp['title'];
 				$aspect =& $tmp['aspect'];
 				$atrack =& $tmp['atrack'];
+				$chapters =& $tmp['chapters'];
 				
 				$basename = $dvd->formatTitle($title);
 				
@@ -353,8 +359,8 @@
 				if(shell::in_dir($vob, $export) && !shell::in_dir($mkv, $export)) {
 				
 					// Temporary
-					$chapters = $vobsub = '';
-				
+					$vobsub = '';
+					
 					shell::msg("[MKV] $series_title: $e $title");
  					$dvd->mkvmerge($vob, $mkv, $title, $aspect, $chapters, $atrack, $vobsub);
 					
