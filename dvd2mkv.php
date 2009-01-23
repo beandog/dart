@@ -151,7 +151,7 @@
 		
 			$str_title = pg_escape_string($title);
 			
-			if(!$dvd->args['nodb']) {
+			if($dvd->args['db']) {
 				$sql = "DELETE FROM movies WHERE disc_id = '$disc_id' AND track = $track;";
 				sqlite_query($sql, $db);
 				$sql = "INSERT INTO movies (disc_id, disc_title, track, aid) VALUES ('$disc_id', '$str_title', $track, $aid);";
