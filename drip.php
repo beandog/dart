@@ -220,6 +220,7 @@
 	
 		$dvd->disc();
 		$dvd->series();
+		$dvd->tracks();
 		
 //  		print_r($dvd->series);
 		
@@ -284,6 +285,7 @@
 				$basename = $export.$basename;
 				
 				$vob = "$basename.vob";
+				$sub = "$basename.idx";
 				$mkv = "$basename.mkv";
 				
 				// Check to see if file exists, if not, rip it
@@ -306,6 +308,37 @@
 					shell::msg("Partial file exists for $series_title: $title");
 				}
 				$x++;
+				
+				// Rip VobSub
+				if((!shell::in_dir($sub, $export) && !shell::in_dir($mkv, $export)) || $options['pretend']) {
+				
+					$vobsub = false;
+					
+					// See if we have an English VOBSUB for the track
+					if($dvd->dvd['tracks'][$tmp['track']]['vobsub']) {
+						
+						foreach($dvd->dvd['tracks'][$tmp['track']]['vobsub'] as $arr) {
+							if($arr['lang'] == 'en' || $arr['language'] == 'English') {
+								$vobsub = true;
+								break;
+							}
+						}
+					}
+					
+					if($vobsub) {
+						if($options['pretend']) {
+							shell::msg("[SUB] $sub");
+						} else {
+							// Pass the basename, since mencoder dumps to
+							// <basename>.idx, .sub
+							shell::msg("[SUB] Extracting Subtitles");
+							$dvd->sub($basename, $tmp['track'], $tmp['starting_chapter'], $tmp['ending_chapter']);
+						}
+					}
+				
+				} else {
+					shell::msg("Partial subtitles exists for $series_title: $title");
+				}
 				
 				// Add episode to queue
 				if(shell::in_dir($vob, $export)) {
@@ -353,16 +386,14 @@
 				$basename = $export.$basename;
 				
 				$vob = "$basename.vob";
+				$sub = "$basename.idx";
 				$mkv = "$basename.mkv";
 				
 				// Check to see if file exists, if not, rip it
 				if(shell::in_dir($vob, $export) && !shell::in_dir($mkv, $export)) {
 				
-					// Temporary
-					$vobsub = '';
-					
 					shell::msg("[MKV] $series_title: $e $title");
- 					$dvd->mkvmerge($vob, $mkv, $title, $aspect, $chapters, $atrack, $vobsub);
+ 					$dvd->mkvmerge($vob, $mkv, $title, $aspect, $chapters, $atrack, $sub);
 					
 					if(shell::in_dir($vob, $export) && shell::in_dir($mkv, $export)) {
  						unlink($vob);

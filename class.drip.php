@@ -536,6 +536,50 @@
 		}
 		
 		/**
+		 * Rip VobSub subtitles
+		 *
+		 */
+		function sub($filename, $track, $start = '', $end = '') {
+		
+			$flags = array();
+			
+			$track = abs(intval($track));
+			
+			$flags[] = "dvd://$track";
+			$flags[] = "-dvd-device ".$this->device;
+			$flags[] = "-ovc copy";
+			$flags[] = "-nosound";
+			$flags[] = "-vobsubout $filename";
+			$flags[] = "-o /dev/null";
+			$flags[] = "-slang en";
+			$flags[] = "-quiet";
+			
+			/** FIXME Not sure if this will work with chapters or not **/
+			if(is_numeric($start)) {
+				$start = abs(intval($start));
+				if(is_numeric($end))
+					$end = abs(intval($end));
+				// Ripping Highway to Heaven, need to rip
+				// -chapter 2-
+				// Why in the world would I have it rip
+				// only that one chapter by default?
+				// It overrides the function input (might
+				// as well not have a var)
+// 				else
+// 					$end =& $start;
+				
+				$flags[] = "-chapter $start-$end";
+			}
+			
+// 			$exec = "mencoder -ovc copy -nosound -vobsubout $filename -o /dev/null -slang en";
+			$str = "mencoder ".implode(' ', $flags);
+			$str = escapeshellcmd($str);
+			
+			shell::cmd($str);
+		
+		}
+		
+		/**
 		 * Add an episode to the queue to be encoded
 		 *
 		 * @param int episode id
