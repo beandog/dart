@@ -199,6 +199,9 @@
 			}
 			
 			$dvd->chapters();
+			
+			print_r($dvd['chapters']); die;
+			
 			foreach($dvd->dvd['chapters'] as $track => $arr_chapter) {
 				foreach($arr_chapter as $chapter => $arr) {
 				
@@ -285,7 +288,7 @@
 				$basename = $export.$basename;
 				
 				$vob = "$basename.vob";
-				$sub = "$basename.idx";
+				$idx = "$basename.idx";
 				$mkv = "$basename.mkv";
 				
 				// Check to see if file exists, if not, rip it
@@ -386,7 +389,8 @@
 				$basename = $export.$basename;
 				
 				$vob = "$basename.vob";
-				$sub = "$basename.idx";
+				$idx = "$basename.idx";
+				$sub = "$basename.sub";
 				$mkv = "$basename.mkv";
 				
 				// Check to see if file exists, if not, rip it
@@ -397,6 +401,11 @@
 					
 					if(shell::in_dir($vob, $export) && shell::in_dir($mkv, $export)) {
  						unlink($vob);
+					}
+					
+					if(shell::in_dir($idx, $export) && shell::in_dir($sub, $export) && shell::in_dir($mkv, $export)) {
+ 						unlink($idx);
+ 						unlink($sub);
 					}
 				
 				} else {

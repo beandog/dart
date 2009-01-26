@@ -7,7 +7,7 @@
 			$this->device = '/dev/dvd';
 			$this->export = getenv('HOME').'/dvds/';
 			$this->eject = false;
-			$this->hostname = `hostname`;
+			$this->hostname = trim(`hostname`);
 			
 			// lsdvd output
 			$this->lsdvd['titles'] = '';
@@ -707,19 +707,22 @@
 		
 			$flags = array();
 			
-			$flags[] = "-o \"$target\"";
-			$flags[] = "--default-language en";
+			// mkvmerge format
+			// mkvmerge [global options] -o out [options1] <file1> [[options2] <file2> ...] [@optionsfile]
+			
+			$flags[] = "--default-language eng";
 			if($title)
 				$flags[] = "--title \"$title\"";
-			
-			if($aspect)
-				$flags[] = "--aspect-ratio 0:$aspect";
-			
 			if($chapters) {
 				$tmp = tempnam('/tmp', 'chapters');
 				file_put_contents($tmp, $chapters);
 				$flags[] = "--chapters $tmp";
 			}
+			
+			$flags[] = "-o \"$target\"";
+			
+			if($aspect)
+				$flags[] = "--aspect-ratio 0:$aspect";
 			
 			// Source must immediately follow atrack flag
 			if($audio_track)

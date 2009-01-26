@@ -843,21 +843,35 @@
 				if(is_null($atrack))
 					$atrack = 1;
 				// Moving order around to work with audio tracks
-				$exec = "mkvmerge --aspect-ratio 0:$aspect -o \"$mkv\" -a $atrack \"$avi\" --title \"$title\" --default-language en";
 				
+				// mkvmerge format
+				// mkvmerge [global options] -o out [options1] <file1> [[options2] <file2> ...] [@optionsfile]
+				
+				// globals
+				$verbose = false;
+				if($this->args['v'] == 'mkv') {
+					$verbose = true;
+					$flags[] = "-v";
+				}
+				$flags[] = "--default-language eng";
+				$flags[] = "--title \"$title\"";
 				if(file_exists($txt))
-					 $exec .= " --chapters \"$txt\"";
-				 
+					 $flags[] = "--chapters \"$txt\"";
+				
+				$flags[] = "-o \"$mkv\"";
+				
+				// locals
+				$flags[] = "--aspect-ratio 0:$aspect";
+				$flags[] = "-a $atrack \"$avi\"";
 				// Include VobSub subtitles if they exist
 				if(file_exists($idx))
-					 $exec .= " \"$idx\"";
+					 $flags[] = "\"$idx\"";
+				
+// 				$exec = "mkvmerge --aspect-ratio 0:$aspect -o \"$mkv\" -a $atrack \"$avi\" --title \"$title\" --default-language en";
+				$exec = "mkvmerge ".implode(' ', $flags);
 					 
 				#echo $exec; die;
 				
-				$verbose = false;
-				if($this->args['v'] == 'mkv')
-					$verbose = true;
-					 
 				$this->executeCommand($exec, true, $verbose);
 		}
 		
