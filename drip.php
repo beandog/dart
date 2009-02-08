@@ -288,6 +288,7 @@
 				$basename = $export.$basename;
 				
 				$vob = "$basename.vob";
+				$sub = "$basename.sub";
 				$idx = "$basename.idx";
 				$mkv = "$basename.mkv";
 				
@@ -328,7 +329,7 @@
 						}
 					}
 					
-					if($vobsub) {
+					if($vobsub && !shell::in_dir($sub, $export)) {
 						if($options['pretend']) {
 							shell::msg("[SUB] $sub");
 						} else {
@@ -397,7 +398,7 @@
 				if(shell::in_dir($vob, $export) && !shell::in_dir($mkv, $export)) {
 				
 					shell::msg("[MKV] $series_title: $e $title");
- 					$dvd->mkvmerge($vob, $mkv, $title, $aspect, $chapters, $atrack, $sub);
+ 					$dvd->mkvmerge($vob, $mkv, $title, $aspect, $chapters, $atrack, $idx);
 					
 					if(shell::in_dir($vob, $export) && shell::in_dir($mkv, $export)) {
  						unlink($vob);
