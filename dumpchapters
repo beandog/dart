@@ -1,0 +1,6 @@
+#!/bin/sh
+if [[ -n $1 ]]; then
+	dvdxchap /dev/dvd -t ${1} > chapters.txt
+else
+	dvdxchap /dev/dvd > chapters.txt
+fi
