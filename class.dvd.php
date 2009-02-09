@@ -13,15 +13,10 @@
 			
 			// Default config settings
 			$this->config = array(
-				'queue' => 0,
-				'transcode_video_codec' => 'xvid4',
-				'transcode_video_bitrate' => 2200,
-				'transcode_audio_codec' => 'copy',
-				'transcode_audio_bitrate' => 128,
-				'export_dir' => './',
-				'device' => '/dev/dvd',
+				'video_bitrate' => 2450,
+				'dvd_device' => '/dev/dvd',
 				'mount' => true,
-				'eject' => true
+				'eject' => true,
 			);
 		}
 		
@@ -753,30 +748,30 @@
 			// Get the disc ID (libdvdread)
 			if(!isset($this->disc_id))
 				$this->disc_id = $this->getDiscId($dvd);
-			
+				
 			// Build the array of tracks and their lengths
 			foreach($lsdvd->track as $track) {
 				// This is the original array created -- track lengths
 				// only.  Now I dump more information into a second array
-				// below (arr_lsdvd) for dvd2mkv, to store extra
+				// below (contents) for dvd2mkv, to store extra
 				// information about audio tracks, subtitles, aspect ratio
 				$this->arr_tracks[(int)$track->ix] = number_format((float)$track->length / 60, 2, '.', '');
 				
 				// Newer array
 				// Only add ones where length != 0
 				if($this->arr_tracks[(int)$track->ix] != '0.00') {
-					$this->arr_lsdvd[(int)$track->ix]['length'] = $this->arr_tracks[(int)$track->ix];
+					$this->contents[(int)$track->ix]['length'] = $this->arr_tracks[(int)$track->ix];
 					
-					$this->arr_lsdvd[(int)$track->ix]['aspect'] = (string)$track->aspect;
+					$this->contents[(int)$track->ix]['aspect'] = (string)$track->aspect;
 					
 					// Get the audio streams
 					foreach($track->audio as $audio) {
-						$this->arr_lsdvd[(int)$track->ix]['audio'][] = array('lang' => (string)$audio->langcode, 'channels' => (int)$audio->channels, 'format' => (string)$audio->format);
+						$this->contents[(int)$track->ix]['audio'][] = array('lang' => (string)$audio->langcode, 'channels' => (int)$audio->channels, 'format' => (string)$audio->format);
 					}
 					
 					// Get the subtitle streams
 					foreach($track->subp as $subp) {
-						$this->arr_lsdvd[(int)$track->ix]['vobsub'][] = array('lang' => (string)$subp->langcode, 'language' => (string)$subp->language);
+						$this->contents[(int)$track->ix]['vobsub'][] = array('lang' => (string)$subp->langcode, 'language' => (string)$subp->language);
 					}
 				}
 				
@@ -813,7 +808,7 @@
 
 		function midentify($file = 'movie.vob') {
 
-			exec("midentify $file", $midentify);
+			exec("midentify \"$file\"", $midentify);
 			
 			$a = 0;
 
@@ -821,7 +816,7 @@
 				$arr_split = preg_split('/\s*=\s*/', $value);
 				$key = trim($arr_split[0]);
 				$value = trim($arr_split[1]);
-				$arr[$key] = $value;
+				$arr[$key][] = $value;
 				
 				// Use lsdvd instead .. cleaner
 				/*
@@ -1006,7 +1001,7 @@
 		
 			if(is_int($argc) && is_array($argv) && is_array($arr_config)) {
 			
-				$this->config = $arr_config;
+				$this->config = array_merge($this->config, $arr_config);
 				
 				// Fix some stuff about the 'parse_ini_file' php function I don't like
 				if($this->config['mount'] == '1')
@@ -1123,10 +1118,82 @@
 		}
 
 		function writeChapters($chapters = '', $txt = 'movie.txt') {
-			$handle = fopen($txt, 'w') or die('error');
-			fwrite($handle, $chapters);
-			fclose($handle);
+			if(strlen($chapters)) {
+				$handle = fopen($txt, 'w') or die('error');
+				fwrite($handle, $chapters);
+				fclose($handle);
+			}
 		}
+		
+		// Find and match the AID to the listing in the VOBs
+		// Also check to see if the audio track order is reversed.
+		/** FIXME Not sure what to do when # tracks disagree **/
+		function probeAudio($vob = 'movie.vob', $track, $aid) {
+		
+			$midentify = $this->midentify($vob);
+			
+// 			print_r($midentify);
+// 			print_r($this->contents[$track]['audio']);
+			
+			// This all only matters if there is actually more than one track
+			
+			if((count($midentify['ID_AUDIO_ID']) > 1) || (count($this->contents[$track]['audio']) > 1)) {
+			
+				// Check to see if they are reversed in ffmpeg.
+				// Midentify will report them backwards as well
+				if($midentify['ID_AUDIO_ID'][0] > $midentify['ID_AUDIO_ID'][1])
+					$this->reversed_audio_track_order = true;
+				else
+					$this->reversed_audio_track_order = false;
+				
+				// Label the AID on the audio tracks, just for verbosity
+				$atrack = 128;
+				for($x = 0; $x < count($this->contents[$track]['audio']); $x++) {
+					$this->contents[$track]['audio'][$x]['aid'] = $atrack++;
+				}
+				
+				// Now find the audio track to map to ffmpeg
+				// If the order is reversed, we'll flip this array around
+				// as well, so we can get the sequential track # to map
+				$tmp = $this->contents[$track]['audio'];
+				if($this->reversed_audio_track_order)
+					$tmp = array_reverse($tmp, true);
+// 				print_r($tmp);
+				// Start at 1 because the first track (0.0) is video.
+				// First audio track will be 0.1
+				$i = 1;
+				foreach($tmp as $key => $arr_audio) {
+					if($arr_audio['aid'] == $aid)
+						$this->ffmpeg_atrack_map = "0.".($i);
+					$i++;
+				}
+				
+			} else {
+				$this->contents[$track]['audio'][0]['aid'] = 128;
+				$this->ffmpeg_atrack_map = "0.1";
+			}
+			
+// 			print_r($this->contents[$track]['audio']);
+		
+		}
+		
+		
+		function probeVideo($vob = 'movie.vob') {
+		
+			exec("ffmpeg -i \"$vob\" 2>&1", $ffmpeg);
+			$ffmpeg = implode("\n", $ffmpeg);
+			
+			// Very lazy check to see if 59.94 is in there
+			// ffmpeg will report the original framerate as 59.94 if it is really 23.97
+			// otherwise for 29.97, it will record it correctly.
+			if(strpos($ffmpeg, '59.94') !== false)
+				$this->ffmpeg_framerate = "24000/1001";
+			else
+				$this->ffmpeg_framerate = "30000/1001";
+				
+		
+		}
+		
 	}
 	
 ?>
