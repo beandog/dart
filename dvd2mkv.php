@@ -25,13 +25,15 @@
 		$dvd->verbose = $verbose = true;
 	if($dvd->args['force'])
 		$force = true;
+	if($dvd->args['s'])
+		 $dvd->args['sub'] = true;
 		
 	if($dvd->args['h'] || $dvd->args['help']) {
 	
 		$dvd->msg("Options:");
 		$dvd->msg("  --title <title>\tMovie title");
 		$dvd->msg("  --track <track>\tSpecify track number to rip");
-		$dvd->msg("  --sub\t\t\tRip subtitles");
+		$dvd->msg("  -s, --sub\t\tRip subtitles");
 		$dvd->msg("  --nodb\t\tDon't write to database");
 		$dvd->msg("  -i\t\t\tInteractive mode, choose everything manually");
 		$dvd->msg("  -v\t\t\tVerbose output");
