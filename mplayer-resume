@@ -1,9 +1,9 @@
 #!/usr/bin/env php
 <?
 
-	// By default, save files in ~/.mplayer/playback/
+	// By default, save files in ~/.mplayer/resume/
 	$home = getenv('HOME');
-	$save_files_to = "$home/.mplayer/playback/";
+	$save_files_to = "$home/.mplayer/resume/";
 
 	/**
 	 *
