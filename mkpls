@@ -4,4 +4,4 @@ PLS="${HOME}/.mplayer/resume/series/playlist/${SERIES}.pls"
 
 ls -1 /var/media/dvds/"${SERIES}"/*.mkv > "${PLS}"
 
-series-resume "${PLS}"
+php /var/media/bin/series-resume "${PLS}"
