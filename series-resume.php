@@ -3,7 +3,7 @@
 
 	// By default, save files in ~/.mplayer/playback/
 	$home = getenv('HOME');
-	$save_files_to = "$home/.mplayer/series/";
+	$save_files_to = "$home/.mplayer/resume/series/";
 
 	/**
 	 *
@@ -30,7 +30,7 @@
 	function stdout($str) {
 		if(!empty($str) && is_string($str)) {
 			$str = rtrim($str);
-			fwrite(STDOUT, "playlist-resume: $str\n");
+			fwrite(STDOUT, "series-resume: $str\n");
 			return true;
 		} else
 			return false;
@@ -45,7 +45,7 @@
 	function stderr($str) {
 		if(!empty($str) && is_string($str)) {
 			$str = rtrim($str);
-			fwrite(STDERR, "playlist-resume: $str\n");
+			fwrite(STDERR, "series-resume: $str\n");
 			return true;
 		} else
 			return false;

@@ -1,6 +1,6 @@
 #!/bin/bash
 SERIES=$(basename $0 .sh)
-PLS="${HOME}/.mplayer/series/playlist/${SERIES}.pls"
+PLS="${HOME}/.mplayer/resume/series/playlist/${SERIES}.pls"
 
 ls -1 /var/media/dvds/"${SERIES}"/*.mkv > "${PLS}"
 

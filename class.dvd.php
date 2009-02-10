@@ -1188,6 +1188,9 @@
 			// otherwise for 29.97, it will record it correctly.
 			if(strpos($ffmpeg, '59.94') !== false)
 				$this->ffmpeg_framerate = "24000/1001";
+			// PAL
+			elseif(strpos($ffmpeg, '25.00') !== false)
+				$this->ffmpeg_framerate = 25;
 			else
 				$this->ffmpeg_framerate = "30000/1001";
 				
