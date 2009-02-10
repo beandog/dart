@@ -20,9 +20,25 @@
 	$options = shell::parseArguments();
 	
 	$ini = array();
-	$config = getenv('HOME').'/.bend';
+	$config = getenv('HOME').'/.drip/config';
 	if(file_exists($config))
 		$ini = parse_ini_file($config);
+		
+	if($options['h'] || $options['help']) {
+	
+		shell::msg("Options:");
+		shell::msg("  --rip\t\t\tRip DVD");
+		shell::msg("  --encode\t\tEncode episodes in queue");
+		shell::msg("  --season <int>\tSet season #");
+		shell::msg("  --disc <int>\t\tSet disc # for season");
+		shell::msg("  --series <int>\tPass TV Series ID");
+		shell::msg("  --skip <int>\t\tSkip # of episodes");
+		shell::msg("  --max <int>\t\tMax # of episodes to rip and/or encode");
+		shell::msg("  --v, -verbose\t\tVerbose output");
+		shell::msg("  --debug\t\t\tEnable debugging");
+	
+		die;
+	}
 		
 //  	print_r($options);
 
@@ -36,6 +52,19 @@
 		
 	if($options['max'])
 		$max = abs(intval($options['max']));
+	
+	if($ini['eject'])
+		$eject = true;
+		
+	if($options['debug']) {
+		$debug = true;
+		$eject = false;
+	}
+		
+	if($options['v'] || $options['verbose'] || $ini['verbose'] || $debug)
+		$verbose = true;
+		
+	
 	
 	// Archive disc if not in the db
 	if(($options['archive'] || $options['rip']) && !$dvd->inDatabase()) {
@@ -67,7 +96,7 @@
 			else {
 				$sql = "SELECT title FROM tv_shows WHERE id = $series;";
 				$title = $db->getOne($sql);
-				shell::msg("$title");
+				shell::msg("[DVD] Series: $title");
 			}
 		}
 		
@@ -278,8 +307,8 @@
 			// After this, we auto-increment it ourselves
 			$e = $dvd->episodeNumber(key($arr));
 			
-			if($options['pretend'] || $options['debug'] || $options['verbose']) {
-				shell::msg("Starting episode number: $e");
+			if($options['pretend'] || $debug || $verbose) {
+				shell::msg("[Series] Starting episode number: $e");
 			}
 		
 			$series_title = $arr[key($arr)]['series_title'];
@@ -291,8 +320,8 @@
  			if(!is_dir($export))
  				mkdir($export, 0755) or die("Can't create export directory $export");
 		
-			shell::msg($series_title);
-			shell::msg("Season: $season  Disc: $disc  Episodes: $count");
+			shell::msg("[Series] Title: ".$series_title);
+			shell::msg("[Series] Season: $season  Disc: $disc  Episodes: $count");
 			
 			foreach($arr as $episode => $tmp) {
 			
@@ -322,10 +351,14 @@
 				$idx = "$basename.idx";
 				$mkv = "$basename.mkv";
 				
+				shell::msg("[Episode] Title: $title");
+				if($verbose)
+					shell::msg("[Episode] Track: $track");
+				
 				// Check to see if file exists, if not, rip it
 				if((!shell::in_dir($vob, $export) && !shell::in_dir($mkv, $export)) || $options['pretend']) {
 				
-					$msg = "[DVD] ($x/$count) Track $track";
+					$msg = "[DVD] Ripping Episode $x/$count";
 					if($tmp['starting_chapter'])
 						$msg .= ", chapter(s) ".$tmp['starting_chapter']."-".$tmp['ending_chapter'];
 					$msg .= ": $title";
@@ -339,12 +372,15 @@
 					}
 				
 				} else {
-					shell::msg("Partial file exists for $series_title: $title");
+					shell::msg("[DVD] Skipping (file exists)");
 				}
 				$x++;
 				
 				// Rip VobSub
 				if((!shell::in_dir($sub, $export) && !shell::in_dir($mkv, $export)) || $options['pretend']) {
+				
+					if($verbose)
+						shell::msg("[DVD] Checking for subtitles");
 				
 					$vobsub = false;
 					
@@ -361,17 +397,19 @@
 					
 					if($vobsub && !shell::in_dir($sub, $export)) {
 						if($options['pretend']) {
-							shell::msg("[SUB] $sub");
+							shell::msg("[VobSub] $sub");
 						} else {
 							// Pass the basename, since mencoder dumps to
 							// <basename>.idx, .sub
-							shell::msg("[SUB] Extracting Subtitles");
+							shell::msg("[VobSub] Extracting Subtitles");
 							$dvd->sub($basename, $tmp['track'], $tmp['starting_chapter'], $tmp['ending_chapter']);
 						}
+					} else {
+						shell::msg("[DVD] No subtitles available");
 					}
 				
-				} else {
-					shell::msg("Partial subtitles exists for $series_title: $title");
+				} elseif(shell::in_dir($idx, $export)) {
+					shell::msg("[VobSub] Skipping (file exists)");
 				}
 				
 				// Add episode to queue
@@ -386,7 +424,7 @@
 		
 		}
 		
-		if($ini['eject'])
+		if($eject)
 			$dvd->eject();
 	
 	}
