@@ -13,7 +13,7 @@
 //   	$dvd->disc_id();
 //   	$dvd->title();
 //  	$dvd->tracks();
-//  	$dvd->chapters();
+//   	$dvd->chapters(); 
 //  	$dvd->disc();
 // 	$dvd->series();
 
@@ -24,11 +24,18 @@
 	if(file_exists($config))
 		$ini = parse_ini_file($config);
 		
-// 	print_r($options);
+//  	print_r($options);
 
 	if($options['p'])
 		$options['pretend'] = true;
-
+		
+	if($options['skip'])
+		$skip = abs(intval($options['skip']));
+	else
+		$skip = 0;
+		
+	if($options['max'])
+		$max = abs(intval($options['max']));
 	
 	// Archive disc if not in the db
 	if(($options['archive'] || $options['rip']) && !$dvd->inDatabase()) {
@@ -183,25 +190,37 @@
 			// Populate IDs
 			$dvd->trackIDs();
 			
+			// Getting chapters into the database
+			// is currently incomplete in design.
+			// I can't remember where I was going with it,
+			// since dvdxchap is buggy if you select start / ending
+			// positions.
+			// It seems like I was looking to recreate them, somewhere,
+			// for some reason, by getting the distance between chapters
+			// and storing that.
+			// For now, I'm just going back to the old method: store it
+			// with the track (in episodes table) in raw format, and
+			// pass that to mkvmerge. I can clean it up later.
+			$dvd->chapters();
+			
 			// Get max and minimum length requirements
 			$sql = "SELECT min_len, max_len FROM tv_shows WHERE id = $series;";
 			$arr_len = $db->getRow($sql);
 			
 			foreach($dvd->dvd['tracks'] as $track => $arr) {
-				if(($len > $arr_len['max_len']) || ($len < $arr_len['min_len']))
+			
+				if(($arr['len'] > $arr_len['max_len']) || ($arr['len'] < $arr_len['min_len']))
 					$ignore = true;
 				else
 					$ignore = false;
-				
+					
 				// Episodes originate as one track + one chapter,
 				// and can be expanded upon in the frontend admin
-				$dvd->newEpisode($arr['id'], $ignore);
+ 				$dvd->newEpisode($arr['id'], $ignore, $dvd->dvd['tracks'][$track]['dvdxchap']);
 			}
 			
-			$dvd->chapters();
-			
-			print_r($dvd['chapters']); die;
-			
+			// I don't remember where I was going with this.
+			// FIXME Single chapter episodes don't need chapters in the MKV
 			foreach($dvd->dvd['chapters'] as $track => $arr_chapter) {
 				foreach($arr_chapter as $chapter => $arr) {
 				
@@ -214,6 +233,19 @@
 			}
 			
 		}
+	}
+	
+	// Set the limit and starting points
+	if($options['rip'] || $options['encode']) {
+		if($skip)
+			$offset = " OFFSET $skip";
+		else
+			$offset = '';
+		
+		if($max)
+			$limit = " LIMIT $max";
+		else
+			$limit = '';
 	}
 	
 	if($options['rip']) {
@@ -235,10 +267,8 @@
 		// This query has nothing to do with what has / hasn't been encoded
 		
 		// Rip in sequential order by episode order, then title
-		$sql = "SELECT e.id, tv.title AS series_title, e.title, d.season, d.disc, t.track, tv.unordered,  t.multi, tv.starting_chapter AS series_starting_chapter, e.chapter AS starting_chapter, e.ending_chapter, e.episode_order FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id AND d.id = {$dvd->disc['id']} INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND t.bad_track = FALSE AND e.title != '' ORDER BY t.track_order, e.episode_order, e.title, t.track, e.id;";
+		$sql = "SELECT e.id, tv.title AS series_title, e.title, d.season, d.disc, t.track, tv.unordered,  t.multi, tv.starting_chapter AS series_starting_chapter, e.chapter AS starting_chapter, e.ending_chapter, e.episode_order FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id AND d.id = {$dvd->disc['id']} INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND t.bad_track = FALSE AND e.title != '' ORDER BY t.track_order, e.episode_order, e.title, t.track, e.id $offset $limit;";
 		$arr = $db->getAssoc($sql);
-		
-//  		print_r($arr);
 		
 		if(count($arr)) {
 		
@@ -363,7 +393,7 @@
 	
 	if($options['encode']) {
 	
-		$arr = $dvd->getQueue();
+		$arr = $dvd->getQueue($max);
 		
 		$todo = $count = count($arr);
 		

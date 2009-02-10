@@ -465,7 +465,7 @@
 			
 		}
 		
-		function newEpisode($track, $ignore = false) {
+		function newEpisode($track, $ignore = false, $chapters) {
 		
 			$track = abs(intval($track));
 			if($ignore)
@@ -475,10 +475,11 @@
 		
 			global $db;
 			
-			$sql = "INSERT INTO episodes(track, ignore) VALUES($track, $ignore);";
+			$chapters = pg_escape_string($chapters);
+			
+			$sql = "INSERT INTO episodes(track, ignore, chapters) VALUES($track, $ignore, '$chapters');";
 			$db->query($sql);
 			
-		
 		}
 		
 		/**
@@ -713,7 +714,7 @@
 			$flags[] = "--default-language eng";
 			if($title)
 				$flags[] = "--title \"$title\"";
-			if($chapters) {
+			if(strlen($chapters)) {
 				$tmp = tempnam('/tmp', 'chapters');
 				file_put_contents($tmp, $chapters);
 				$flags[] = "--chapters $tmp";
@@ -744,10 +745,15 @@
 		 * along with all the information needed to encode them.
 		 *
 		 */
-		function getQueue() {
+		function getQueue($max) {
+		
+			if($max)
+				$limit = " LIMIT $max";
+			else
+				$limit = '';
 		
 			global $db;
-			$sql = "SELECT e.id, tv.id AS series, tv.title AS series_title, e.title, d.season, d.disc, t.id AS track_id, t.track, t.aspect, tv.unordered, t.multi, COALESCE(e.starting_chapter, e.chapter, tv.starting_chapter) AS starting_chapter, e.ending_chapter, e.chapters, e.episode_order FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id INNER JOIN tv_shows tv ON d.tv_show = tv.id INNER JOIN queue q ON q.episode = e.id AND q.queue = '".pg_escape_string($this->hostname)."' WHERE e.ignore = FALSE AND t.bad_track = FALSE AND e.title != '' ORDER BY insert_date;";
+			$sql = "SELECT e.id, tv.id AS series, tv.title AS series_title, e.title, d.season, d.disc, t.id AS track_id, t.track, t.aspect, tv.unordered, t.multi, COALESCE(e.starting_chapter, e.chapter, tv.starting_chapter) AS starting_chapter, e.ending_chapter, e.chapters, e.episode_order FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id INNER JOIN tv_shows tv ON d.tv_show = tv.id INNER JOIN queue q ON q.episode = e.id AND q.queue = '".pg_escape_string($this->hostname)."' WHERE e.ignore = FALSE AND t.bad_track = FALSE AND e.title != '' ORDER BY insert_date $limit;";
 			$arr = $db->getAssoc($sql);
 			
 			// TODO: Get chapters
