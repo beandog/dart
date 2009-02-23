@@ -28,6 +28,7 @@
 	
 		shell::msg("Options:");
 		shell::msg("  --rip\t\t\tRip DVD");
+		shell::msg("  --nosub\t\t\tDon't rip subtitles");
 		shell::msg("  --encode\t\tEncode episodes in queue");
 		shell::msg("  --season <int>\tSet season #");
 		shell::msg("  --disc <int>\t\tSet disc # for season");
@@ -377,7 +378,7 @@
 				$x++;
 				
 				// Rip VobSub
-				if((!shell::in_dir($sub, $export) && !shell::in_dir($mkv, $export)) || $options['pretend']) {
+				if(((!shell::in_dir($sub, $export) && !shell::in_dir($mkv, $export)) || $options['pretend']) && !$options['nosub']) {
 				
 					if($verbose)
 						shell::msg("[DVD] Checking for subtitles");
@@ -408,9 +409,12 @@
 						shell::msg("[DVD] No subtitles available");
 					}
 				
+				} elseif($options['nosub'] && $verbose) {
+					shell::msg("[VobSub] Skipping");
 				} elseif(shell::in_dir($idx, $export)) {
 					shell::msg("[VobSub] Skipping (file exists)");
 				}
+				
 				
 				// Add episode to queue
 				if(shell::in_dir($vob, $export)) {
