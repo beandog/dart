@@ -145,11 +145,13 @@
 	// return code to see if mplayer throws an error.
 	exec($exec, $arr, $return);
 	
-	// You can optionally pass "exit 255" to slave mode to mplayer,
+	// You can optionally pass "quit 255" to slave mode to mplayer,
 	// and this will reset the position of the series playback
 	// to the first file.
 	if($return == 255) {
-		unlink($txt);
+		stdout("Resetting playlist completely");
+		if(file_exists($txt))
+			unlink($txt);
 		exit(0);
 	}
 	// If mplayer dies with a positive exit code, then it failed.
