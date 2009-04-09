@@ -4,6 +4,8 @@
 	// By default, save files in ~/.mplayer/playback/
 	$home = getenv('HOME');
 	$save_files_to = "$home/.mplayer/resume/series/";
+	$sqlite_db = "$home/.mplayer/resume/series/sqlite.db";
+	$db = sqlite_open($sqlite_db, 0644);
 
 	/**
 	 *
@@ -105,16 +107,23 @@
 	
 	// Where the seek position will be saved
 	$txt = $save_files_to.basename($movie).".txt";
-
+	
+	// Get the playlist
+	$pls = basename($movie);
+	
 	// If there is already a playback file, read it and start
 	// from that position.
 	$key_start = 0;
-	if(file_exists($txt)) {
+	
+	$sql = "SELECT * FROM series_resume WHERE playlist = '".sqlite_escape_string($pls)."';";
+	echo "$sql\n";
+	$row = sqlite_fetch_array(sqlite_query($db, $sql));
+	
+	if($row) {
 	
 		// Get filename and time position of last playback
 		// $filename and $time_pos
-		$tmp = parse_ini_file($txt);
-		extract($tmp);
+		extract($row);
 		
 		$arr_playlist = trimArray(file($movie));
 		
@@ -150,8 +159,10 @@
 	// to the first file.
 	if($return == 255) {
 		stdout("Resetting playlist completely");
-		if(file_exists($txt))
-			unlink($txt);
+		if($row) {
+			$sql = "DELETE FROM series_resume WHERE playlist = '".sqlite_escape_string($pls)."';";
+			sqlite_query($db, $sql);
+		}
 		exit(0);
 	}
 	// If mplayer dies with a positive exit code, then it failed.
@@ -180,29 +191,16 @@
 
 	// On stop, set the resume file to open the next
 	// filename in the playlist at start position
-	if(empty($time_pos)) {
-		if($arr_playlist[($key_start + 1)]) {
+	if(empty($time_pos) && $arr_playlist[($key_start + 1)]) {
 			$filename = basename($arr_playlist[($key_start + 1)]);
-			$contents = "filename=$filename";
-		// If no more files to play, kill the resume playlist
-		} else {
-			unlink($txt);
-			exit(0);
-		}
-		
+			$time_pos = 0;
 	}
-	// Otherwise, if exit, just resume where we left off.
-	else
-		$contents .= "filename=$filename\ntime_pos=$time_pos";
-		
-// 	var_dump($contents);
-		
-	// Use PHP 5's fancy new functions, if possible. :)
-	if(function_exists('file_put_contents'))
-		file_put_contents($txt, $contents) or stderr($error_msg);
-	// Otherwise fallback on PHP 4's functions
-	else {
-		fwrite(fopen($txt, 'w'), $contents) or stderr($error_msg);
+	
+	$sql = "DELETE FROM series_resume WHERE playlist = '".sqlite_escape_string($pls)."';";
+	sqlite_query($db, $sql);
+	if($filename && is_numeric($time_pos)) {
+		$sql = "INSERT INTO series_resume VALUES ('".sqlite_escape_string($pls)."', '".sqlite_escape_string($filename)."', '".sqlite_escape_string($time_pos)."');";
+		sqlite_query($db, $sql);
 	}
 		
 	// Notes
