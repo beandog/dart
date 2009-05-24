@@ -1,25 +1,42 @@
 <?
 
+	/**
+	 * TODO
+	 *
+	 * Include class.shell.php
+	 * Check for PHP modules
+	 * Check for tidy XML support
+	 * Display error messages
+	 * Cleanup variable names
+	 * Split title output into chunks
+	 * Document code
+	 * Documentation
+	 * Standalone binary
+	 * Use internal PHP curl libs?
+	 *
+	 */
+	
+
 	require_once 'class.shell.php';
 
 	$config_dir = getenv("HOME")."/.trip/";
 	$config = $config_dir."config";
+	$tivo_html = $config_dir."index.html";
+	$tivo_xhtml = $config_dir."index.xhtml";
 	
 	if(is_dir($config_dir) && file_exists($config))
 		$arr_config = parse_ini_file($config);
 	else
 		mkdir($config_dir) or die("Couldn't create $config_dir to store configuration settings");
-	$tivo_html = $config_dir."index.html";
-	$tivo_xhtml = $config_dir."index.xhtml";
 	
 	$debug = $verbose = false;
 	
 	$args = shell::parseArguments();
 
-	if($args['h'] || $arg['help']) {
+	if($args['h'] || $args['help']) {
 	
 		shell::msg("Tivo Ripper - Download recordings from your Tivo and remove the DRM");
-		shell::msg("http://spaceparanoids.org/trac/bend");
+		shell::msg("http://spaceparanoids.org/trac/bend/wiki/trip");
 		echo "\n";
 		shell::msg("Usage:");
 		shell::msg("  trip [options]");
