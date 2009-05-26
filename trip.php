@@ -13,6 +13,7 @@
 	 * Documentation
 	 * Standalone binary
 	 * Use internal PHP curl libs?
+	 * Handle error states on Tivo access (sync, download), tivodecode
 	 *
 	 */
 	
@@ -263,7 +264,7 @@
 					shell::msg("Source: $url");
 					shell::msg("Destination: $save_file_to");
 				}
- 				downloadFile($url, $save_file_to, $tivo_media_access_key);
+ 				downloadFile($url, $save_file_to, $media_access_key);
 			}
 			
 			if(!file_exists($mpg) && file_exists($save_file_to)) {
