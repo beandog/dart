@@ -13,7 +13,6 @@
 	 * Document code
 	 * Documentation
 	 * Standalone binary
-	 * Use internal PHP curl libs?
 	 * Handle error states on Tivo access (sync, download), tivodecode
 	 *
 	 */
@@ -58,21 +57,21 @@
 		die;
 	}
 	
-	if($args['mak'])
-		$media_access_key= $args['mak'];
+	if($args['media-access-key'])
+		$tivo_media_access_key= $args['media-access-key'];
 	elseif($args['m'])
-		$media_access_key = $args['m'];
-	elseif($arr_config['mak'])
-		$media_access_key = $arr_config['mak'];
+		$tivo_media_access_key = $args['m'];
+	elseif($arr_config['media-access-key'])
+		$tivo_media_access_key = $arr_config['media-access-key'];
 	else
 		die("Neeed the Media Access Key");
 	
-	if($args['address'])
-		$ip = $args['address'];
+	if($args['ip-address'])
+		$tivo_ip_address = $args['address'];
 	elseif($args['a'])
-		$ip = $args['a'];
-	elseif($arr_config['ip'])
-		$ip = $arr_config['ip'];
+		$tivo_ip_address = $args['a'];
+	elseif($arr_config['ip-address'])
+		$tivo_ip_address = $arr_config['ip-address'];
 	else
 		die("Need the IP address of the TiVo");
 
@@ -90,8 +89,35 @@
 	if($sync || !file_exists($tivo_html)) {
 		if($verbose)
 			shell::msg("Syncing with Tivo");
-		$exec = "curl --digest -k -u tivo:$media_access_key -c ".tempnam('/tmp', 'tivo')." -o $tivo_html \"https://$ip/nowplaying/index.html?Recurse=Yes\"";
- 		shell::cmd($exec, !$debug);
+
+		$tivo_index_url = "https://$tivo_ip_address/nowplaying/index.html?Recurse=Yes";
+
+		$cookie_jar = tempnam('/tmp', 'tivo');
+
+		if(extension_loaded("curl")) {
+			$ch = curl_init($tivo_index_url);
+			$fp = fopen("/tmp/tivo.html", "w");
+
+			curl_setopt($ch, CURLOPT_FILE, $fp);
+			curl_setopt($ch, CURLOPT_HEADER, 0);
+			curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+			curl_setopt($ch, CURLOPT_USERPWD, "tivo:$tivo_media_access_key");
+			curl_setopt($ch, CURLOPT_COOKIESESSION, true);
+			curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_jar);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+			$curl_html = curl_exec($ch);
+			curl_close($ch);
+			fclose($fp);
+
+			if($curl_html !=== false) {
+				file_put_contents($tivo_html, $curl_html);
+			}
+		} else {
+			$exec = "curl --digest -k -u tivo:$tivo_media_access_key -c \"$cookie_jar\" -o \"$tivo_html\" \"$tivo_index_url\"";
+ 			shell::cmd($exec, !$debug);
+		}
 	}
 	
 	// FIXME Don't run tidy unless xhtml file is old.
@@ -265,12 +291,12 @@
 					shell::msg("Source: $url");
 					shell::msg("Destination: $save_file_to");
 				}
- 				downloadFile($url, $save_file_to, $media_access_key);
+ 				downloadFile($url, $save_file_to, $tivo_media_access_key);
 			}
 			
 			if(!file_exists($mpg) && file_exists($save_file_to)) {
 				shell::msg("Removing DRM");
-				tivoDecode($save_file_to, $mpg, $media_access_key);
+				tivoDecode($save_file_to, $mpg, $tivo_media_access_key);
 
 				if(file_exists($mpg))
 					unlink($save_file_to);
