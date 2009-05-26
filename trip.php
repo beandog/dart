@@ -1,3 +1,4 @@
+#!/usr/bin/php
 <?
 
 	/**
@@ -268,8 +269,12 @@
 			}
 			
 			if(!file_exists($mpg) && file_exists($save_file_to)) {
-					shell::msg("Removing DRM");
-					tivoDecode($save_file_to, $mpg, $tivo_media_access_key);
+				shell::msg("Removing DRM");
+				tivoDecode($save_file_to, $mpg, $media_access_key);
+
+				if(file_exists($mpg))
+					unlink($save_file_to);
+
 			}
 			
 		}
@@ -290,7 +295,6 @@
 	 */
 	function tivoDecode($src, $dest, $key) {
 		$exec = "tivodecode -m $key \"$src\" -o \"$dest\"";
-  		shell::cmd($exec, true, true);
-  		unlink($src);
+  		shell::cmd($exec);
 	}
 ?>
