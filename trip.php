@@ -61,7 +61,7 @@
 	elseif($args['m'])
 		$media_access_key = $args['m'];
 	elseif($arr_config['mak'])
-		$media_access_key = $arg_config['mak'];
+		$media_access_key = $arr_config['mak'];
 	else
 		die("Neeed the Media Access Key");
 	
@@ -70,7 +70,7 @@
 	elseif($args['a'])
 		$ip = $args['a'];
 	elseif($arr_config['ip'])
-		$ip = $args_config['ip'];
+		$ip = $arr_config['ip'];
 	else
 		die("Need the IP address of the TiVo");
 
