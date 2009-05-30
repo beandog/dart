@@ -58,7 +58,7 @@
 		function lsdvd() {
 		
 			if(empty($this->lsdvd['output'])) {
-				$str = "lsdvd -Ox -v -a -s ".$this->device;
+				$str = "lsdvd -Ox -v -a -s -c ".$this->device;
 				$arr = shell::cmd($str);
 				$str = implode("\n", $arr);
 				
@@ -106,6 +106,9 @@
 		
 		/**
 		 * Execute dvdxchap to get chapter start/stop info
+		 *
+		 * FIXME Don't use dvdxchap, use lsdvd -t track -c to get
+		 * chapter info!
 		 *
 		 * @param int track number
 		 * @return dvdxchapter string output
@@ -264,9 +267,6 @@
 		
 				}
 			
-// 				for($x = 1; $x <= $this->dvd['tracks'][$track]['num_chapters']; $x++) {
-// 					shell::msg($x);
-// 				}
 			}
 			
 		}
@@ -448,7 +448,7 @@
 		 * @param int chapter number
 		 *
 		 */
-		function newChapter($track, $start_time, $chapter) {
+		function newChapter($track, $start_time, $chapter, $len) {
 		
 			global $db;
 			
@@ -460,7 +460,7 @@
 			
 			$chapter = abs(intval($chapter));
 			
- 			$sql = "INSERT INTO track_chapters(track, start_time, chapter) VALUES($track, $start_time, $chapter);";
+ 			$sql = "INSERT INTO track_chapters(track, start_time, chapter, len) VALUES($track, $start_time, $chapter, $len);";
  			$db->query($sql);
 			
 		}
@@ -732,7 +732,7 @@
 			$flags[] = "\"$source\"";
 			
 			if($vobsub && file_exists($vobsub))
-				$flags[] = "\"$vobsub\"";
+				$flags[] = "--default-track 0:no \"$vobsub\"";
 				
 			$exec = "mkvmerge ".implode(' ', $flags);
 			

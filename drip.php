@@ -254,10 +254,11 @@
 			foreach($dvd->dvd['chapters'] as $track => $arr_chapter) {
 				foreach($arr_chapter as $chapter => $arr) {
 				
-					$len =& $dvd->dvd['tracks'][$track]['len'];
+					$track_len =& $dvd->dvd['tracks'][$track]['len'];
+					$chapter_len = $arr['len'];
 				
-					if($dvd->dvd['tracks'][$track]['id'] && $len) {
-						$dvd->newChapter($dvd->dvd['tracks'][$track]['id'], $arr['start'], $chapter);
+					if($dvd->dvd['tracks'][$track]['id'] && $track_len && $chapter_len) {
+						$dvd->newChapter($dvd->dvd['tracks'][$track]['id'], $arr['start'], $chapter, $chapter_len);
 					}
 				}
 			}
