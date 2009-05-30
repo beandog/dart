@@ -132,6 +132,30 @@
 			else
 				return false;
 		}
+		
+		/**
+		 * Get the contents of a filename, optionally stripping out non-comments
+		 *
+		 * @param string filename
+		 * @param bool strip comments
+		 * @return array
+		 */
+		function arrFilename($filename, $confcat = false) {
+			$arr = array();
+
+			if(!is_string($filename) || empty($filename) || !file_exists($filename))
+				trigger_error("Cannot read filename $filename", E_USER_ERROR);
+				#return $arr;
+
+			$arr = file($filename);
+			if($confcat)
+				$arr = preg_grep('/(^#|^$)/', $arr, PREG_GREP_INVERT);
+			foreach($arr as $key => $value) {
+				$arr[$key] = trim($value);
+			}
+			
+			return $arr;
+		}
 	}
 
 ?>
