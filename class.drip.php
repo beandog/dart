@@ -646,7 +646,7 @@ XML;
 				$flags[] = "-chapter $start-$end";
 			}
 			
-			$str = "mplayer -quiet ".implode(' ', $flags);
+			$str = "mplayer -really-quiet -quiet ".implode(' ', $flags);
 			$str = escapeshellcmd($str);
 			
 			if($this->debug)
@@ -707,7 +707,7 @@ XML;
 				shell::msg("Executing: $str");
 			
 			$start = time();
-			shell::cmd($str, !$this->verbose);
+			shell::cmd($str, !$this->debug);
 			$finish = time();
 			
 			if($this->debug) {
@@ -859,17 +859,6 @@ XML;
 			
 			$flags[] = "--default-language eng";
 			
-			if(!is_null($global_tags) && file_exists($global_tags))
-				$flags[] = "--global-tags \"$global_tags\"";
-			
-			if($title)
-				$flags[] = "--title \"$title\"";
-			if(strlen($chapters)) {
-				$tmp = tempnam('/tmp', 'chapters');
-				file_put_contents($tmp, $chapters);
-				$flags[] = "--chapters $tmp";
-			}
-			
 			$flags[] = "-o \"$target\"";
 			
 			if($aspect)
@@ -883,6 +872,18 @@ XML;
 			
 			if($vobsub && file_exists($vobsub))
 				$flags[] = "--default-track 0:no \"$vobsub\"";
+			
+			if($title)
+				$flags[] = "--title \"$title\"";
+			
+			if(strlen($chapters)) {
+				$txt = preg_replace("/mkv$/", "txt", $target);
+				file_put_contents($txt, $chapters);
+				$flags[] = "--chapters \"$txt\"";
+			}
+			
+			if(!is_null($global_tags) && file_exists($global_tags))
+				$flags[] = "--global-tags \"$global_tags\"";
 				
 			$exec = "mkvmerge ".implode(' ', $flags);
 			

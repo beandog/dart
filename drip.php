@@ -516,6 +516,7 @@
 				$sub = "$basename.sub";
 				$mkv = "$basename.mkv";
 				$xml = "$basename.xml";
+				$txt = "$basename.txt";
 				
 				// Check to see if file exists, if not, encode it
 				if(shell::in_dir($vob, $export) && !shell::in_dir($mkv, $export)) {
@@ -533,9 +534,13 @@
  						unlink($vob);
 					}
 					
-					if(shell::in_dir($idx, $export) && shell::in_dir($sub, $export) && shell::in_dir($mkv, $export)) {
- 						unlink($idx);
+					if(shell::in_dir($idx, $export) && shell::in_dir($sub, $export) && shell::in_dir($mkv, $export) && !$debug) {
+						unlink($idx);
  						unlink($sub);
+ 						if(file_exists($xml))
+ 							unlink($xml);
+ 						if(file_exists($txt))
+ 							unlink($txt);
 					}
 				
 				} else {
