@@ -315,21 +315,20 @@
 			// After this, we auto-increment it ourselves
 			$e = $dvd->episodeNumber(key($arr));
 			
-			if($options['pretend'] || $debug || $verbose) {
-				shell::msg("[Series] Starting episode number: $e");
-			}
-		
+			$episode_number = $dvd->episodeNumber(key($arr), false);
+			
 			$series_title = $arr[key($arr)]['series_title'];
 			$season = $arr[key($arr)]['season'];
 			$disc = $arr[key($arr)]['disc'];
-			$count = count($arr);
-		
+			$num_episodes = $count = count($arr);
+			
 			$export = $dvd->export.$dvd->formatTitle($series_title).'/';
  			if(!is_dir($export))
  				mkdir($export, 0755) or die("Can't create export directory $export");
 		
-			shell::msg("[Series] Title: ".$series_title);
-			shell::msg("[Series] Season: $season  Disc: $disc  Episodes: $count");
+			shell::msg("[Disc] Ripping \"$series_title\"");
+			shell::msg("[Disc] Season $season, Disc $disc, Episodes $episode_number - ".($episode_number + $count - 1)."");
+			
 			
 			foreach($arr as $episode => $tmp) {
 			
@@ -357,38 +356,75 @@
 				$vob = "$basename.vob";
 				$sub = "$basename.sub";
 				$idx = "$basename.idx";
+				$xml = "$basename.xml";
 				$mkv = "$basename.mkv";
 				
-				shell::msg("[Episode] Title: $title");
-				if($verbose)
-					shell::msg("[Episode] Track: $track");
+				$arr_todo = array();
 				
-				// Check to see if file exists, if not, rip it
-				if((!shell::in_dir($vob, $export) && !shell::in_dir($mkv, $export)) || $options['pretend']) {
+				if(!shell::in_dir($mkv, $export)) {
+ 					
+ 					if(!shell::in_dir($vob, $export))
+						$arr_todo[] = "Video";
+					if((!shell::in_dir($sub, $export) || !shell::in_dir($idx, $export)) && !$options['nosub'])
+						$arr_todo[] = "Subtitles";
+					
+					$arr_todo[] = "Matroska";
+				}
 				
+				// Check to see if file exists, if not, rip it 				
+				if((!shell::in_dir($vob, $export) && !shell::in_dir($mkv, $export)) || $options['pretend'])
+					$rip = true;
+				
+				if($rip || $verbose) {
+					echo "\n";
+					shell::msg("[Episode] \"$title\" ($x/$num_episodes)");
+					if(count($arr_todo)) {
+						shell::msg("[Episode] ".implode(", ", $arr_todo));
+					}
+				}
+				
+				// Actually start ripping
+				if($rip) {
+				
+					// FIXME Display MPEG2 + Codec + Num. Channels
+					shell::msg("[DVD] Ripping DVD Video (MPEG-2)");
+					
 					$msg = "[DVD] Ripping Episode $x/$count";
-					if($tmp['starting_chapter'])
-						$msg .= ", chapter(s) ".$tmp['starting_chapter']."-".$tmp['ending_chapter'];
-					$msg .= ": $title";
+					
+					if($verbose) {
+						$msg = "[DVD] Track $track";
+					
+						if($tmp['starting_chapter'])
+							$msg .= "\tChapters ".$tmp['starting_chapter']."-".$tmp['ending_chapter'];
 				
-					shell::msg($msg);
+ 						shell::msg($msg);
+					}
+					
+					if($debug) {
+						$msg = "mplayer dvd://$track";
+						if($tmp['starting_chapter'])
+							$msg .= " -chapter ".$tmp['starting_chapter']."-".$tmp['ending_chapter'];
+						shell::msg($msg);
+					}
 					
 					if($options['pretend']) {
 						shell::msg("[VOB] $vob");
 					} else {
-						$dvd->rip($vob, $tmp['track'], $tmp['starting_chapter'], $tmp['ending_chapter']);
+ 						$dvd->rip($vob, $tmp['track'], $tmp['starting_chapter'], $tmp['ending_chapter']);
 					}
 				
 				} else {
-					shell::msg("[DVD] Skipping (file exists)");
+					if($verbose) {
+						shell::msg("[DVD] Video Ripped");
+					}
 				}
 				$x++;
 				
 				// Rip VobSub
-				if(((!shell::in_dir($sub, $export) && !shell::in_dir($mkv, $export)) || $options['pretend']) && !$options['nosub']) {
+				if((!shell::in_dir($sub, $export) && !shell::in_dir($mkv, $export)) || $options['pretend']) {
 				
-					if($verbose)
-						shell::msg("[DVD] Checking for subtitles");
+// 					if($verbose && !$options['nosub'])
+// 						shell::msg("[DVD] Checking for subtitles");
 				
 					$vobsub = false;
 					
@@ -403,24 +439,30 @@
 						}
 					}
 					
+					if($options['nosub'] && $vobsub) {
+						$vobsub = false;
+						shell::msg("[DVD] Ignoring Subtitles");
+					} elseif(!$vobsub) {
+						shell::msg("[DVD] No Subtitles");
+					}
+						
+					
 					if($vobsub && !shell::in_dir($sub, $export)) {
 						if($options['pretend']) {
-							shell::msg("[VobSub] $sub");
+							shell::msg("[DVD] $sub");
 						} else {
 							// Pass the basename, since mencoder dumps to
 							// <basename>.idx, .sub
-							shell::msg("[VobSub] Extracting Subtitles");
-							$dvd->sub($basename, $tmp['track'], $tmp['starting_chapter'], $tmp['ending_chapter']);
+							shell::msg("[DVD] Ripping Subtitles (VobSub)");
+ 							$dvd->sub($basename, $tmp['track'], $tmp['starting_chapter'], $tmp['ending_chapter']);
 						}
-					} else {
-						shell::msg("[DVD] No subtitles available");
 					}
 				
-				} elseif($options['nosub'] && $verbose) {
-					shell::msg("[VobSub] Skipping");
-				} elseif(shell::in_dir($idx, $export)) {
-					shell::msg("[VobSub] Skipping (file exists)");
+				} elseif(shell::in_dir($idx, $export) && $verbose) {
+					shell::msg("[DVD] Subtitles Ripped");
 				}
+				
+// 				die;
 				
 				
 				// Add episode to queue
@@ -430,6 +472,7 @@
 				
 				// Increment episode number
 				$e++;
+				$episode_number++;
 				
 			}
 		
