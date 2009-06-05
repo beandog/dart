@@ -8,6 +8,8 @@
 			$this->export = getenv('HOME').'/dvds/';
 			$this->eject = false;
 			$this->hostname = trim(`hostname`);
+			$this->debug = false;
+			$this->verbose = false;
 			
 			// lsdvd output
 			$this->lsdvd['titles'] = '';
@@ -271,6 +273,121 @@
 			
 		}
 		
+		/**
+		 * Create the Matroska global tags
+		 */
+		function globalTags($episode) {
+		
+			global $db;
+		
+			/**
+			 * Need:
+			 * series title, season #, season year, episode #, episode title, production studio
+			 */
+			 
+			$sql = "SELECT * FROM view_episodes WHERE id = $episode;";
+			$arr = $db->getRow($sql);
+			
+			if(!count($arr))
+				return "";
+			
+			$arr['episode_number'] = $this->episodeNumber($episode, false);
+			
+			extract($arr);
+			
+			if($start_year)
+				$season_year = $start_year + $season - 1;
+			
+			$xml = <<<XML
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Tags SYSTEM "/usr/local/share/matroska/xml/matroskatags.dtd">
+<Tags>
+</Tags>
+XML;
+
+			$sxe = new SimpleXMLElement($xml);
+			
+			/** Series **/
+	
+			$tag = $sxe->addChild("Tag");
+			$targets = $tag->addChild("Targets");
+			$targets->addChild("TargetTypeValue", "70");
+			$targets->addChild("TargetType", "COLLECTION");
+			
+			$simple = $tag->addChild("Simple");
+			$simple->addChild("Name", "TITLE");
+			$simple->addChild("String", $series);
+			$simple->addChild("TagLanguage", "eng");
+			
+			if($production_studio) {
+				$simple = $tag->addChild("Simple");
+				$simple->addChild("Name", "PRODUCTION_STUDIO");
+				$simple->addChild("String", $production_studio);
+				$simple->addChild("TagLanguage", "eng");
+			}
+			
+			if($start_year) {
+				$simple = $tag->addChild("Simple");
+				$simple->addChild("Name", "DATE_RELEASE");
+				$simple->addChild("String", $start_year);
+				$simple->addChild("TagLanguage", "eng");
+			}
+			
+			/** Season **/
+			
+			if($season) {
+				$tag = $sxe->addChild("Tag");
+				$targets = $tag->addChild("Targets");
+				$targets->addChild("TargetTypeValue", "60");
+				$targets->addChild("TargetType", "SEASON");
+				
+				if($season_year) {
+					$simple = $tag->addChild("Simple");
+					$simple->addChild("Name", "DATE_RELEASE");
+					$simple->addChild("String", $season_year);
+					$simple->addChild("TagLanguage", "eng");
+				}
+				
+				// Season number
+				$simple = $tag->addChild("Simple");
+				$simple->addChild("Name", "PART_NUMBER");
+				$simple->addChild("String", $season);
+				$simple->addChild("TagLanguage", "eng");
+			}
+			
+			/** Episode **/
+	
+			$tag = $sxe->addChild("Tag");
+			$targets = $tag->addChild("Targets");
+			$targets->addChild("TargetTypeValue", "50");
+			$targets->addChild("TargetType", "EPISODE");
+			
+			if($title) {
+				// Episode title
+				$simple = $tag->addChild("Simple");
+				$simple->addChild("Name", "TITLE");
+				$simple->addChild("String", $title);
+				$simple->addChild("TagLanguage", "eng");
+			}
+			
+			if($episode_number) {
+				// Episode number
+				$simple = $tag->addChild("Simple");
+				$simple->addChild("Name", "PART_NUMBER");
+				$simple->addChild("String", $episode_number);
+				$simple->addChild("TagLanguage", "eng");
+			}
+			
+			$doc = new DOMDocument('1.0');
+			$doc->preserveWhiteSpace = false;
+			$doc->loadXML($sxe->asXML());
+			$doc->formatOutput = true;
+			$xml = $doc->saveXML();
+			
+			return $xml;
+		
+		}
+		
 		function inDatabase() {
 		
 			global $db;
@@ -532,7 +649,17 @@
 			$str = "mplayer -quiet ".implode(' ', $flags);
 			$str = escapeshellcmd($str);
 			
-			shell::cmd($str);
+			if($this->debug)
+				shell::msg("Executing: $str");
+			
+			$start = time();
+			shell::cmd($str, !$this->debug);
+			$finish = time();
+			
+			if($this->debug) {
+				$exec_time = shell::executionTime($start, $finish);
+				shell::msg("Execution time: ".$exec_time['minutes']."m ".$exec_time['seconds']."s");
+			}
 		
 		}
 		
@@ -576,7 +703,17 @@
 			$str = "mencoder ".implode(' ', $flags);
 			$str = escapeshellcmd($str);
 			
-			shell::cmd($str);
+			if($this->debug)
+				shell::msg("Executing: $str");
+			
+			$start = time();
+			shell::cmd($str, !$this->verbose);
+			$finish = time();
+			
+			if($this->debug) {
+				$exec_time = shell::executionTime($start, $finish);
+				shell::msg("Execution time: ".$exec_time['minutes']."m ".$exec_time['seconds']."s");
+			}
 		
 		}
 		
@@ -659,7 +796,14 @@
 		
 		}
 		
-		function episodeNumber($episode) {
+		/**
+		 * Get the *actual* episode number, based on all other considerations
+		 *
+		 * @param string episode ID
+		 * @param boolean pad string with season (102: season 1, episode 2)
+		 *
+		 */
+		function episodeNumber($episode, $pad_string = true) {
 		
 			// This second episodeNumber function calls the first one,
 			// but it uses it to calculate the episode number based
@@ -686,9 +830,10 @@
 			
 			$key = array_search($episode, $arr);
 			
-			$int = $key + $e;
-			
-			return $int;
+			if($pad_string)
+				return $key + $e;
+			else
+				return $key + 1;
 			
 		}
 		
@@ -701,10 +846,11 @@
 		 * @param string aspect ratio
 		 * @param string chapters
 		 * @param string subtitles vobsub filename
+		 * @param string global tags in XML format filename
 		 * @param int audio track id
 		 *
 		 */
-		function mkvmerge($source, $target, $title = '', $aspect = null, $chapters = null, $audio_track = 1, $vobsub = null) {
+		function mkvmerge($source, $target, $title = '', $aspect = null, $chapters = null, $audio_track = 1, $vobsub = null, $global_tags = null) {
 		
 			$flags = array();
 			
@@ -712,6 +858,10 @@
 			// mkvmerge [global options] -o out [options1] <file1> [[options2] <file2> ...] [@optionsfile]
 			
 			$flags[] = "--default-language eng";
+			
+			if(!is_null($global_tags) && file_exists($global_tags))
+				$flags[] = "--global-tags \"$global_tags\"";
+			
 			if($title)
 				$flags[] = "--title \"$title\"";
 			if(strlen($chapters)) {
@@ -736,7 +886,33 @@
 				
 			$exec = "mkvmerge ".implode(' ', $flags);
 			
-			shell::cmd($exec, true, true);
+			if($this->debug)
+				shell::msg("Executing: $exec");
+			
+			/**
+			
+			From the mkvmerge man:
+			
+			EXIT CODES
+			mkvmerge exits with one of three exit codes:
+		
+			0      This exit codes means that muxing has completed successfully.
+		
+			1      In this case mkvmerge has output at least one warning, but muxing did continue.  A warning is prefixed with the text  ´Warning:´.   Depending  on
+					the issues involved the resulting file might be ok or not.  The user is urged to check both the warning and the resulting file.
+		
+			2      This  exit  code is used after an error occured.  mkvmerge aborts right after outputting the error message.  Error messages range from wrong com‐
+					mand line arguments over read/write errors to broken files.
+			*/
+
+			$start = time();
+			shell::cmd($exec, !$this->verbose, false, $this->debug, array(0,1));
+			$finish = time();
+			
+			if($this->debug) {
+				$exec_time = shell::executionTime($start, $finish);
+				shell::msg("Execution time: ".$exec_time['minutes']."m ".$exec_time['seconds']."s");
+			}
 		
 		}
 		

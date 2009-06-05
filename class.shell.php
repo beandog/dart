@@ -11,18 +11,24 @@
 		* @param string execution string
 		* @param boolean drop stderr to /dev/null
 		* @param boolean ignore exit codes
+		* @param array exit codes that indicate success
 		* @return output array
 		*/
-		function cmd($str, $stderr_to_null = true, $ignore_exit_code = false) {
+		function cmd($str, $stderr_to_null = true, $ignore_exit_code = false, $passthru = false, $arr_successful_exit_codes = array(0)) {
+			
+			$arr = array();
 			
 			if($stderr_to_null)
 				$exec = "$str 2> /dev/null";
 			else
 				$exec =& $str;
 			
-			exec($exec, $arr, $return);
+			if($passthru)
+				passthru($exec, $return);
+			else
+				exec($exec, $arr, $return);
 			
-			if($return !== 0 && !$ignore_exit_code) {
+			if(!in_array($return, $arr_successful_exit_codes) && !$ignore_exit_code) {
 				shell::msg("execution died: $str");
 				die($return);
 			} else
@@ -156,6 +162,27 @@
 			
 			return $arr;
 		}
+		
+		// Calculate execution time, based on
+		// two integer timestamps
+		function executionTime($start, $finish) {
+		
+			$arr = array();
+		
+			$start = abs(intval($start));
+			$finish = abs(intval($finish));
+			
+			if($finish > $start) {
+				$arr = array(
+					'minutes' => intval(($finish - $start) / 60),
+					'seconds' => intval(($finish - $start) % 60),
+				);
+			}
+			
+			return $arr;
+		
+		}
+		
 	}
 
 ?>

@@ -1,6 +1,8 @@
 #!/usr/bin/php
 <?
 
+	$start = time();
+
 	require_once 'class.shell.php';
 	require_once 'class.drip.php';
 	require_once 'DB.php';
@@ -58,12 +60,16 @@
 		$eject = true;
 		
 	if($options['debug']) {
-		$debug = true;
+		$dvd->debug = $dvd->verbose = true;
+		$debug =& $dvd->debug;
+		$verbose =& $dvd->verbose;
 		$eject = false;
 	}
 		
-	if($options['v'] || $options['verbose'] || $ini['verbose'] || $debug)
-		$verbose = true;
+	if($options['v'] || $options['verbose'] || $ini['verbose'] || $debug) {
+		$dvd->verbose = true;
+		$verbose =& $dvd->verbose;
+	}
 		
 	
 	
@@ -466,12 +472,19 @@
 				$idx = "$basename.idx";
 				$sub = "$basename.sub";
 				$mkv = "$basename.mkv";
+				$xml = "$basename.xml";
 				
-				// Check to see if file exists, if not, rip it
+				// Check to see if file exists, if not, encode it
 				if(shell::in_dir($vob, $export) && !shell::in_dir($mkv, $export)) {
 				
+					if(!shell::in_dir($xml, $export)) {
+						$tags = $dvd->globalTags($episode);
+						if($tags)
+							file_put_contents($xml, $tags);
+					}
+					
 					shell::msg("[MKV] $series_title: $e $title");
- 					$dvd->mkvmerge($vob, $mkv, $title, $aspect, $chapters, $atrack, $idx);
+ 					$dvd->mkvmerge($vob, $mkv, $title, $aspect, $chapters, $atrack, $idx, $xml);
 					
 					if(shell::in_dir($vob, $export) && shell::in_dir($mkv, $export)) {
  						unlink($vob);
@@ -499,5 +512,11 @@
 		
 	}
 	
+	$finish = time();
+	
+	if($verbose) {
+// 		$exec_time = shell::executionTime($start, $finish);
+// 		shell::msg("Total execution time: ".$exec_time['minutes']."m ".$exec_time['seconds']."s");
+	}
 
 ?>
