@@ -539,11 +539,13 @@
 					}
 					
 					if(shell::in_dir($idx, $export) && shell::in_dir($sub, $export) && shell::in_dir($mkv, $export) && !$debug) {
-						unlink($idx);
- 						unlink($sub);
- 						if(file_exists($xml))
+						if(shell::in_dir($idx, $export))
+							unlink($idx);
+						if(shell::in_dir($sub, $export))
+	 						unlink($sub);
+ 						if(shell::in_dir($xml, $export))
  							unlink($xml);
- 						if(file_exists($txt))
+ 						if(shell::in_dir($txt, $export))
  							unlink($txt);
 					}
 				
