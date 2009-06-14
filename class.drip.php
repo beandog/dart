@@ -465,7 +465,6 @@ XML;
 			} else {
 				$this->title();
 			}
-			
 		
 		}
 		
