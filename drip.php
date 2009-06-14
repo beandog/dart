@@ -56,7 +56,7 @@
 	if($options['max'])
 		$max = abs(intval($options['max']));
 	
-	if($ini['eject'])
+	if($ini['eject'] || $options['eject'])
 		$eject = true;
 		
 	if($options['debug']) {
@@ -70,8 +70,9 @@
 		$dvd->verbose = true;
 		$verbose =& $dvd->verbose;
 	}
-		
 	
+	if($ini['mount'] && ($options['archive'] || $options['rip'] || $options['encode']))
+		$dvd->mount();
 	
 	// Archive disc if not in the db
 	if(($options['archive'] || $options['rip']) && !$dvd->inDatabase()) {
@@ -286,9 +287,6 @@
 	}
 	
 	if($options['rip']) {
-	
-		if($ini['mount'])
-			$dvd->mount();
 	
 		$dvd->disc();
 		$dvd->series();
@@ -572,5 +570,8 @@
 // 		$exec_time = shell::executionTime($start, $finish);
 // 		shell::msg("Total execution time: ".$exec_time['minutes']."m ".$exec_time['seconds']."s");
 	}
+	
+	if($options['eject'])
+		$dvd->eject();
 
 ?>
