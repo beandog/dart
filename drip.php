@@ -374,6 +374,10 @@
 				// Check to see if file exists, if not, rip it 				
 				if((!shell::in_dir($vob, $export) && !shell::in_dir($mkv, $export)) || $options['pretend'])
 					$rip = true;
+					
+				
+					
+				
 				
 				if($rip || $verbose) {
 					echo "\n";
@@ -410,7 +414,7 @@
 					if($options['pretend']) {
 						shell::msg("[VOB] $vob");
 					} else {
- 						$dvd->rip($vob, $tmp['track'], $tmp['starting_chapter'], $tmp['ending_chapter']);
+  						$dvd->rip($vob, $tmp['track'], $tmp['starting_chapter'], $tmp['ending_chapter']);
 					}
 				
 				} else {
@@ -530,7 +534,7 @@
 					shell::msg("[MKV] $series_title: $e $title");
  					$dvd->mkvmerge($vob, $mkv, $title, $aspect, $chapters, $atrack, $idx, $xml);
 					
-					if(shell::in_dir($vob, $export) && shell::in_dir($mkv, $export)) {
+					if(shell::in_dir($vob, $export) && shell::in_dir($mkv, $export) && !$debug) {
  						unlink($vob);
 					}
 					

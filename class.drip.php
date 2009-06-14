@@ -833,7 +833,7 @@ XML;
 			if($pad_string)
 				return $key + $e;
 			else
-				return $key + 1;
+				return intval(substr($key + $e, 1));
 			
 		}
 		
