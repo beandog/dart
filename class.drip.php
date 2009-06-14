@@ -500,7 +500,7 @@ XML;
 			
 		}
 		
-		function newDisc($series, $season, $disc) {
+		function newDisc($series, $season, $disc, $side = "") {
 		
 			global $db;
 		
@@ -511,7 +511,7 @@ XML;
 			$season = abs(intval($season));
 			$disc = abs(intval($disc));
 			
-			$sql = "INSERT INTO discs(tv_show, season, disc, disc_id, disc_title) VALUES ($series, $season, $disc, '".$this->dvd['disc_id']."', '".$this->dvd['title']."');";
+			$sql = "INSERT INTO discs(tv_show, season, disc, side, disc_id, disc_title) VALUES ($series, $season, $disc, '$side', '".$this->dvd['disc_id']."', '".$this->dvd['title']."');";
 			$db->query($sql);
 			
 			$this->disc();

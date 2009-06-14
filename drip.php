@@ -71,7 +71,7 @@
 		$verbose =& $dvd->verbose;
 	}
 	
-	if($ini['mount'] && ($options['archive'] || $options['rip'] || $options['encode']))
+	if($ini['mount'] && ($options['archive'] || $options['rip']))
 		$dvd->mount();
 	
 	// Archive disc if not in the db
@@ -91,6 +91,14 @@
 		// series, season, disc #
 		foreach(array('series', 'season', 'disc') as $x) {
 			$tmp = abs(intval($options[$x]));
+			
+			// Allow disc side for discs
+			if($x == "disc") {
+				$side = strtoupper(substr($options[$x], -1, 1));
+				if($side == "A" || $side == "B")
+					$tmp .= $side;
+			}
+			
 			if($tmp)
 				$$x = $tmp;
 		}
@@ -188,35 +196,74 @@
 			// Find out which other discs they already have archived
 			// Set the default to the next one in line
 			if($series) {
-				$sql = "SELECT disc FROM discs WHERE tv_show = $series AND season = $season ORDER BY disc;";
-				$arr = $db->getCol($sql);
-				if(count($arr)) {
-					$str = implode(', ', $arr);
+				$sql = "SELECT disc, TRIM(side) AS side, id FROM discs WHERE tv_show = $series AND season = $season ORDER BY disc, side;";
+				$arr = $db->getAll($sql);
+				
+				foreach($arr as $row) {
+					if($row['side'])
+						$arr_discs[$row['disc']][$row['side']] = $row['id'];
+					else
+						$arr_discs[$row['disc']] = $row['id'];
+
+					$arr_archives[] = $row['disc'].$row['side'];
+				}
+				
+				if(count($arr_archives)) {
+					$str = implode(', ', $arr_archives);
 					shell::msg("Discs archived for Season $season: $str");
-					$max = max($arr);
-					$max++;
-				} else
-					$max = 1;
+					
+					$last_disc = max(array_keys($arr_discs));
+					if(is_array($arr_discs[$last_disc])) {
+						$last_disc = max(array_keys($arr_discs));
+						$last_disc_side = max(array_keys($arr_discs[$last_disc]));
+					} else {
+						$last_disc_side = "";
+						$next_disc_side = "";
+					}
+					
+					if($last_disc_side == "A") {
+						$next_disc = $last_disc;
+						$next_disc_side = "B";
+					} elseif($last_disc_side == "B") {
+						$next_disc = $last_disc + 1;
+						$next_disc_side = "A";
+					} elseif(empty($last_disc_side)) {
+						$next_disc = $last_disc + 1;
+						$next_disc_side = "";
+					}
+					
+				} else {
+					$next_disc = 1;
+					$next_disc_side = "";
+				}
+				
 				
 			} else {
-				$max = 1;
+				$next_disc = 1;
+				$next_disc_side = "";
 			}
 			
 			do {
-				$disc = shell::ask("What number is this disc? [$max]", $max);
+				$disc = shell::ask("What number is this disc? [$next_disc$next_disc_side]", $next_disc.$next_disc_side);
+				
+				$side = strtoupper(substr($disc, -1));
+				if(!($side == "A" || $side == "B"))
+					$side = "";
 				$disc = intval($disc);
 				
-				if(in_array($disc, $arr)) {
-					shell::msg("Disc #$disc is already archived.  Choose another number.");
+				if(in_array($disc.$side, $arr_archives)) {
+					shell::msg("Disc $disc$side is already archived.  Choose another number.");
+					$disc = 0;
+				} elseif(is_numeric($disc) && empty($side) && (in_array($disc."A", $arr_archives) || in_array($disc."B", $arr_archives))) {
+					shell::msg("Need to specify a valid disc # and side.");
 					$disc = 0;
 				}
 				
 			} while($disc == 0);
-			
 		}
 		
 		if($series && $season && $disc) {
-			$dvd->newDisc($series, $season, $disc);
+			$dvd->newDisc($series, $season, $disc, $side);
 			
 			$dvd->tracks();
 			
@@ -302,7 +349,7 @@
 		// This query has nothing to do with what has / hasn't been encoded
 		
 		// Rip in sequential order by episode order, then title
-		$sql = "SELECT e.id, tv.title AS series_title, e.title, d.season, d.disc, t.track, tv.unordered,  t.multi, tv.starting_chapter AS series_starting_chapter, e.chapter AS starting_chapter, e.ending_chapter, e.episode_order FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id AND d.id = {$dvd->disc['id']} INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND t.bad_track = FALSE AND e.title != '' ORDER BY t.track_order, e.episode_order, e.title, t.track, e.id $offset $limit;";
+		$sql = "SELECT e.id, tv.title AS series_title, e.title, d.season, d.disc, d.side, t.track, tv.unordered, t.multi, tv.starting_chapter AS series_starting_chapter, e.chapter AS starting_chapter, e.ending_chapter, e.episode_order FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id AND d.id = {$dvd->disc['id']} INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND t.bad_track = FALSE AND e.title != '' ORDER BY t.track_order, e.episode_order, e.title, t.track, e.id $offset $limit;";
 		$arr = $db->getAssoc($sql);
 		
 		if(count($arr)) {
@@ -318,6 +365,7 @@
 			$series_title = $arr[key($arr)]['series_title'];
 			$season = $arr[key($arr)]['season'];
 			$disc = $arr[key($arr)]['disc'];
+			$side = $arr[key($arr)]['side'];
 			$num_episodes = $count = count($arr);
 			
 			$export = $dvd->export.$dvd->formatTitle($series_title).'/';
@@ -325,7 +373,7 @@
  				mkdir($export, 0755) or die("Can't create export directory $export");
 		
 			shell::msg("[Disc] Ripping \"$series_title\"");
-			shell::msg("[Disc] Season $season, Disc $disc, Episodes $episode_number - ".($episode_number + $count - 1)."");
+			shell::msg("[Disc] Season $season, Disc $disc$side, Episodes $episode_number - ".($episode_number + $count - 1)."");
 			
 			
 			foreach($arr as $episode => $tmp) {
@@ -464,9 +512,6 @@
 					shell::msg("[DVD] Subtitles Ripped");
 				}
 				
-// 				die;
-				
-				
 				// Add episode to queue
 				if(shell::in_dir($vob, $export)) {
 					$dvd->queue($episode);
@@ -532,18 +577,17 @@
 					shell::msg("[MKV] $series_title: $e $title");
  					$dvd->mkvmerge($vob, $mkv, $title, $aspect, $chapters, $atrack, $idx, $xml);
 					
-					if(shell::in_dir($vob, $export) && shell::in_dir($mkv, $export) && !$debug) {
- 						unlink($vob);
-					}
-					
-					if(shell::in_dir($idx, $export) && shell::in_dir($sub, $export) && shell::in_dir($mkv, $export) && !$debug) {
-						if(shell::in_dir($idx, $export))
+					// Delete old files
+					if(file_exists($mkv) && !$debug) {
+						if(file_exists($vob))
+ 							unlink($vob);
+						if(file_exists($idx))
 							unlink($idx);
-						if(shell::in_dir($sub, $export))
+						if(file_exists($sub))
 	 						unlink($sub);
- 						if(shell::in_dir($xml, $export))
+ 						if(file_exists($xml))
  							unlink($xml);
- 						if(shell::in_dir($txt, $export))
+ 						if(file_exists($txt))
  							unlink($txt);
 					}
 				
@@ -571,7 +615,12 @@
 // 		shell::msg("Total execution time: ".$exec_time['minutes']."m ".$exec_time['seconds']."s");
 	}
 	
+	
+	if($ini['mount'] && ($options['archive'] || $options['rip']))
+		$dvd->unmount();
+		
 	if($options['eject'])
 		$dvd->eject();
+	
 
 ?>
