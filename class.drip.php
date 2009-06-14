@@ -771,7 +771,7 @@ XML;
 			// It works by calculating the number of valid tracks that come before it
 			// So, you can archive discs outside of their order, just don't transcode them
 			// or your numbering scheme will be off
-			$sql = "SELECT d.tv_show, d.season, d.disc AS disc_number, e.episode_order, t.track, t.track_order FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id WHERE e.id = $episode;";
+			$sql = "SELECT d.tv_show, d.season, d.disc AS disc_number, d.side, e.episode_order, t.track, t.track_order FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id WHERE e.id = $episode;";
 			$row = $db->getRow($sql);
 			extract($row);
 			
@@ -782,8 +782,8 @@ XML;
 			// # of epsiodes on previous discs plus 
 			// # of episodes on current disc plus earlier tracks plus
 			// # of episodes on current disc plus current track plus earlier episodes
-			$sql = "SELECT (count(e.id) + 1) FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id WHERE d.tv_show = $tv_show AND d.season = $season AND t.bad_track = FALSE AND e.title != '' AND e.ignore = FALSE AND ( (d.disc < $disc_number) OR (d.disc = $disc_number AND t.track != $track AND t.track_order <= $track_order AND e.episode_order <= $episode_order ));";
-// 			shell::msg($sql);
+			$sql = "SELECT (count(e.id) + 1) FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id WHERE d.tv_show = $tv_show AND d.season = $season AND t.bad_track = FALSE AND e.title != '' AND e.ignore = FALSE AND ( (d.disc < $disc_number) OR ( d.disc = 4 AND d.side < '$side' ) OR (d.disc = $disc_number AND t.track != $track AND t.track_order <= $track_order AND e.episode_order <= $episode_order ));";
+//  			shell::msg($sql);
 			$int = $db->getOne($sql);
 			
 			// I'm not padding the seasons, because I'm assuming there's not

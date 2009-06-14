@@ -75,7 +75,14 @@
 		$dvd->mount();
 	
 	// Archive disc if not in the db
-	if(($options['archive'] || $options['rip']) && !$dvd->inDatabase()) {
+	
+	// Some series may span seasons across one disc, by accident or design (complete series)
+	// Normally the schema should prefer one entry per disc ID, but the simplest way to override
+	// the season number is just to add another entry for the disc.
+	// So, this statement will check to see if the disc is in the database OR if it is and
+	// we are manually passing a season #.
+	
+	if(($options['archive'] || $options['rip']) && (!$dvd->inDatabase() || ($dvd->inDatabase() && $options['season']))) {
 	
 		// Bypass archive confirmation if --new is passed
 		if(!$options['archive']) {
@@ -102,6 +109,9 @@
 			if($tmp)
 				$$x = $tmp;
 		}
+		
+		
+		
 		
 		// See if series passed is in the DB
 		if($series) {
@@ -198,6 +208,8 @@
 			if($series) {
 				$sql = "SELECT disc, TRIM(side) AS side, id FROM discs WHERE tv_show = $series AND season = $season ORDER BY disc, side;";
 				$arr = $db->getAll($sql);
+				
+				$arr_archives = array();
 				
 				foreach($arr as $row) {
 					if($row['side'])
@@ -348,8 +360,8 @@
 		// Pull out the tracks that haven't been flagged to ignore in the database frontend
 		// This query has nothing to do with what has / hasn't been encoded
 		
-		// Rip in sequential order by episode order, then title
-		$sql = "SELECT e.id, tv.title AS series_title, e.title, d.season, d.disc, d.side, t.track, tv.unordered, t.multi, tv.starting_chapter AS series_starting_chapter, e.chapter AS starting_chapter, e.ending_chapter, e.episode_order FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id AND d.id = {$dvd->disc['id']} INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND t.bad_track = FALSE AND e.title != '' ORDER BY t.track_order, e.episode_order, e.title, t.track, e.id $offset $limit;";
+		// Rip in sequential order by season, episode order, then title
+		$sql = "SELECT e.id, tv.title AS series_title, e.title, d.season, d.disc, d.side, t.track, tv.unordered, t.multi, tv.starting_chapter AS series_starting_chapter, e.chapter AS starting_chapter, e.ending_chapter, e.episode_order FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id AND d.disc_id = '{$dvd->dvd['disc_id']}' INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND t.bad_track = FALSE AND e.title != '' ORDER BY t.track_order, d.season, e.episode_order, e.title, t.track, e.id $offset $limit;";
 		$arr = $db->getAssoc($sql);
 		
 		if(count($arr)) {
@@ -375,11 +387,14 @@
 			shell::msg("[Disc] Ripping \"$series_title\"");
 			shell::msg("[Disc] Season $season, Disc $disc$side, Episodes $episode_number - ".($episode_number + $count - 1)."");
 			
-			
 			foreach($arr as $episode => $tmp) {
+			
+				$e = $dvd->episodeNumber($episode);
+				$episode_number = $dvd->episodeNumber($episode, false);
 			
 				$title =& $tmp['title'];
 				$track =& $tmp['track'];
+				$season =& $tmp['season'];
 				
 				// Select the chapter(s) to rip
 				// Three possibilities:
@@ -421,10 +436,6 @@
 				if((!shell::in_dir($vob, $export) && !shell::in_dir($mkv, $export)) || $options['pretend'])
 					$rip = true;
 					
-				
-					
-				
-				
 				if($rip || $verbose) {
 					echo "\n";
 					shell::msg("[Episode] \"$title\" ($x/$num_episodes)");
