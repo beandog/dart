@@ -627,7 +627,7 @@ XML;
 			
 			$flags[] = "dvd://$track";
 			$flags[] = "-dvd-device ".$this->device;
-			$flags[] = "-dumpstream -dumpfile \"$filename\"";
+			$flags[] = "-dumpstream -dumpfile $filename";
 			
 			if(is_numeric($start)) {
 				$start = abs(intval($start));
@@ -676,7 +676,7 @@ XML;
 			$flags[] = "-dvd-device ".$this->device;
 			$flags[] = "-ovc copy";
 			$flags[] = "-nosound";
-			$flags[] = "-vobsubout \"$filename\"";
+			$flags[] = "-vobsubout $filename";
 			$flags[] = "-o /dev/null";
 			$flags[] = "-slang en";
 			$flags[] = "-quiet";
