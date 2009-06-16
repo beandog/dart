@@ -581,7 +581,7 @@ XML;
 			
 		}
 		
-		function newEpisode($track, $ignore = false, $chapters) {
+		function newEpisode($season, $track, $ignore = false, $chapters) {
 		
 			$track = abs(intval($track));
 			if($ignore)
@@ -593,7 +593,7 @@ XML;
 			
 			$chapters = pg_escape_string($chapters);
 			
-			$sql = "INSERT INTO episodes(track, ignore, chapters) VALUES($track, $ignore, '$chapters');";
+			$sql = "INSERT INTO episodes(season, track, ignore, chapters) VALUES($season, $track, $ignore, '$chapters');";
 			$db->query($sql);
 			
 		}
@@ -781,8 +781,8 @@ XML;
 			// # of epsiodes on previous discs plus 
 			// # of episodes on current disc plus earlier tracks plus
 			// # of episodes on current disc plus current track plus earlier episodes
-			$sql = "SELECT (count(e.id) + 1) FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id WHERE d.tv_show = $tv_show AND d.season = $season AND t.bad_track = FALSE AND e.title != '' AND e.ignore = FALSE AND ( (d.disc < $disc_number) OR ( d.disc = 4 AND d.side < '$side' ) OR (d.disc = $disc_number AND t.track != $track AND t.track_order <= $track_order AND e.episode_order <= $episode_order ));";
-//  			shell::msg($sql);
+			$sql = "SELECT (count(e.id) + 1) FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id WHERE d.tv_show = $tv_show AND d.season = $season AND t.bad_track = FALSE AND e.title != '' AND e.ignore = FALSE AND ( (d.disc < $disc_number) OR ( d.disc = $disc_number AND d.side < '$side' ) OR (d.disc = $disc_number AND t.track != $track AND t.track_order <= $track_order AND e.episode_order <= $episode_order ));";
+//   			shell::msg($sql); die;
 			$int = $db->getOne($sql);
 			
 			// I'm not padding the seasons, because I'm assuming there's not

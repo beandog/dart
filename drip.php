@@ -312,7 +312,7 @@
 					
 				// Episodes originate as one track + one chapter,
 				// and can be expanded upon in the frontend admin
- 				$dvd->newEpisode($arr['id'], $ignore, $dvd->dvd['tracks'][$track]['dvdxchap']);
+ 				$dvd->newEpisode($season, $arr['id'], $ignore, $dvd->dvd['tracks'][$track]['dvdxchap']);
 			}
 			
 			// I don't remember where I was going with this.
