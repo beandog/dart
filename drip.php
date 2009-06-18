@@ -45,8 +45,11 @@
 		
 //  	print_r($options);
 
-	if($options['p'])
-		$options['pretend'] = true;
+	if($options['p'] || $options['pretend'])
+		$pretend = true;
+	
+	if($options['q'] || $options['queue'])
+		$queue = true;
 		
 	if($options['skip'])
 		$skip = abs(intval($options['skip']));
@@ -56,23 +59,34 @@
 	if($options['max'])
 		$max = abs(intval($options['max']));
 	
-	if($ini['eject'] || $options['eject'])
-		$eject = true;
-		
 	if($options['debug']) {
 		$dvd->debug = $dvd->verbose = true;
 		$debug =& $dvd->debug;
 		$verbose =& $dvd->verbose;
 		$eject = false;
 	}
+	
+	if($options['encode'])
+		$encode = true;
+	
+	if($options['rip'])
+		$rip = true;
+	
+	if($options['archive'])
+		$archive = true;
+	
+	if($ini['eject'] || $options['eject'])
+		$eject = true;
 		
 	if($options['v'] || $options['verbose'] || $ini['verbose'] || $debug) {
 		$dvd->verbose = true;
 		$verbose =& $dvd->verbose;
 	}
 	
-	if($ini['mount'] && ($options['archive'] || $options['rip']))
+	if($ini['mount'] && ($archive || $rip)) {
+		$mount = true;
 		$dvd->mount();
+	}
 	
 	// Archive disc if not in the db
 	
@@ -82,10 +96,10 @@
 	// So, this statement will check to see if the disc is in the database OR if it is and
 	// we are manually passing a season #.
 	
-	if(($options['archive'] || $options['rip']) && (!$dvd->inDatabase() || ($dvd->inDatabase() && $options['season']))) {
+	if(($archive || $rip) && (!$dvd->inDatabase() || ($dvd->inDatabase() && $options['season']))) {
 	
 		// Bypass archive confirmation if --new is passed
-		if(!$options['archive']) {
+		if(!$archive) {
 			shell::msg("Your DVD is not in the database.");
 			$q = shell::ask("Would you like to archive it now? [Y/n]", 'y');
 			$q = strtolower($q);
@@ -333,7 +347,7 @@
 	}
 	
 	// Set the limit and starting points
-	if($options['rip'] || $options['encode']) {
+	if($rip || $encode) {
 		if($skip)
 			$offset = " OFFSET $skip";
 		else
@@ -345,7 +359,7 @@
 			$limit = '';
 	}
 	
-	if($options['rip']) {
+	if($rip) {
 	
 		$dvd->disc();
 		$dvd->series();
@@ -389,6 +403,8 @@
 			
 			foreach($arr as $episode => $tmp) {
 			
+				$rip_episode = false;
+			
 				$e = $dvd->episodeNumber($episode);
 				$episode_number = $dvd->episodeNumber($episode, false);
 			
@@ -422,21 +438,21 @@
 				
 				$arr_todo = array();
 				
-				if(!shell::in_dir($mkv, $export)) {
+				if(!file_exists($mkv)) {
  					
- 					if(!shell::in_dir($vob, $export))
+ 					if(!file_exists($vob))
 						$arr_todo[] = "Video";
-					if((!shell::in_dir($sub, $export) || !shell::in_dir($idx, $export)) && !$options['nosub'])
+					if((!file_exists($sub) || !file_exists($idx)) && !$options['nosub'])
 						$arr_todo[] = "Subtitles";
 					
 					$arr_todo[] = "Matroska";
 				}
 				
 				// Check to see if file exists, if not, rip it 				
-				if((!shell::in_dir($vob, $export) && !shell::in_dir($mkv, $export)) || $options['pretend'])
-					$rip = true;
+				if((!file_exists($vob) && !file_exists($mkv)) || $pretend)
+					$rip_episode = true;
 					
-				if($rip || $verbose) {
+				if($rip_episode || $verbose) {
 					echo "\n";
 					shell::msg("[Episode] \"$title\" ($x/$num_episodes)");
 					if(count($arr_todo)) {
@@ -445,7 +461,7 @@
 				}
 				
 				// Actually start ripping
-				if($rip) {
+				if($rip_episode) {
 				
 					// FIXME Display MPEG2 + Codec + Num. Channels
 					shell::msg("[DVD] Ripping DVD Video (MPEG-2)");
@@ -468,7 +484,7 @@
 						shell::msg($msg);
 					}
 					
-					if($options['pretend']) {
+					if($pretend) {
 						shell::msg("[VOB] $vob");
 					} else {
   						$dvd->rip($vob, $tmp['track'], $tmp['starting_chapter'], $tmp['ending_chapter']);
@@ -482,10 +498,7 @@
 				$x++;
 				
 				// Rip VobSub
-				if((!shell::in_dir($sub, $export) && !shell::in_dir($mkv, $export)) || $options['pretend']) {
-				
-// 					if($verbose && !$options['nosub'])
-// 						shell::msg("[DVD] Checking for subtitles");
+				if((!file_exists($sub) && !file_exists($mkv)) || $pretend) {
 				
 					$vobsub = false;
 					
@@ -508,8 +521,8 @@
 					}
 						
 					
-					if($vobsub && !shell::in_dir($sub, $export)) {
-						if($options['pretend']) {
+					if($vobsub && !file_exists($sub)) {
+						if($pretend) {
 							shell::msg("[DVD] $sub");
 						} else {
 							// Pass the basename, since mencoder dumps to
@@ -519,12 +532,12 @@
 						}
 					}
 				
-				} elseif(shell::in_dir($idx, $export) && $verbose) {
+				} elseif(file_exists($idx) && $verbose) {
 					shell::msg("[DVD] Subtitles Ripped");
 				}
 				
 				// Add episode to queue
-				if(shell::in_dir($vob, $export)) {
+				if(file_exists($vob)) {
 					$dvd->queue($episode);
 				}
 				
@@ -541,7 +554,7 @@
 	
 	}
 	
-	if($options['encode']) {
+	if($encode || $queue) {
 	
 		$arr = $dvd->getQueue($max);
 		
@@ -577,19 +590,20 @@
 				$txt = "$basename.txt";
 				
 				// Check to see if file exists, if not, encode it
-				if(shell::in_dir($vob, $export) && !shell::in_dir($mkv, $export)) {
+				if(file_exists($vob) && !file_exists($mkv)) {
 				
-					if(!shell::in_dir($xml, $export)) {
+					if($encode && !file_exists($xml)) {
 						$tags = $dvd->globalTags($episode);
 						if($tags)
 							file_put_contents($xml, $tags);
 					}
 					
 					shell::msg("[MKV] $series_title: $e $title");
- 					$dvd->mkvmerge($vob, $mkv, $title, $aspect, $chapters, $atrack, $idx, $xml);
+					if($encode)
+ 						$dvd->mkvmerge($vob, $mkv, $title, $aspect, $chapters, $atrack, $idx, $xml);
 					
 					// Delete old files
-					if(file_exists($mkv) && !$debug) {
+					if($encode && file_exists($mkv) && !$debug) {
 						if(file_exists($vob))
  							unlink($vob);
 						if(file_exists($idx))
@@ -603,11 +617,21 @@
 					}
 				
 				} else {
- 					shell::msg("Partial file exists for $title");
+				
+					// Could be a number of reasons we got here.
+					$dirname = dirname($vob);
+					
+					if(!file_exists($dirname)) {
+						shell::msg("Directory $dirname doesn't exist for ripping ... file is probably deleted, removing episode from queue.");
+						$sql = "DELETE FROM queue WHERE episode = $episode;";
+ 						$db->query($sql);
+					} else {
+ 						shell::msg("Partial file exists for $title");
+ 					}
 				}
 				
 				// Remove episode from queue
-				if(shell::in_dir($mkv, $export)) {
+				if($encode && file_exists($mkv)) {
 					$sql = "DELETE FROM queue WHERE episode = $episode;";
  					$db->query($sql);
 				}
@@ -627,10 +651,10 @@
 	}
 	
 	
-	if($ini['mount'] && ($options['archive'] || $options['rip']))
+	if($mount && ($archive || $rip) && !$queue)
 		$dvd->unmount();
 		
-	if($options['eject'])
+	if($eject && !$queue)
 		$dvd->eject();
 	
 
