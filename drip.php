@@ -375,7 +375,7 @@
 		// This query has nothing to do with what has / hasn't been encoded
 		
 		// Rip in sequential order by season, episode order, then title
-		$sql = "SELECT e.id, tv.title AS series_title, e.title, d.season, d.disc, d.side, t.track, tv.unordered, t.multi, tv.starting_chapter AS series_starting_chapter, e.chapter AS starting_chapter, e.ending_chapter, e.episode_order FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id AND d.disc_id = '{$dvd->dvd['disc_id']}' INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND t.bad_track = FALSE AND e.title != '' ORDER BY t.track_order, d.season, e.episode_order, e.title, t.track, e.id $offset $limit;";
+		$sql = "SELECT e.id, tv.title AS series_title, e.title, d.season, d.disc, d.side, t.track, tv.unordered, t.multi, e.chapter AS starting_chapter, e.ending_chapter, e.episode_order FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id AND d.disc_id = '{$dvd->dvd['disc_id']}' INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND t.bad_track = FALSE AND e.title != '' ORDER BY t.track_order, d.season, e.episode_order, e.title, t.track, e.id $offset $limit;";
 		$arr = $db->getAssoc($sql);
 		
 		if(count($arr)) {
@@ -413,13 +413,10 @@
 				$season =& $tmp['season'];
 				
 				// Select the chapter(s) to rip
-				// Three possibilities:
-				// starting chapter for series
+				// Two possibilities:
 				// one episode = one track w/ one chapter
 				// one episode = one track w/ multiple chapters
-				if($tmp['series_starting_chapter']) {
-					$tmp['starting_chapter'] = $tmp['series_starting_chapter'];
-				} elseif(!$tmp['ending_chapter']) {
+				if(!$tmp['ending_chapter']) {
 					$tmp['ending_chapter'] = $tmp['starting_chapter'];
 				}
 			
