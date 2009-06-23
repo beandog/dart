@@ -75,6 +75,10 @@
 	if($options['archive'])
 		$archive = true;
 	
+	$raw = true;
+	if($options['noraw'])
+		$raw = false;
+	
 	if($ini['eject'] || $options['eject'])
 		$eject = true;
 		
@@ -585,6 +589,12 @@
 				$mkv = "$basename.mkv";
 				$xml = "$basename.xml";
 				$txt = "$basename.txt";
+				$mpg = "$basename.mpg";
+				$ac3 = "$basename.ac3";
+				
+				if(!$raw) {
+					$mpg = $ac3 = $vob;
+				}
 				
 				// Check to see if file exists, if not, encode it
 				if(file_exists($vob) && !file_exists($mkv)) {
@@ -595,14 +605,38 @@
 							file_put_contents($xml, $tags);
 					}
 					
+					var_dump($raw);
+					var_dump($mpg);
+					var_dump($encode);
+					var_dump(file_exists($mpg));
+					
+					if($encode && $raw) {
+					
+						if(!file_exists($mpg)) {
+							shell::msg("[MPG] $series_title: $e $title");
+							$dvd->rawvideo($vob, $mpg);
+						}
+						
+						if(!file_exists($ac3)) {
+							shell::msg("[AC3] $series_title: $e $title");
+							$dvd->rawaudio($vob, $ac3);
+						}
+						
+					}
+					
 					shell::msg("[MKV] $series_title: $e $title");
+					
 					if($encode)
- 						$dvd->mkvmerge($vob, $mkv, $title, $aspect, $chapters, $atrack, $idx, $xml);
+ 						$dvd->mkvmerge($mpg, $ac3, $mkv, $title, $aspect, $chapters, $atrack, $idx, $xml);
 					
 					// Delete old files
 					if($encode && file_exists($mkv) && !$debug) {
 						if(file_exists($vob))
  							unlink($vob);
+						if(file_exists($mpg))
+ 							unlink($mpg);
+ 						if(file_exists($ac3))
+ 							unlink($ac3);
 						if(file_exists($idx))
 							unlink($idx);
 						if(file_exists($sub))

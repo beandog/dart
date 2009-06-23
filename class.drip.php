@@ -717,6 +717,70 @@ XML;
 		}
 		
 		/**
+		 * Extract the raw video stream from a media file
+		 *
+		 * @param string source filename
+		 * @param string destination filename
+		 */
+		function rawvideo($src, $dest) {
+		
+			if(!file_exists($src))
+				return false;
+			
+			$flags = array("$src", "-ovc copy", "-of rawvideo", "-nosound", "-quiet", "-o $dest");
+			
+			$str = "mencoder ".implode(' ', $flags);
+			$str = escapeshellcmd($str);
+			
+			if($this->debug)
+				shell::msg("Executing: $str");
+			
+			$start = time();
+			shell::cmd($str, !$this->debug);
+			$finish = time();
+			
+			if($this->debug) {
+				$exec_time = shell::executionTime($start, $finish);
+				shell::msg("Execution time: ".$exec_time['minutes']."m ".$exec_time['seconds']."s");
+			}
+			
+			return true;
+		
+		}
+		
+		/**
+		 * Extract the raw audio stream from a media file
+		 *
+		 * @param string source filename
+		 * @param string destination filename
+		 */
+		function rawaudio($src, $dest) {
+		
+			if(!file_exists($src))
+				return false;
+			
+			$flags = array("$src", "-oac copy", "-of rawaudio", "-ovc frameno", "-quiet", "-o $dest");
+			
+			$str = "mencoder ".implode(' ', $flags);
+			$str = escapeshellcmd($str);
+			
+			if($this->debug)
+				shell::msg("Executing: $str");
+			
+			$start = time();
+			shell::cmd($str, !$this->debug);
+			$finish = time();
+			
+			if($this->debug) {
+				$exec_time = shell::executionTime($start, $finish);
+				shell::msg("Execution time: ".$exec_time['minutes']."m ".$exec_time['seconds']."s");
+			}
+			
+			return true;
+		
+		}
+		
+		/**
 		 * Add an episode to the queue to be encoded
 		 *
 		 * @param int episode id
@@ -839,7 +903,8 @@ XML;
 		/**
 		 * Mux a Matroska file
 		 *
-		 * @param string source filename
+		 * @param string source video filename
+		 * @param string source audio filename
 		 * @param string target filename
 		 * @param string episode title
 		 * @param string aspect ratio
@@ -849,7 +914,7 @@ XML;
 		 * @param int audio track id
 		 *
 		 */
-		function mkvmerge($source, $target, $title = '', $aspect = null, $chapters = null, $audio_track = 1, $vobsub = null, $global_tags = null) {
+		function mkvmerge($video, $audio, $target, $title = '', $aspect = null, $chapters = null, $audio_track = 1, $vobsub = null, $global_tags = null) {
 		
 			$flags = array();
 			
@@ -863,11 +928,19 @@ XML;
 			if($aspect)
 				$flags[] = "--aspect-ratio 0:$aspect";
 			
-			// Source must immediately follow atrack flag
-			if($audio_track)
-				$flags[] = "-a $audio_track";
 			
-			$flags[] = "\"$source\"";
+			
+			if($video == $audio) {
+				// Source must immediately follow atrack flag
+				if($audio_track)
+					$flags[] = "-a $audio_track";
+				$flags[] = "\"$video\"";
+			} else {
+				$flags[] = "-A \"$video\"";
+				if($audio_track)
+					$flags[] = "-a $audio_track";
+				$flags[] = "-D \"$audio\"";
+			}
 			
 			if($vobsub && file_exists($vobsub))
 				$flags[] = "--default-track 0:no \"$vobsub\"";
