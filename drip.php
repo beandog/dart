@@ -614,7 +614,7 @@
 						
 						if(!file_exists($ac3)) {
 							shell::msg("[AC3] $series_title: $e $title");
-							$dvd->rawaudio($vob, $ac3);
+							$dvd->rawaudio($vob, $ac3, (127 + $atrack));
 						}
 						
 					}

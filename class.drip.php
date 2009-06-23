@@ -676,7 +676,7 @@ XML;
 			$flags[] = "-dvd-device ".$this->device;
 			$flags[] = "-ovc copy";
 			$flags[] = "-nosound";
-			$flags[] = "-vobsubout $filename";
+			$flags[] = "-vobsubout \"$filename\"";
 			$flags[] = "-o /dev/null";
 			$flags[] = "-slang en";
 			$flags[] = "-quiet";
@@ -700,7 +700,6 @@ XML;
 			
 // 			$exec = "mencoder -ovc copy -nosound -vobsubout $filename -o /dev/null -slang en";
 			$str = "mencoder ".implode(' ', $flags);
-			$str = escapeshellcmd($str);
 			
 			if($this->debug)
 				shell::msg("Executing: $str");
@@ -727,10 +726,9 @@ XML;
 			if(!file_exists($src))
 				return false;
 			
-			$flags = array("$src", "-ovc copy", "-of rawvideo", "-nosound", "-quiet", "-o $dest");
+			$flags = array("\"$src\"", "-ovc copy", "-of rawvideo", "-nosound", "-quiet", "-o \"$dest\"");
 			
 			$str = "mencoder ".implode(' ', $flags);
-			$str = escapeshellcmd($str);
 			
 			if($this->debug)
 				shell::msg("Executing: $str");
@@ -754,15 +752,16 @@ XML;
 		 * @param string source filename
 		 * @param string destination filename
 		 */
-		function rawaudio($src, $dest) {
+		function rawaudio($src, $dest, $aid = 128) {
 		
 			if(!file_exists($src))
 				return false;
+				
+			$aid = abs(intval($aid));
 			
-			$flags = array("$src", "-oac copy", "-of rawaudio", "-ovc frameno", "-quiet", "-o $dest");
+			$flags = array("\"$src\"", "-oac copy", "-of rawaudio", "-ovc frameno", "-quiet", "-aid $aid", "-o \"$dest\"");
 			
 			$str = "mencoder ".implode(' ', $flags);
-			$str = escapeshellcmd($str);
 			
 			if($this->debug)
 				shell::msg("Executing: $str");
@@ -928,8 +927,6 @@ XML;
 			if($aspect)
 				$flags[] = "--aspect-ratio 0:$aspect";
 			
-			
-			
 			if($video == $audio) {
 				// Source must immediately follow atrack flag
 				if($audio_track)
@@ -937,8 +934,6 @@ XML;
 				$flags[] = "\"$video\"";
 			} else {
 				$flags[] = "-A \"$video\"";
-				if($audio_track)
-					$flags[] = "-a $audio_track";
 				$flags[] = "-D \"$audio\"";
 			}
 			
