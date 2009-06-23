@@ -436,6 +436,8 @@
 				$idx = "$basename.idx";
 				$xml = "$basename.xml";
 				$mkv = "$basename.mkv";
+				$mpg = "$basename.mpg";
+				$ac3 = "$basename.ac3";
 				
 				$arr_todo = array();
 				
@@ -445,6 +447,8 @@
 						$arr_todo[] = "Video";
 					if((!file_exists($sub) || !file_exists($idx)) && !$options['nosub'])
 						$arr_todo[] = "Subtitles";
+					if((!file_exists($mpg) || !file_exists($ac3)) && $raw)
+						$arr_todo[] = "Demux";
 					
 					$arr_todo[] = "Matroska";
 				}
@@ -608,12 +612,12 @@
 					if($encode && $raw) {
 					
 						if(!file_exists($mpg)) {
-							shell::msg("[MPG] $series_title: $e $title");
+							shell::msg("[VOB] Demuxing Raw Video");
 							$dvd->rawvideo($vob, $mpg);
 						}
 						
 						if(!file_exists($ac3)) {
-							shell::msg("[AC3] $series_title: $e $title");
+							shell::msg("[VOB] Demuxing Raw Audio");
 							$dvd->rawaudio($vob, $ac3, (127 + $atrack));
 						}
 						
