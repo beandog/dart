@@ -605,11 +605,6 @@
 							file_put_contents($xml, $tags);
 					}
 					
-					var_dump($raw);
-					var_dump($mpg);
-					var_dump($encode);
-					var_dump(file_exists($mpg));
-					
 					if($encode && $raw) {
 					
 						if(!file_exists($mpg)) {
