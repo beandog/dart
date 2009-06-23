@@ -274,7 +274,7 @@
 		}
 		
 		/**
-		 * Create the Matroska global tags
+		 * Create the Matroska global tags containing the episode metadata
 		 */
 		function globalTags($episode) {
 		
@@ -492,7 +492,7 @@ XML;
 			$sql = "SELECT NEXTVAL('public.tv_shows_id_seq');";
 			$id = $db->getOne($sql);
 			
-			$sql = "INSERT INTO tv_shows(id, title, min_len, max_len, cartoon) VALUES ($id, '$title', $min_len, $max_len, $cartoon);";
+			$sql = "INSERT INTO tv_shows(id, title, title_long, min_len, max_len, cartoon) VALUES ($id, '$title', '$title', $min_len, $max_len, $cartoon);";
 			$db->query($sql);
 			
 			return $id;
