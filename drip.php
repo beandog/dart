@@ -33,6 +33,7 @@
 		shell::msg("  --nosub\t\t\tDon't rip subtitles");
 		shell::msg("  --encode\t\tEncode episodes in queue");
 		shell::msg("  --season <int>\tSet season #");
+		shell::msg("  --volume <int>\tSet volume #");
 		shell::msg("  --disc <int>\t\tSet disc # for season");
 		shell::msg("  --series <int>\tPass TV Series ID");
 		shell::msg("  --skip <int>\t\tSkip # of episodes");
@@ -114,7 +115,7 @@
 			
 		// Check for shell arguments to pass optionally
 		// series, season, disc #
-		foreach(array('series', 'season', 'disc') as $x) {
+		foreach(array('series', 'season', 'disc', 'volume') as $x) {
 			$tmp = abs(intval($options[$x]));
 			
 			// Allow disc side for discs
@@ -122,14 +123,13 @@
 				$side = strtoupper(substr($options[$x], -1, 1));
 				if($side == "A" || $side == "B")
 					$tmp .= $side;
+				else
+					$side = "";
 			}
 			
 			if($tmp)
 				$$x = $tmp;
 		}
-		
-		
-		
 		
 		// See if series passed is in the DB
 		if($series) {
@@ -211,12 +211,16 @@
 		
 		// Get the season
 		if(!$season) {
+			$season = shell::ask("What season is this disc? [None]", null);
+			if(!is_numeric($season))
+				$season = null;
+		}
 		
-			do {
-				$season = shell::ask("What season is this disc? [1]", 1);
-				$season = intval($season);
-			} while($season == 0);
-		
+		// Get the volume
+		if(!$volume) {
+			$volume = shell::ask("What volume is this disc? [None]", null);
+			if(!is_numeric($volume))
+				$volume = null;
 		}
 		
 		// Get the disc
@@ -224,7 +228,13 @@
 			// Find out which other discs they already have archived
 			// Set the default to the next one in line
 			if($series) {
-				$sql = "SELECT disc, TRIM(side) AS side, id FROM discs WHERE tv_show = $series AND season = $season ORDER BY disc, side;";
+			
+				if(is_null($volume))
+					$str_volume = "NULL";
+				else	
+					$str_volume = $volume;
+			
+				$sql = "SELECT disc, TRIM(side) AS side, id FROM view_discs WHERE tv_show = $series AND volume = $str_volume ORDER BY disc, side;";
 				$arr = $db->getAll($sql);
 				
 				$arr_archives = array();
@@ -240,7 +250,7 @@
 				
 				if(count($arr_archives)) {
 					$str = implode(', ', $arr_archives);
-					shell::msg("Discs archived for Season $season: $str");
+					shell::msg("Discs archived for Season $season, Volume $volume: $str");
 					
 					$last_disc = max(array_keys($arr_discs));
 					if(is_array($arr_discs[$last_disc])) {
@@ -292,8 +302,9 @@
 			} while($disc == 0);
 		}
 		
-		if($series && $season && $disc) {
-			$dvd->newDisc($series, $season, $disc, $side);
+		if($series && $disc) {
+		
+			$dvd->newDisc($volume, $disc, $side);
 			
 			$dvd->tracks();
 			
@@ -330,7 +341,7 @@
 					
 				// Episodes originate as one track + one chapter,
 				// and can be expanded upon in the frontend admin
- 				$dvd->newEpisode($season, $arr['id'], $ignore, $dvd->dvd['tracks'][$track]['dvdxchap']);
+ 				$dvd->newEpisode($series, $season, $arr['id'], $ignore, $dvd->dvd['tracks'][$track]['dvdxchap']);
 			}
 			
 			// I don't remember where I was going with this.

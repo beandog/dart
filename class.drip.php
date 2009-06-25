@@ -415,13 +415,13 @@ XML;
 				global $db;
 				$this->disc_id();
 				
-				$sql = "SELECT id, tv_show, season, disc FROM discs WHERE disc_id = '".$this->dvd['disc_id']."';";
+				$sql = "SELECT id, volume, disc, side FROM discs WHERE disc_id = '".$this->dvd['disc_id']."';";
 				$arr = $db->getRow($sql);
 				if(count($arr)) {
 					$this->disc = $arr;
 				}
 			}
-		
+			
 		}
 		
 		/**
@@ -499,18 +499,20 @@ XML;
 			
 		}
 		
-		function newDisc($series, $season, $disc, $side = "") {
+		function newDisc($volume, $disc, $side = "") {
 		
 			global $db;
 		
 			$this->disc_id();
 			$this->title();
 			
-			$series = abs(intval($series));
-			$season = abs(intval($season));
+			$volume = abs(intval($volume));
 			$disc = abs(intval($disc));
 			
-			$sql = "INSERT INTO discs(tv_show, season, disc, side, disc_id, disc_title) VALUES ($series, $season, $disc, '$side', '".$this->dvd['disc_id']."', '".$this->dvd['title']."');";
+			if(!$volume)
+				$volume = "NULL";
+			
+			$sql = "INSERT INTO discs(volume, disc, side, disc_id, disc_title) VALUES ($volume, $disc, '$side', '".$this->dvd['disc_id']."', '".$this->dvd['title']."');";
 			$db->query($sql);
 			
 			$this->disc();
@@ -581,9 +583,15 @@ XML;
 			
 		}
 		
-		function newEpisode($season, $track, $ignore = false, $chapters) {
+		function newEpisode($series, $season, $track, $ignore = false, $chapters) {
 		
+			$series = abs(intval($series));
+			$season = abs(intval($season));
 			$track = abs(intval($track));
+			
+			if(!$season)
+				$season = "NULL";
+			
 			if($ignore)
 				$ignore = 'TRUE';
 			else
@@ -593,7 +601,7 @@ XML;
 			
 			$chapters = pg_escape_string($chapters);
 			
-			$sql = "INSERT INTO episodes(season, track, ignore, chapters) VALUES($season, $track, $ignore, '$chapters');";
+			$sql = "INSERT INTO episodes(tv_show, season, track, ignore, chapters) VALUES($series, $season, $track, $ignore, '$chapters');";
 			$db->query($sql);
 			
 		}
