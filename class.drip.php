@@ -437,11 +437,14 @@ XML;
 				
 				// Select the show if specifically asked for
 				if($id)
-					$sql = "SELECT tv.id, tv.title, min_len, max_len, cartoon, unordered FROM tv_shows tv WHERE id = $id;";
+					$sql = "SELECT tv.id, tv.title, title_long, min_len, max_len, cartoon, unordered FROM tv_shows tv WHERE id = $id;";
 				// Otherwise, just figure it out from the current disc
 				else {
 					$this->disc_id();
-					$sql = "SELECT tv.id, tv.title, min_len, max_len, cartoon, unordered FROM tv_shows tv INNER JOIN discs d ON d.tv_show = tv.id AND d.disc_id = '".$this->dvd['disc_id']."';";
+					$sql = "SELECT tv_show FROM view_discs WHERE disc_id = '".$this->dvd['disc_id']."';";
+					$series = $db->getOne($sql);
+// 					$sql = "SELECT tv.id, tv.title, min_len, max_len, cartoon, unordered FROM tv_shows tv INNER JOIN discs d ON d.tv_show = tv.id AND d.disc_id = '".$this->dvd['disc_id']."';";
+					$sql = "SELECT id, title, title_long, min_len, max_len, cartoon, unordered FROM tv_shows WHERE id = $series;";
 				}
 				$arr = $db->getRow($sql);
 				
@@ -510,7 +513,7 @@ XML;
 			$disc = abs(intval($disc));
 			
 			if(!$volume)
-				$volume = "NULL";
+				$volume = 0;
 			
 			$sql = "INSERT INTO discs(volume, disc, side, disc_id, disc_title) VALUES ($volume, $disc, '$side', '".$this->dvd['disc_id']."', '".$this->dvd['title']."');";
 			$db->query($sql);
@@ -841,7 +844,9 @@ XML;
 			// It works by calculating the number of valid tracks that come before it
 			// So, you can archive discs outside of their order, just don't transcode them
 			// or your numbering scheme will be off
-			$sql = "SELECT d.tv_show, d.season, d.disc AS disc_number, d.side, e.episode_order, t.track, t.track_order FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id WHERE e.id = $episode;";
+// 			$sql = "SELECT d.tv_show, d.season, d.disc AS disc_number, d.side, e.episode_order, t.track, t.track_order FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id WHERE e.id = $episode;";
+			$sql = "SELECT tv_show_id AS tv_show, season, disc AS disc_number, volume, side, episode_order, track, track_order FROM view_all WHERE episode_id = $episode;";
+//  			shell::msg($sql);
 			$row = $db->getRow($sql);
 			extract($row);
 			
@@ -852,8 +857,9 @@ XML;
 			// # of epsiodes on previous discs plus 
 			// # of episodes on current disc plus earlier tracks plus
 			// # of episodes on current disc plus current track plus earlier episodes
-			$sql = "SELECT (count(e.id) + 1) FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id WHERE d.tv_show = $tv_show AND d.season = $season AND t.bad_track = FALSE AND e.title != '' AND e.ignore = FALSE AND ( (d.disc < $disc_number) OR ( d.disc = $disc_number AND d.side < '$side' ) OR (d.disc = $disc_number AND t.track != $track AND t.track_order <= $track_order AND e.episode_order <= $episode_order ));";
-//   			shell::msg($sql); die;
+// 			$sql = "SELECT (count(e.id) + 1) FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id WHERE d.tv_show = $tv_show AND d.season = $season AND t.bad_track = FALSE AND e.title != '' AND e.ignore = FALSE AND ( (d.disc < $disc_number) OR ( d.disc = $disc_number AND d.side < '$side' ) OR (d.disc = $disc_number AND t.track != $track AND t.track_order <= $track_order AND e.episode_order <= $episode_order ));";
+			$sql = "SELECT (count(e.id) + 1) FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id WHERE e.tv_show = $tv_show AND e.season = $season AND t.bad_track = FALSE AND e.title != '' AND e.ignore = FALSE AND ( (d.disc < $disc_number) OR ( d.disc = $disc_number AND d.side < '$side' ) OR ( e.season = $season AND d.volume < $volume) OR (d.disc = $disc_number AND t.track != $track AND t.track_order <= $track_order AND e.episode_order <= $episode_order ));";
+//     			shell::msg($sql); die;
 			$int = $db->getOne($sql);
 			
 			// I'm not padding the seasons, because I'm assuming there's not
@@ -890,20 +896,60 @@ XML;
 			
 			// Find the episodes, and their order, that belong
 			// on the same disc
-			$sql = "SELECT episodes.id, title FROM episodes INNER JOIN tracks ON episodes.track = tracks.id WHERE disc IN (SELECT d.id FROM discs d INNER JOIN tracks t ON t.disc = d.id INNER JOIN episodes e ON e.track = t.id AND e.id = $episode) AND episodes.ignore = FALSE AND tracks.bad_track = FALSE AND title != '' ORDER BY track_order, episode_order, title;";
+			$sql = "SELECT episodes.id, season FROM episodes INNER JOIN tracks ON episodes.track = tracks.id WHERE disc IN (SELECT d.id FROM discs d INNER JOIN tracks t ON t.disc = d.id INNER JOIN episodes e ON e.track = t.id AND e.id = $episode) AND episodes.ignore = FALSE AND tracks.bad_track = FALSE AND title != '' ORDER BY track_order, episode_order, title;";
+// 			shell::msg($sql);
 			
-			$arr = $db->getCol($sql);
+			$arr = $db->getAssoc($sql);
+			
+// 			print_r($arr);
+			
+// 			die;
 			
 			// Get the starting episode number for that disc
 			// using the first episode ID
-			$e = $this->startingEpisodeNumber(current($arr));
+			$e = $this->startingEpisodeNumber(current(array_keys($arr)));
 			
-			$key = array_search($episode, $arr);
+// 			var_dump($e); die;
+			
+			// How many episodes is this one away from the starting one
+			$offset = array_search($episode, array_keys($arr));
+			
+// 			var_dump($offset);
+			
+			// If we switch seasons mid-disc (rawr, what a pain), then
+			// account for that as well.
+			// Do that by checking to see how many times each season shows up
+			// then calcuate the offset again to the first episode
+			// for that new season.
+			if(count(array_unique($arr)) > 1) {
+			
+// 				echo "Season switch";
+				
+				$arr_count = array_count_values($arr);
+// 				print_r($arr_count);
+				
+ 				if($offset >= current($arr_count)) {
+ 				
+ 					$new_season = end(array_keys($arr_count));
+ 				
+ 					// Reset the starting episode number
+ 					if($pad_string)
+						$e = $new_season."01";
+					else
+						$e = 1;
+ 					$offset -= current($arr_count);
+ 				}
+			
+			}
+			
+// 			var_dump($offset + $e);
+			
+// 			die;
 			
 			if($pad_string)
-				return $key + $e;
+				return $offset + $e;
 			else
-				return intval(substr($key + $e, 1));
+				return intval(substr($offset + $e, 1));
 			
 		}
 		
@@ -1005,7 +1051,8 @@ XML;
 				$limit = '';
 		
 			global $db;
-			$sql = "SELECT e.id, tv.id AS series, tv.title AS series_title, e.title, d.season, d.disc, t.id AS track_id, t.track, t.aspect, tv.unordered, t.multi, e.chapter AS starting_chapter, e.ending_chapter, e.chapters, e.episode_order FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id INNER JOIN tv_shows tv ON d.tv_show = tv.id INNER JOIN queue q ON q.episode = e.id AND q.queue = '".pg_escape_string($this->hostname)."' WHERE e.ignore = FALSE AND t.bad_track = FALSE AND e.title != '' ORDER BY insert_date $limit;";
+			$sql = "SELECT e.id, tv.id AS series, tv.title AS series_title, e.title, e.season, d.disc, t.id AS track_id, t.track, t.aspect, tv.unordered, t.multi, e.chapter AS starting_chapter, e.ending_chapter, e.chapters, e.episode_order FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id INNER JOIN tv_shows tv ON e.tv_show = tv.id INNER JOIN queue q ON q.episode = e.id AND q.queue = '".pg_escape_string($this->hostname)."' WHERE e.ignore = FALSE AND t.bad_track = FALSE AND e.title != '' ORDER BY insert_date $limit;";
+			
 			$arr = $db->getAssoc($sql);
 			
 			// TODO: Get chapters

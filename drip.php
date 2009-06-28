@@ -9,6 +9,7 @@
 
 	$db =& DB::connect("pgsql://steve@willy/movies");
 	$db->setFetchMode(DB_FETCHMODE_ASSOC);
+	PEAR::setErrorHandling(PEAR_ERROR_DIE);
 	
 	$dvd =& new drip();
 	
@@ -43,8 +44,8 @@
 	
 		die;
 	}
-		
-//  	print_r($options);
+	
+//   	print_r($options);
 
 	if($options['p'] || $options['pretend'])
 		$pretend = true;
@@ -302,6 +303,7 @@
 			} while($disc == 0);
 		}
 		
+		
 		if($series && $disc) {
 		
 			$dvd->newDisc($volume, $disc, $side);
@@ -380,8 +382,6 @@
 		$dvd->series();
 		$dvd->tracks();
 		
-//  		print_r($dvd->series);
-		
 		// Create export dir
 		if(!is_dir($dvd->export))
 			mkdir($dvd->export, 0755);
@@ -390,17 +390,17 @@
 		// This query has nothing to do with what has / hasn't been encoded
 		
 		// Rip in sequential order by season, episode order, then title
-		$sql = "SELECT e.id, tv.title AS series_title, e.title, d.season, d.disc, d.side, t.track, tv.unordered, t.multi, e.chapter AS starting_chapter, e.ending_chapter, e.episode_order FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id AND d.disc_id = '{$dvd->dvd['disc_id']}' INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND t.bad_track = FALSE AND e.title != '' ORDER BY t.track_order, d.season, e.episode_order, e.title, t.track, e.id $offset $limit;";
+// 		$sql = "SELECT e.id, tv.title AS series_title, e.title, d.season, d.disc, d.side, t.track, tv.unordered, t.multi, e.chapter AS starting_chapter, e.ending_chapter, e.episode_order FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id AND d.disc_id = '{$dvd->dvd['disc_id']}' INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND t.bad_track = FALSE AND e.title != '' ORDER BY t.track_order, d.season, e.episode_order, e.title, t.track, e.id $offset $limit;";
+		$sql = "SELECT episode_id AS id, tv_show_title AS series_title, episode_title AS title, season, volume, disc, side, track, unordered, multi, chapter AS starting_chapter, ending_chapter, episode_order FROM view_all WHERE ignore = FALSE AND bad_track = FALSE AND episode_title != '' AND disc_uniq_id = '".$dvd->dvd['disc_id']."' ORDER BY track_order, season, episode_order, episode_title, track, id $offset $limit;";
 		$arr = $db->getAssoc($sql);
 		
 		if(count($arr)) {
 		
 			$x = 1;
 			
-			// Get the first episode number.
+			// Get the number for the first episode on this disc.
 			// After this, we auto-increment it ourselves
 			$e = $dvd->episodeNumber(key($arr));
-			
 			$episode_number = $dvd->episodeNumber(key($arr), false);
 			
 			$series_title = $arr[key($arr)]['series_title'];
@@ -417,6 +417,8 @@
 			shell::msg("[Disc] Season $season, Disc $disc$side, Episodes $episode_number - ".($episode_number + $count - 1)."");
 			
 			foreach($arr as $episode => $tmp) {
+			
+				print_r($tmp);
 			
 				$rip_episode = false;
 			
@@ -629,7 +631,7 @@
 						
 						if(!file_exists($ac3)) {
 							shell::msg("[VOB] Demuxing Raw Audio");
-							$dvd->rawaudio($vob, $ac3, (127 + $atrack));
+							$dvd->rawaudio($vob, $ac3, (128 + $atrack));
 						}
 						
 					}
