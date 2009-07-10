@@ -618,6 +618,7 @@
 				
 					if($encode && !file_exists($xml)) {
 						$tags = $dvd->globalTags($episode);
+						
 						if($tags)
 							file_put_contents($xml, $tags);
 					}
@@ -631,7 +632,8 @@
 						
 						if(!file_exists($ac3)) {
 							shell::msg("[VOB] Demuxing Raw Audio");
-							$dvd->rawaudio($vob, $ac3, (128 + $atrack));
+							// atrack will always be at least 1
+							$dvd->rawaudio($vob, $ac3, (127 + $atrack));
 						}
 						
 					}

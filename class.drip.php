@@ -285,12 +285,12 @@
 			 * series title, season #, season year, episode #, episode title, production studio
 			 */
 			 
-			$sql = "SELECT * FROM view_episodes WHERE id = $episode;";
+			$sql = "SELECT * FROM view_episodes WHERE episode_id = $episode;";
 			$arr = $db->getRow($sql);
+			
 			
 			if(!count($arr))
 				return "";
-			
 			$arr['episode_number'] = $this->episodeNumber($episode, false);
 			
 			extract($arr);
@@ -310,13 +310,36 @@ XML;
 			/** Series **/
 	
 			$tag = $sxe->addChild("Tag");
+			
+			$simple = $tag->addChild("Simple");
+			$simple->addChild("Name", "ORIGINAL_MEDIA_TYPE");
+			$simple->addChild("String", "DVD");
+			$simple->addChild("TagLanguage", "eng");
+		
+			$simple = $tag->addChild("Simple");
+			$simple->addChild("Name", "DATE_TAGGED");
+			$simple->addChild("String", date("Y-m-d"));
+			$simple->addChild("TagLanguage", "eng");
+			
+			$simple = $tag->addChild("Simple");
+			$simple->addChild("Name", "PLAY_COUNTER");
+			$simple->addChild("String", 0);
+			$simple->addChild("TagLanguage", "eng");
+			
+			$tag = $sxe->addChild("Tag");
+			
 			$targets = $tag->addChild("Targets");
 			$targets->addChild("TargetTypeValue", "70");
 			$targets->addChild("TargetType", "COLLECTION");
 			
 			$simple = $tag->addChild("Simple");
 			$simple->addChild("Name", "TITLE");
-			$simple->addChild("String", $series);
+			$simple->addChild("String", $tv_show_title_long);
+			$simple->addChild("TagLanguage", "eng");
+			
+			$simple = $tag->addChild("Simple");
+			$simple->addChild("Name", "SORT_WITH");
+			$simple->addChild("String", $tv_show_title);
 			$simple->addChild("TagLanguage", "eng");
 			
 			if($production_studio) {
@@ -362,11 +385,11 @@ XML;
 			$targets->addChild("TargetTypeValue", "50");
 			$targets->addChild("TargetType", "EPISODE");
 			
-			if($title) {
+			if($episode_title) {
 				// Episode title
 				$simple = $tag->addChild("Simple");
 				$simple->addChild("Name", "TITLE");
-				$simple->addChild("String", $title);
+				$simple->addChild("String", $episode_title);
 				$simple->addChild("TagLanguage", "eng");
 			}
 			
