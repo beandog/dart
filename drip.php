@@ -6,6 +6,7 @@
 	require_once 'class.shell.php';
 	require_once 'class.drip.php';
 	require_once 'DB.php';
+	require_once 'class.matroska.php';
 
 	$db =& DB::connect("pgsql://steve@willy/movies");
 	$db->setFetchMode(DB_FETCHMODE_ASSOC);
@@ -13,10 +14,28 @@
 	
 	$dvd =& new drip();
 	
+	$matroska = new Matroska("test.mkv");
+	
+ 	$matroska->addTag();
+ 	$matroska->addSimpleTag("ORIGINAL_MEDIA_TYPE", "DVD");
+ 	$matroska->addSimpleTag("DATE_TAGGED", date("Y-m-d"));
+ 	$matroska->addSimpleTag("PLAY_COUNTER", 0);
+ 	
+ 	$matroska->addTag();
+ 	
+ 	$matroska->addTarget(70, "COLLECTION");
+ 	$matroska->addSimpleTag("TITLE", "The Super Friends");
+ 	$matroska->addSimpleTag("SORT_WITH", "Super Friends");
+ 	
+ 	$xml = $matroska->getXML();
+ 	print_r($xml);
+ 	
+// 	print_r($matroska);
+	die;
+	
 //   	$dvd->disc_id();
 //   	$dvd->title();
 //  	$dvd->tracks();
-//   	$dvd->chapters(); 
 //  	$dvd->disc();
 // 	$dvd->series();
 
@@ -317,19 +336,6 @@
 			// Populate IDs
 			$dvd->trackIDs();
 			
-			// Getting chapters into the database
-			// is currently incomplete in design.
-			// I can't remember where I was going with it,
-			// since dvdxchap is buggy if you select start / ending
-			// positions.
-			// It seems like I was looking to recreate them, somewhere,
-			// for some reason, by getting the distance between chapters
-			// and storing that.
-			// For now, I'm just going back to the old method: store it
-			// with the track (in episodes table) in raw format, and
-			// pass that to mkvmerge. I can clean it up later.
-			$dvd->chapters();
-			
 			// Get max and minimum length requirements
 			$sql = "SELECT min_len, max_len FROM tv_shows WHERE id = $series;";
 			$arr_len = $db->getRow($sql);
@@ -345,21 +351,6 @@
 				// and can be expanded upon in the frontend admin
  				$dvd->newEpisode($series, $season, $arr['id'], $ignore, $dvd->dvd['tracks'][$track]['dvdxchap']);
 			}
-			
-			// I don't remember where I was going with this.
-			// FIXME Single chapter episodes don't need chapters in the MKV
-			foreach($dvd->dvd['chapters'] as $track => $arr_chapter) {
-				foreach($arr_chapter as $chapter => $arr) {
-				
-					$track_len =& $dvd->dvd['tracks'][$track]['len'];
-					$chapter_len = $arr['len'];
-				
-					if($dvd->dvd['tracks'][$track]['id'] && $track_len && $chapter_len) {
-						$dvd->newChapter($dvd->dvd['tracks'][$track]['id'], $arr['start'], $chapter, $chapter_len);
-					}
-				}
-			}
-			
 		}
 	}
 	
@@ -418,7 +409,7 @@
 			
 			foreach($arr as $episode => $tmp) {
 			
-				print_r($tmp);
+// 				print_r($tmp);
 			
 				$rip_episode = false;
 			
@@ -589,7 +580,6 @@
 				$title =& $tmp['title'];
 				$aspect =& $tmp['aspect'];
 				$atrack =& $tmp['atrack'];
-				$chapters =& $tmp['chapters'];
 				
 				$basename = $dvd->formatTitle($title);
 				

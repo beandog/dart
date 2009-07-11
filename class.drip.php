@@ -240,6 +240,9 @@
 				$arr = explode("\n", $str);
 				$arr = preg_grep('/^CHAPTER\d+=/', $arr);
 				$arr = preg_replace('/^CHAPTER\d+=/', '', $arr);
+				
+				print_r($arr); die;
+				
 				foreach($arr as $start_time) {
 					// Convert start times to seconds
 					// This is the format we'll use when muxing chapters
@@ -270,6 +273,35 @@
 				}
 			
 			}
+			
+		}
+		
+		function getChapters($track) {
+		
+			$str = $this->dvd['tracks'][$track]['dvdxchap'] = $this->dvdxchap($track);
+			
+			$str = trim($str);
+			
+			if(empty($str))
+				return array();
+			
+			$arr = explode("\n", $str);
+			
+			// *GENERALLY* speaking, if there's just two chapters, it's not worth grabbing them.
+			if(count($arr) == 2)
+				return array();
+			
+			$arr = preg_grep('/^CHAPTER\d+=/', $arr);
+			$arr = preg_replace('/^CHAPTER\d+=/', '', $arr);
+				
+			$chapters = array();
+				
+			foreach($arr as $value) {
+				if($value != end($chapters))
+					$chapters[] = $value;
+			}
+			
+			return $chapters;
 			
 		}
 		
