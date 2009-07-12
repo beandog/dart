@@ -5,8 +5,11 @@
 
 	require_once 'class.shell.php';
 	require_once 'class.drip.php';
-	require_once 'DB.php';
+	require_once 'class.dvd.php';
+	require_once 'class.dvdtrack.php';
 	require_once 'class.matroska.php';
+	require_once 'DB.php';
+	
 
 	$db =& DB::connect("pgsql://steve@willy/movies");
 	$db->setFetchMode(DB_FETCHMODE_ASSOC);
@@ -14,24 +17,6 @@
 	
 	$dvd =& new drip();
 	
-	$matroska = new Matroska("test.mkv");
-	
- 	$matroska->addTag();
- 	$matroska->addSimpleTag("ORIGINAL_MEDIA_TYPE", "DVD");
- 	$matroska->addSimpleTag("DATE_TAGGED", date("Y-m-d"));
- 	$matroska->addSimpleTag("PLAY_COUNTER", 0);
- 	
- 	$matroska->addTag();
- 	
- 	$matroska->addTarget(70, "COLLECTION");
- 	$matroska->addSimpleTag("TITLE", "The Super Friends");
- 	$matroska->addSimpleTag("SORT_WITH", "Super Friends");
- 	
- 	$xml = $matroska->getXML();
- 	print_r($xml);
- 	
-// 	print_r($matroska);
-	die;
 	
 //   	$dvd->disc_id();
 //   	$dvd->title();
@@ -442,6 +427,7 @@
 				$mkv = "$basename.mkv";
 				$mpg = "$basename.mpg";
 				$ac3 = "$basename.ac3";
+				$txt = "$basename.txt";
 				
 				$arr_todo = array();
 				
@@ -451,6 +437,8 @@
 						$arr_todo[] = "Video";
 					if((!file_exists($sub) || !file_exists($idx)) && !$options['nosub'])
 						$arr_todo[] = "Subtitles";
+					if(!file_exists($txt))
+						$arr_todo[] = "Chapters";
 					if((!file_exists($mpg) || !file_exists($ac3)) && $raw)
 						$arr_todo[] = "Demux";
 					
@@ -545,6 +533,13 @@
 					shell::msg("[DVD] Subtitles Ripped");
 				}
 				
+ 				if(!file_exists($txt)) {
+					shell::msg("[DVD] Chapters");
+					$dvdtrack = new DVDTrack($tmp['track']);
+					$dvdxchap = $dvdtrack->getDvdxchapFormat($tmp['starting_chapter'], $tmp['ending_chapter']);
+					file_put_contents($txt, $dvdxchap);
+ 				}
+				
 				// Add episode to queue
 				if(file_exists($vob)) {
 					$dvd->queue($episode);
@@ -631,7 +626,7 @@
 					shell::msg("[MKV] $series_title: $e $title");
 					
 					if($encode)
- 						$dvd->mkvmerge($mpg, $ac3, $mkv, $title, $aspect, $chapters, $atrack, $idx, $xml);
+ 						$dvd->mkvmerge($mpg, $ac3, $mkv, $title, $aspect, $txt, $atrack, $idx, $xml);
 					
 					// Delete old files
 					if($encode && file_exists($mkv) && !$debug) {

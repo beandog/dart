@@ -1052,10 +1052,8 @@ XML;
 			if($title)
 				$flags[] = "--title \"$title\"";
 			
-			if(strlen($chapters)) {
-				$txt = preg_replace("/mkv$/", "txt", $target);
-				file_put_contents($txt, $chapters);
-				$flags[] = "--chapters \"$txt\"";
+			if($chapters) {
+				$flags[] = "--chapters \"$chapters\"";
 			}
 			
 			if(!is_null($global_tags) && file_exists($global_tags))
