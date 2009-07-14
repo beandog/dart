@@ -71,10 +71,13 @@
 				$this->setTitle((string)$this->sxe->title);
 				$this->setLongestTrack((int)$this->sxe->longest_track);
 				
-				
 				foreach($this->sxe->track as $track) {
 					$this->num_tracks++;
 				}
+				
+				// Set the default track to the longest one
+				if(!$this->track)
+					$this->setTrack($this->getLongestTrack());
 				
 			}
 		
@@ -84,20 +87,10 @@
 			$this->title = $str;
 		}
 		
-		private function setLongestTrack($int) {
-			$this->longest_track = $int;
-		}
-		
 		public function getTitle() {
 			if(!$this->sxe)
 				$this->lsdvd();
 			return $this->title;
-		}
-		
-		public function getLongestTrack() {
-			if(!$this->sxe)
-				$this->lsdvd();
-			return $this->longest_track;
 		}
 		
 		public function getXML() {
@@ -106,13 +99,23 @@
 			return $this->xml;
 		}
 		
-		
+		/** Tracks **/
 		public function getNumTracks() {
 			if(!$this->sxe)
 				$this->lsdvd();
 			return $this->num_tracks;
 		}
 		
+		private function setLongestTrack($int) {
+			$this->longest_track = $int;
+		}
+		
+		public function getLongestTrack() {
+			if(!$this->sxe)
+				$this->lsdvd();
+			
+			return $this->longest_track;
+		}
 		
 	}
 ?>

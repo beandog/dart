@@ -327,7 +327,9 @@
 			
 			foreach($dvd->dvd['tracks'] as $track => $arr) {
 			
-				if(($arr['len'] > $arr_len['max_len']) || ($arr['len'] < $arr_len['min_len']))
+				$dvdtrack = new DVDTrack($track);
+			
+				if(($dvdtrack->getLength() > $arr_len['max_len']) || ($dvdtrack->getLength() < $arr_len['min_len']))
 					$ignore = true;
 				else
 					$ignore = false;
@@ -439,6 +441,8 @@
 						$arr_todo[] = "Subtitles";
 					if(!file_exists($txt))
 						$arr_todo[] = "Chapters";
+					if(!file_exists($xml))
+						$arr_todo[] = "Metadata";
 					if((!file_exists($mpg) || !file_exists($ac3)) && $raw)
 						$arr_todo[] = "Demux";
 					
@@ -533,12 +537,21 @@
 					shell::msg("[DVD] Subtitles Ripped");
 				}
 				
+				// Chapters
  				if(!file_exists($txt)) {
 					shell::msg("[DVD] Chapters");
 					$dvdtrack = new DVDTrack($tmp['track']);
 					$dvdxchap = $dvdtrack->getDvdxchapFormat($tmp['starting_chapter'], $tmp['ending_chapter']);
 					file_put_contents($txt, $dvdxchap);
  				}
+ 				
+ 				// Metadata
+ 				if(!file_exists($xml)) {
+					$tags = $dvd->globalTags($episode);
+					
+					if($tags)
+						file_put_contents($xml, $tags);
+				}
 				
 				// Add episode to queue
 				if(file_exists($vob)) {
@@ -601,13 +614,6 @@
 				// Check to see if file exists, if not, encode it
 				if(file_exists($vob) && !file_exists($mkv)) {
 				
-					if($encode && !file_exists($xml)) {
-						$tags = $dvd->globalTags($episode);
-						
-						if($tags)
-							file_put_contents($xml, $tags);
-					}
-					
 					if($encode && $raw) {
 					
 						if(!file_exists($mpg)) {
