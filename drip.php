@@ -5,24 +5,34 @@
 
 	require_once 'class.shell.php';
 	require_once 'class.drip.php';
+
+	require_once 'DB.php';
+	
+	// New OOP classes
 	require_once 'class.dvd.php';
 	require_once 'class.dvdtrack.php';
 	require_once 'class.matroska.php';
-	require_once 'DB.php';
+	
+	require_once 'class.drip.series.php';
+	require_once 'class.drip.disc.php';
+	require_once 'class.drip.track.php';
+	require_once 'class.drip.audio.php';
+	require_once 'class.drip.chapter.php';
+	require_once 'class.drip.episode.php';
 	
 
 	$db =& DB::connect("pgsql://steve@willy/movies");
 	$db->setFetchMode(DB_FETCHMODE_ASSOC);
 	PEAR::setErrorHandling(PEAR_ERROR_DIE);
 	
-	$dvd =& new drip();
+	$drip = new drip();
+	$dvd = new DVD("/dev/dvd");
 	
-	
-//   	$dvd->disc_id();
-//   	$dvd->title();
-//  	$dvd->tracks();
-//  	$dvd->disc();
-// 	$dvd->series();
+//   	$drip->disc_id();
+//   	$drip->title();
+//  	$drip->tracks();
+//  	$drip->disc();
+// 	$drip->series();
 
 	$options = shell::parseArguments();
 	
@@ -66,9 +76,9 @@
 		$max = abs(intval($options['max']));
 	
 	if($options['debug']) {
-		$dvd->debug = $dvd->verbose = true;
-		$debug =& $dvd->debug;
-		$verbose =& $dvd->verbose;
+		$drip->debug = $drip->verbose = true;
+		$debug =& $drip->debug;
+		$verbose =& $drip->verbose;
 		$eject = false;
 	}
 	
@@ -89,13 +99,13 @@
 		$eject = true;
 		
 	if($options['v'] || $options['verbose'] || $ini['verbose'] || $debug) {
-		$dvd->verbose = true;
-		$verbose =& $dvd->verbose;
+		$drip->verbose = true;
+		$verbose =& $drip->verbose;
 	}
 	
 	if($ini['mount'] && ($archive || $rip)) {
 		$mount = true;
-		$dvd->mount();
+// 		$dvd->mount();
 	}
 	
 	// Archive disc if not in the db
@@ -106,7 +116,7 @@
 	// So, this statement will check to see if the disc is in the database OR if it is and
 	// we are manually passing a season #.
 	
-	if(($archive || $rip) && (!$dvd->inDatabase() || ($dvd->inDatabase() && $options['season']))) {
+	if(($archive || $rip) && (!$drip->inDatabase($dvd->getID()) || ($drip->inDatabase($dvd->getID()) && $options['season']))) {
 	
 		// Bypass archive confirmation if --new is passed
 		if(!$archive) {
@@ -123,30 +133,30 @@
 		foreach(array('series', 'season', 'disc', 'volume') as $x) {
 			$tmp = abs(intval($options[$x]));
 			
-			// Allow disc side for discs
-			if($x == "disc") {
-				$side = strtoupper(substr($options[$x], -1, 1));
-				if($side == "A" || $side == "B")
-					$tmp .= $side;
-				else
-					$side = "";
+			switch($x) {
+				case 'series':
+					$series_id = $options[$x];
+					break;
+				case 'disc':
+					$disc_number = $options[$x];
+					$side = strtoupper(substr($options[$x], -1, 1));
+					if($side == "A" || $side == "B")
+						$tmp .= $side;
+					else
+						$side = "";
+					break;
+				case 'season':
+					$season = $options[$x];
+					break;
+				case 'volume':
+					$volume = $options[$x];
+					break;
 			}
-			
-			if($tmp)
-				$$x = $tmp;
 		}
 		
 		// See if series passed is in the DB
-		if($series) {
-			$sql = "SELECT COUNT(1) FROM tv_shows WHERE id = $series;";
-			$num_rows = $db->getOne($sql);
-			if(!$num_rows)
-				unset($series);
-			else {
-				$sql = "SELECT title FROM tv_shows WHERE id = $series;";
-				$title = $db->getOne($sql);
-				shell::msg("[DVD] Series: $title");
-			}
+		if($series_id) {
+			$series = new DripSeries($series_id);
 		}
 		
 		if(!$series) {
@@ -182,7 +192,7 @@
 					if(strtolower(trim($input)) != 'new') {
 						$input = intval($input);
 					} else {
-						$new_title = true;
+						$new_series = true;
 						break 2;
 					}
 					
@@ -197,21 +207,30 @@
 				}
 			} while($input == 0);
 						
-			$series = $arr[($input - 1)]['id'];
+			$series_id = $arr[($input - 1)]['id'];
+			$series = new DripSeries($series_id);
 		}
 				
 		// Create a new series
-		if($new_title && !$series) {
-			$dvd->title();
+		if($new_series && !$series) {
+// 			$drip->title();
 			
 			shell::msg('');
-			shell::msg("Disc Title: ".$dvd->dvd['title']);
+			shell::msg("Disc Title: ".$dvd->getTitle());
 			$title = shell::ask("What is the title of this series? [TV Show]", 'TV Show');
 			$min_len = shell::ask("What is the minimum episode length (in minutes)? [20]", 20);
 			$max_len = shell::ask("What is the maximum episode length (in minutes)? [60]", 60);
 			$cartoon = shell::ask("Is this series animated? [y/N]", 0);
 			
-			$series = $dvd->newSeries($title, $min_len, $max_len, $cartoon);
+			$series = new DripSeries();
+			$series->setTitle($title);
+			$series->setSortingTitle($title);
+			$series->setMinLen($min_len);
+			$series->setMaxLen($max_len);
+			$series->setCartoon($cartoon);
+			$series_id = $series->getID();
+			
+// 			$series_id = $drip->newSeries($title, $min_len, $max_len, $cartoon);
 		}
 		
 		// Get the season
@@ -222,24 +241,20 @@
 		}
 		
 		// Get the volume
-		if(!$volume) {
+		if(is_null($volume)) {
 			$volume = shell::ask("What volume is this disc? [None]", null);
 			if(!is_numeric($volume))
-				$volume = null;
+				$volume = 0;
 		}
 		
 		// Get the disc
-		if($series && !$disc) {
+		if($series && !$disc_number) {
+		
 			// Find out which other discs they already have archived
 			// Set the default to the next one in line
-			if($series) {
+			if($series->getNumDiscs()) {
 			
-				if(is_null($volume))
-					$str_volume = "NULL";
-				else	
-					$str_volume = $volume;
-			
-				$sql = "SELECT disc, TRIM(side) AS side, id FROM view_discs WHERE tv_show = $series AND volume = $str_volume ORDER BY disc, side;";
+				$sql = "SELECT disc, TRIM(side) AS side, id FROM view_discs WHERE tv_show = ".$series->getID()." AND volume = $volume ORDER BY disc, side;";
 				$arr = $db->getAll($sql);
 				
 				$arr_archives = array();
@@ -289,54 +304,131 @@
 			}
 			
 			do {
-				$disc = shell::ask("What number is this disc? [$next_disc$next_disc_side]", $next_disc.$next_disc_side);
+				$disc_number = shell::ask("What number is this disc? [$next_disc$next_disc_side]", $next_disc.$next_disc_side);
 				
-				$side = strtoupper(substr($disc, -1));
+				$side = strtoupper(substr($disc_number, -1));
 				if(!($side == "A" || $side == "B"))
 					$side = "";
-				$disc = intval($disc);
+				$disc_number = intval($disc_number);
 				
-				if(in_array($disc.$side, $arr_archives)) {
-					shell::msg("Disc $disc$side is already archived.  Choose another number.");
-					$disc = 0;
-				} elseif(is_numeric($disc) && empty($side) && (in_array($disc."A", $arr_archives) || in_array($disc."B", $arr_archives))) {
+				if(in_array($disc_number.$side, $arr_archives)) {
+					shell::msg("Disc $disc_number$side is already archived.  Choose another number.");
+					$disc_number = 0;
+				} elseif(is_numeric($disc_number) && empty($side) && (in_array($disc_number."A", $arr_archives) || in_array($disc_number."B", $arr_archives))) {
 					shell::msg("Need to specify a valid disc # and side.");
-					$disc = 0;
+					$disc_number = 0;
 				}
 				
-			} while($disc == 0);
+			} while($disc_number == 0);
 		}
 		
 		
-		if($series && $disc) {
+		if($series && $disc_number) {
 		
-			$dvd->newDisc($volume, $disc, $side);
+			if($debug)
+				shell::msg("new DripDisc()");
 			
-			$dvd->tracks();
+			$disc = new DripDisc();
 			
-			foreach($dvd->dvd['tracks'] as $track => $arr) {
-				$dvd->newTrack($track, $arr['len'], $arr['aspect'], $arr['audio']);
-			}
+			$disc->setSide($side);
+			$disc->setDiscID($dvd->getID());
+			$disc->setTitle($dvd->getTitle());
+			$disc->setDiscNumber($disc_number);
+			$disc->setVolume($volume);
 			
-			// Populate IDs
-			$dvd->trackIDs();
+			$num_tracks = $dvd->getNumTracks();
 			
-			// Get max and minimum length requirements
-			$sql = "SELECT min_len, max_len FROM tv_shows WHERE id = $series;";
-			$arr_len = $db->getRow($sql);
+			$min_length = $series->getMinLength();
+			$max_length = $series->getMaxLength();
 			
-			foreach($dvd->dvd['tracks'] as $track => $arr) {
+			for($x = 0; $x < $num_tracks; $x++) {
 			
-				$dvdtrack = new DVDTrack($track);
+				$track_number = $x + 1;
+				
+				if($verbose)
+					shell::msg("[Track $track_number]");
 			
-				if(($dvdtrack->getLength() > $arr_len['max_len']) || ($dvdtrack->getLength() < $arr_len['min_len']))
-					$ignore = true;
-				else
+				if($debug)
+					shell::msg("new DVDTrack()");
+				$dvd_track = new DVDTrack($track_number);
+				
+				// Convert to minutes to check against max/min length
+				$track_length = bcdiv($dvd_track->getLength(), 60, 3);
+				
+				if($verbose)
+					shell::msg("Length: $track_length");
+				
+				if($track_length < $max_length && $track_length > $min_length)
 					$ignore = false;
+				else
+					$ignore = true;
+				
+				if($verbose) {
+					$display_ignore = ($ignore ? "Yes" : "No");
+					shell::msg("Ignoring: $display_ignore");
+				}
 					
-				// Episodes originate as one track + one chapter,
-				// and can be expanded upon in the frontend admin
- 				$dvd->newEpisode($series, $season, $arr['id'], $ignore, $dvd->dvd['tracks'][$track]['dvdxchap']);
+				if($debug)
+					shell::msg("new DripTrack()");
+				
+				$drip_track = new DripTrack();
+				$drip_track->setDisc($disc->getID());
+				$drip_track->setTrackNumber($track_number);
+				$drip_track->setLength($track_length);
+				$drip_track->setAspectRatio($dvd_track->getAspectRatio());
+				
+				// Add audio tracks
+				$num_audio_tracks = $dvd_track->getNumAudioTracks();
+				
+				for($a = 0; $a < $num_audio_tracks; $a++) {
+				
+					$audio_index = $a + 1;
+				
+					$audio = new DripAudio();
+					$audio->setTrackID($drip_track->getID());
+					$audio->setIndex($audio_index);
+					
+					$dvd_track->setAudioIndex($audio_index);
+					
+					$audio->setLanguage($dvd_track->getAudioLangCode());
+					$audio->setNumChannels($dvd_track->getAudioChannels());
+					$audio->setFormat($dvd_track->getAudioFormat());
+					
+				}
+				
+				// Add chapters
+				$num_chapters = $dvd_track->getNumChapters();
+				if($num_chapters) {
+					
+					if($verbose) {
+						shell::msg("Chapters: $num_chapters");
+						echo "\n";
+					}
+					
+					for($i = 0; $i < $num_chapters; $i++) {
+						$chapter_number = $i + 1;
+						
+						if($debug)
+							shell::msg("new DripChapter()");
+						
+						$chapter = new DripChapter();
+						$chapter->setTrackID($drip_track->getID());
+						$chapter->setNumber($chapter_number);
+						$chapter->setLength($dvd_track->getChapterLength($chapter_number));
+						
+					}
+				}
+				
+				if($debug)
+					shell::msg("new DripEpisode()");
+				
+				$episode = new DripEpisode();
+				$episode->setTrackID($drip_track->getID());
+				$episode->setOrder($x + 1);
+				$episode->setIgnore($ignore);
+				$episode->setSeriesID($series->getID());
+				$episode->setSeason($season);
+				
 			}
 		}
 	}
@@ -356,20 +448,27 @@
 	
 	if($rip) {
 	
-		$dvd->disc();
-		$dvd->series();
-		$dvd->tracks();
+		// Get the series ID
+		$sql = "SELECT tv_show FROM view_discs WHERE disc_id = '".$dvd->getID()."';";
+		$series_id = $db->getOne($sql);
+		
+		$series = new DripSeries($series_id);
+		
+	
+// 		$drip->disc();
+// 		$drip->series();
+// 		$drip->tracks();
 		
 		// Create export dir
-		if(!is_dir($dvd->export))
-			mkdir($dvd->export, 0755);
+		if(!is_dir($drip->export))
+			mkdir($drip->export, 0755);
 			
 		// Pull out the tracks that haven't been flagged to ignore in the database frontend
 		// This query has nothing to do with what has / hasn't been encoded
 		
 		// Rip in sequential order by season, episode order, then title
-// 		$sql = "SELECT e.id, tv.title AS series_title, e.title, d.season, d.disc, d.side, t.track, tv.unordered, t.multi, e.chapter AS starting_chapter, e.ending_chapter, e.episode_order FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id AND d.disc_id = '{$dvd->dvd['disc_id']}' INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND t.bad_track = FALSE AND e.title != '' ORDER BY t.track_order, d.season, e.episode_order, e.title, t.track, e.id $offset $limit;";
-		$sql = "SELECT episode_id AS id, tv_show_title AS series_title, episode_title AS title, season, volume, disc, side, track, unordered, multi, chapter AS starting_chapter, ending_chapter, episode_order FROM view_all WHERE ignore = FALSE AND bad_track = FALSE AND episode_title != '' AND disc_uniq_id = '".$dvd->dvd['disc_id']."' ORDER BY track_order, season, episode_order, episode_title, track, id $offset $limit;";
+// 		$sql = "SELECT e.id, tv.title AS series_title, e.title, d.season, d.disc, d.side, t.track, tv.unordered, t.multi, e.chapter AS starting_chapter, e.ending_chapter, e.episode_order FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id AND d.disc_id = '{$drip->dvd['disc_id']}' INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND t.bad_track = FALSE AND e.title != '' ORDER BY t.track_order, d.season, e.episode_order, e.title, t.track, e.id $offset $limit;";
+		$sql = "SELECT episode_id AS id, tv_show_title AS series_title, episode_title AS title, season, volume, disc, side, track, unordered, multi, starting_chapter, ending_chapter, episode_order FROM view_episodes WHERE ignore = FALSE AND bad_track = FALSE AND episode_title != '' AND disc_uniq_id = '".$dvd->getID()."' ORDER BY track_order, season, episode_order, episode_title, track, id $offset $limit;";
 		$arr = $db->getAssoc($sql);
 		
 		if(count($arr)) {
@@ -378,49 +477,50 @@
 			
 			// Get the number for the first episode on this disc.
 			// After this, we auto-increment it ourselves
-			$e = $dvd->episodeNumber(key($arr));
-			$episode_number = $dvd->episodeNumber(key($arr), false);
+			$e = $drip->episodeNumber(key($arr));
+			$episode_number = $drip->episodeNumber(key($arr), false);
 			
-			$series_title = $arr[key($arr)]['series_title'];
+			$series_title = $series->getTitle();
 			$season = $arr[key($arr)]['season'];
 			$disc = $arr[key($arr)]['disc'];
 			$side = $arr[key($arr)]['side'];
 			$num_episodes = $count = count($arr);
 			
-			$export = $dvd->export.$dvd->formatTitle($series_title).'/';
+			$export = $drip->export.$drip->formatTitle($series_title).'/';
  			if(!is_dir($export))
  				mkdir($export, 0755) or die("Can't create export directory $export");
 		
 			shell::msg("[Disc] Ripping \"$series_title\"");
 			shell::msg("[Disc] Season $season, Disc $disc$side, Episodes $episode_number - ".($episode_number + $count - 1)."");
 			
-			foreach($arr as $episode => $tmp) {
+			foreach($arr as $episode_id => $tmp) {
 			
-// 				print_r($tmp);
+				$episode = new DripEpisode($episode_id);
 			
 				$rip_episode = false;
 			
-				$e = $dvd->episodeNumber($episode);
-				$episode_number = $dvd->episodeNumber($episode, false);
-			
-				$title =& $tmp['title'];
-				$track =& $tmp['track'];
-				$season =& $tmp['season'];
+				$e = $drip->episodeNumber($episode_id);
+				$episode_number = $drip->episodeNumber($episode_id, false);
+				$episode_title = $episode->getTitle();
 				
-				// Select the chapter(s) to rip
-				// Two possibilities:
-				// one episode = one track w/ one chapter
-				// one episode = one track w/ multiple chapters
-				if(!$tmp['ending_chapter']) {
-					$tmp['ending_chapter'] = $tmp['starting_chapter'];
-				}
-			
-				$basename = $dvd->formatTitle($title);
+				$basename_title = $episode_title;
+				if($episode->getPart() > 1)
+					$basename_title .= ", Part ".$episode->getPart();
 				
-				if($dvd->series['unordered'] == 'f')
+				$basename = $drip->formatTitle($basename_title);
+				if(!$series->isUnordered())
 					$basename = $e.'._'.$basename;
-					
 				$basename = $export.$basename;
+				
+ 				$track = new DripTrack($episode->getTrackID());
+ 				$track_number = $track->getTrackNumber();
+				$starting_chapter = $episode->getStartingChapter();
+				$ending_chapter = $episode->getEndingChapter();
+				
+				$dvd_track = new DVDTrack($track_number);
+				$dvd_track->setBasename($basename);
+				$dvd_track->setStartingChapter($starting_chapter);
+				$dvd_track->setEndingChapter($ending_chapter);
 				
 				$vob = "$basename.vob";
 				$sub = "$basename.sub";
@@ -455,7 +555,9 @@
 					
 				if($rip_episode || $verbose) {
 					echo "\n";
-					shell::msg("[Episode] \"$title\" ($x/$num_episodes)");
+					shell::msg("[Episode] \"$episode_title\" ($x/$num_episodes)");
+					if($episode->getPart())
+						shell::msg("[Episode] Part ".$episode->getPart());
 					if(count($arr_todo)) {
 						shell::msg("[Episode] ".implode(", ", $arr_todo));
 					}
@@ -470,25 +572,26 @@
 					$msg = "[DVD] Ripping Episode $x/$count";
 					
 					if($verbose) {
-						$msg = "[DVD] Track $track";
+						$msg = "[DVD] Track $track_number";
+						$msg = "[DVD] Chapters $starting_episode-$ending_episode";
 					
-						if($tmp['starting_chapter'])
-							$msg .= "\tChapters ".$tmp['starting_chapter']."-".$tmp['ending_chapter'];
+						if($episode->getStartingChapter())
+							$msg .= "\tChapters $starting_chapter-$ending_chapter";
 				
  						shell::msg($msg);
 					}
 					
 					if($debug) {
-						$msg = "mplayer dvd://$track";
-						if($tmp['starting_chapter'])
-							$msg .= " -chapter ".$tmp['starting_chapter']."-".$tmp['ending_chapter'];
-						shell::msg($msg);
+ 						$msg = "mplayer dvd://$track_number";
+ 						if($starting_chapter)
+ 							$msg .= " -chapter $starting_chapter-$ending_chapter";
+ 						shell::msg($msg);
 					}
 					
 					if($pretend) {
 						shell::msg("[VOB] $vob");
 					} else {
-  						$dvd->rip($vob, $tmp['track'], $tmp['starting_chapter'], $tmp['ending_chapter']);
+						$dvd_track->dumpStream();
 					}
 				
 				} else {
@@ -504,14 +607,9 @@
 					$vobsub = false;
 					
 					// See if we have an English VOBSUB for the track
-					if($dvd->dvd['tracks'][$tmp['track']]['vobsub']) {
-						
-						foreach($dvd->dvd['tracks'][$tmp['track']]['vobsub'] as $arr) {
-							if($arr['lang'] == 'en' || $arr['language'] == 'English') {
-								$vobsub = true;
-								break;
-							}
-						}
+					
+					if($dvd_track->hasSubtitles()) {
+						$vobsub = true;
 					}
 					
 					if($options['nosub'] && $vobsub) {
@@ -520,16 +618,13 @@
 					} elseif(!$vobsub) {
 						shell::msg("[DVD] No Subtitles");
 					}
-						
 					
 					if($vobsub && !file_exists($sub)) {
 						if($pretend) {
 							shell::msg("[DVD] $sub");
 						} else {
-							// Pass the basename, since mencoder dumps to
-							// <basename>.idx, .sub
 							shell::msg("[DVD] Ripping Subtitles (VobSub)");
- 							$dvd->sub($basename, $tmp['track'], $tmp['starting_chapter'], $tmp['ending_chapter']);
+							$dvd_track->dumpSubtitles();
 						}
 					}
 				
@@ -540,22 +635,76 @@
 				// Chapters
  				if(!file_exists($txt)) {
 					shell::msg("[DVD] Chapters");
-					$dvdtrack = new DVDTrack($tmp['track']);
-					$dvdxchap = $dvdtrack->getDvdxchapFormat($tmp['starting_chapter'], $tmp['ending_chapter']);
-					file_put_contents($txt, $dvdxchap);
+					$dvd_track->dumpChapters();
  				}
  				
  				// Metadata
  				if(!file_exists($xml)) {
-					$tags = $dvd->globalTags($episode);
+ 				
+ 					$matroska = new Matroska();
+ 					
+ 					$matroska->setFilename($mkv);
+ 					if($episode_title)
+ 						$matroska->setTitle("TITLE", $episode->getTitle());
+ 					$matroska->setAspectRatio($dvd_track->getAspectRatio());
+ 					
+ 					$matroska->addTag();
 					
-					if($tags)
-						file_put_contents($xml, $tags);
+					$matroska->addTag();
+					$matroska->addTarget(70, "COLLECTION");
+					$matroska->addSimpleTag("TITLE", $series->getTitle());
+					$matroska->addSimpleTag("SORT_WITH", $series->getSortingTitle());
+					if($series->getProductionStudio())
+						$matroska->addSimpleTag("PRODUCTION_STUDIO", $series->getProductionStudio());
+					if($series->getBroadcastYear())
+						$matroska->addSimpleTag("DATE_RELEASE", $series->getBroadcastYear());
+					$matroska->addSimpleTag("ORIGINAL_MEDIA_TYPE", "DVD");
+					
+					/** Season **/
+					if($episode->getSeason()) {
+					
+						$season = $episode->getSeason();
+					
+						$matroska->addTag();
+						$matroska->addTarget(60, "SEASON");
+						
+						if($series->getBroadcastYear()) {
+							$year = $series->getBroadcastYear() + $season - 1;
+							$matroska->addSimpleTag("DATE_RELEASE", $year);
+						}
+						
+						$matroska->addSimpleTag("PART_NUMBER", $season);
+						
+					}
+					
+					/** Episode **/
+					$matroska->addTag();
+					$matroska->addTarget(50, "EPISODE");
+					if($episode_title)
+						$matroska->addSimpleTag("TITLE", $episode_title);
+					if($episode_number)
+						$matroska->addSimpleTag("PART_NUMBER", $episode_number);
+					$matroska->addSimpleTag("DATE_TAGGED", date("Y-m-d"));
+					$matroska->addSimpleTag("PLAY_COUNTER", 0);
+					
+					if($episode->getPart() > 1) {
+						$matroska->addTag();
+						$matroska->addTarget(40, "PART");
+						$matroska->addSimpleTag("PART_NUMBER", $episode->getPart());
+					}
+					
+					$str = $matroska->getXML();
+					
+ 					if($str)
+						file_put_contents($xml, $str);
+					
+					die;
+			
 				}
 				
 				// Add episode to queue
 				if(file_exists($vob)) {
-					$dvd->queue($episode);
+					$drip->queue($episode_id);
 				}
 				
 				// Increment episode number
@@ -573,7 +722,9 @@
 	
 	if($encode || $queue) {
 	
-		$arr = $dvd->getQueue($max);
+		$arr = $drip->getQueue($max);
+		
+		print_r($arr);
 		
 		$todo = $count = count($arr);
 		
@@ -581,22 +732,50 @@
 		
 			shell::msg("$count episode(s) total to encode.");
 			
-			foreach($arr as $episode => $tmp) {
+			foreach($arr as $episode_id) {
 			
-				$series_title =& $tmp['series_title'];
-				$export = $dvd->export.$dvd->formatTitle($series_title).'/';
-				$title =& $tmp['title'];
-				$aspect =& $tmp['aspect'];
-				$atrack =& $tmp['atrack'];
+				$episode = new DripEpisode($episode_id);
+				$track = new DripTrack($episode->getTrackID());
+				$series = new DripSeries($episode->getSeriesID());
 				
-				$basename = $dvd->formatTitle($title);
+				print_r($episode);
+				print_r($track);
 				
-				if($tmp['unordered'] == 'f') {
-					$e = $dvd->episodeNumber($episode);
+				
+				
+				print_r($series);
+				
+				print_r($track->getAudioTrack());
+				
+				$episode_title = $episode->getTitle();
+				
+				die;
+			
+				
+			
+// 				$series_title =& $tmp['series_title'];
+				$export = $drip->export.$drip->formatTitle($series->getTitle()).'/';
+// 				$title =& $tmp['title'];
+// 				$aspect =& $tmp['aspect'];
+// 				$atrack =& $tmp['atrack'];
+
+				$basename_title = $episode_title;
+				if($episode->getPart() > 1)
+					$basename_title .= ", Part ".$episode->getPart();
+				
+				$basename = $drip->formatTitle($basename_title);
+				if(!$series->isUnordered())
 					$basename = $e.'._'.$basename;
-				}
-					
 				$basename = $export.$basename;
+				
+// 				$basename = $drip->formatTitle($title);
+// 				
+// 				if($tmp['unordered'] == 'f') {
+// 					$e = $drip->episodeNumber($episode);
+// 					$basename = $e.'._'.$basename;
+// 				}
+// 					
+// 				$basename = $export.$basename;
 				
 				$vob = "$basename.vob";
 				$idx = "$basename.idx";
@@ -618,13 +797,13 @@
 					
 						if(!file_exists($mpg)) {
 							shell::msg("[VOB] Demuxing Raw Video");
-							$dvd->rawvideo($vob, $mpg);
+							$drip->rawvideo($vob, $mpg);
 						}
 						
 						if(!file_exists($ac3)) {
 							shell::msg("[VOB] Demuxing Raw Audio");
 							// atrack will always be at least 1
-							$dvd->rawaudio($vob, $ac3, (127 + $atrack));
+							$drip->rawaudio($vob, $ac3, (127 + $atrack));
 						}
 						
 					}
@@ -632,7 +811,7 @@
 					shell::msg("[MKV] $series_title: $e $title");
 					
 					if($encode)
- 						$dvd->mkvmerge($mpg, $ac3, $mkv, $title, $aspect, $txt, $atrack, $idx, $xml);
+ 						$drip->mkvmerge($mpg, $ac3, $mkv, $title, $aspect, $txt, $atrack, $idx, $xml);
 					
 					// Delete old files
 					if($encode && file_exists($mkv) && !$debug) {
@@ -687,11 +866,11 @@
 	}
 	
 	
-	if($mount && ($archive || $rip) && !$queue)
-		$dvd->unmount();
+// 	if($mount && ($archive || $rip) && !$queue)
+// 		$drip->unmount();
 		
 	if($eject && !$queue)
-		$dvd->eject();
+		$drip->eject();
 	
 
 ?>

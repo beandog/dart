@@ -1,5 +1,22 @@
 <?
 
+	/**
+	 * A few words about chapters
+	 *
+	 * The goal here is to store the chapter information for the tracks in a
+	 * agnostic approach.  Normally, I would try to mimic dvdxchap's format
+	 * which would only cause problems down the road.  So, while it's one
+	 * thing to simply add a function to export to that format, all information
+	 * stored in here will simply contain chapter numbers, indexes, and lengths
+	 * as it would normally be accessed: incrementally starting with one, and
+	 * storing each chapter's length in seconds.
+	 *
+	 * dvdxchap's format is slightly different as the first chapter is really
+	 * the starting point of the stream.  Or, 0 minutes, 0 seconds.  This means
+	 * that in that format, the starting point of the second chapter would be
+	 * equal to the length of the first chapter.
+	 */
+
 	class DVDTrack {
 	
 		private $device;
@@ -10,6 +27,8 @@
 		
 		private $verbose = false;
 		private $debug = false;
+		
+		public $chapters;
 	
 		function __construct($track = 1, $device = "/dev/dvd") {
 		
@@ -70,9 +89,9 @@
 		/** Metadata **/
 		private function lsdvd() {
 		
-			if(empty($this->lsdvd['output'])) {
-				$str = "lsdvd -Ox -v -a -s -c -t ".$this->getTrack()." ".$this->getDevice();
-				$arr = shell::cmd($str);
+			if(is_null($this->xml)) {
+				$exec = "lsdvd -Ox -v -a -s -c -t ".$this->getTrack()." ".$this->getDevice();
+				$arr = shell::cmd($exec);
 				$str = implode("\n", $arr);
 				
 				// Fix broken encoding on langcodes, standardize output
@@ -81,6 +100,9 @@
 				$str = preg_replace("/\<langcode\>\W+\<\/langcode\>/", "<langcode>und</langcode>", $str);
 				
 				$this->xml = $str;
+			}
+			
+			if(is_null($this->sxe)) {
 				
 				$this->sxe = simplexml_load_string($str) or die("Couldn't parse lsdvd XML output");
 				
@@ -120,39 +142,32 @@
 				
 				// Chapters
 				
-				/**
-				 * lsdvd workaround:
-				 *
-				 * lsdvd has a small bug (I think, loosely verified) where
-				 * it adds too many chapters.  You can verify it by comparing
-				 * the output of the normal output and the XML output.  The
-				 * last chapter will always be the same length as the first one.
-				 *
-				 * Since the first chapter is really 00:00:00.000, the entire index is
-				 * off by one (compared to dvdxchap).  I want to retain that first chapter
-				 * so if you want to jump back *all* the way to the beginning, you can.
-				 *
-				 * So, the workaround is to first insert the fake chapter at the front,
-				 * and then, when finished, drop the last chapter.
-				 */
-				 
-				$this->chapters[1] = array(
-					'length' => 0.00,
-					'name' => "Chapter 1"
-				);
-				$chapter = 2;
+				$chapter_number = 1;
 				 
 				foreach($this->sxe->track->chapter as $obj) {
 					$length = (float)$obj->length;
-					$this->chapters[(int)$obj->ix + 1] = array(
-						'length' =>$length,
+					$this->chapters[$chapter_number] = array(
+						'length' => $length,
 						'name' => "",
 					);
 					
-					$chapter++;
+					$chapter_number++;
+					
+					$last_chapter_length = $length;
 				}
 				
- 				array_pop($this->chapters);
+				// I've seen this regularly on some sources, especially
+				// cartoons where the last chapter is really short.  It
+				// makes navigation annoying, because you want to skip
+				// to the next entry in a playlist, and instead it
+				// jumps to the last second or two of the episode.
+				// So, I'm going to specify a hard limit, and if the
+				// length of the last one is less than that, don't
+				// add the chapter.
+				
+				// Current fixed length: two seconds
+ 				if($last_chapter_length < 2)
+  					array_pop($this->chapters);
 				
 				$this->num_chapters = count($this->chapters);
 				
@@ -216,6 +231,13 @@
 		
 		/** Audio **/
 		
+		function getNumAudioTracks() {
+			if(is_null($this->num_audio_tracks))
+				$this->lsdvd();
+			
+			return $this->num_audio_tracks;
+		}
+		
 		/**
 		 * Select the first audio stream with the preset langcode
 		 */
@@ -231,6 +253,12 @@
 				if($arr['langcode'] == $this->getLangCode() && !$this->audio_index)
 					$this->audio_index = $idx;
 			}
+			
+			// If there aren't any set, or if there is only one, set it to the default.
+			if(count($this->audio) == 1 || is_null($this->audio_index)) {
+				$this->audio_index = 1;
+			}
+			
 		}
 		
 		function getAudioIndex() {
@@ -253,6 +281,20 @@
 			return $this->audio[$this->getAudioIndex()]['format'];
 		}
 		
+		function getAudioLanguage() {
+			if(!$this->audio_index)
+				$this->setAudioIndex();
+				
+			return $this->audio[$this->getAudioIndex()]['language'];
+		}
+		
+		function getAudioLangCode() {
+			if(!$this->audio_index)
+				$this->setAudioIndex();
+				
+			return $this->audio[$this->getAudioIndex()]['langcode'];
+		}
+		
 		function getAudioStreamID() {
 			if(!$this->audio_index)
 				$this->setAudioIndex();
@@ -272,6 +314,35 @@
 		/**
 		 * Select the first subtitle stream with the preset langcode
 		 */
+		 
+		function getNumSubtitles() {
+			if(!$this->sxe)
+				$this->lsdvd();
+				
+			if(!$this->langcode)
+				$this->setLangCode();
+			
+			if($this->subtitles) {
+				$this->num_subtitles = count($this->subtitles);
+			} else {
+				$this->num_subtitles = 0;
+			}
+			
+			return $this->num_subtitles;
+			
+		}
+		
+		function hasSubtitles() {
+			if($this->getNumSubtitles()) {
+				if(is_null($this->getSubtitlesIndex()))
+					return false;
+				else
+					return true;
+			} else {
+				return false;
+			}
+		}
+		 
 		function setSubtitlesIndex() {
 			if(!$this->sxe)
 				$this->lsdvd();
@@ -280,9 +351,11 @@
 				$this->setLangCode();
 			
 			// Subtitles
-			foreach($this->subtitles as $idx => $arr) {
-				if($arr['langcode'] == $this->getLangCode() && !$this->subtitle_index)
-					$this->subtitle_index = $idx;
+			if($this->getNumSubtitles()) {
+				foreach($this->subtitles as $idx => $arr) {
+					if($arr['langcode'] == $this->getLangCode() && !$this->subtitle_index)
+						$this->subtitle_index = $idx;
+				}
 			}
 		}
 		
@@ -347,21 +420,31 @@
 				return "";
 			
 			// Where to start the slice
-			$offset = $starting_chapter - 1;
+			// Remove 1 from the index, since
+			// in dvdxchap, everything is one chapter behind.
+ 			$offset = $starting_chapter - 1;
 			
 			// How many chapters to fetch
-			$length = $ending_chapter - $starting_chapter + 1;
+ 			$length = $ending_chapter - $starting_chapter + 1;
 			
 			// Preserve the keys when grabbing, as we index the key as chapter #
-			$arr_slice = array_slice($this->chapters, $offset, $length, true);
+ 			$arr_slice = array_slice($this->chapters, $offset, $length, true);
+
+			// Manually add the first chapter
+			$str = "CHAPTER01=00:00:00.000\n";
+			$chapter_name = $this->getChapterName($key);
+			if(!$chapter_name)
+				$chapter_name = "Chapter 1";
+			$str .= "CHAPTER01NAME=$chapter_name\n";
+			$chapter_number = 2;
 			
-			$chapter = 1;
+			$start_pos = 0;
 			
 			foreach($arr_slice as $key => $arr) {
 				$start_pos = bcadd($start_pos, $this->getChapterLength($key));
 				$hms = $this->secondsToHMS($start_pos);
 				
-				$pad = str_pad($chapter, 2, 0, STR_PAD_LEFT);
+				$pad = str_pad($chapter_number, 2, 0, STR_PAD_LEFT);
 				
 				$str .= "CHAPTER$pad=$hms\n";
 				
@@ -369,11 +452,11 @@
 				// If not, just name it "Chapter X"
 				$chapter_name = $this->getChapterName($key);
 				if(!$chapter_name)
-					$chapter_name = "Chapter $chapter";
+					$chapter_name = "Chapter $chapter_number";
 				
 				$str .= "CHAPTER${pad}NAME=$chapter_name\n";
 				
-				$chapter++;
+				$chapter_number++;
 			}
 			
 			return $str;
@@ -416,7 +499,7 @@
 			if($chapter > $this->getNumChapters())
 				return "";
 			
-			return $this->chapters[$chapter]['name'];
+			return trim($this->chapters[$chapter]['name']);
 		
 		}
 		
@@ -475,14 +558,14 @@
 		
 		function dumpSubtitles() {
 			
-			$track = $this->getTrack();
+			$track_number = $this->getTrack();
 			$device = $this->getDevice();
 			$basename = $this->getBasename();
 			$slang = $this->getLangCode();
 			$starting_chapter = $this->getStartingChapter();
 			$ending_chapter = $this->getEndingChapter();
 			
-			$flags[] = "dvd://$track";
+			$flags[] = "dvd://$track_number";
 			$flags[] = "-dvd-device $device";
 			$flags[] = "-ovc copy";
 			$flags[] = "-nosound";

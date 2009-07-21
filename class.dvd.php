@@ -41,9 +41,9 @@
 		/** Metadata **/
 		
 		private function disc_id() {
-			$str = shell::msg("disc_id ".$this->getDevice());
-			if(!empty($str))
-				$this->id = $str;
+			$arr = shell::cmd("disc_id ".$this->getDevice());
+			if(!empty($arr))
+				$this->id = current($arr);
 		}
 		
 		public function getID() {
@@ -74,10 +74,6 @@
 				foreach($this->sxe->track as $track) {
 					$this->num_tracks++;
 				}
-				
-				// Set the default track to the longest one
-				if(!$this->track)
-					$this->setTrack($this->getLongestTrack());
 				
 			}
 		

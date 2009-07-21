@@ -443,13 +443,16 @@ XML;
 		
 		}
 		
-		function inDatabase() {
+		function inDatabase($disc_id = null) {
+		
+			if(is_null($disc_id) && $this->disc_id)
+				$disc_id = $this->disc_id;
+			else
+				$this->disc_id = $disc_id;
 		
 			global $db;
 		
-			$this->disc_id();
-				
-			$sql = "SELECT COUNT(1) FROM discs WHERE disc_id = '".$this->dvd['disc_id']."';";
+			$sql = "SELECT COUNT(1) FROM discs WHERE disc_id = '$disc_id';";
 			$num_rows = $db->getOne($sql);
 			
 			if($num_rows)
@@ -636,8 +639,8 @@ XML;
 			
 			$chapter = abs(intval($chapter));
 			
- 			$sql = "INSERT INTO track_chapters(track, start_time, chapter, len) VALUES($track, $start_time, $chapter, $len);";
- 			$db->query($sql);
+//  			$sql = "INSERT INTO track_chapters(track, start_time, chapter, len) VALUES($track, $start_time, $chapter, $len);";
+//  			$db->query($sql);
 			
 		}
 		
@@ -900,7 +903,7 @@ XML;
 			// So, you can archive discs outside of their order, just don't transcode them
 			// or your numbering scheme will be off
 // 			$sql = "SELECT d.tv_show, d.season, d.disc AS disc_number, d.side, e.episode_order, t.track, t.track_order FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id WHERE e.id = $episode;";
-			$sql = "SELECT tv_show_id AS tv_show, season, disc AS disc_number, volume, side, episode_order, track, track_order FROM view_all WHERE episode_id = $episode;";
+			$sql = "SELECT tv_show_id AS tv_show, season, disc AS disc_number, volume, side, episode_order, track, track_order FROM view_episodes WHERE episode_id = $episode;";
 //  			shell::msg($sql);
 			$row = $db->getRow($sql);
 			extract($row);
@@ -1104,38 +1107,38 @@ XML;
 				$limit = '';
 		
 			global $db;
-			$sql = "SELECT e.id, tv.id AS series, tv.title AS series_title, e.title, e.season, d.disc, t.id AS track_id, t.track, t.aspect, tv.unordered, t.multi, e.chapter AS starting_chapter, e.ending_chapter, e.chapters, e.episode_order FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id INNER JOIN tv_shows tv ON e.tv_show = tv.id INNER JOIN queue q ON q.episode = e.id AND q.queue = '".pg_escape_string($this->hostname)."' WHERE e.ignore = FALSE AND t.bad_track = FALSE AND e.title != '' ORDER BY insert_date $limit;";
-			
+			$sql = "SELECT e.id, tv.id AS series, tv.title AS series_title, e.title, e.season, e.part, d.disc, t.id AS track_id, t.track, t.aspect, tv.unordered, t.multi, e.starting_chapter, e.ending_chapter, e.chapters, e.episode_order FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id INNER JOIN tv_shows tv ON e.tv_show = tv.id INNER JOIN queue q ON q.episode = e.id AND q.queue = '".pg_escape_string($this->hostname)."' WHERE e.ignore = FALSE AND t.bad_track = FALSE AND e.title != '' ORDER BY insert_date $limit;";
 			$arr = $db->getAssoc($sql);
 			
-			// TODO: Get chapters
-			// This query works to get the relevant chapters for that track,
-			// but it's not checking to see if they apply (one episode per track or not)
-			foreach($arr as $id => $arr_track) {
-// 				$sql = "SELECT start_time, chapter FROM track_chapters WHERE track = ".$arr_track['track_id'].";";
-// 				$arr_chapters = $db->getAll($sql);
-// 				$arr[$id]['chapters'] = $arr_chapters;
-
-				// Get audio tracks, find the first English one
-				$sql = "SELECT * FROM audio_tracks WHERE track = ".$arr_track['track_id']." ORDER BY audio_track;";
-				$arr_audio_tracks = $db->getAssoc($sql);
-				
-				if(count($arr_audio_tracks)) {
-					foreach($arr_audio_tracks as $arr_audio) {
-						if($arr_audio['lang'] == 'en') {
-							$atrack = ($arr_audio['audio_track'] + 1);
-							break;
-						}
-					}
-				} else
-					$atrack = 1;
-				
-				$arr[$id]['atrack'] = $atrack;
-
-				// Unused
-				unset($arr[$id]['track_id']);
-				
-			}
+			$sql = "SELECT episode_id FROM view_episodes e INNER JOIN queue q ON q.episode = e.episode_id AND q.queue = '".pg_escape_string($this->hostname)."' WHERE e.ignore = FALSE AND e.bad_track = FALSE AND e.episode_title != '' ORDER BY insert_date $limit;";
+			
+			$arr = $db->getCol($sql);
+			
+// 			// TODO: Get chapters
+// 			// This query works to get the relevant chapters for that track,
+// 			// but it's not checking to see if they apply (one episode per track or not)
+// 			foreach($arr as $id => $arr_track) {
+// 
+// 				// Get audio tracks, find the first English one
+// 				$sql = "SELECT * FROM audio_tracks WHERE track = ".$arr_track['track_id']." ORDER BY audio_track;";
+// 				$arr_audio_tracks = $db->getAssoc($sql);
+// 				
+// 				if(count($arr_audio_tracks)) {
+// 					foreach($arr_audio_tracks as $arr_audio) {
+// 						if($arr_audio['lang'] == 'en') {
+// 							$atrack = ($arr_audio['audio_track'] + 1);
+// 							break;
+// 						}
+// 					}
+// 				} else
+// 					$atrack = 1;
+// 				
+// 				$arr[$id]['atrack'] = $atrack;
+// 
+// 				// Unused
+// 				unset($arr[$id]['track_id']);
+/*				
+			}*/
 			
 			return $arr;
 		
