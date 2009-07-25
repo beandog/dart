@@ -469,5 +469,20 @@
 			return $db->getOne($sql);
 		}
 		
+		function getNumAltTitles() {
+		
+			global $db;
+			
+			$sql = "SELECT COUNT(1) FROM alt_titles WHERE tv_show = ".$this->getID().";";
+			return $db->getOne($sql);
+		}
+		
+		
+		function getAltTitles() {
+			global $db;
+			
+			$sql = "SELECT id, title FROM alt_titles WHERE tv_show = ".$this->getID().";";
+			return $db->getAssoc($sql);
+		}
 	}
 ?>

@@ -3,6 +3,7 @@
 	class DripDisc {
 	
 		private $id;
+		private $series_id;
 		private $disc_id;
 		private $title;
 		private $side;
@@ -45,6 +46,33 @@
 			$db->autoExecute('discs', $arr_insert, DB_AUTOQUERY_INSERT);
 			
 			$this->setId($id);
+		}
+		
+		function setSeriesID($int) {
+		
+			global $db;
+		
+			$int = abs(intval($int));
+			
+			$arr_update = array(
+				'tv_show_id' => $int
+			);
+			
+			$db->autoExecute('discs', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			
+			$this->series_id = $int;
+		}
+		
+		function getSeriesID() {
+			if(is_null($this->series_id)) {
+				global $db;
+				$sql = "SELECT tv_show_id FROM discs WHERE id = ".$this->getID().";";
+				$this->series_id = $db->getOne($sql);
+				if(is_null($this->series_id))
+					$this->series_id = "";
+			}
+			
+			return $this->series_id;
 		}
 		
 		public function setDiscID($str) {
@@ -193,6 +221,26 @@
 			}
 			
 			return $this->side;
+		}
+		
+		function getTrackIDs() {
+		
+			global $db;
+			$sql = "SELECT t.id FROM tracks t INNER JOIN discs d ON t.disc = d.id WHERE d.id = ".$this->getID()." ORDER BY t.track;";
+			$arr = $db->getCol($sql);
+			
+			return $arr;
+		
+		}
+		
+		function getSeasons() {
+		
+			global $db;
+			
+			$sql = "SELECT DISTINCT season FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id WHERE d.id = ".$this->getID().";";
+			$arr = $db->getCol($sql);
+			
+			return $arr;
 		}
 		
 	}

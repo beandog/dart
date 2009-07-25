@@ -24,6 +24,7 @@
 		private $id;
 		private $track;
 		private $num_chapters = 0;
+		private $aspect_ratio;
 		
 		private $verbose = false;
 		private $debug = false;

@@ -6,25 +6,23 @@
 		private $track_id;
 		private $order;
 		private $title;
-		private $ignore;
-		private $series_id;
 		private $season;
 		private $part;
 		private $starting_chapter;
 		private $ending_chapter;
+		private $alt_title_id;
 		
 		function __construct($id = null) {
 			if(!is_null($id)) {
 				$this->setID($id);
 				$this->getTitle();
-				$this->getSeriesID();
 				$this->getTrackID();
 				$this->getSeason();
 				$this->getPart();
 				$this->getOrder();
-				$this->isIgnored();
 				$this->getStartingChapter();
 				$this->getEndingChapter();
+				$this->alt_title_id = $this->getAltTitleID();
 			} else {
 				$this->newEpisode();
 			}
@@ -84,33 +82,6 @@
 			return $this->track_id;
 		}
 		
-		function setSeriesID($int) {
-		
-			global $db;
-		
-			$int = abs(intval($int));
-			
-			$arr_update = array(
-				'tv_show' => $int
-			);
-			
-			$db->autoExecute('episodes', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
-			
-			$this->series_id = $int;
-		}
-		
-		function getSeriesID() {
-			if(is_null($this->series_id)) {
-				global $db;
-				$sql = "SELECT tv_show FROM episodes WHERE id = ".$this->getID().";";
-				$this->series_id = $db->getOne($sql);
-				if(is_null($this->series_id))
-					$this->series_id = "";
-			}
-			
-			return $this->series_id;
-		}
-		
 		function setSeason($int) {
 		
 			global $db;
@@ -143,6 +114,8 @@
 			global $db;
 		
 			$int = abs(intval($int));
+			if(!$int)
+				$int = null;
 			
 			$arr_update = array(
 				'part' => $int
@@ -231,7 +204,7 @@
 				$this->newEpisode();
 			
 			$arr_update = array(
-				'disc_title' => $str
+				'title' => $str
 			);
 			
 			$db->autoExecute('episodes', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
@@ -279,47 +252,7 @@
 			return $this->order;
 		}
 		
-		function setIgnore($bool = true) {
-		
-			global $db;
-			
-			if(!$this->id)
-				$this->newEpisode();
-			
-			if($bool === true) {
-				$ignore = "t";
-				$this->ignore = true;
-			} else {
-				$ignore = "f";
-				$this->ignore = false;
-			}
-			
-			$arr_update = array(
-				'ignore' => $ignore
-			);
-			
-			$db->autoExecute('episodes', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
-			
-		}
-		
-		function isIgnored() {
-		
-			global $db;
-			
-			if(isset($this->ignore))
-				return $this->ignore;
-			
-			$sql = "SELECT ignore FROM episodes WHERE id = ".$this->getID().";";
-			$ignore = $db->getOne($sql);
-			
-			if($ignore == "t")
-				$this->ignore = true;
-			else
-				$this->ignore = false;
-			
-			return $this->ignore;
-			
-		}
+		function getLength() {}
 		
 		function getAudioID($language = "en") {
 			global $db;
@@ -378,6 +311,45 @@
 			
 			return $this->audio_index + 127;
 		
+		}
+		
+		function getEpisodeNumber() {
+		
+			global $db;
+			
+			// Find the # of episodes on previous discs for this season
+			$sql = "SELECT COUNT(1) FROM view_episodes e1 INNER JOIN view_episodes e2 ON e1.tv_show_id = e2.tv_show_id AND e1.season = e2.season AND e1.volume = e2.volume AND e1.disc_id != e2.disc_id WHERE e2.episode_id = ".$this->getID()." AND e1.season <= e2.season AND ((e1.disc_number < e2.disc_number) OR (e1.disc_number = e2.disc_number AND e1.side < e2.side));";
+			$count = $db->getOne($sql);
+		
+			// Find the # of episodes before the one on the current disc
+			$sql = "SELECT COUNT(1) FROM view_episodes e1 INNER JOIN view_episodes e2 ON e1.disc_id = e2.disc_id AND ((e1.episode_order < e2.episode_order) OR (e1.episode_order = e2.episode_order AND e1.episode_id < e2.episode_id))AND e1.side = e2.side AND e1.season = e2.season AND e1.episode_id != e2.episode_id WHERE e2.episode_id = ".$this->getID().";";
+			$count += $db->getOne($sql);
+			
+			// Add one because we start counting at 1, not 0
+			$count++;
+			
+			return $count;
+		
+		}
+		
+		function setAltTitleID() {
+		
+			
+		
+		}
+		
+		function getAltTitleID() {
+		
+			if(isset($this->alt_title_id))
+				return $this->alt_title_id;
+			
+			global $db;
+			$sql = "SELECT alt_title_id FROM episodes WHERE id = ".$this->getID().";";
+			
+			$id = $db->getOne($sql);
+			
+			return $id;
+			
 		}
 		
 	}

@@ -31,7 +31,7 @@
 		}
 		
 		function mount() {
-			shell::cmd("mount ".$this->getDevice());
+			shell::cmd("mount ".$this->getDevice(), true, true, false, array(0, 32, 64));
 		}
 		
 		function unmount() {

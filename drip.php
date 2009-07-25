@@ -20,20 +20,23 @@
 	require_once 'class.drip.chapter.php';
 	require_once 'class.drip.episode.php';
 	
+	
+	
 
 	$db =& DB::connect("pgsql://steve@willy/movies");
 	$db->setFetchMode(DB_FETCHMODE_ASSOC);
-	PEAR::setErrorHandling(PEAR_ERROR_DIE);
+// 	PEAR::setErrorHandling(PEAR_ERROR_DIE);
+	
+	function pear_error($obj) {
+		die($obj->getMessage() . "\n" . $obj->getDebugInfo());
+	}
+	
+	
+	PEAR::setErrorHandling(PEAR_ERROR_CALLBACK, 'pear_error');
 	
 	$drip = new drip();
 	$dvd = new DVD("/dev/dvd");
 	
-//   	$drip->disc_id();
-//   	$drip->title();
-//  	$drip->tracks();
-//  	$drip->disc();
-// 	$drip->series();
-
 	$options = shell::parseArguments();
 	
 	$ini = array();
@@ -63,6 +66,9 @@
 
 	if($options['p'] || $options['pretend'])
 		$pretend = true;
+	
+	if($options['update'])
+		$update = true;
 	
 	if($options['q'] || $options['queue'])
 		$queue = true;
@@ -103,10 +109,94 @@
 		$verbose =& $drip->verbose;
 	}
 	
-	if($ini['mount'] && ($archive || $rip)) {
+	if($ini['mount'] && ($archive || $rip || $update)) {
 		$mount = true;
-// 		$dvd->mount();
+  		$dvd->mount();
 	}
+	
+	// Re-archive disc
+	if($update && $drip->inDatabase($dvd->getID())) {
+		
+		$sql = "SELECT id FROM discs WHERE disc_id = '".$dvd->getID()."';";
+		$drip_disc_id = $db->getOne($sql);
+		
+		$drip_disc = new DripDisc($drip_disc_id);
+		
+		$arr_track_ids = $drip_disc->getTrackIDs();
+		
+		// Update disc number
+		if($options['disc']) {
+			if($verbose) {
+				shell::msg("Updating disc");
+			}
+			$drip_disc->setDiscNumber($options['disc']);
+		}
+		
+		// Update side
+		if($options['side']) {
+			if($verbose) {
+				shell::msg("Updating side");
+			}
+			$drip_disc->setSide($options['side']);
+		}
+		
+		foreach($arr_track_ids as $track_id) {
+			$drip_track = new DripTrack($track_id);
+			$dvd_track = new DVDTrack($drip_track->getTrackNumber());
+			
+			// Update aspect ratio
+			if($drip_track->getAspectRatio() != $dvd_track->getAspectRatio()) {
+				if($verbose) {
+					shell::msg("Updating aspect ratio");
+				}
+				$drip_track->setAspectRatio($dvd_track->getAspectRatio());
+			}
+			
+			// Convert to minutes to check against max/min length
+			$track_length = bcdiv($dvd_track->getLength(), 60, 3);
+			
+			if($track_length != $drip_track->getLength()) {
+				if($verbose) {
+					shell::msg("Updating track length");
+				}
+				$drip_track->setLength($track_length);
+			}
+				
+				
+			// Add chapters
+			$num_chapters = $dvd_track->getNumChapters();
+			if($num_chapters != $drip_track->getNumChapters()) {
+			
+				// Delete the old records (if any)
+				if($drip_track->getNumChapters()) {
+					echo "Make sure this works";
+					echo $sql = "DELETE FROM chapters WHERE track = ".$drip_track->getID().";";
+					die;
+				}
+				
+				if($verbose) {
+					shell::msg("Chapters: $num_chapters");
+				}
+				
+				for($i = 0; $i < $num_chapters; $i++) {
+					$chapter_number = $i + 1;
+					
+					if($debug)
+						shell::msg("new DripChapter()");
+					
+					$chapter = new DripChapter();
+					$chapter->setTrackID($drip_track->getID());
+					$chapter->setNumber($chapter_number);
+					$chapter->setLength($dvd_track->getChapterLength($chapter_number));
+					
+				}
+			}
+			
+		}
+		
+		die;
+	}
+	
 	
 	// Archive disc if not in the db
 	
@@ -425,7 +515,6 @@
 				$episode = new DripEpisode();
 				$episode->setTrackID($drip_track->getID());
 				$episode->setOrder($x + 1);
-				$episode->setIgnore($ignore);
 				$episode->setSeriesID($series->getID());
 				$episode->setSeason($season);
 				
@@ -467,8 +556,7 @@
 		// This query has nothing to do with what has / hasn't been encoded
 		
 		// Rip in sequential order by season, episode order, then title
-// 		$sql = "SELECT e.id, tv.title AS series_title, e.title, d.season, d.disc, d.side, t.track, tv.unordered, t.multi, e.chapter AS starting_chapter, e.ending_chapter, e.episode_order FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id AND d.disc_id = '{$drip->dvd['disc_id']}' INNER JOIN tv_shows tv ON d.tv_show = tv.id WHERE e.ignore = FALSE AND t.bad_track = FALSE AND e.title != '' ORDER BY t.track_order, d.season, e.episode_order, e.title, t.track, e.id $offset $limit;";
-		$sql = "SELECT episode_id AS id, tv_show_title AS series_title, episode_title AS title, season, volume, disc, side, track, unordered, multi, starting_chapter, ending_chapter, episode_order FROM view_episodes WHERE ignore = FALSE AND bad_track = FALSE AND episode_title != '' AND disc_uniq_id = '".$dvd->getID()."' ORDER BY track_order, season, episode_order, episode_title, track, id $offset $limit;";
+		$sql = "SELECT episode_id AS id, tv_show_title AS series_title, episode_title AS title, season, volume, disc, side, track, unordered, starting_chapter, ending_chapter, episode_order FROM view_episodes WHERE bad_track = FALSE AND episode_title != '' AND dvd_id = '".$dvd->getID()."' ORDER BY track_order, season, episode_order, episode_title, track, id $offset $limit;";
 		$arr = $db->getAssoc($sql);
 		
 		if(count($arr)) {
@@ -698,8 +786,6 @@
  					if($str)
 						file_put_contents($xml, $str);
 					
-					die;
-			
 				}
 				
 				// Add episode to queue
@@ -724,7 +810,7 @@
 	
 		$arr = $drip->getQueue($max);
 		
-		print_r($arr);
+// 		print_r($arr);
 		
 		$todo = $count = count($arr);
 		
@@ -735,47 +821,32 @@
 			foreach($arr as $episode_id) {
 			
 				$episode = new DripEpisode($episode_id);
-				$track = new DripTrack($episode->getTrackID());
+				$track_id = $episode->getTrackID();
+				$drip_track = new DripTrack($track_id);
 				$series = new DripSeries($episode->getSeriesID());
-				
-				print_r($episode);
-				print_r($track);
-				
-				
-				
-				print_r($series);
-				
-				print_r($track->getAudioTrack());
-				
+				$series_title = $series->getTitle();
 				$episode_title = $episode->getTitle();
 				
-				die;
-			
+// 				print_r($episode);
+// 				print_r($drip_track);
+// 				print_r($series);
 				
+				
+				$audio_index = $drip->getDefaultAudioTrack($track_id) - 1;
+				$audio_aid = $drip->getDefaultAudioAID($track_id);
 			
-// 				$series_title =& $tmp['series_title'];
-				$export = $drip->export.$drip->formatTitle($series->getTitle()).'/';
-// 				$title =& $tmp['title'];
-// 				$aspect =& $tmp['aspect'];
-// 				$atrack =& $tmp['atrack'];
+				$export = $drip->export.$drip->formatTitle($series_title).'/';
 
 				$basename_title = $episode_title;
 				if($episode->getPart() > 1)
 					$basename_title .= ", Part ".$episode->getPart();
 				
+				$episode_number = $drip->episodeNumber($episode_id);
+				
 				$basename = $drip->formatTitle($basename_title);
 				if(!$series->isUnordered())
-					$basename = $e.'._'.$basename;
+					$basename = $episode_number.'._'.$basename;
 				$basename = $export.$basename;
-				
-// 				$basename = $drip->formatTitle($title);
-// 				
-// 				if($tmp['unordered'] == 'f') {
-// 					$e = $drip->episodeNumber($episode);
-// 					$basename = $e.'._'.$basename;
-// 				}
-// 					
-// 				$basename = $export.$basename;
 				
 				$vob = "$basename.vob";
 				$idx = "$basename.idx";
@@ -803,16 +874,37 @@
 						if(!file_exists($ac3)) {
 							shell::msg("[VOB] Demuxing Raw Audio");
 							// atrack will always be at least 1
-							$drip->rawaudio($vob, $ac3, (127 + $atrack));
+							$drip->rawaudio($vob, $ac3, $audio_aid);
 						}
 						
 					}
 					
-					shell::msg("[MKV] $series_title: $e $title");
+					shell::msg("[MKV] $series_title: $episode_number $episode_title");
 					
-					if($encode)
- 						$drip->mkvmerge($mpg, $ac3, $mkv, $title, $aspect, $txt, $atrack, $idx, $xml);
-					
+					if($encode) {
+						$matroska = new Matroska($mkv);
+						
+						$matroska->addVideo($mpg);
+						$matroska->addAudio($ac3);
+						
+						if(file_exists($idx))
+							$matroska->addSubtitles($idx);
+						if(file_exists($txt))
+							$matroska->addChapters($txt);
+						if(file_exists($xml))
+							$matroska->addGlobalTags($xml);
+						
+						$matroska->setTitle($episode_title);
+						
+						if($drip_track->getAspectRatio())
+							$matroska->setAspectRatio($drip_track->getAspectRatio());
+						
+						
+						
+						$matroska->mux();
+						
+ 					}
+ 					
 					// Delete old files
 					if($encode && file_exists($mkv) && !$debug) {
 						if(file_exists($vob))
@@ -838,7 +930,7 @@
 					
 					if(!file_exists($dirname)) {
 						shell::msg("Directory $dirname doesn't exist for ripping ... file is probably deleted, removing episode from queue.");
-						$sql = "DELETE FROM queue WHERE episode = $episode;";
+						$sql = "DELETE FROM queue WHERE episode = $episode_id;";
  						$db->query($sql);
 					} else {
  						shell::msg("Partial file exists for $title");
@@ -847,7 +939,7 @@
 				
 				// Remove episode from queue
 				if($encode && file_exists($mkv)) {
-					$sql = "DELETE FROM queue WHERE episode = $episode;";
+					$sql = "DELETE FROM queue WHERE episode = $episode_id;";
  					$db->query($sql);
 				}
 				
@@ -870,7 +962,7 @@
 // 		$drip->unmount();
 		
 	if($eject && !$queue)
-		$drip->eject();
+		$dvd->eject();
 	
 
 ?>

@@ -3,14 +3,10 @@
 	class Matroska {
 	
 		private $filename;
-		private $chapters;
-		private $global_tags;
 		private $aspect_ratio;
 		private $flags = array();
+		private $args = array();
 		private $streams = array();
-		private $xml;
-		private $sxe;
-		private $tag;
 		private $dtd;
 	
 		function __construct($filename = null) {
@@ -25,11 +21,11 @@
 		/** Filename **/
 		public function setFilename($str) {
 			if(is_string($str))
-				$this->filename = $filename;
+				$this->filename = $str;
 		}
 		
 		public function getFilename() {
-			return (string)$this->filename;
+			return $this->filename;
 		}
 		
 		/** Streams **/
@@ -158,17 +154,21 @@ XML;
 		private function arguments() {
 		
 			$flags['output'] = $this->getFilename();
+			$args = array();
+			
+			if($this->title)
+				$flags['title'] = $this->title;
 		
-			foreach($streams as $arr) {
+			foreach($this->streams as $arr) {
 			
 				switch($arr['type']) {
+				
+					case 'video':
+						$flags['no-audio'] = $arr['filename'];
+						break;
 					
 					case 'audio':
 						$flags['no-video'] = $arr['filename'];
-						break;
-					
-					case 'video':
-						$flags['no-audio'] = $arr['filename'];
 						break;
 					
 					case 'subtitles':
@@ -178,19 +178,61 @@ XML;
 					case 'chapters':
 						$flags['chapters'] = $arr['filename'];
 						break;
+					
+					case 'global_tags':
+						$flags['global-tags'] = $arr['filename'];
+						break;
 						
 					default:
 						$args[] = $arr['filename'];
 						break;
 					
-					
 				}
-			
 			}
 			
-			if($this->title)
-				$flags['title'] = $this->title;
+			if($this->getAspectRatio()) {
+				$flags['aspect-ratio'] = "0:".$this->getAspectRatio();
+			}
 			
+			
+			$this->args = $args;
+			$this->flags = $flags;
+			
+			
+			
+		}
+		
+		private function getCommandString() {
+			$this->arguments();
+			
+			$exec[] = "mkvmerge";
+			
+			if($this->verbose || $this->debug)
+				$exec[] = "-v";
+			
+			foreach($this->flags as $option => $argument) {
+				$exec[] = "--$option ".escapeshellarg($argument);
+			}
+			
+			foreach($this->args as $argument) {
+				$exec[] = "--$option ".escapeshellarg($argument);
+			}
+			
+			$str = implode(" ", $exec);
+			
+			$this->exec = $str;
+			
+			return $str;
+			
+		}
+		
+		public function mux() {
+			
+			if(is_null($this->exec))
+				$str = $this->getCommandString();
+				
+			shell::cmd($str);
+		
 		}
 	
 	}

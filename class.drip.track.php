@@ -7,15 +7,10 @@
 		private $track;
 		private $length;
 		private $bad;
-		private $multiple_episodes;
 		private $aspect_ratio;
 		private $order;
-		private $language;
-		private $audio_track;
-		private $audio_track_id;
-		private $audio_track_language;
-		private $audio_track_channels;
-		private $audio_track_format;
+		private $num_chapters;
+		private $num_episodes;
 	
 		function __construct($id = null) {
 			if($id) {
@@ -24,10 +19,10 @@
 				$this->getTrackNumber();
  				$this->getLength();
  				$this->isBadTrack();
- 				$this->hasMultipleEpisodes();
  				$this->getAspectRatio();
  				$this->getOrder();
-
+				$this->num_episodes = $this->getNumEpisodes();
+				$this->valid_length = $this->validLength();
 			} else {
 				$this->newTrack();
 			}
@@ -211,48 +206,6 @@
 			
 		}
 		
-		function setMultipleEpisodes($bool = true) {
-		
-			global $db;
-			
-			if(!$this->id)
-				$this->newTrack();
-			
-			if($bool === true) {
-				$multi = "t";
-				$this->multiple_episodes = true;
-			} else {
-				$multi = "f";
-				$this->multiple_episodes = false;
-			}
-			
-			$arr_update = array(
-				'multi' => $multi
-			);
-			
-			$db->autoExecute('tracks', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
-			
-		}
-		
-		function hasMultipleEpisodes() {
-		
-			global $db;
-			
-			if(isset($this->multiple_episodes))
-				return $this->multiple_episodes;
-			
-			$sql = "SELECT multi FROM tracks WHERE id = ".$this->getID().";";
-			$multi = $db->getOne($sql);
-			
-			if($multi == "t")
-				$this->multiple_episodes = true;
-			else
-				$this->multiple_episodes = false;
-			
-			return $this->multiple_episodes;
-			
-		}
-		
 		function setAspectRatio($str) {
 		
 			global $db;
@@ -325,6 +278,64 @@
 			return $this->order;
 		
 		}
+		
+		function getNumChapters() {
+		
+			if(is_null($this->num_chapters)) {
+				global $db;
+				$sql = "SELECT COUNT(1) FROM chapters WHERE track = ".$this->getID().";";
+				$num_chapters = $db->getOne($sql);
+				
+				$this->num_chapters = $num_chapters;
+			}
+			return $this->num_chapters;
+		}
+		
+		function getEpisodeIDs() {
+		
+			global $db;
+			
+			$sql = "SELECT id FROM episodes WHERE track = ".$this->getID()." ORDER BY season, episode_order, starting_chapter, id;";
+			$arr = $db->getCol($sql);
+			
+			return $arr;
+		}
+		
+		function getNumEpisodes() {
+		
+			if(is_null($this->num_episodes)) {
+				global $db;
+				$sql = "SELECT COUNT(1) FROM episodes WHERE track = ".$this->getID().";";
+				$int = $db->getOne($sql);
+				
+				return $int;
+			} else {
+				return $this->num_episodes;
+			}
+		}
+		
+		/**
+		 * See if a track meets the valid length for an episode
+		 */
+		function validLength() {
+		
+			if(is_null($this->valid_length)) {
+		
+				global $db;
+				$sql = "SELECT min_len, max_len FROM tv_shows tv INNER JOIN discs d ON d.tv_show_id = tv.id INNER JOIN tracks t ON t.disc = d.id WHERE t.id = ".$this->getID().";";
+				
+				$row = $db->getRow($sql);
+				
+				if(($this->getLength() >= $row['min_len']) && ($this->getLength() <= $row['max_len']))
+					return true;
+				else
+					return false;
+			} else {
+				return $this->valid_length;
+			}
+			
+		}
+		
 	
 	}
 ?>
