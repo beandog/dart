@@ -425,6 +425,7 @@
 			$disc->setTitle($dvd->getTitle());
 			$disc->setDiscNumber($disc_number);
 			$disc->setVolume($volume);
+			$disc->setSeriesID($series->getID());
 			
 			$num_tracks = $dvd->getNumTracks();
 			
@@ -462,7 +463,7 @@
 					shell::msg("new DripTrack()");
 				
 				$drip_track = new DripTrack();
-				$drip_track->setDisc($disc->getID());
+				$drip_track->setDiscID($disc->getID());
 				$drip_track->setTrackNumber($track_number);
 				$drip_track->setLength($track_length);
 				$drip_track->setAspectRatio($dvd_track->getAspectRatio());
@@ -508,15 +509,6 @@
 						
 					}
 				}
-				
-				if($debug)
-					shell::msg("new DripEpisode()");
-				
-				$episode = new DripEpisode();
-				$episode->setTrackID($drip_track->getID());
-				$episode->setOrder($x + 1);
-				$episode->setSeriesID($series->getID());
-				$episode->setSeason($season);
 				
 			}
 		}
