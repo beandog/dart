@@ -229,7 +229,7 @@ XML;
 			if(is_null($this->exec))
 				$str = $this->getCommandString();
 				
-			shell::cmd($str);
+			shell::cmd($str, !$this->verbose, false, $this->debug, array(0,1));
 		
 		}
 	
