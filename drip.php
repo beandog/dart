@@ -556,39 +556,37 @@
 		// This query has nothing to do with what has / hasn't been encoded
 		
 		// Rip in sequential order by season, episode order, then title
-		$sql = "SELECT episode_id AS id, tv_show_title AS series_title, episode_title AS title, season, volume, disc, side, track, unordered, starting_chapter, ending_chapter, episode_order FROM view_episodes WHERE bad_track = FALSE AND episode_title != '' AND dvd_id = '".$dvd->getID()."' ORDER BY track_order, season, episode_order, episode_title, track, id $offset $limit;";
+		$sql = "SELECT episode_id AS id, tv_show_title AS series_title, episode_title AS title, season, volume, disc_number, side, track, unordered, starting_chapter, ending_chapter, episode_order FROM view_episodes WHERE bad_track = FALSE AND episode_title != '' AND dvd_id = '".$dvd->getID()."' ORDER BY track_order, season, episode_order, episode_title, track, id $offset $limit;";
 		$arr = $db->getAssoc($sql);
 		
 		if(count($arr)) {
 		
 			$x = 1;
 			
-			// Get the number for the first episode on this disc.
-			// After this, we auto-increment it ourselves
-			$e = $drip->episodeNumber(key($arr));
-			$episode_number = $drip->episodeNumber(key($arr), false);
-			
 			$series_title = $series->getTitle();
 			$season = $arr[key($arr)]['season'];
-			$disc = $arr[key($arr)]['disc'];
+			$disc_number = $arr[key($arr)]['disc_number'];
 			$side = $arr[key($arr)]['side'];
 			$num_episodes = $count = count($arr);
+			$episode = new DripEpisode($arr[key($arr)]['id']);
+			$starting_episode_number = $episode->getEpisodeNumber();
+			$ending_episode_number = $starting_episode_number + $count - 1;
 			
-			$export = $drip->export.$drip->formatTitle($series_title).'/';
- 			if(!is_dir($export))
- 				mkdir($export, 0755) or die("Can't create export directory $export");
-		
 			shell::msg("[Disc] Ripping \"$series_title\"");
-			shell::msg("[Disc] Season $season, Disc $disc$side, Episodes $episode_number - ".($episode_number + $count - 1)."");
+			shell::msg("[Disc] Season $season, Disc $disc_number$side, Episodes $starting_episode_number - $ending_episode_number");
 			
 			foreach($arr as $episode_id => $tmp) {
 			
 				$episode = new DripEpisode($episode_id);
+				
+				$export = $drip->export.$drip->formatTitle($episode->getExportTitle()).'/';
+ 				if(!is_dir($export))
+ 					mkdir($export, 0755) or die("Can't create export directory $export");
 			
 				$rip_episode = false;
 			
-				$e = $drip->episodeNumber($episode_id);
-				$episode_number = $drip->episodeNumber($episode_id, false);
+				$episode_number = $episode->getEpisodeNumber();
+				$episode_index = $episode->getEpisodeIndex();
 				$episode_title = $episode->getTitle();
 				
 				$basename_title = $episode_title;
@@ -597,7 +595,7 @@
 				
 				$basename = $drip->formatTitle($basename_title);
 				if(!$series->isUnordered())
-					$basename = $e.'._'.$basename;
+					$basename = $episode_index.'._'.$basename;
 				$basename = $export.$basename;
 				
  				$track = new DripTrack($episode->getTrackID());
@@ -661,7 +659,6 @@
 					
 					if($verbose) {
 						$msg = "[DVD] Track $track_number";
-						$msg = "[DVD] Chapters $starting_episode-$ending_episode";
 					
 						if($episode->getStartingChapter())
 							$msg .= "\tChapters $starting_chapter-$ending_chapter";
@@ -721,7 +718,7 @@
 				}
 				
 				// Chapters
- 				if(!file_exists($txt)) {
+ 				if(!file_exists($txt) && $episode->getNumChapters()) {
 					shell::msg("[DVD] Chapters");
 					$dvd_track->dumpChapters();
  				}
@@ -823,9 +820,22 @@
 				$episode = new DripEpisode($episode_id);
 				$track_id = $episode->getTrackID();
 				$drip_track = new DripTrack($track_id);
-				$series = new DripSeries($episode->getSeriesID());
+				$drip_disc = new DripDisc($drip_track->getDiscID());
+				$series = new DripSeries($drip_disc->getSeriesID());
 				$series_title = $series->getTitle();
 				$episode_title = $episode->getTitle();
+				$export_title = $episode->getExportTitle();
+				$episode_number = $episode->getEpisodeNumber();
+				
+				// Display stats for episode
+				if($encode) {
+					shell::msg("[$series_title]");
+				}
+				
+				if($episode_number)
+					$display_episode_number = $episode_number.".";
+				else
+					$display_episode_number = "";
 				
 // 				print_r($episode);
 // 				print_r($drip_track);
@@ -835,17 +845,17 @@
 				$audio_index = $drip->getDefaultAudioTrack($track_id) - 1;
 				$audio_aid = $drip->getDefaultAudioAID($track_id);
 			
-				$export = $drip->export.$drip->formatTitle($series_title).'/';
+				$export = $drip->export.$drip->formatTitle($episode->getExportTitle()).'/';
 
 				$basename_title = $episode_title;
 				if($episode->getPart() > 1)
 					$basename_title .= ", Part ".$episode->getPart();
 				
-				$episode_number = $drip->episodeNumber($episode_id);
+				$episode_index = $episode->getEpisodeIndex();
 				
 				$basename = $drip->formatTitle($basename_title);
 				if(!$series->isUnordered())
-					$basename = $episode_number.'._'.$basename;
+					$basename = $episode_index.'._'.$basename;
 				$basename = $export.$basename;
 				
 				$vob = "$basename.vob";
@@ -879,7 +889,7 @@
 						
 					}
 					
-					shell::msg("[MKV] $series_title: $episode_number $episode_title");
+					shell::msg("[MKV] $export_title: $display_episode_number $episode_title");
 					
 					if($encode) {
 						$matroska = new Matroska($mkv);

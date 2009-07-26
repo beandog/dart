@@ -230,6 +230,8 @@
 			global $db;
 		
 			$int = abs(intval($int));
+			if(!$int)
+				$int = null;
 			
 			$arr_update = array(
 				'episode_order' => $int
@@ -318,11 +320,11 @@
 			global $db;
 			
 			// Find the # of episodes on previous discs for this season
-			$sql = "SELECT COUNT(1) FROM view_episodes e1 INNER JOIN view_episodes e2 ON e1.tv_show_id = e2.tv_show_id AND e1.season = e2.season AND e1.volume = e2.volume AND e1.disc_id != e2.disc_id WHERE e2.episode_id = ".$this->getID()." AND e1.season <= e2.season AND ((e1.disc_number < e2.disc_number) OR (e1.disc_number = e2.disc_number AND e1.side < e2.side));";
+			$sql = "SELECT COUNT(1) FROM view_episodes e1 INNER JOIN view_episodes e2 ON e1.tv_show_id = e2.tv_show_id AND e1.season = e2.season AND e1.volume = e2.volume AND e1.disc_id != e2.disc_id WHERE e2.episode_id = ".$this->getID()." AND e1.season <= e2.season AND ((e1.disc_number < e2.disc_number) OR (e1.disc_number = e2.disc_number AND e1.side < e2.side)) AND ((e1.alt_title_id IS NULL AND e2.alt_title_id IS NULL) OR (e1.alt_title_id = e2.alt_title_id));";
 			$count = $db->getOne($sql);
 		
 			// Find the # of episodes before the one on the current disc
-			$sql = "SELECT COUNT(1) FROM view_episodes e1 INNER JOIN view_episodes e2 ON e1.disc_id = e2.disc_id AND ((e1.episode_order < e2.episode_order) OR (e1.episode_order = e2.episode_order AND e1.episode_id < e2.episode_id))AND e1.side = e2.side AND e1.season = e2.season AND e1.episode_id != e2.episode_id WHERE e2.episode_id = ".$this->getID().";";
+			$sql = "SELECT COUNT(1) FROM view_episodes e1 INNER JOIN view_episodes e2 ON e1.disc_id = e2.disc_id AND ((e1.episode_order < e2.episode_order) OR (e1.episode_order = e2.episode_order AND e1.episode_id < e2.episode_id))AND e1.side = e2.side AND e1.season = e2.season AND e1.episode_id != e2.episode_id WHERE e2.episode_id = ".$this->getID()." AND ((e1.alt_title_id IS NULL AND e2.alt_title_id IS NULL) OR (e1.alt_title_id = e2.alt_title_id));";
 			$count += $db->getOne($sql);
 			
 			// Add one because we start counting at 1, not 0
@@ -332,23 +334,90 @@
 		
 		}
 		
-		function setAltTitleID() {
-		
+		function getEpisodeIndex() {
 			
+			
+			$season = $this->getSeason();
+			
+			if($season) {
+				$str = $this->getEpisodeNumber();
+				
+				$str = str_pad($str, 2, 0, STR_PAD_LEFT);
+				$str = $season.$str;
+				
+				return $str;
+				
+			} else {
+				return "";
+			}
+			
+		}
+		
+		function setAltTitleID($int) {
+		
+			global $db;
+		
+			$int = abs(intval($int));
+			if(!$int)
+				$int = null;
+			
+			$arr_update = array(
+				'alt_title_id' => $int
+			);
+			
+			$db->autoExecute('episodes', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			
+			$this->alt_title_id = $int;
 		
 		}
 		
 		function getAltTitleID() {
 		
-			if(isset($this->alt_title_id))
-				return $this->alt_title_id;
+ 			if($this->alt_title_id)
+ 				return $this->alt_title_id;
 			
 			global $db;
 			$sql = "SELECT alt_title_id FROM episodes WHERE id = ".$this->getID().";";
 			
 			$id = $db->getOne($sql);
 			
+			$this->alt_title_id = $id;
+			
 			return $id;
+			
+		}
+		
+		function getExportTitle() {
+		
+			if($this->export_title)
+				return $this->export_title;
+				
+			global $db;
+		
+			$alt_title_id = $this->getAltTitleID();
+		
+			if($alt_title_id) {
+				$sql = "SELECT title FROM alt_titles WHERE id = $alt_title_id;";
+			} else {
+				$sql = "SELECT tv_show_title FROM view_episodes WHERE episode_id = ".$this->getID().";";
+			}
+			
+			$title = $db->getOne($sql);
+			
+			$this->export_title = $title;
+			
+			return $title;
+			
+		}
+		
+		function getNumChapters() {
+			
+			$int = $this->getEndingChapter - $this->getStartingChapter();
+			
+			if($int < 0)
+				return 0;
+			else
+				return $int;
 			
 		}
 		

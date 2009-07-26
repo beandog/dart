@@ -448,7 +448,7 @@ XML;
 			// # of epsiodes on previous discs plus 
 			// # of episodes on current disc plus earlier tracks plus
 			// # of episodes on current disc plus current track plus earlier episodes
-			$sql = "SELECT (count(e.id) + 1) FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id WHERE e.tv_show = $tv_show AND e.season = $season AND t.bad_track = FALSE AND e.title != '' AND ( (d.disc < $disc_number) OR ( d.disc = $disc_number AND d.side < '$side' ) OR ( e.season = $season AND d.volume < $volume) OR (d.disc = $disc_number AND t.track != $track AND t.track_order <= $track_order AND e.episode_order <= $episode_order ));";
+			$sql = "SELECT (count(e.id) + 1) FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id WHERE d.tv_show = $tv_show AND e.season = $season AND t.bad_track = FALSE AND e.title != '' AND ( (d.disc < $disc_number) OR ( d.disc = $disc_number AND d.side < '$side' ) OR ( e.season = $season AND d.volume < $volume) OR (d.disc = $disc_number AND t.track != $track AND t.track_order <= $track_order AND e.episode_order <= $episode_order ));";
 //     			shell::msg($sql); die;
 			$int = $db->getOne($sql);
 			
@@ -639,7 +639,7 @@ XML;
 				$limit = '';
 		
 			global $db;
-			$sql = "SELECT e.id, tv.id AS series, tv.title AS series_title, e.title, e.season, e.part, d.disc, t.id AS track_id, t.track, t.aspect, tv.unordered, e.starting_chapter, e.ending_chapter, e.chapters, e.episode_order FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id INNER JOIN tv_shows tv ON e.tv_show = tv.id INNER JOIN queue q ON q.episode = e.id AND q.queue = '".pg_escape_string($this->hostname)."' WHERE t.bad_track = FALSE AND e.title != '' ORDER BY insert_date $limit;";
+			$sql = "SELECT e.id, tv.id AS series, tv.title AS series_title, e.title, e.season, e.part, d.disc, t.id AS track_id, t.track, t.aspect, tv.unordered, e.starting_chapter, e.ending_chapter, e.episode_order FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id INNER JOIN tv_shows tv ON d.tv_show_id = tv.id INNER JOIN queue q ON q.episode = e.id AND q.queue = '".pg_escape_string($this->hostname)."' WHERE t.bad_track = FALSE AND e.title != '' ORDER BY insert_date $limit;";
 			$arr = $db->getAssoc($sql);
 			
 			$sql = "SELECT episode_id FROM view_episodes e INNER JOIN queue q ON q.episode = e.episode_id AND q.queue = '".pg_escape_string($this->hostname)."' WHERE e.bad_track = FALSE AND e.episode_title != '' ORDER BY insert_date $limit;";

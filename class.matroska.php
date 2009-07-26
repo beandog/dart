@@ -164,6 +164,9 @@ XML;
 				switch($arr['type']) {
 				
 					case 'video':
+					 	if($this->getAspectRatio()) {
+							$flags['aspect-ratio'] = "0:".$this->getAspectRatio();
+						}
 						$flags['no-audio'] = $arr['filename'];
 						break;
 					
@@ -172,7 +175,7 @@ XML;
 						break;
 					
 					case 'subtitles':
-						$args[] = $arr['filename'];
+						$flags['default-track 0:no'] = $arr['filename'];
 						break;
 					
 					case 'chapters':
@@ -189,11 +192,6 @@ XML;
 					
 				}
 			}
-			
-			if($this->getAspectRatio()) {
-				$flags['aspect-ratio'] = "0:".$this->getAspectRatio();
-			}
-			
 			
 			$this->args = $args;
 			$this->flags = $flags;
@@ -215,7 +213,7 @@ XML;
 			}
 			
 			foreach($this->args as $argument) {
-				$exec[] = "--$option ".escapeshellarg($argument);
+				$exec[] = escapeshellarg($argument);
 			}
 			
 			$str = implode(" ", $exec);

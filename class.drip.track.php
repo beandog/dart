@@ -11,11 +11,12 @@
 		private $order;
 		private $num_chapters;
 		private $num_episodes;
+		private $disc_id;
 	
 		function __construct($id = null) {
 			if($id) {
 				$this->setID($id);
-				$this->getDisc();
+				$this->getDiscID();
 				$this->getTrackNumber();
  				$this->getLength();
  				$this->isBadTrack();
@@ -54,7 +55,7 @@
 			return $this->id;
 		}
 		
-		function setDisc($id) {
+		function setDiscID($id) {
 		
 			global $db;
 		
@@ -75,7 +76,7 @@
 		
 		}
 		
-		function getDisc() {
+		function getDiscID() {
 		
 			global $db;
 		
