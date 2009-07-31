@@ -272,6 +272,7 @@
 				$save_file_to = $title.".tivo";
 
 			$save_file_to = str_replace(" ", "_", $save_file_to);
+			$save_file_to = str_replace("/", "_", $save_file_to);
 			$mpg = preg_replace('/tivo$/', 'mpg', $save_file_to);
 			
 			$basename = basename($mpg);
