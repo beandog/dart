@@ -246,7 +246,7 @@
 		
 		// See if series passed is in the DB
 		if($series_id) {
-			$series = new DripSeries($series_id);
+ 			$series = new DripSeries($series_id);
 		}
 		
 		if(!$series) {
@@ -296,9 +296,8 @@
 					}
 				}
 			} while($input == 0);
-						
-			$series_id = $arr[($input - 1)]['id'];
-			$series = new DripSeries($series_id);
+			
+			
 		}
 				
 		// Create a new series
@@ -315,12 +314,16 @@
 			$series = new DripSeries();
 			$series->setTitle($title);
 			$series->setSortingTitle($title);
-			$series->setMinLen($min_len);
-			$series->setMaxLen($max_len);
+			$series->setMinLength($min_len);
+			$series->setMaxLength($max_len);
 			$series->setCartoon($cartoon);
 			$series_id = $series->getID();
 			
 // 			$series_id = $drip->newSeries($title, $min_len, $max_len, $cartoon);
+		} else {
+			if(!$series_id)
+ 				$series_id = $arr[($input - 1)]['id'];
+			$series = new DripSeries($series_id);
 		}
 		
 		// Get the season
@@ -340,14 +343,14 @@
 		// Get the disc
 		if($series && !$disc_number) {
 		
+			$arr_archives = array();
+		
 			// Find out which other discs they already have archived
 			// Set the default to the next one in line
 			if($series->getNumDiscs()) {
 			
 				$sql = "SELECT disc, TRIM(side) AS side, id FROM view_discs WHERE tv_show = ".$series->getID()." AND volume = $volume ORDER BY disc, side;";
 				$arr = $db->getAll($sql);
-				
-				$arr_archives = array();
 				
 				foreach($arr as $row) {
 					if($row['side'])
@@ -530,15 +533,9 @@
 	if($rip) {
 	
 		// Get the series ID
-		$sql = "SELECT tv_show FROM view_discs WHERE disc_id = '".$dvd->getID()."';";
-		$series_id = $db->getOne($sql);
-		
-		$series = new DripSeries($series_id);
-		
-	
-// 		$drip->disc();
-// 		$drip->series();
-// 		$drip->tracks();
+		$sql = "SELECT id FROM view_discs WHERE disc_id = '".$dvd->getID()."';";
+		$drip_disc = new DripDisc($db->getOne($sql));
+		$series = new DripSeries($drip_disc->getSeriesID());
 		
 		// Create export dir
 		if(!is_dir($drip->export))
@@ -548,26 +545,29 @@
 		// This query has nothing to do with what has / hasn't been encoded
 		
 		// Rip in sequential order by season, episode order, then title
-		$sql = "SELECT episode_id AS id, tv_show_title AS series_title, episode_title AS title, season, volume, disc_number, side, track, unordered, starting_chapter, ending_chapter, episode_order FROM view_episodes WHERE bad_track = FALSE AND episode_title != '' AND dvd_id = '".$dvd->getID()."' ORDER BY track_order, season, episode_order, episode_title, track, id $offset $limit;";
-		$arr = $db->getAssoc($sql);
+		$sql = "SELECT episode_id FROM view_episodes WHERE bad_track = FALSE AND episode_title != '' AND disc_id = ".$drip_disc->getID()." ORDER BY track_order, season, episode_order, episode_title, track, episode_id $offset $limit;";
+		
+		$arr = $db->getCol($sql);
 		
 		if(count($arr)) {
 		
 			$x = 1;
 			
 			$series_title = $series->getTitle();
-			$season = $arr[key($arr)]['season'];
-			$disc_number = $arr[key($arr)]['disc_number'];
-			$side = $arr[key($arr)]['side'];
+			$disc_number = $drip_disc->getDiscNumber();
+			$side = $drip_disc->getSide();
 			$num_episodes = $count = count($arr);
+			
 			$episode = new DripEpisode($arr[key($arr)]['id']);
 			$starting_episode_number = $episode->getEpisodeNumber();
 			$ending_episode_number = $starting_episode_number + $count - 1;
+			$season = $episode->getSeason();
+			$side = trim($side);
 			
 			shell::msg("[Disc] Ripping \"$series_title\"");
 			shell::msg("[Disc] Season $season, Disc $disc_number$side, Episodes $starting_episode_number - $ending_episode_number");
 			
-			foreach($arr as $episode_id => $tmp) {
+			foreach($arr as $episode_id) {
 			
 				$episode = new DripEpisode($episode_id);
 				
@@ -634,6 +634,8 @@
 				if($rip_episode || $verbose) {
 					echo "\n";
 					shell::msg("[Episode] \"$episode_title\" ($x/$num_episodes)");
+					if($episode_number)
+						shell::msg("[Episode] Number $episode_number");
 					if($episode->getPart())
 						shell::msg("[Episode] Part ".$episode->getPart());
 					if(count($arr_todo)) {
@@ -782,10 +784,6 @@
 					$drip->queue($episode_id);
 				}
 				
-				// Increment episode number
-				$e++;
-				$episode_number++;
-				
 			}
 		
 		}
@@ -805,6 +803,8 @@
 		
 		if($count) {
 		
+			$x = 1;
+		
 			shell::msg("$count episode(s) total to encode.");
 			
 			foreach($arr as $episode_id) {
@@ -819,20 +819,10 @@
 				$export_title = $episode->getExportTitle();
 				$episode_number = $episode->getEpisodeNumber();
 				
-				// Display stats for episode
-				if($encode) {
-					shell::msg("[$series_title]");
-				}
-				
 				if($episode_number)
 					$display_episode_number = $episode_number.".";
 				else
 					$display_episode_number = "";
-				
-// 				print_r($episode);
-// 				print_r($drip_track);
-// 				print_r($series);
-				
 				
 				$audio_index = $drip->getDefaultAudioTrack($track_id) - 1;
 				$audio_aid = $drip->getDefaultAudioAID($track_id);
@@ -868,6 +858,17 @@
 				
 					if($encode && $raw) {
 					
+						echo "\n";
+						shell::msg("[$series_title]");
+						shell::msg("[Episode] \"$episode_title\" ($x/$count)");
+						if($episode_number)
+							shell::msg("[Episode] Number $episode_number");
+						if($episode->getPart())
+							shell::msg("[Episode] Part ".$episode->getPart());
+						if(count($arr_todo)) {
+							shell::msg("[Episode] ".implode(", ", $arr_todo));
+						}
+					
 						if(!file_exists($mpg)) {
 							shell::msg("[VOB] Demuxing Raw Video");
 							$drip->rawvideo($vob, $mpg);
@@ -881,7 +882,7 @@
 						
 					}
 					
-					shell::msg("[MKV] $export_title: $display_episode_number $episode_title");
+// 					shell::msg("[MKV] $export_title: $display_episode_number $episode_title");
 					
 					if($encode) {
 						$matroska = new Matroska($mkv);
@@ -900,8 +901,6 @@
 						
 						if($drip_track->getAspectRatio())
 							$matroska->setAspectRatio($drip_track->getAspectRatio());
-						
-						
 						
 						$matroska->mux();
 						
@@ -944,6 +943,8 @@
 					$sql = "DELETE FROM queue WHERE episode = $episode_id;";
  					$db->query($sql);
 				}
+				
+				$x++;
 				
 			}
 

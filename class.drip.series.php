@@ -78,6 +78,8 @@
 			$str = trim($str);
 			if(empty($str) || !is_string($str))
 				return false;
+			
+			global $db;
 		
 			if(!$this->id)
 				$this->newSeries();
@@ -96,6 +98,8 @@
 			$str = trim($str);
 			if(empty($str) || !is_string($str))
 				return false;
+				
+			global $db;
 		
 			if(!$this->id)
 				$this->newSeries();
