@@ -1,3 +1,10 @@
+2.0 (2009-08-11)
+	
+	- Add --filename argument to specify filename directly, instead
+	  of trying to guess what it is.
+	- Add optional argument --use-filedir-conf, to include mplayer.conf
+	  in local directory, and pass -include mplayer.conf to mplayer.
+
 1.6 (2008-12-16)
 
 	- Check exit codes on mplayer, so that if mplayer quits

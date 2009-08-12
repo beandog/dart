@@ -8,16 +8,70 @@ MPlayer playback / resume position script
 	"get_time_pos" command to MPlayer through an input event,
 	mapped by either LIRC or the keyboard.
 
-	For v1.5, you can also add "get_filename" to the exit
-	command as well, though this is optional for resuming
-	playback of a file you started in a playlist (see Playlist
-	section below).
-
 	The script captures the output and saves it to a file in
 	the playback directory for each media file.
 
 	See http://www.mplayerhq.hu/DOCS/tech/slave.txt for more
 	commands that work on both backends.
+
+Installation:
+
+	To execute this program, either call it using the PHP
+	binary, or make it executable.	Whichever you like best. :)
+
+	$ php mplayer-resume movie.avi
+
+		# cp mplayer-resume /usr/local/bin/
+		# chmod +x /usr/local/bin/mplayer-resume
+		$ mplayer-resume --filename movie.avi
+
+	The script should parse any arguments that you want to send
+	mplayer at the same time, regardless of whether you start
+	it as a standalone program or with php.
+
+	Standalone:
+		$ mplayer-resume --filename movie.avi -vo xv
+
+	With php:
+		$ php mplayer-resume --filename movie.avi -vo xv
+
+Syntax:
+
+	mplayer-resume --filename <filename> [options] [mplayer options]
+
+	As of v2.0, the syntax has changed.  Previously, mplayer-resume
+	would attempt to guess the correct filename, but in cases of movies
+	with spaces in the file, it would cause problems.  Now, you must
+	define the filename manually with the --filename argument.
+
+MPlayer optional arguments:
+
+	You can still pass all the normal arguments you would normally use
+	when running mplayer.  They will be passed to the command line
+	after mplayer-resume has added it's own.
+
+	$ mplayer-resume --filename "My movie.mkv" -vo xv -fs -ao sdl
+
+	The *only* extra arguments that this script will add to your
+	mplayer command is -ss to seek to resume a file, and
+	-quiet so it can correctly grab the output.
+
+	The script will also strip out any commands that are known to
+	break the output.  Currently the only one being stripped is
+	"-really-quiet".
+
+Optional arguments:
+
+	Currently, mplayer-resume only supports one extra argument, a 
+	small feature added to the script to scratch a personal itch of mine.
+
+	Passing --use-dir-conf to mplayer-resume will look for a file named
+	"mplayer.conf" in the same directory of the filename you are playing,
+	and if one exists, it will pass "-include <filename>" to the mplayer
+	binary.
+
+	This is just a little workaround to add a feature that mplayer doesn't
+	currently implement. :)
 
 LIRC:
 
@@ -27,6 +81,8 @@ LIRC:
 		1) Get the time position
 		2) Get the filename
 		3) Stop playing
+	
+	Here's an example configuration:
 
 		begin
 			prog = mplayer
@@ -73,83 +129,7 @@ Configuration:
 	must be a directory that this script can read / write to.
 
 	The script will try to automatically create a directory, and
-	uses /home/username/.mplayer/playback/ by default.
-
-Usage:
-
-	To execute this program, either call it using the PHP
-	binary, or make it executable.	Whichever you like best. :)
-
-	$ php mplayer-resume movie.avi
-
-		# cp mplayer-resume /usr/local/bin/
-		# chmod +x /usr/local/bin/mplayer-resume
-		$ mplayer-resume movie.avi
-
-	The script should parse any arguments that you want to send
-	mplayer at the same time, regardless of whether you start
-	it as a standalone program or with php.
-
-	Standalone:
-		$ mplayer-resume movie.avi -vo xv
-
-	With php:
-		$ php mplayer-resume movie.avi -vo xv
-
-	The *only* extra arguments that this script will add to your
-	mplayer command is -ss to seek to resume a file, and
-	-quiet so it can correctly grab the output.
-
-	The script will also strip out any commands that are known to
-	break the output.  Currently the only one being stripped is
-	"-really-quiet".
-
-	As of version 1.5, mplayer-resume can handle files with spaces
-	in them.  Either escape the filename correctly, or add quotes
-	around it.
-
-		$ mplayer-resume dvds/Peter\ Pan.mkv
-
-		$ mplayer-resume "dvds/Peter Pan.mkv"
-
-Playlists:
-
-	v1.5 also adds a feature where if you start playing a file from
-	a playlist (.m3u and .pls formats recognized by the script)
-	and then resume the same file outside of the playlist, it will
-	resume playback for that same file.
-
-	For instance, let's say you have a playlist of movies with this
-	as the contents:
-
-		$ cat movies.pls
-		Peter Pan.mkv
-		TRON.mkv
-		Star Trek 9.mkv
-
-	If you start playing the playlist with mplayer-resume, when you
-	resume playing back the same file, it will seek to the resume
-	position.
-
-		$ mplayer-resume -playlist movies.pls
-
-	1. Peter Pan.mkv starts playing
-
-	2. Exit
-
-		$ mplayer-resume "Peter Pan.mkv"
-
-	3. Peter Pan.mkv resumes playback
-
-	This works because of adding the "get_filename" option to LIRC
-	as mentioned at the top of this document, which is optional if
-	you want to use this feature.  It's handy if you want to randomly
-	play a file from a playlist, but resume playback by choosing it
-	specifically the second time.
-
-		$ mplayer-resume -playlist movies.pls -shuffle
-
-		$ mplayer-resume TRON.mkv
+	uses /home/username/.mplayer/resume/ by default.
 
 MythTV:
 
@@ -174,26 +154,6 @@ MythTV:
 	normally may here.
 
 		mplayer-resume -fs -vo xv -aspect 16/9 %s
-
-File formats:
-
-	mplayer-resume has a strict list of file extensions that it
-	recognizes as playable file formats.  The reason for this is that
-	there is no way to know what the filename is of the movie you
-	are playing until you actually exit, and the script needs to know
-	what it is at the beginning to resume playback.  Media filename
-	is determined by examining the arguments passed to the script
-	and finding the one that ends with a hardcoded extension.
-
-	The list of formats the script supports is extensive, and should
-	cover most everything I can think of, but you may want it to
-	add more.  To do so, just hack the script manually and look for
-	the variable $movie.
-
-	You'll see a long regular expression with pipes between each
-	format.  To add a new extension, just add "|foo" somewhere in
-	there.	If you edit the script, it should be simple to figure
-	out. :)
 
 Notes:
 
