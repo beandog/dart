@@ -1,0 +1,20 @@
+1.6 (2008-12-16)
+
+	- Check exit codes on mplayer, so that if mplayer quits
+	  unexpectedly, mplayer-resume won't kill the resume point.
+	- Send exit codes
+
+1.5 (2008-01-12)
+	
+	- Allow spaces in filenames.  Use mplayer-resume "filename"
+	- Get the filename from MPlayer on exit, and use that to save
+	the file to.  Useful for playlists.  See README.
+
+1.3 (2006-09-15)
+
+	- Call env instead of php directly
+	- Get $HOME environment variable to save files to
+
+1.2
+
+	- Documentation updates
