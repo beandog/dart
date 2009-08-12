@@ -2,6 +2,7 @@
 <?
 	
 	require_once 'class.dvd.php';
+	require_once 'class.shell.php';
 	require_once 'db/willy.movies.php';
 	
 	$dvd =& new DVD();
@@ -17,78 +18,71 @@
 		$arr_config = array();
 	}
 	
-	$dvd->setConfig($argc, $argv, $arr_config);
+	$args = shell::parseArguments();
 	
-	if($dvd->args['debug'])
-		$dvd->debug = $dvd->verbose = $verbose = $debug = true;
-	if($dvd->args['v'] || $dvd->args['verbose'])
-		$dvd->verbose = $verbose = true;
-	if($dvd->args['force'])
+	print_r($args); die;
+	
+// 	$dvd->setConfig($argc, $argv, $arr_config);
+	
+	if($args['debug'])
+		$verbose = $debug = true;
+	if($args['v'] || $args['verbose'])
+		$verbose = true;
+	if($args['force'])
 		$force = true;
-	if($dvd->args['s'])
-		 $dvd->args['sub'] = true;
+	if($args['nosub'])
+		 $subs = false;
+	else
+		$subs = true;
 		
-	if($dvd->args['h'] || $dvd->args['help']) {
+	if($args['h'] || $args['help']) {
 	
-		$dvd->msg("Options:");
-		$dvd->msg("  --title <title>\tMovie title");
-		$dvd->msg("  --track <track>\tSpecify track number to rip");
-		$dvd->msg("  -s, --sub\t\tRip subtitles");
-		$dvd->msg("  --nodb\t\tDon't write to database");
-		$dvd->msg("  -i\t\t\tInteractive mode, choose everything manually");
-		$dvd->msg("  -v\t\t\tVerbose output");
+		shell::msg("Options:");
+		shell::msg("  --title <title>\tMovie title");
+		shell::msg("  --track <track>\tSpecify track number to rip");
+		shell::msg("  -s, --sub\t\tRip subtitles");
+		shell::msg("  --nodb\t\tDon't write to database");
+		shell::msg("  -i\t\t\tInteractive mode, choose everything manually");
+		shell::msg("  -v\t\t\tVerbose output");
 		echo "\n";
-		$dvd->msg("Encoding:");
-		$dvd->msg("  --bitrate\t\tVideo bitrate");
+		shell::msg("Encoding:");
+		shell::msg("  --bitrate\t\tVideo bitrate");
 		echo "\n";
-		$dvd->msg("Debugging:");
-		$dvd->msg("  --force\t\tOverwrite files");
-		$dvd->msg("  --debug\t\tDebug output");
-		$dvd->msg("  -q\t\t\tlsdvd array");
+		shell::msg("Debugging:");
+		shell::msg("  --force\t\tOverwrite files");
+		shell::msg("  --debug\t\tDebug output");
+// 		shell::msg("  -q\t\t\tlsdvd array");
 	
 		die;
 	}
 	
-	if($dvd->args['movie'] == 1 || $dvd->dvd2mkv === true) {
-	
-		$title =& $dvd->args['title'];
+		$title =& $args['title'];
 		
-		if($dvd->args['bitrate']) {
-			$tmp = abs(intval($dvd->args['bitrate']));
+		if($args['bitrate']) {
+			$tmp = abs(intval($args['bitrate']));
 			if($tmp)
 				$dvd->config['video_bitrate'] = $tmp;
 		}
 	
-		$dvd->disc_id = $dvd->getDiscID();
+		$dvd_id = $dvd->getID();
 		
-		if(strlen($dvd->disc_id) != '32')
+		if(strlen($dvd_id) != '32')
 			die("Couldn't get disc ID!\n");
 			
-		$dvd->lsdvd();
-		
 		if($verbose)
-			$dvd->msg("[DVD] Disc title: ".$dvd->disc_title);
-		
-		if($dvd->args['q']) {
+			shell::msg("[DVD] Disc title: ".$dvd->getTitle());
+/*		
+		if($args['q']) {
 			print_r($dvd->contents); die;
-		}
+		}*/
 		
-		$disc_id = pg_escape_string($dvd->disc_id);
-		$sql = "SELECT * FROM movies WHERE disc_id = '$disc_id';";
-		$row = $db->queryRow($sql);
-		
-		if($row && !$dvd->args['i']) {
-			extract($row);
-			$title =& $row['disc_title'];
-			$dvd->msg("[DVD] Movie title: $title");
-		} else {
 		
 			// Default to the single track if its the only non-zero lengthed one
 			if(count($dvd->contents) == 1) {
 				$track = key($dvd->contents);
 			// Check for user input
-			} elseif($dvd->args['track']) {
-				$track = abs(intval($dvd->args['track']));
+			} elseif($args['track']) {
+				$track = abs(intval($args['track']));
 			// Otherwise, figure it out ourselves
 			} else {
 				$longest_track_length = max($dvd->arr_tracks);
@@ -101,18 +95,18 @@
 				}
 				
 				// Ask which video track to pick in interactive mode
-				if($dvd->args['i']) {
-					$dvd->msg("Choose your video track:");
+				if($args['i']) {
+					shell::msg("Choose your video track:");
 					foreach($dvd->contents as $key => $tmp) {
-						$dvd->msg("Track $key Length: ".$tmp['length']." Aspect: ".$tmp['aspect']);
+						shell::msg("Track $key Length: ".$tmp['length']." Aspect: ".$tmp['aspect']);
 					}
 					$track = $dvd->ask("Rip video track: [$track] ", $track);
 				}
 				
 			}
 			
-			if($debug && !$dvd->args['track'])
-				$dvd->msg("[DVD] Selected track $track");
+			if($debug && !$args['track'])
+				shell::msg("[DVD] Selected track $track");
 			
 			// Determine the audio track ID
 			$aid = '';
@@ -121,7 +115,7 @@
 			// otherwise, mencoder will get the default track fine
 			// with no arguments
 			
-			if(count($dvd->contents[$track]['audio']) > 1 || $dvd->args['i']) {
+			if(count($dvd->contents[$track]['audio']) > 1 || $args['i']) {
 				$lang_track = array();
 				
 				// Should be customizable sometime
@@ -158,11 +152,11 @@
 					}
 					
 					// Override interactively
-					if($dvd->args['i']) {
+					if($args['i']) {
 					
-						$dvd->msg("Select the audio track:");
+						shell::msg("Select the audio track:");
 						foreach($arr_possible_tracks as $tmp) {
-							$dvd->msg("Audio Track: ".($tmp + 128)." Channels: ".$dvd->contents[$track]['audio'][$tmp]['channels']." Format: ".$dvd->contents[$track]['audio'][$tmp]['format']);
+							shell::msg("Audio Track: ".($tmp + 128)." Channels: ".$dvd->contents[$track]['audio'][$tmp]['channels']." Format: ".$dvd->contents[$track]['audio'][$tmp]['format']);
 						}
 						$aid = $dvd->ask("Rip audio track: [$aid] ", $aid);
 					}
@@ -184,14 +178,14 @@
 				$title = str_replace(' The ', ' the ', $title);
 				$title = $dvd->ask("Enter a movie title: [$title]", $title);
 			} else {
-				$title = $dvd->args['title'];
+				$title = $args['title'];
 			}
 		
 			$str_title = pg_escape_string($title);
 			
-			if(!$dvd->args['nodb']) {
+			if(!$args['nodb']) {
 				if($debug)
-					$dvd->msg("[DB] Saving movie to database");
+					shell::msg("[DB] Saving movie to database");
 				$sql = "DELETE FROM movies WHERE disc_id = '$disc_id' AND track = $track;";
 				$db->query($sql);
 				$sql = "INSERT INTO movies (disc_id, disc_title, track, aid) VALUES ('$disc_id', '$str_title', $track, $aid);";
@@ -233,7 +227,7 @@
 		$avi = "$file.avi";
 		$mkv = "$file.mkv";
 
-		$scandir = preg_grep('/(vob|sub|idx|txt|avi|mkv)$/', scandir('./'));
+		$scandir = preg_grep('/(vob|sub|idx|txt|avi|mkv|mpg|ac3)$/', scandir('./'));
 		
 		if($force)
 			$scandir = array();
@@ -242,30 +236,30 @@
 		
 			// file_exists doesn't work on LARGE files (such as VOB files over 2gb)
 			// so we use scandir and in_array instead
-			$dvd->msg("[Video] Track number: $track");
-			$dvd->msg("[Video] Aspect ratio: $aspect");
-			$dvd->msg("[Video] Length: $length");
-			$dvd->msg("[Audio] Track: $aid");
-			$dvd->msg("[Audio] Format: $format");
-			$dvd->msg("[Audio] Channels: $channels");
+			shell::msg("[Video] Track number: $track");
+			shell::msg("[Video] Aspect ratio: $aspect");
+			shell::msg("[Video] Length: $length");
+			shell::msg("[Audio] Track: $aid");
+			shell::msg("[Audio] Format: $format");
+			shell::msg("[Audio] Channels: $channels");
 			// No subtitles available or Subtitles
-			if($dvd->args['sub'])
-				$dvd->msg("[DVD] Subtitles: $subtitles");
+			if($args['sub'])
+				shell::msg("[DVD] Subtitles: $subtitles");
 			// Ignoring available subtitles
-			elseif($slang && !$dvd->args['sub'])
-				$dvd->msg("[DVD] Subtitles: Ignoring");
+			elseif($slang && !$args['sub'])
+				shell::msg("[DVD] Subtitles: Ignoring");
 			
 			if(!in_array($vob, $scandir)) {
-				$dvd->msg("[DVD] Ripping MPEG-2");
+				shell::msg("[DVD] Ripping MPEG-2");
 				$exec = "mplayer -dvd-device ".$dvd->config['dvd_device']." dvd://$track -dumpstream -dumpfile $vob";
 				$dvd->executeCommand($exec, false, $verbose);
 				if($verbose)
-					$dvd->msg("[DVD] VOB dumped");
+					shell::msg("[DVD] VOB dumped");
 			}
 			
 			// Get the chapters
 			if(!file_exists($txt)) {
-				$dvd->msg("[DVD] Ripping chapters");
+				shell::msg("[DVD] Ripping chapters");
 				$chapters = $dvd->getChapters($track, $dvd->config['dvd_device']);
 				$dvd->writeChapters($chapters, $txt);
 			}
@@ -274,19 +268,19 @@
 			// 1) They exist and
 			// 2) there is one for the specified language and
 			// 3) They are not already ripped
-			if($dvd->args['sub']) {
+			if($args['sub']) {
 				
 				if ($slang && (!in_array($idx, $scandir) && !in_array($sub, $scandir))) {
-					$dvd->msg("[DVD] Ripping subtitles");
+					shell::msg("[DVD] Ripping subtitles");
 					$exec = "mencoder -dvd-device {$dvd->config['dvd_device']} dvd://$track -ovc copy -nosound -vobsubout $file -o /dev/null -slang en";
 					$dvd->executeCommand($exec, false, $verbose);
 					if($verbose)
-						$dvd->msg("[DVD] VobSub dumped");
+						shell::msg("[DVD] VobSub dumped");
 				} elseif(in_array($idx, $scandir) && in_array($sub, $scandir))
-					$dvd->msg("[DVD] VobSub exists");
+					shell::msg("[DVD] VobSub exists");
 			}
 			
-			if($dvd->args['encode']) {
+			if($args['encode']) {
 			
 				if(!in_array($avi, $scandir)) {
 				
@@ -306,7 +300,7 @@
 					// or 29.97 (rare).
 					$dvd->probeVideo($vob);
 					
-					$dvd->msg('[AVI] Encoding VOB to MPEG4');
+					shell::msg('[AVI] Encoding VOB to MPEG4');
 					$exec = "ffmpeg -y -i \"$vob\" -r ".$dvd->ffmpeg_framerate." -vcodec mpeg4 -ab 192k -b ".$dvd->config['video_bitrate']."k -acodec mp2 -map 0:0 -map ".$dvd->ffmpeg_atrack_map.":0.1 -ac 2 \"$avi\"";
 // 					$dvd->executeCommand($exec, true, $verbose);
 					$dvd->executeCommand($exec, true, true);
@@ -314,10 +308,9 @@
 			
 			}
 			
-		}
 		
 		if($dvd->config['eject'] && !$debug) {
-			$dvd->msg("Attempting to eject disc.", true, true);
+			shell::msg("Attempting to eject disc.", true, true);
 			$exec = 'eject '.$dvd->config['dvd_device'];
 			$dvd->executeCommand($exec, false, $verbose);
 		}
@@ -327,9 +320,9 @@
 		
 		if(!file_exists($mkv)) {
 		
-			$dvd->msg("[MKV] Creating Matroska file");
+			shell::msg("[MKV] Creating Matroska file");
 			
-			if($dvd->args['encode'])
+			if($args['encode'])
 				$atrack = 1;
 			else
 				$atrack = ($aid - 127);
@@ -339,7 +332,7 @@
 
 		if(file_exists($mkv) && !$debug) {
 			if($verbose)
-				$dvd->msg('Deleting temporary files');
+				shell::msg('Deleting temporary files');
 			file_exists($vob) && unlink($vob);
 			file_exists($avi) && unlink($avi);
 			file_exists($txt) && unlink($txt);
@@ -350,7 +343,6 @@
 		#print_r($dvd);
 		#print_r($chapters);
 
-	}
 	
 	
 ?>

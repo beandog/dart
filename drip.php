@@ -558,7 +558,7 @@
 			$side = $drip_disc->getSide();
 			$num_episodes = $count = count($arr);
 			
-			$episode = new DripEpisode($arr[key($arr)]['id']);
+			$episode = new DripEpisode(current($arr));
 			$starting_episode_number = $episode->getEpisodeNumber();
 			$ending_episode_number = $starting_episode_number + $count - 1;
 			$season = $episode->getSeason();
@@ -882,7 +882,7 @@
 						
 					}
 					
-// 					shell::msg("[MKV] $export_title: $display_episode_number $episode_title");
+ 					shell::msg("[MKV] Muxing to Matroska");
 					
 					if($encode) {
 						$matroska = new Matroska($mkv);
