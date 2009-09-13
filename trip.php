@@ -111,7 +111,7 @@
 			curl_close($ch);
 			fclose($fp);
 
-			if($curl_html !=== false) {
+			if($curl_html !== false) {
 				file_put_contents($tivo_html, $curl_html);
 			}
 		} else {
@@ -265,14 +265,19 @@
 		
 			extract($arr);
 		
-			if($arr['episode']) {
-				$save_file_to = $title."/".$arr['episode'].".tivo";
-				$dirname = str_replace(" ", "_", $title);
-			} else
-				$save_file_to = $title.".tivo";
+			$dirname = "";
 
+			if($arr['episode']) {
+				$tivo = $arr['episode'].".tivo";
+				//$save_file_to = $title."/".$arr['episode'].".tivo";
+				$dirname = str_replace(" ", "_", $title)."/";
+			} else {
+				$tivo = $title.".tivo";
+			}
+
+			$tivo = str_replace("/", "-", $tivo);
+			$save_file_to = $dirname.$tivo;
 			$save_file_to = str_replace(" ", "_", $save_file_to);
-			$save_file_to = str_replace("/", "_", $save_file_to);
 			$mpg = preg_replace('/tivo$/', 'mpg', $save_file_to);
 			
 			$basename = basename($mpg);
@@ -315,6 +320,44 @@
 		$src = html_entity_decode($src);
 		$exec = "curl --digest -k -u tivo:$key -c ".tempnam('/tmp', 'tivo')." -o \"$dest\" \"$src\"";
   		shell::cmd($exec, false);
+
+		/*
+
+
+			$ch = curl_init($src);
+			$fp = fopen("/tmp/foo", "w");
+
+			$cookie_jar = tempnam('/tmp', 'tivo');
+
+			curl_setopt($ch, CURLOPT_FILE, $fp);
+			curl_setopt($ch, CURLOPT_HEADER, 0);
+			curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+			curl_setopt($ch, CURLOPT_USERPWD, "tivo:$tivo_media_access_key");
+			curl_setopt($ch, CURLOPT_COOKIESESSION, true);
+			curl_setopt($ch, CURLOPT_COOKIEJAR, $cookie_jar);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($ch, CURLOPT_WRITEFUNCTION, 'readBody');
+			curl_setopt($ch, CURLOPT_BUFFERSIZE, 1024);
+
+			$curl_data = curl_exec($ch);
+			curl_close($ch);
+			fclose($fp);
+
+
+			if($curl_data !== false) {
+				file_put_contents($dest, $curl_data);
+			}
+			die;
+			*/
+	}
+
+	function readBody($ch, $str) {
+		
+		$len = strlen($str);
+		echo "Received $len bytes\n";
+		return $len;
+
 	}
 	
 	/**
