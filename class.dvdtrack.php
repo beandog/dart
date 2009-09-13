@@ -519,6 +519,7 @@
 		/** Basename for dumping **/
 		public function setBasename($str = "") {
 			$str = trim($str);
+			$str = str_replace(" ", "_", $str);
 			
 			if(empty($str) || !is_string($str))
 				$this->basename = "dvd";
