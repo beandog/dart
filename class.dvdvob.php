@@ -59,7 +59,6 @@
 		/**
 		* Extract the raw audio stream from a media file
 		*
-		* @param string source filename
 		* @param string destination filename
 		*/
 		function rawaudio($dest) {
@@ -83,5 +82,28 @@
 			}
 		
 		}
+		
+		/**
+		 * Extract the SRT subtitles from a media file
+		 *
+		 * @param string destination filename
+		 */
+		 function dumpSRT() {
+		 	
+		 	$str = "ccextractor --no_progress_bar \"".$this->getFilename()."\"";
+		 	
+		 	if($this->debug)
+				shell::msg("Executing: $str");
+			
+			$start = time();
+			shell::cmd($str, !$this->debug);
+			$finish = time();
+			
+			if($this->debug) {
+				$exec_time = shell::executionTime($start, $finish);
+				shell::msg("Execution time: ".$exec_time['minutes']."m ".$exec_time['seconds']."s");
+			}
+		 	
+		 }
 	}
 ?>

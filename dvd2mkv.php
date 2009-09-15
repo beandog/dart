@@ -97,6 +97,7 @@
 	$ac3 = "$file.ac3";
 	$sub = "$file.sub";
 	$idx = "$file.idx";
+	$srt = "$file.srt";
 	$txt = "$file.txt";
 	$avi = "$file.avi";
 	$mkv = "$file.mkv";
@@ -113,6 +114,7 @@
 		shell::msg("[Video] Track number: $track");
 		shell::msg("[Video] Aspect ratio: ".$dvdtrack->getAspectRatio());
 		shell::msg("[Video] Length: ".$dvdtrack->getLength());
+		shell::msg("[Video] VobSub: ".($dvdtrack->hasSubtitles() ? "Yes" : "No"));
 		shell::msg("[Audio] Track: ".$dvdtrack->getAudioAID());
 		shell::msg("[Audio] Format: ".$dvdtrack->getAudioFormat());
 		shell::msg("[Audio] Channels: ".$dvdtrack->getAudioChannels());
@@ -128,9 +130,9 @@
 			$dvdtrack->dumpChapters();
 		}
 		
-		// Subtitles
+		// VobSub Subtitles
 		if(!file_exists($idx) && $dvdtrack->hasSubtitles()) {
-			shell::msg("[DVD] Ripping Subtitles");
+			shell::msg("[DVD] Ripping VobSub Subtitles");
 			$dvdtrack->dumpSubtitles();
 		}
 		
@@ -141,6 +143,12 @@
 		
 		$dvdvob = new DVDVOB($vob);
 		$dvdvob->setAID($dvdtrack->getAudioAID());
+		
+		// SRT Subtitles
+		if(!$dvdtrack->hasSubtitles() && !file_exists($srt)) {
+			shell::msg("[DVD] Ripping SRT Subtitles");
+			$dvdvob->dumpSRT();
+		}
 		
 		// Raw Video
 		if(!in_array($mpg, $scandir)) {
@@ -165,6 +173,10 @@
 		
 		if(file_exists($idx))
 			$matroska->addSubtitles($idx);
+		// ccextractor will dump an empty .srt output file
+		// if there are no subtitles
+		if(file_exists($srt) && filesize($srt))
+			$matroska->addSubtitles($srt);
 		if(file_exists($txt))
 			$matroska->addChapters($txt);
 		
@@ -184,6 +196,7 @@
 		file_exists($txt) && unlink($txt);
 		file_exists($idx) && unlink($idx);
 		file_exists($sub) && unlink($sub);
+		file_exists($srt) && unlink($srt);
 	}
 	
 	
