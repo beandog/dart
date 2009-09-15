@@ -153,6 +153,7 @@ XML;
 		
 		private function arguments() {
 		
+			$flags['default-language'] = 'eng';
 			$flags['output'] = $this->getFilename();
 			$args = array();
 			
@@ -195,8 +196,6 @@ XML;
 			
 			$this->args = $args;
 			$this->flags = $flags;
-			
-			
 			
 		}
 		
