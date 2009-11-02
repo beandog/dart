@@ -114,7 +114,7 @@
 		shell::msg("[Video] Track number: $track");
 		shell::msg("[Video] Aspect ratio: ".$dvdtrack->getAspectRatio());
 		shell::msg("[Video] Length: ".$dvdtrack->getLength());
-		shell::msg("[Video] VobSub: ".($dvdtrack->hasSubtitles() ? "Yes" : "No"));
+		shell::msg("[Subtitles] VobSub: ".($dvdtrack->hasSubtitles() ? "Yes" : "No"));
 		shell::msg("[Audio] Track: ".$dvdtrack->getAudioAID());
 		shell::msg("[Audio] Format: ".$dvdtrack->getAudioFormat());
 		shell::msg("[Audio] Channels: ".$dvdtrack->getAudioChannels());
@@ -132,7 +132,7 @@
 		
 		// VobSub Subtitles
 		if(!file_exists($idx) && $dvdtrack->hasSubtitles()) {
-			shell::msg("[DVD] Ripping VobSub Subtitles");
+			shell::msg("[Subtitles] Ripping VobSub");
 			$dvdtrack->dumpSubtitles();
 		}
 		
@@ -146,19 +146,19 @@
 		
 		// SRT Subtitles
 		if(!$dvdtrack->hasSubtitles() && !file_exists($srt)) {
-			shell::msg("[DVD] Ripping SRT Subtitles");
+			shell::msg("[Subtitles] Ripping SRT");
 			$dvdvob->dumpSRT();
 		}
 		
 		// Raw Video
 		if(!in_array($mpg, $scandir)) {
-			shell::msg("[MPG] Raw Video");
+			shell::msg("[MPG] Demuxing VOB to Raw Video");
 			$dvdvob->rawvideo($mpg);
 		}
 		
 		// Raw Audio
 		if(!in_array($ac3, $scandir)) {
-			shell::msg("[MPG] Raw Audio");
+			shell::msg("[AC3] Demuxing VOB to Raw Audio");
 			$dvdvob->rawaudio($ac3);
 		}
 		
