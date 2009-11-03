@@ -9,6 +9,7 @@
 		private $max_length;
 		private $cartoon;
 		private $unordered;
+		private $cc;
 		private $broadcast_year;
 		private $production_studio;
 		private $arr_boxset;
@@ -24,6 +25,7 @@
 				$this->getMaxLength();
 				$this->isCartoon();
 				$this->isUnordered();
+				$this->hasCC();
 				$this->getBroadcastYear();
 				$this->getProductionStudio();
 				$this->getBoxset();
@@ -266,6 +268,41 @@
 			}
 			
 			return $this->unordered;
+		
+		}
+		
+		function setCC($bool) {
+		
+			global $db;
+		
+			if($bool)
+				$value = true;
+			else
+				$value = false;
+			
+			$arr_update = array(
+				'cc' => $value
+			);
+			
+			$db->autoExecute('tv_shows', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			
+			$this->cc = $int;
+			
+		}
+		
+		function hasCC() {
+		
+			if(is_null($this->cc)) {
+				global $db;
+				$sql = "SELECT cc FROM tv_shows WHERE id = ".$this->getID().";";
+				$value = $db->getOne($sql);
+				if($value === 't')
+					$this->cc = true;
+				else
+					$this->cc = false;
+			}
+			
+			return $this->cc;
 		
 		}
 		

@@ -27,7 +27,7 @@
 			return $this->aid;
 		}
 		
-		function setDebug($bool) {
+		function setDebug($bool = true) {
 			$this->debug = (boolean)$bool;
 		}
 

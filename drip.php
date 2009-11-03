@@ -10,6 +10,7 @@
 	
 	// New OOP classes
 	require_once 'class.dvd.php';
+	require_once 'class.dvdvob.php';
 	require_once 'class.dvdtrack.php';
 	require_once 'class.matroska.php';
 	
@@ -603,6 +604,7 @@
 				$vob = "$basename.vob";
 				$sub = "$basename.sub";
 				$idx = "$basename.idx";
+				$srt = "$basename.srt";
 				$xml = "$basename.xml";
 				$mkv = "$basename.mkv";
 				$mpg = "$basename.mpg";
@@ -843,6 +845,7 @@
 				$vob = "$basename.vob";
 				$idx = "$basename.idx";
 				$sub = "$basename.sub";
+				$srt = "$basename.srt";
 				$mkv = "$basename.mkv";
 				$xml = "$basename.xml";
 				$txt = "$basename.txt";
@@ -882,9 +885,18 @@
 						
 					}
 					
- 					shell::msg("[MKV] Muxing to Matroska");
+					if($encode && !file_exists($srt) && !$nosub && $series->hasCC()) {
+						shell::msg("[SRT] Ripping closed captioning");
+						$dvd_vob = new DVDVOB($vob);
+						if($debug)
+							$dvd_vob->setDebug();
+						$dvd_vob->dumpSRT();
+					}
 					
 					if($encode) {
+					
+						shell::msg("[MKV] Muxing to Matroska");
+					
 						$matroska = new Matroska($mkv);
 						
 						$matroska->addVideo($mpg);
@@ -892,6 +904,8 @@
 						
 						if(file_exists($idx))
 							$matroska->addSubtitles($idx);
+						if(file_exists($srt) && filesize($srt))
+							$matroska->addSubtitles($srt);
 						if(file_exists($txt))
 							$matroska->addChapters($txt);
 						if(file_exists($xml))
@@ -916,6 +930,8 @@
  							unlink($ac3);
 						if(file_exists($idx))
 							unlink($idx);
+						if(file_exists($srt))
+							unlink($srt);
 						if(file_exists($sub))
 	 						unlink($sub);
  						if(file_exists($xml))
@@ -934,7 +950,8 @@
 						$sql = "DELETE FROM queue WHERE episode = $episode_id;";
  						$db->query($sql);
 					} else {
- 						shell::msg("Partial file exists for $title");
+						// Old code FIXME
+//  						shell::msg("Partial file exists for $title");
  					}
 				}
 				
