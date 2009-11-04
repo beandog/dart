@@ -539,13 +539,8 @@
 		else
 			$offset = '';
 		
-		if($max)
-			$limit = " LIMIT $max";
-		else
-			$limit = '';
-		
 		// Rip in sequential order by season, episode order, then title
-		$sql = "SELECT episode_id FROM view_episodes WHERE bad_track = FALSE AND episode_title != '' AND disc_id = ".$drip_disc->getID()." ORDER BY track_order, season, episode_order, episode_title, track, episode_id $offset $limit;";
+		$sql = "SELECT episode_id FROM view_episodes WHERE bad_track = FALSE AND episode_title != '' AND disc_id = ".$drip_disc->getID()." ORDER BY track_order, season, episode_order, episode_title, track, episode_id $offset;";
 		
 		$arr = $db->getCol($sql);
 		
@@ -565,7 +560,12 @@
 			$side = trim($side);
 			
 			shell::msg("[Series] $series_title");
-			shell::msg("[Disc] Disc $disc_number$side, Episodes $starting_episode_number - $ending_episode_number");
+			$str = "[Disc] Disc $disc_number$side";
+			if($max)
+				$str .= ", Max $max Episodes";
+			else
+				$str .= ", Episodes $starting_episode_number - $ending_episode_number";
+			shell::msg($str);
 			
 			foreach($arr as $episode_id) {
 			
@@ -652,14 +652,14 @@
 						shell::msg("[VOB] $vob");
 					} else {
 						$dvd_track->dumpStream();
+						$num_ripped++;
 					}
-				
+					
 				} else {
 					if($verbose) {
 						shell::msg("[DVD] Video Ripped");
 					}
 				}
-				$x++;
 				
 				// Rip VobSub
 				if((!file_exists($sub) && !file_exists($mkv)) || $pretend) {
@@ -764,6 +764,11 @@
 				if(file_exists($vob)) {
 					$drip->queue($episode_id);
 				}
+				
+				$x++;
+				
+				if($num_ripped == $max)
+					break(1);
 				
 			}
 		
