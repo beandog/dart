@@ -567,7 +567,7 @@ XML;
 		 * along with all the information needed to encode them.
 		 *
 		 */
-		function getQueue($max) {
+		function getQueue($max = 0) {
 		
 			if($max)
 				$limit = " LIMIT $max";
