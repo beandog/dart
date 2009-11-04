@@ -564,7 +564,7 @@
 			$season = $episode->getSeason();
 			$side = trim($side);
 			
-			shell::msg("[Disc] Ripping \"$series_title\"");
+			shell::msg("[Series] $series_title");
 			shell::msg("[Disc] Disc $disc_number$side, Episodes $starting_episode_number - $ending_episode_number");
 			
 			foreach($arr as $episode_id) {
@@ -611,24 +611,6 @@
 				$ac3 = "$basename.ac3";
 				$txt = "$basename.txt";
 				
-				$arr_todo = array();
-				
-				if(!file_exists($mkv)) {
- 					
- 					if(!file_exists($vob))
-						$arr_todo[] = "Video";
-					if((!file_exists($sub) || !file_exists($idx)) && !$options['nosub'])
-						$arr_todo[] = "Subtitles";
-					if(!file_exists($txt))
-						$arr_todo[] = "Chapters";
-					if(!file_exists($xml))
-						$arr_todo[] = "Metadata";
-					if((!file_exists($mpg) || !file_exists($ac3)) && $raw)
-						$arr_todo[] = "Demux";
-					
-					$arr_todo[] = "Matroska";
-				}
-				
 				// Check to see if file exists, if not, rip it 				
 				if((!file_exists($vob) && !file_exists($mkv)) || $pretend)
 					$rip_episode = true;
@@ -640,9 +622,6 @@
 						shell::msg("[Episode] Number $episode_number");
 					if($episode->getPart())
 						shell::msg("[Episode] Part ".$episode->getPart());
-					if(count($arr_todo)) {
-						shell::msg("[Episode] ".implode(", ", $arr_todo));
-					}
 				}
 				
 				// Actually start ripping
@@ -829,9 +808,7 @@
 				$episode_index = $episode->getEpisodeIndex();
 				
 				if($queue) {
-				
 					shell::msg("[Queue] ($x/$todo) $series_title: Episode $episode_index: $episode_title");
-				
 				}
 				
 				if($encode) {
@@ -863,14 +840,13 @@
 					// Check to see if file exists, if not, encode it
 					if(file_exists($vob) && !file_exists($mkv)) {
 					
+						shell::msg("[Series] $series_title");
+					
 						$dvd_vob = new DVDVOB($vob);
 						$dvd_vob->setDebug($debug);
 						$dvd_vob->setAID($audio_aid);
 					
 						if($raw) {
-						
-							echo "\n";
-							shell::msg("[$series_title]");
 							shell::msg("[Episode] \"$episode_title\" ($x/$count)");
 							if($episode_number)
 								shell::msg("[Episode] Number $episode_number");
