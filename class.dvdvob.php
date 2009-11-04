@@ -88,7 +88,7 @@
 		 */
 		 function dumpSRT() {
 		 	
-		 	$str = "ccextractor -nomyth -ps \"".$this->getFilename()."\"";
+		 	$str = "ccextractor -unicode -nomyth -ps \"".$this->getFilename()."\"";
 		 	
 		 	if($this->debug)
 				shell::msg("Executing: $str");
