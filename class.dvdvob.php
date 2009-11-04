@@ -88,7 +88,7 @@
 		 */
 		 function dumpSRT() {
 		 	
-		 	$str = "ccextractor --no_progress_bar \"".$this->getFilename()."\"";
+		 	$str = "ccextractor -nomyth -ps \"".$this->getFilename()."\"";
 		 	
 		 	if($this->debug)
 				shell::msg("Executing: $str");
