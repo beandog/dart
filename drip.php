@@ -548,6 +548,8 @@
 		
 			$x = 1;
 			
+			$num_ripped = array();
+			
 			$series_title = $series->getTitle();
 			$disc_number = $drip_disc->getDiscNumber();
 			$side = $drip_disc->getSide();
@@ -652,7 +654,7 @@
 						shell::msg("[VOB] $vob");
 					} else {
 						$dvd_track->dumpStream();
-						$num_ripped++;
+						$num_ripped['vob']++;
 					}
 					
 				} else {
@@ -685,6 +687,7 @@
 						} else {
 							shell::msg("[DVD] Ripping Subtitles (VobSub)");
 							$dvd_track->dumpSubtitles();
+							$num_ripped['vobsub']++;
 						}
 					}
 				
@@ -696,10 +699,13 @@
  				if(!file_exists($txt) && $episode->getNumChapters()) {
 					shell::msg("[DVD] Chapters");
 					$dvd_track->dumpChapters();
+					$num_ripped['chapters']++;
  				}
  				
  				// Metadata
  				if(!file_exists($xml)) {
+ 				
+ 					shell::msg("[MKV] Metadata");
  				
  					$matroska = new Matroska();
  					
@@ -758,6 +764,8 @@
  					if($str)
 						file_put_contents($xml, $str);
 					
+					$num_ripped['xml']++;
+					
 				}
 				
 				// Add episode to queue
@@ -767,8 +775,9 @@
 				
 				$x++;
 				
-				if($num_ripped == $max)
-					break(1);
+				foreach($num_ripped as $value)
+					if($value == $max)
+						break(2);
 				
 			}
 		
@@ -812,35 +821,40 @@
 				$episode_number = $episode->getEpisodeNumber();
 				$episode_index = $episode->getEpisodeIndex();
 				
+				$export = $drip->export.$drip->formatTitle($episode->getExportTitle()).'/';
+	
+				$basename_title = $episode_title;
+				if($episode->getPart() > 1)
+					$basename_title .= ", Part ".$episode->getPart();
+				
+				$basename = $drip->formatTitle($basename_title);
+				if(!$series->isUnordered())
+					$basename = $episode_index.'._'.$basename;
+				$basename = $export.$basename;
+				
+				$vob = "$basename.vob";
+				$idx = "$basename.idx";
+				$sub = "$basename.sub";
+				$srt = "$basename.srt";
+				$mkv = "$basename.mkv";
+				$xml = "$basename.xml";
+				$txt = "$basename.txt";
+				$mpg = "$basename.mpg";
+				$ac3 = "$basename.ac3";
+				
 				if($queue) {
-					shell::msg("[Queue] ($x/$todo) $series_title: Episode $episode_index: $episode_title");
+					
+					if(!file_exists($vob) || file_exists($mkv)) {
+						$sql = "DELETE FROM queue WHERE episode = $episode_id;";
+						$db->query($sql);
+					} else
+						shell::msg("[Queue] ($x/$todo) $series_title: Episode $episode_index: $episode_title");
 				}
 				
 				if($encode) {
 				
 					$audio_index = $drip->getDefaultAudioTrack($track_id) - 1;
 					$audio_aid = $drip->getDefaultAudioAID($track_id);
-				
-					$export = $drip->export.$drip->formatTitle($episode->getExportTitle()).'/';
-	
-					$basename_title = $episode_title;
-					if($episode->getPart() > 1)
-						$basename_title .= ", Part ".$episode->getPart();
-					
-					$basename = $drip->formatTitle($basename_title);
-					if(!$series->isUnordered())
-						$basename = $episode_index.'._'.$basename;
-					$basename = $export.$basename;
-					
-					$vob = "$basename.vob";
-					$idx = "$basename.idx";
-					$sub = "$basename.sub";
-					$srt = "$basename.srt";
-					$mkv = "$basename.mkv";
-					$xml = "$basename.xml";
-					$txt = "$basename.txt";
-					$mpg = "$basename.mpg";
-					$ac3 = "$basename.ac3";
 				
 					// Check to see if file exists, if not, encode it
 					if(file_exists($vob) && !file_exists($mkv)) {
