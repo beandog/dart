@@ -566,7 +566,7 @@
 			$side = trim($side);
 			
 			shell::msg("[Disc] Ripping \"$series_title\"");
-			shell::msg("[Disc] Season $season, Disc $disc_number$side, Episodes $starting_episode_number - $ending_episode_number");
+			shell::msg("[Disc] Disc $disc_number$side, Episodes $starting_episode_number - $ending_episode_number");
 			
 			foreach($arr as $episode_id) {
 			
@@ -581,10 +581,11 @@
 				$episode_number = $episode->getEpisodeNumber();
 				$episode_index = $episode->getEpisodeIndex();
 				$episode_title = $episode->getTitle();
+				$episode_part = $episode->getPart();
 				
 				$basename_title = $episode_title;
-				if($episode->getPart() > 1)
-					$basename_title .= ", Part ".$episode->getPart();
+				if($episode_part > 1)
+					$basename_title .= ", Part $episode_part";
 				
 				$basename = $drip->formatTitle($basename_title);
 				if(!$series->isUnordered())
@@ -859,6 +860,10 @@
 				// Check to see if file exists, if not, encode it
 				if(file_exists($vob) && !file_exists($mkv)) {
 				
+					$dvd_vob = new DVDVOB($vob);
+					$dvd_vob->setDebug($debug);
+					$dvd_vob->setAID($audio_aid);
+				
 					if($encode && $raw) {
 					
 						echo "\n";
@@ -874,22 +879,19 @@
 					
 						if(!file_exists($mpg)) {
 							shell::msg("[VOB] Demuxing Raw Video");
-							$drip->rawvideo($vob, $mpg);
+							$dvd_vob->rawvideo($mpg);
 						}
 						
 						if(!file_exists($ac3)) {
 							shell::msg("[VOB] Demuxing Raw Audio");
 							// atrack will always be at least 1
-							$drip->rawaudio($vob, $ac3, $audio_aid);
+							$dvd_vob->rawaudio($ac3);
 						}
 						
 					}
 					
 					if($encode && !file_exists($srt) && !$nosub && $series->hasCC()) {
 						shell::msg("[SRT] Ripping closed captioning");
-						$dvd_vob = new DVDVOB($vob);
-						if($debug)
-							$dvd_vob->setDebug();
 						$dvd_vob->dumpSRT();
 					}
 					
@@ -920,26 +922,6 @@
 						
  					}
  					
-					// Delete old files
-					if($encode && file_exists($mkv) && !$debug) {
-						if(file_exists($vob))
- 							unlink($vob);
-						if(file_exists($mpg))
- 							unlink($mpg);
- 						if(file_exists($ac3))
- 							unlink($ac3);
-						if(file_exists($idx))
-							unlink($idx);
-						if(file_exists($srt))
-							unlink($srt);
-						if(file_exists($sub))
-	 						unlink($sub);
- 						if(file_exists($xml))
- 							unlink($xml);
- 						if(file_exists($txt))
- 							unlink($txt);
-					}
-				
 				} else {
 				
 					// Could be a number of reasons we got here.
@@ -953,6 +935,26 @@
 						// Old code FIXME
 //  						shell::msg("Partial file exists for $title");
  					}
+				}
+				
+				// Delete old files
+				if($encode && file_exists($mkv) && !$debug) {
+					if(file_exists($vob))
+						unlink($vob);
+					if(file_exists($mpg))
+						unlink($mpg);
+					if(file_exists($ac3))
+						unlink($ac3);
+					if(file_exists($idx))
+						unlink($idx);
+					if(file_exists($srt))
+						unlink($srt);
+					if(file_exists($sub))
+						unlink($sub);
+					if(file_exists($xml))
+						unlink($xml);
+					if(file_exists($txt))
+						unlink($txt);
 				}
 				
 				// Remove episode from queue
