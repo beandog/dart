@@ -877,7 +877,7 @@
 						}
 						
 						if(!file_exists($srt) && !$nosub && $series->hasCC()) {
-							shell::msg("[SRT] Ripping closed captioning");
+							shell::msg("[SRT] Ripping Closed Captioning");
 							$dvd_vob->dumpSRT();
 						}
 						
