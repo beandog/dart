@@ -11,6 +11,7 @@
 		private $starting_chapter;
 		private $ending_chapter;
 		private $alt_title_id;
+		private $episode_number;
 		
 		function __construct($id = null) {
 			if(!is_null($id)) {
@@ -330,26 +331,23 @@
 			// Add one because we start counting at 1, not 0
 			$count++;
 			
-			return $count;
+			return $this->episode_number = $count;
 		
 		}
 		
 		function getEpisodeIndex() {
 			
-			
 			$season = $this->getSeason();
 			
-			if($season) {
-				$str = $this->getEpisodeNumber();
-				
-				$str = str_pad($str, 2, 0, STR_PAD_LEFT);
-				$str = $season.$str;
-				
-				return $str;
-				
-			} else {
-				return "";
-			}
+			if(!$season)
+				$season = 1;
+			
+			$str = $this->getEpisodeNumber();
+			
+			$str = str_pad($str, 2, 0, STR_PAD_LEFT);
+			$str = $season.$str;
+			
+			return $str;
 			
 		}
 		
