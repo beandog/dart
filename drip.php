@@ -629,11 +629,9 @@
 				// Actually start ripping
 				if($rip_episode) {
 				
-					// FIXME Display MPEG2 + Codec + Num. Channels
-					shell::msg("[DVD] Ripping DVD Video (MPEG-2)");
-					
-					$msg = "[DVD] Ripping Episode $x/$count";
-					
+					if($count > 1)
+						shell::msg("[DVD] Ripping Episode $x/$count");
+				
 					if($verbose) {
 						$msg = "[DVD] Track $track_number";
 					
@@ -642,6 +640,9 @@
 				
  						shell::msg($msg);
 					}
+					
+					// FIXME Display MPEG2 + Codec + Num. Channels
+					shell::msg("[DVD] Ripping DVD Video (MPEG-2)");
 					
 					if($debug) {
  						$msg = "mplayer dvd://$track_number";
@@ -847,6 +848,7 @@
 					if(!file_exists($vob) || file_exists($mkv)) {
 						$sql = "DELETE FROM queue WHERE episode = $episode_id;";
 						$db->query($sql);
+						shell::msg("[Queue] ($x/$todo) Removing $series_title: Episode $episode_index: $episode_title");
 					} else
 						shell::msg("[Queue] ($x/$todo) $series_title: Episode $episode_index: $episode_title");
 				}
