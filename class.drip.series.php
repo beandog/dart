@@ -271,11 +271,13 @@
 		
 		}
 		
-		function setCC($bool) {
+		function setCC($cc) {
 		
 			global $db;
 		
-			if($bool)
+			if(is_null($cc) || $cc == -1)
+				$value = null;
+			elseif($cc)
 				$value = true;
 			else
 				$value = false;
@@ -286,7 +288,7 @@
 			
 			$db->autoExecute('tv_shows', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
-			$this->cc = $int;
+			$this->cc = $value;
 			
 		}
 		
@@ -298,6 +300,8 @@
 				$value = $db->getOne($sql);
 				if($value === 't')
 					$this->cc = true;
+				elseif(is_null($value))
+					$this->cc = null;
 				else
 					$this->cc = false;
 			}
