@@ -249,12 +249,33 @@
 			if(!$this->langcode)
 				$this->setLangCode();
 			
-			// Subtitles
+			// Selecting the *correct* audio track can be tricky.  Generally,
+			// you want the *first* one that is your language, with the
+			// highest number of audio channels.  If there are two of the
+			// same language and number of channels, then one of them is
+			// likely to be an audio commentary track or score only.  In
+			// those cases, pick the first one in the index.
+			
+			$max_channels = 0;
+			
+			// Look at all the channels, and for the ones that match the
+			// language code, add it to an array to inspect.
 			foreach($this->audio as $idx => $arr) {
-				if($arr['langcode'] == $this->getLangCode() && !$this->audio_index)
+				if($arr['langcode'] == $this->getLangCode()) {
+					$max_channels = max($max_channels, $arr['channels']);
 					$this->audio_index = $idx;
+					$arr_tracks[$arr['stream_id']] = array('idx' => $idx, 'channels' => $arr['channels']);
+				}
 			}
 			
+			// For all the possible audio channels, find the first one with
+			// the highest number of channels ordering by the stream_id.  This
+			// should be the correct track.
+ 			foreach($arr_tracks as $arr) {
+ 				if($arr['channels'] == $max_channels)
+ 					$this->audio_index = $arr['idx'];
+ 			}
+
 			// If there aren't any set, or if there is only one, set it to the default.
 			if(count($this->audio) == 1 || is_null($this->audio_index)) {
 				$this->audio_index = 1;
