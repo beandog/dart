@@ -159,7 +159,8 @@ XML;
 			
 			if($this->title)
 				$flags['title'] = $this->title;
-		
+				
+			// FIXME Can only handle one stream of each type		
 			foreach($this->streams as $arr) {
 			
 				switch($arr['type']) {
