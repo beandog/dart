@@ -263,7 +263,6 @@
 			foreach($this->audio as $idx => $arr) {
 				if($arr['langcode'] == $this->getLangCode()) {
 					$max_channels = max($max_channels, $arr['channels']);
-					$this->audio_index = $idx;
 					$arr_tracks[$arr['stream_id']] = array('idx' => $idx, 'channels' => $arr['channels']);
 				}
 			}
