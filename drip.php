@@ -21,17 +21,13 @@
 	require_once 'class.drip.chapter.php';
 	require_once 'class.drip.episode.php';
 	
-	
-	
-
-	$db =& DB::connect("pgsql://steve@willy/movies");
+	$db =& DB::connect("pgsql://steve@charlie/movies");
 	$db->setFetchMode(DB_FETCHMODE_ASSOC);
 // 	PEAR::setErrorHandling(PEAR_ERROR_DIE);
 	
 	function pear_error($obj) {
 		die($obj->getMessage() . "\n" . $obj->getDebugInfo());
 	}
-	
 	
 	PEAR::setErrorHandling(PEAR_ERROR_CALLBACK, 'pear_error');
 	
@@ -116,6 +112,7 @@
 	}
 	
 	// Re-archive disc
+	// Generally called if you want to update the webif
 	if($update && $drip->inDatabase($dvd->getID())) {
 		
 		$sql = "SELECT id FROM discs WHERE disc_id = '".$dvd->getID()."';";
@@ -165,15 +162,15 @@
 				
 				
 			// Add chapters
+			// This will only add chapters for the track, not set them for the episodes.
 			$num_chapters = $dvd_track->getNumChapters();
-			if($num_chapters != $drip_track->getNumChapters()) {
+ 			if($num_chapters != $drip_track->getNumChapters()) {
 			
 				// Delete the old records (if any)
-				if($drip_track->getNumChapters()) {
-					echo "Make sure this works";
-					echo $sql = "DELETE FROM chapters WHERE track = ".$drip_track->getID().";";
-					die;
-				}
+ 				if($drip_track->getNumChapters()) {
+					$sql = "DELETE FROM chapters WHERE track = ".$drip_track->getID().";";
+					$db->query($sql);
+ 				}
 				
 				if($verbose) {
 					shell::msg("Chapters: $num_chapters");
@@ -191,13 +188,12 @@
 					$chapter->setLength($dvd_track->getChapterLength($chapter_number));
 					
 				}
-			}
+ 			}
 			
 		}
 		
 		die;
 	}
-	
 	
 	// Archive disc if not in the db
 	
@@ -218,10 +214,10 @@
 			if($q != 'y')
 				exit(0);
 		}
-			
+		
 		// Check for shell arguments to pass optionally
 		// series, season, disc #
-		foreach(array('series', 'season', 'disc', 'volume') as $x) {
+		foreach(array('series', 'season', 'disc', 'side', 'volume') as $x) {
 			$tmp = abs(intval($options[$x]));
 			
 			switch($x) {
@@ -230,19 +226,20 @@
 					break;
 				case 'disc':
 					$disc_number = $options[$x];
-					$side = strtoupper(substr($options[$x], -1, 1));
-					if($side == "A" || $side == "B")
-						$tmp .= $side;
-					else
-						$side = "";
+					if(!$options['side']) {
+						$side = strtoupper(substr($options[$x], -1, 1));
+					}
 					break;
+				case 'side':
 				case 'season':
-					$season = $options[$x];
-					break;
 				case 'volume':
-					$volume = $options[$x];
+					$$x = $options[$x];
 					break;
 			}
+			
+			if(!($side == "A" || $side == "B"))
+				$side = "";
+			
 		}
 		
 		// See if series passed is in the DB
@@ -329,17 +326,28 @@
 		
 		// Get the season
 		if(!$season) {
-			$season = shell::ask("What season is this disc? [None]", null);
+		
+			$last_season = $series->getLastSeasonNumber();
+		
+			if($last_season)
+				$guess = $default = $last_season;
+			else {
+				$guess = 'None';
+				$default = null;
+			}
+		
+			$season = shell::ask("What season is this disc? [$guess]", $default);
 			if(!is_numeric($season))
 				$season = null;
 		}
 		
 		// Get the volume
-		if(is_null($volume)) {
+		if(is_null($volume) && $series->hasVolumes()) {
 			$volume = shell::ask("What volume is this disc? [None]", null);
 			if(!is_numeric($volume))
 				$volume = 0;
-		}
+		} else
+			$volume = 0;
 		
 		// Get the disc
 		if($series && !$disc_number) {
@@ -350,7 +358,12 @@
 			// Set the default to the next one in line
 			if($series->getNumDiscs()) {
 			
-				$sql = "SELECT disc, TRIM(side) AS side, id FROM view_discs WHERE tv_show = ".$series->getID()." AND volume = $volume ORDER BY disc, side;";
+				if(is_null($season))
+					$str_season = "NULL";
+				else
+					$str_season = $season;
+			
+				$sql = "SELECT DISTINCT disc_number, TRIM(side) AS side, disc_id FROM view_episodes WHERE tv_show_id = ".$series->getID()." AND season = $str_season AND volume = $volume ORDER BY disc_number, side;";
 				$arr = $db->getAll($sql);
 				
 				foreach($arr as $row) {
@@ -363,8 +376,13 @@
 				}
 				
 				if(count($arr_archives)) {
-					$str = implode(', ', $arr_archives);
-					shell::msg("Discs archived for Season $season, Volume $volume: $str");
+					$str = "Discs archived for Season $season";
+					
+					if($series->hasVolumes())
+						$str .= ", Volume $volume";
+					$str .= ": ".implode(', ', $arr_archives);
+					
+					shell::msg($str);
 					
 					$last_disc = max(array_keys($arr_discs));
 					if(is_array($arr_discs[$last_disc])) {
@@ -400,7 +418,8 @@
 			do {
 				$disc_number = shell::ask("What number is this disc? [$next_disc$next_disc_side]", $next_disc.$next_disc_side);
 				
-				$side = strtoupper(substr($disc_number, -1));
+				if(!$side)
+					$side = strtoupper(substr($disc_number, -1));
 				if(!($side == "A" || $side == "B"))
 					$side = "";
 				$disc_number = intval($disc_number);
@@ -664,6 +683,13 @@
 					}
 				}
 				
+				// Chapters
+ 				if(!file_exists($txt) && $episode->getNumChapters()) {
+					shell::msg("[DVD] Chapters");
+					$dvd_track->dumpChapters();
+					$num_ripped['chapters']++;
+ 				}
+				
 				// Rip VobSub
 				if((!file_exists($sub) && !file_exists($mkv)) || $pretend) {
 				
@@ -696,15 +722,8 @@
 					shell::msg("[DVD] Subtitles Ripped");
 				}
 				
-				// Chapters
- 				if(!file_exists($txt) && $episode->getNumChapters()) {
-					shell::msg("[DVD] Chapters");
-					$dvd_track->dumpChapters();
-					$num_ripped['chapters']++;
- 				}
- 				
  				// Metadata
- 				if(!file_exists($xml)) {
+ 				if(!file_exists($xml) && !file_exists($mkv)) {
  				
  					shell::msg("[MKV] Metadata");
  				
@@ -906,7 +925,7 @@
 						
 						if(file_exists($idx))
 							$matroska->addSubtitles($idx);
-						if(file_exists($srt) && filesize($srt))
+						if(file_exists($srt) && filesize($srt) > 25)
 							$matroska->addSubtitles($srt);
 						if(file_exists($txt))
 							$matroska->addChapters($txt);
@@ -975,10 +994,10 @@
 	}
 	
 	
-// 	if($mount && ($archive || $rip) && !$queue)
-// 		$drip->unmount();
+ 	if($mount && ($archive || $rip) && !$queue)
+ 		$dvd->unmount();
 		
-	if($eject && !$queue)
+	if($eject && $rip)
 		$dvd->eject();
 	
 

@@ -139,6 +139,7 @@
 			return $this->part;
 		}
 		
+		/** Called by webif **/
 		function setStartingChapter($int) {
 		
 			global $db;
@@ -418,8 +419,15 @@
 		}
 		
 		function getNumChapters() {
+		
+			global $db;
 			
-			$int = $this->getEndingChapter - $this->getStartingChapter();
+			if($this->getEndingChapter()) {
+				$int = $this->getEndingChapter - $this->getStartingChapter();
+			} else {
+				$sql = "SELECT COUNT(1) FROM chapters WHERE track = ".$db->quote($this->track_id).";";
+				$int = $db->getOne($sql);
+			}
 			
 			if($int < 0)
 				return 0;

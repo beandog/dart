@@ -257,6 +257,7 @@
 			// those cases, pick the first one in the index.
 			
 			$max_channels = 0;
+			$arr_tracks = array();
 			
 			// Look at all the channels, and for the ones that match the
 			// language code, add it to an array to inspect.
@@ -400,7 +401,7 @@
 			return $this->num_chapters;
 		}
 		
-		private function secondsToHMS($float) {
+		public function secondsToHMS($float) {
 			$int = intval($float);
 			$remainder = bcsub($float, $int);
 			

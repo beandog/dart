@@ -10,9 +10,9 @@
 		private $cartoon;
 		private $unordered;
 		private $cc;
+		private $volumes;
 		private $broadcast_year;
 		private $production_studio;
-		private $arr_boxset;
 		private $arr_production_studios;
 		
 		
@@ -26,10 +26,9 @@
 				$this->isCartoon();
 				$this->isUnordered();
 				$this->hasCC();
+				$this->hasVolumes();
 				$this->getBroadcastYear();
 				$this->getProductionStudio();
-				$this->getBoxset();
-				$this->getBoxsetName();
 			} else {
 				$this->newSeries();
 			}
@@ -216,7 +215,7 @@
 			
 			$db->autoExecute('tv_shows', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
-			$this->cartoon = $int;
+			$this->cartoon = $value;
 			
 		}
 		
@@ -233,6 +232,41 @@
 			}
 			
 			return $this->cartoon;
+		
+		}
+		
+		function setVolumes($bool) {
+		
+			global $db;
+		
+			if($bool)
+				$value = true;
+			else
+				$value = false;
+			
+			$arr_update = array(
+				'volumes' => $value
+			);
+			
+			$db->autoExecute('tv_shows', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			
+			$this->volumes = $value;
+			
+		}
+		
+		function hasVolumes() {
+		
+			if(is_null($this->volumes)) {
+				global $db;
+				$sql = "SELECT volumes FROM tv_shows WHERE id = ".$this->getID().";";
+				$value = $db->getOne($sql);
+				if($value === 't')
+					$this->volumes = true;
+				else
+					$this->volumes = false;
+			}
+			
+			return $this->volumes;
 		
 		}
 		
@@ -390,53 +424,6 @@
 			return $this->broadcast_year;
 		}
 		
-		function setBoxset($int) {
-		
-			global $db;
-		
-			if(!is_null($int))
-				$int = abs(intval($int));
-			
-			$arr_update = array(
-				'boxset' => $int
-			);
-			
-			$db->autoExecute('tv_shows', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
-			
-			$this->boxset = $int;
-			$this->boxset_name = $this->arr_boxset[$this->boxset];
-		
-		}
-		
-		function getBoxset() {
-			
-			if(isset($this->boxset))
-				return $this->boxset;
-			
-			global $db;
-			
-			$sql = "SELECT boxset FROM tv_shows WHERE id = ".$this->getID().";";
-			$this->boxset = $db->getOne($sql);
-			
-			return $this->boxset;
-			
-		}
-		
-		function getBoxsetName() {
-			
-			$boxset = $this->getBoxset();
-			
-			if(is_null($boxset))
-				$this->boxset_name = "";
-			else
-				$this->boxset_name = $this->arr_boxset[$boxset];
-			
-		}
-		
-		function getBoxsetArray() {
-			return $this->arr_boxset;
-		}
-		
 		function getProductionStudioArray() {
 			return $this->arr_production_studios;
 		}
@@ -528,6 +515,34 @@
 			
 			$sql = "SELECT id, title FROM alt_titles WHERE tv_show = ".$this->getID().";";
 			return $db->getAssoc($sql);
+		}
+		
+		function getLastSeasonNumber() {
+			global $db;
+			
+			$sql = "SELECT MAX(season) FROM view_episodes WHERE tv_show_id = ".$this->getID().";";
+			return $db->getOne($sql);
+		}
+		
+		function getLastDiscNumber() {
+			global $db;
+			
+			$sql = "SELECT MAX(disc_number) FROM view_episodes WHERE tv_show_id = ".$this->getID()." AND season = ".$this->getLastSeasonNumber().";";
+			return $db->getOne($sql);
+		}
+		
+		function getLastSide() {
+			global $db;
+			
+			$sql = "SELECT MAX(side) FROM view_episodes WHERE tv_show_id = ".$this->getID()." AND season = ".$this->getLastSeasonNumber()." AND disc_number = ".$this->getLastDiscNumber().";";
+			return $db->getOne($sql);
+		}
+		
+		function getLastVolumeNumber() {
+			global $db;
+			
+			$sql = "SELECT MAX(volume) FROM view_episodes WHERE tv_show_id = ".$this->getID().";";
+			return $db->getOne($sql);
 		}
 	}
 ?>

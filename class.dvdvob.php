@@ -63,7 +63,7 @@
 		*/
 		function rawaudio($dest) {
 		
-			$flags = array('"'.$this->getFilename().'"', "-oac copy", "-of rawaudio", "-ovc frameno", "-quiet", "-aid ".$this->getAID(), "-o \"$dest\"");
+			$flags = array('"'.$this->getFilename().'"', "-oac copy", "-of rawaudio", "-ovc frameno", "-quiet", "-o \"$dest\"");
 			
 			$str = "mencoder ".implode(' ', $flags);
 			

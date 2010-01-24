@@ -6,21 +6,38 @@
 	require_once 'class.dvdvob.php';
 	require_once 'class.matroska.php';
 	require_once 'class.shell.php';
-	require_once 'db/willy.movies.php';
+	
+	$args = shell::parseArguments();
+	
+	if($args['h'] || $args['help']) {
+	
+		shell::msg("Options:");
+		shell::msg("  --title <title>\tMovie title");
+		shell::msg("  --track <track>\tSpecify track number to rip");
+		shell::msg("  -s, --sub\t\tRip subtitles");
+		shell::msg("  -v\t\t\tVerbose output");
+		echo "\n";
+// 		shell::msg("Encoding:");
+// 		shell::msg("  --bitrate\t\tVideo bitrate");
+// 		echo "\n";
+// 		shell::msg("Debugging:");
+// 		shell::msg("  --force\t\tOverwrite files");
+// 		shell::msg("  --debug\t\tDebug output");
+	
+		die;
+	}
 	
 	$dvd =& new DVD();
 	$dvd->mount();
 	
 	/** Get the configuration options */
-	$config = '/home/steve/.dvd2mkv/config';
+	$config = getenv('HOME').'/.dvd2mkv/config';
 	if(file_exists($config)) {
 		$arr_config = parse_ini_file($config);
 	} else {
 		trigger_error("No config file found, using defaults", E_USER_WARNING);
 		$arr_config = array();
 	}
-	
-	$args = shell::parseArguments();
 	
 	if($args['debug'])
 		$verbose = $debug = true;
@@ -32,27 +49,30 @@
 		 $subs = false;
 	else
 		$subs = true;
+	
+	if($arr_config['eject'] || $args['eject'])
+		$eject = true;
+	if($args['noeject'])
+		$eject = false;
 		
-	if($args['h'] || $args['help']) {
-	
-		shell::msg("Options:");
-		shell::msg("  --title <title>\tMovie title");
-		shell::msg("  --track <track>\tSpecify track number to rip");
-		shell::msg("  -s, --sub\t\tRip subtitles");
-		shell::msg("  --nodb\t\tDon't write to database");
-		shell::msg("  -i\t\t\tInteractive mode, choose everything manually");
-		shell::msg("  -v\t\t\tVerbose output");
-		echo "\n";
-		shell::msg("Encoding:");
-		shell::msg("  --bitrate\t\tVideo bitrate");
-		echo "\n";
-		shell::msg("Debugging:");
-		shell::msg("  --force\t\tOverwrite files");
-		shell::msg("  --debug\t\tDebug output");
-	
-		die;
-	}
-	
+	$arr_all_args = array(
+		'Ripping Options' => array(
+			'title' => 'Movie title',
+			'track' => 'DVD track number',
+			'sub' => 'Rip VobSub subtitles',
+			'cc' => 'Rip Closed Captioning subtitles',
+			'v' => 'Verbose output',
+			'debug' => 'Debugging output',
+		),
+		
+		'Dumping options' => array(
+			'vob' => 'Dump Audio+Video (VOB)',
+			'vobsub' => 'Rip VobSub subtitles (IDX, SUB)',
+			'srt' => 'Rip Closed Captioning subtitles (SRT)',
+			'chapters' => 'Dump chapters (TXT)',
+		),
+	);
+		
 	$title =& $args['title'];
 	
 	if(strlen($dvd->getID()) != '32')
@@ -137,7 +157,7 @@
 		}
 		
 		// Eject
-		if(!$debug) {
+		if(!$debug && $eject) {
 			$dvd->eject();
 		}
 		
@@ -175,7 +195,7 @@
 			$matroska->addSubtitles($idx);
 		// ccextractor will dump an empty .srt output file
 		// if there are no subtitles
-		if(file_exists($srt) && filesize($srt))
+		if(file_exists($srt) && filesize($srt) > 15)
 			$matroska->addSubtitles($srt);
 		if(file_exists($txt))
 			$matroska->addChapters($txt);

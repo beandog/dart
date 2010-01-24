@@ -36,7 +36,7 @@
 		}
 		
 		function unmount() {
-			shell::cmd("unmount ".$this->getDevice());
+			shell::cmd("umount ".$this->getDevice());
 		}
 		
 		/** Metadata **/
