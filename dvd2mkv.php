@@ -6,6 +6,7 @@
 	require_once 'class.dvdvob.php';
 	require_once 'class.matroska.php';
 	require_once 'class.shell.php';
+	require_once 'class.mediainfo.php';
 	
 	$args = shell::parseArguments();
 	
@@ -14,7 +15,8 @@
 		shell::msg("Options:");
 		shell::msg("  --title <title>\tMovie title");
 		shell::msg("  --track <track>\tSpecify track number to rip");
-		shell::msg("  -s, --sub\t\tRip subtitles");
+		shell::msg("  --sub, -s\t\tRip DVD subtitles");
+		shell::msg("  --cc\t\t\tRip Closed Captioning");
 		shell::msg("  -v\t\t\tVerbose output");
 		echo "\n";
 // 		shell::msg("Encoding:");
@@ -39,6 +41,9 @@
 		$arr_config = array();
 	}
 	
+	if($arr_config['cc'])
+		$cc = true;
+	
 	if($args['debug'])
 		$verbose = $debug = true;
 	if($args['v'] || $args['verbose'])
@@ -47,8 +52,8 @@
 		$force = true;
 	if($args['nosub'])
 		 $subs = false;
-	else
-		$subs = true;
+	if($args['nocc'])
+		$cc = false;
 	
 	if($arr_config['eject'] || $args['eject'])
 		$eject = true;
@@ -164,8 +169,10 @@
 		$dvdvob = new DVDVOB($vob);
 		$dvdvob->setAID($dvdtrack->getAudioAID());
 		
+		$mediainfo = new MediaInfo($vob);
+		
 		// SRT Subtitles
-		if(!$dvdtrack->hasSubtitles() && !file_exists($srt)) {
+		if(!$dvdtrack->hasSubtitles() && !file_exists($srt) && $mediainfo->hasCC() && $cc) {
 			shell::msg("[Subtitles] Ripping SRT");
 			$dvdvob->dumpSRT();
 		}
