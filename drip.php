@@ -33,6 +33,7 @@
 	
 	$drip = new drip();
 	$dvd = new DVD("/dev/dvd");
+	$storage_dir = "/var/media";
 	
 	$options = shell::parseArguments();
 	
@@ -592,9 +593,17 @@
 			
 				$episode = new DripEpisode($episode_id);
 				
-				$export = $drip->export.$drip->formatTitle($episode->getExportTitle()).'/';
+				$dir = $drip->formatTitle($episode->getExportTitle());
+				
+				$export = $drip->export.$dir.'/';
  				if(!is_dir($export))
  					mkdir($export, 0755) or die("Can't create export directory $export");
+ 				
+ 				// Create the directory in the storage_dir
+				$dir = $storage_dir."/dvds/$dir";
+				
+				if(!file_exists($dir))
+					mkdir($dir);
 			
 				$rip_episode = false;
 			
@@ -980,7 +989,6 @@
 				echo "\n";
 				
 			}
-
 			
 		}
 		
@@ -996,9 +1004,9 @@
 	
  	if($mount && ($archive || $rip) && !$queue)
  		$dvd->unmount();
-		
-	if($eject && $rip)
-		$dvd->eject();
 	
+	// Don't eject if you are just checking the queue
+	if($eject && !$queue && ($rip) )
+		$dvd->eject();
 
 ?>
