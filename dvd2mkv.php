@@ -15,7 +15,7 @@
 		shell::msg("Options:");
 		shell::msg("  --title <title>\tMovie title");
 		shell::msg("  --track <track>\tSpecify track number to rip");
-		shell::msg("  --sub, -s\t\tRip DVD subtitles");
+		shell::msg("  --vobsub\t\tRip DVD subtitles");
 		shell::msg("  --cc\t\t\tRip Closed Captioning");
 		shell::msg("  -v\t\t\tVerbose output");
 		echo "\n";
@@ -32,8 +32,34 @@
 	$dvd =& new DVD();
 	$dvd->mount();
 	
+	$config_dir = getenv('HOME')."/.dvd2mkv/";
+	$lock_file = $config_dir."lock";
+	
+	// Locking functions
+	function lock() {
+		global $lock_file;
+		touch($lock_file);
+	}
+	
+	function unlock() {
+		global $lock_file;
+		if(isLocked())
+			unlink($lock_file);
+	}
+	
+	function isLocked() {
+		global $lock_file;
+		return file_exists($lock_file);
+	}
+	
+	function beep() {
+		shell::cmd("aplay /home/steve/beep.wav");
+	}
+	
+	$rip_subs = $rip_cc = $mux_subs = $mux_cc = false;
+	
 	/** Get the configuration options */
-	$config = getenv('HOME').'/.dvd2mkv/config';
+	$config = $config_dir."config";
 	if(file_exists($config)) {
 		$arr_config = parse_ini_file($config);
 	} else {
@@ -41,43 +67,70 @@
 		$arr_config = array();
 	}
 	
-	if($arr_config['cc'])
-		$cc = true;
+	// Subtitle options
+	// Command line args override home config
 	
-	if($args['debug'])
+	// Closed Captioning
+	if($arr_config['rip_cc'] || $arr_config['mux_cc'] || $args['cc'])
+		$rip_cc = true;
+	if($args['cc'] || $arr_config['mux_cc'])
+		$mux_cc = true;
+	if($args['nocc'])
+		$rip_cc = $mux_cc = false;
+	$min_cc_filesize = 15;
+	
+	// DVD Subs (VobSubs)
+	if($arr_config['rip_subs'] || $arr_config['mux_subs'] || $args['subs'])
+		$rip_subs = true;
+	if($args['subs'] || $arr_config['mux_subs'])
+		$mux_subs = true;
+	if($args['nosubs'])
+		$rip_subs = $mux_subs = false;
+	
+	if($args['debug'] || $arr_config['debug'])
 		$verbose = $debug = true;
 	if($args['v'] || $args['verbose'])
 		$verbose = true;
 	if($args['force'])
 		$force = true;
-	if($args['nosub'])
-		 $subs = false;
-	if($args['nocc'])
-		$cc = false;
 	
 	if($arr_config['eject'] || $args['eject'])
 		$eject = true;
 	if($args['noeject'])
 		$eject = false;
 		
-	$arr_all_args = array(
-		'Ripping Options' => array(
-			'title' => 'Movie title',
-			'track' => 'DVD track number',
-			'sub' => 'Rip VobSub subtitles',
-			'cc' => 'Rip Closed Captioning subtitles',
-			'v' => 'Verbose output',
-			'debug' => 'Debugging output',
-		),
+	if($args['lock'])
+		lock();
+	if($args['unlock'])
+		unlock();
+	
+	if(isLocked()) {
+		shell::msg("Waiting for lock to be removed ...");
+		while(isLocked()) {
+			sleep(2);
+		}
+	}
+	
+	lock();
 		
-		'Dumping options' => array(
-			'vob' => 'Dump Audio+Video (VOB)',
-			'vobsub' => 'Rip VobSub subtitles (IDX, SUB)',
-			'srt' => 'Rip Closed Captioning subtitles (SRT)',
-			'chapters' => 'Dump chapters (TXT)',
-		),
-	);
-		
+// 	$arr_all_args = array(
+// 		'Ripping Options' => array(
+// 			'title' => 'Movie title',
+// 			'track' => 'DVD track number',
+// 			'sub' => 'Rip VobSub subtitles',
+// 			'cc' => 'Rip Closed Captioning subtitles',
+// 			'v' => 'Verbose output',
+// 			'debug' => 'Debugging output',
+// 		),
+// 		
+// 		'Dumping options' => array(
+// 			'vob' => 'Dump Audio+Video (VOB)',
+// 			'vobsub' => 'Rip VobSub subtitles (IDX, SUB)',
+// 			'srt' => 'Rip Closed Captioning subtitles (SRT)',
+// 			'chapters' => 'Dump chapters (TXT)',
+// 		),
+// 	);
+ 		
 	$title =& $args['title'];
 	
 	if(strlen($dvd->getID()) != '32')
@@ -138,11 +191,11 @@
 		// so we use scandir and in_array instead
 		shell::msg("[Video] Track number: $track");
 		shell::msg("[Video] Aspect ratio: ".$dvdtrack->getAspectRatio());
-		shell::msg("[Video] Length: ".$dvdtrack->getLength());
+		shell::msg("[Video] Length: ".$dvdtrack->secondsToHMS($dvdtrack->getLength()));
 		shell::msg("[Subtitles] VobSub: ".($dvdtrack->hasSubtitles() ? "Yes" : "No"));
 		shell::msg("[Audio] Track: ".$dvdtrack->getAudioAID());
 		shell::msg("[Audio] Format: ".$dvdtrack->getAudioFormat());
-		shell::msg("[Audio] Channels: ".$dvdtrack->getAudioChannels());
+		shell::msg("[Audio] Channels: ".$dvdtrack->getAudio());
 		
 		// VOB
 		if(!in_array($vob, $scandir)) {
@@ -156,7 +209,7 @@
 		}
 		
 		// VobSub Subtitles
-		if(!file_exists($idx) && $dvdtrack->hasSubtitles()) {
+		if(!file_exists($idx) && $dvdtrack->hasSubtitles() && $rip_subs) {
 			shell::msg("[Subtitles] Ripping VobSub");
 			$dvdtrack->dumpSubtitles();
 		}
@@ -172,9 +225,19 @@
 		$mediainfo = new MediaInfo($vob);
 		
 		// SRT Subtitles
-		if(!$dvdtrack->hasSubtitles() && !file_exists($srt) && $mediainfo->hasCC() && $cc) {
-			shell::msg("[Subtitles] Ripping SRT");
+		if(!file_exists($srt) && $rip_cc) {
+			if($mediainfo->hasCC())
+				shell::msg("[Subtitles] Ripping Closed Captioning");
+			else
+				shell::msg("[Subtitles] Checking for Closed Captioning");
 			$dvdvob->dumpSRT();
+			
+			if(!$mediainfo->hasCC() && file_exists($srt)) {
+				if(filesize($srt) > $min_cc_filesize)
+					shell::msg("[Subtitles] Found Closed Captioning stream");
+				else
+					shell::msg("[Subtitles] No Closed Captioning available");
+			} 
 		}
 		
 		// Raw Video
@@ -198,11 +261,11 @@
 		$matroska->addVideo($mpg);
 		$matroska->addAudio($ac3);
 		
-		if(file_exists($idx))
+		if(file_exists($idx) && $mux_subs)
 			$matroska->addSubtitles($idx);
 		// ccextractor will dump an empty .srt output file
 		// if there are no subtitles
-		if(file_exists($srt) && filesize($srt) > 15)
+		if(file_exists($srt) && filesize($srt) > $min_cc_filesize && $mux_cc)
 			$matroska->addSubtitles($srt);
 		if(file_exists($txt))
 			$matroska->addChapters($txt);
@@ -221,10 +284,14 @@
 		in_array($ac3, $scandir) && unlink($ac3);
 		in_array($avi, $scandir) && unlink($avi);
 		file_exists($txt) && unlink($txt);
-		file_exists($idx) && unlink($idx);
-		file_exists($sub) && unlink($sub);
-		file_exists($srt) && unlink($srt);
+		if($mux_subs) {
+			file_exists($idx) && unlink($idx);
+			file_exists($sub) && unlink($sub);
+		}
+		if($mux_cc)
+			file_exists($srt) && unlink($srt);
 	}
 	
+	unlock();
 	
 ?>
