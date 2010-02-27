@@ -193,9 +193,10 @@
 		shell::msg("[Video] Aspect ratio: ".$dvdtrack->getAspectRatio());
 		shell::msg("[Video] Length: ".$dvdtrack->secondsToHMS($dvdtrack->getLength()));
 		shell::msg("[Subtitles] VobSub: ".($dvdtrack->hasSubtitles() ? "Yes" : "No"));
+		shell::msg("[Audio] ".$dvdtrack->getAudio());
 		shell::msg("[Audio] Track: ".$dvdtrack->getAudioAID());
 		shell::msg("[Audio] Format: ".$dvdtrack->getAudioFormat());
-		shell::msg("[Audio] Channels: ".$dvdtrack->getAudio());
+		shell::msg("[Audio] Channels: ".$dvdtrack->getAudioChannels());
 		
 		// VOB
 		if(!in_array($vob, $scandir)) {
@@ -253,23 +254,33 @@
 		}
 		
 		// Matroska
-		shell::msg("[MKV] Creating Matroska file");
-		
 		$matroska = new Matroska($mkv);
 		$matroska->setTitle($title);
-		$matroska->setAspectRatio($dvdtrack->getAspectRatio());
-		$matroska->addVideo($mpg);
-		$matroska->addAudio($ac3);
-		
-		if(file_exists($idx) && $mux_subs)
+		if(file_exists($mpg)) {
+			shell::msg("[MKV] Video");
+			$matroska->setAspectRatio($dvdtrack->getAspectRatio());
+			$matroska->addVideo($mpg);
+		}
+		if(file_exists($ac3)) {
+			shell::msg("[MKV] Audio");
+			$matroska->addAudio($ac3);
+		}
+		if(file_exists($idx) && $mux_subs) {
+			shell::msg("[MKV] Subtitles");
 			$matroska->addSubtitles($idx);
+		}
 		// ccextractor will dump an empty .srt output file
 		// if there are no subtitles
-		if(file_exists($srt) && filesize($srt) > $min_cc_filesize && $mux_cc)
+		if(file_exists($srt) && filesize($srt) > $min_cc_filesize && $mux_cc) {
+			shell::msg("[MKV] Closed Captioning");
 			$matroska->addSubtitles($srt);
-		if(file_exists($txt))
+		}
+		if(file_exists($txt)) {
+			shell::msg("[MKV] Chapters");
 			$matroska->addChapters($txt);
+		}
 		
+		shell::msg("[MKV] Muxing to Matroska");
 		$matroska->mux();
 			
 	}
