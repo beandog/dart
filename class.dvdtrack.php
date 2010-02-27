@@ -296,7 +296,7 @@
 					$str = 'Mono';
 					break;
 				case 2:
-					$str = 'Stereo':
+					$str = 'Stereo';
 					break;
 				case 6:
 					$str = 'Surround 5.1';
