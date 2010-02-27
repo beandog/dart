@@ -286,23 +286,33 @@
 		}
 		
 		function getAudio() {
-			if(!$this->audio_index)
-				$this->setAudioIndex();
 			
-			$num_channels = $this->audio[$this->getAudioIndex()]['channels'];
+			$audio_codec = $this->getAudioFormat();
+			$num_channels = $this->getAudioChannels();
+			
+			if($audio_codec == "dts")
+				$str = "DTS ";
+			elseif($audio_codec == "ac3")
+				$str = "Dolby ";
+			else
+				$str = $audio_codec;
 			
 			switch($num_channels) {
 				case 1:
-					$str = 'Mono';
+					$str .= 'Mono';
 					break;
 				case 2:
-					$str = 'Stereo';
+					$str .= 'Surround';
 					break;
+				case 4:
+					$str .= 'SR';
 				case 6:
-					$str = 'Surround 5.1';
+					if($audio_codec == 'ac3')
+						$str .= 'Digital ';
+					$str .= ' 5.1';
 					break;
 				default:
-					$str = $num_channels;
+					$str .= "$num_channels channels";
 					break;
 			}
 			
