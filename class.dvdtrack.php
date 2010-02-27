@@ -272,8 +272,10 @@
 			// the highest number of channels ordering by the stream_id.  This
 			// should be the correct track.
  			foreach($arr_tracks as $arr) {
- 				if($arr['channels'] == $max_channels)
+ 				if($arr['channels'] == $max_channels) {
  					$this->audio_index = $arr['idx'];
+ 					break;
+ 				}
  			}
 
 			// If there aren't any set, or if there is only one, set it to the default.
@@ -281,6 +283,30 @@
 				$this->audio_index = 1;
 			}
 			
+		}
+		
+		function getAudio() {
+			if(!$this->audio_index)
+				$this->setAudioIndex();
+			
+			$num_channels = $this->audio[$this->getAudioIndex()]['channels'];
+			
+			switch($num_channels) {
+				case 1:
+					$str = 'Mono';
+					break;
+				case 2:
+					$str = 'Stereo':
+					break;
+				case 6:
+					$str = 'Surround 5.1';
+					break;
+				default:
+					$str = $num_channels;
+					break;
+			}
+			
+			return $str;
 		}
 		
 		function getAudioIndex() {
