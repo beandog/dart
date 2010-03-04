@@ -25,6 +25,9 @@
 		private $track;
 		private $num_chapters = 0;
 		private $aspect_ratio;
+		private $audio_codecs;
+		private $prefer_dts;
+		private $dts;
 		
 		private $verbose = false;
 		private $debug = false;
@@ -43,6 +46,15 @@
 			$this->setBasename();
 			
 			$this->setLangCode();
+			
+			// Possible codecs that playback can handle
+			$this->audio_codecs = array('ac3', 'dts');
+			
+			// Prefer DTS over Dolby?
+			$this->prefer_dts = true;
+			
+			// Have DTS audio track(s)
+			$this->dts = false;
 				
 			bcscale(3);
 			
@@ -262,17 +274,23 @@
 			// Look at all the channels, and for the ones that match the
 			// language code, add it to an array to inspect.
 			foreach($this->audio as $idx => $arr) {
-				if($arr['langcode'] == $this->getLangCode()) {
+				if($arr['langcode'] == $this->getLangCode() && in_array($arr['format'], $this->audio_codecs)) {
 					$max_channels = max($max_channels, $arr['channels']);
-					$arr_tracks[$arr['stream_id']] = array('idx' => $idx, 'channels' => $arr['channels']);
+					$arr_tracks[$arr['stream_id']] = array('idx' => $idx, 'channels' => $arr['channels'], 'format' => $arr['format']);
 				}
 			}
 			
+			// Determine if there is a track with DTS with the max # of channels
+ 			foreach($arr_tracks as $arr) {
+ 				if($arr['format'] == 'dts' && $arr['channels'] == $max_channels)
+					$this->dts = true;
+ 			}
+ 			
 			// For all the possible audio channels, find the first one with
 			// the highest number of channels ordering by the stream_id.  This
 			// should be the correct track.
  			foreach($arr_tracks as $arr) {
- 				if($arr['channels'] == $max_channels) {
+ 				if($arr['channels'] == $max_channels && ($this->dts == false || ($this->dts == true && $arr['format'] == 'dts'))) {
  					$this->audio_index = $arr['idx'];
  					break;
  				}
@@ -654,6 +672,10 @@
 			if(!empty($str))
 				file_put_contents($txt, $str);
 		
+		}
+		
+		public function hasDTS() {
+			return $this->dts;
 		}
 		
 	}
