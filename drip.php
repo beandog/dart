@@ -530,7 +530,7 @@
 				
 				// Add chapters
 				$num_chapters = $dvd_track->getNumChapters();
-				if($num_chapters > 1) {
+				if($num_chapters) {
 					
 					if($verbose) {
 						shell::msg("Chapters: $num_chapters");
