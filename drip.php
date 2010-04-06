@@ -726,14 +726,13 @@
 						$vobsub = true;
 					}
 					
-					if($args['nosub'] && $vobsub) {
-						$vobsub = false;
+					if(!$rip_subs && $vobsub) {
 						shell::msg("[DVD] Ignoring Subtitles");
 					} elseif(!$vobsub) {
 						shell::msg("[DVD] No Subtitles");
 					}
 					
-					if($vobsub && !file_exists($sub)) {
+					if($vobsub && $rip_subs && !file_exists($sub)) {
 						if($pretend) {
 							shell::msg("[DVD] $sub");
 						} else {
@@ -743,14 +742,14 @@
 						}
 					}
 				
-				} elseif(file_exists($idx) && $verbose) {
+				} elseif(file_exists($idx) && $rip_subs && $verbose) {
 					shell::msg("[DVD] Subtitles Ripped");
 				}
 				
  				// Metadata
  				if(!file_exists($xml) && !file_exists($mkv)) {
  				
- 					shell::msg("[MKV] Metadata");
+//  					shell::msg("[MKV] Metadata");
  				
  					$matroska = new Matroska();
  					
@@ -940,7 +939,7 @@
 							$mpg = $ac3 = $vob;
 						}
 						
-						if(!file_exists($srt) && !$nosub && $series->hasCC()) {
+						if(!file_exists($srt) && $rip_cc && $series->hasCC()) {
 							shell::msg("[SRT] Ripping Closed Captioning");
 							$dvd_vob->dumpSRT();
 						}
@@ -952,9 +951,9 @@
 						$matroska->addVideo($mpg);
 						$matroska->addAudio($ac3);
 						
-						if(file_exists($idx))
+						if(file_exists($idx) && $mux_subs)
 							$matroska->addSubtitles($idx);
-						if(file_exists($srt) && filesize($srt) > 25)
+						if(file_exists($srt) && filesize($srt) > 25 && $mux_cc)
 							$matroska->addSubtitles($srt);
 						if(file_exists($txt))
 							$matroska->addChapters($txt);
@@ -985,12 +984,12 @@
 							unlink($mpg);
 						if(file_exists($ac3))
 							unlink($ac3);
-						if(file_exists($idx))
+						if(file_exists($idx) && $mux_subs)
 							unlink($idx);
-						if(file_exists($srt))
-							unlink($srt);
-						if(file_exists($sub))
+						if(file_exists($sub) && $mux_subs)
 							unlink($sub);
+						if(file_exists($srt) && $mux_cc)
+							unlink($srt);
 						if(file_exists($xml))
 							unlink($xml);
 						if(file_exists($txt))
