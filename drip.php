@@ -709,7 +709,7 @@
 				}
 				
 				// Chapters
- 				if(!file_exists($txt) && $episode->getNumChapters()) {
+ 				if(!file_exists($txt) && $episode->getNumChapters() > 1) {
 					shell::msg("[DVD] Chapters");
 					$dvd_track->dumpChapters();
 					$num_ripped['chapters']++;
