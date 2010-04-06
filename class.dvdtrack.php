@@ -41,7 +41,7 @@
 			if(!is_null($device))
 				$this->setDevice($device);
 			else
-				$this->setDevice = "";
+				$this->setDevice("");
 			
 			$this->setBasename();
 			
