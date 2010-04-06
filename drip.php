@@ -35,14 +35,14 @@
 	$dvd = new DVD("/dev/dvd");
 	$storage_dir = "/var/media";
 	
-	$options = shell::parseArguments();
+	$args = shell::parseArguments();
 	
 	$ini = array();
 	$config = getenv('HOME').'/.drip/config';
 	if(file_exists($config))
 		$ini = parse_ini_file($config);
 		
-	if($options['h'] || $options['help']) {
+	if($args['h'] || $args['help']) {
 	
 		shell::msg("Options:");
 		shell::msg("  --rip\t\t\tRip DVD");
@@ -60,49 +60,49 @@
 		die;
 	}
 	
-//   	print_r($options);
+//   	print_r($args);
 
-	if($options['p'] || $options['pretend'])
+	if($args['p'] || $args['pretend'])
 		$pretend = true;
 	
-	if($options['update'])
+	if($args['update'])
 		$update = true;
 	
-	if($options['q'] || $options['queue'])
+	if($args['q'] || $args['queue'])
 		$queue = true;
 		
-	if($options['skip'])
-		$skip = abs(intval($options['skip']));
+	if($args['skip'])
+		$skip = abs(intval($args['skip']));
 	else
 		$skip = 0;
 		
-	if($options['max'])
-		$max = abs(intval($options['max']));
+	if($args['max'])
+		$max = abs(intval($args['max']));
 	
-	if($options['debug']) {
+	if($args['debug']) {
 		$drip->debug = $drip->verbose = true;
 		$debug =& $drip->debug;
 		$verbose =& $drip->verbose;
 		$eject = false;
 	}
 	
-	if($options['encode'])
+	if($args['encode'])
 		$encode = true;
 	
-	if($options['rip'])
+	if($args['rip'])
 		$rip = true;
 	
-	if($options['archive'])
+	if($args['archive'])
 		$archive = true;
 	
 	$raw = true;
-	if($options['noraw'])
+	if($args['noraw'])
 		$raw = false;
 	
-	if($ini['eject'] || $options['eject'])
+	if($ini['eject'] || $args['eject'])
 		$eject = true;
 		
-	if($options['v'] || $options['verbose'] || $ini['verbose'] || $debug) {
+	if($args['v'] || $args['verbose'] || $ini['verbose'] || $debug) {
 		$drip->verbose = true;
 		$verbose =& $drip->verbose;
 	}
@@ -111,6 +111,23 @@
 		$mount = true;
   		$dvd->mount();
 	}
+	
+	// Closed Captioning
+	if($ini['rip_cc'] || $ini['mux_cc'] || $args['cc'])
+		$rip_cc = true;
+	if($args['cc'] || $ini['mux_cc'])
+		$mux_cc = true;
+	if($args['nocc'])
+		$rip_cc = $mux_cc = false;
+	$min_cc_filesize = 15;
+	
+	// DVD Subs (VobSubs)
+	if($ini['rip_subs'] || $ini['mux_subs'] || $args['subs'])
+		$rip_subs = true;
+	if($args['subs'] || $ini['mux_subs'])
+		$mux_subs = true;
+	if($args['nosubs'])
+		$rip_subs = $mux_subs = false;
 	
 	// Re-archive disc
 	// Generally called if you want to update the webif
@@ -124,19 +141,19 @@
 		$arr_track_ids = $drip_disc->getTrackIDs();
 		
 		// Update disc number
-		if($options['disc']) {
+		if($args['disc']) {
 			if($verbose) {
 				shell::msg("Updating disc");
 			}
-			$drip_disc->setDiscNumber($options['disc']);
+			$drip_disc->setDiscNumber($args['disc']);
 		}
 		
 		// Update side
-		if($options['side']) {
+		if($args['side']) {
 			if($verbose) {
 				shell::msg("Updating side");
 			}
-			$drip_disc->setSide($options['side']);
+			$drip_disc->setSide($args['side']);
 		}
 		
 		foreach($arr_track_ids as $track_id) {
@@ -204,7 +221,7 @@
 	// So, this statement will check to see if the disc is in the database OR if it is and
 	// we are manually passing a season #.
 	
-	if(($archive || $rip) && (!$drip->inDatabase($dvd->getID()) || ($drip->inDatabase($dvd->getID()) && $options['season']))) {
+	if(($archive || $rip) && (!$drip->inDatabase($dvd->getID()) || ($drip->inDatabase($dvd->getID()) && $args['season']))) {
 	
 		// Bypass archive confirmation if --new is passed
 		if(!$archive) {
@@ -219,22 +236,22 @@
 		// Check for shell arguments to pass optionally
 		// series, season, disc #
 		foreach(array('series', 'season', 'disc', 'side', 'volume') as $x) {
-			$tmp = abs(intval($options[$x]));
+			$tmp = abs(intval($args[$x]));
 			
 			switch($x) {
 				case 'series':
-					$series_id = $options[$x];
+					$series_id = $args[$x];
 					break;
 				case 'disc':
-					$disc_number = $options[$x];
-					if(!$options['side']) {
-						$side = strtoupper(substr($options[$x], -1, 1));
+					$disc_number = $args[$x];
+					if(!$args['side']) {
+						$side = strtoupper(substr($args[$x], -1, 1));
 					}
 					break;
 				case 'side':
 				case 'season':
 				case 'volume':
-					$$x = $options[$x];
+					$$x = $args[$x];
 					break;
 			}
 			
@@ -538,7 +555,6 @@
 		}
 	}
 	
-	
 	if($rip) {
 	
 		// Get the series ID
@@ -710,7 +726,7 @@
 						$vobsub = true;
 					}
 					
-					if($options['nosub'] && $vobsub) {
+					if($args['nosub'] && $vobsub) {
 						$vobsub = false;
 						shell::msg("[DVD] Ignoring Subtitles");
 					} elseif(!$vobsub) {
@@ -810,6 +826,10 @@
 				
 			}
 		
+		} else {
+			shell::msg("The disc is archived, but there are no episodes to rip.");
+			shell::msg("Check the frontend to see if titles need to be added.");
+			$eject = false;
 		}
 		
 		if($eject)
