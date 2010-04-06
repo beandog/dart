@@ -27,7 +27,8 @@
 		}
 		
 		function eject() {
-			shell::cmd("eject ".$this->getDevice());
+			// Ignore exit code if it dies
+			shell::cmd("eject ".$this->getDevice(), false, true);
 		}
 		
 		function mount() {
