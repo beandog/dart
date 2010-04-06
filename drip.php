@@ -221,7 +221,7 @@
 	// So, this statement will check to see if the disc is in the database OR if it is and
 	// we are manually passing a season #.
 	
-	if(($archive || $rip) && (!$drip->inDatabase($dvd->getID()) || ($drip->inDatabase($dvd->getID()) && $args['season']))) {
+	if(($archive || $rip) && !$drip->inDatabase($dvd->getID())) {
 	
 		// Bypass archive confirmation if --new is passed
 		if(!$archive) {
@@ -465,6 +465,7 @@
 			$disc->setDiscID($dvd->getID());
 			$disc->setTitle($dvd->getTitle());
 			$disc->setDiscNumber($disc_number);
+			$disc->setSeason($season);
 			$disc->setVolume($volume);
 			$disc->setSeriesID($series->getID());
 			
@@ -1021,11 +1022,11 @@
 	}
 	
 	
- 	if($mount && ($archive || $rip) && !$queue)
+ 	if($mount && ($archive || $rip) && !$queue && !$eject)
  		$dvd->unmount();
 	
 	// Don't eject if you are just checking the queue
-	if($eject && !$queue && ($rip) )
+	if(($eject && !$queue && $rip) || $args['eject'])
 		$dvd->eject();
-
+		
 ?>

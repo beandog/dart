@@ -7,6 +7,7 @@
 		private $disc_id;
 		private $title;
 		private $side;
+		private $season;
 		private $volume;
 		private $disc_number;
 		
@@ -17,6 +18,7 @@
 				$this->getDiscID();
 				$this->getSide();
 				$this->getVolume();
+				$this->getSeason();
 			} else {
 				$this->newDisc();
 			}
@@ -193,6 +195,35 @@
 			return $this->volume;
 		}
 		
+		/** Default season **/
+		function setSeason($int) {
+		
+			global $db;
+		
+			$int = abs(intval($int));
+			
+			if($int == 0)
+				$int = null;
+			
+			$arr_update = array(
+				'season' => $int
+			);
+			
+			$db->autoExecute('discs', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			
+			$this->season = $int;
+		
+		}
+		
+		function getSeason() {
+			if(!isset($this->season)) {
+				global $db;
+				$sql = "SELECT season FROM discs WHERE id = ".$this->getID().";";
+				$this->season = $db->getOne($sql);
+			}
+			
+			return $this->season;
+		}
 		
 		function setSide($char) {
 		
@@ -237,7 +268,7 @@
 		
 			global $db;
 			
-			$sql = "SELECT DISTINCT season FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id WHERE d.id = ".$this->getID().";";
+			$sql = "SELECT DISTINCT e.season FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id WHERE d.id = ".$this->getID().";";
 			$arr = $db->getCol($sql);
 			
 			return $arr;
