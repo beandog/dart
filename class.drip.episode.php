@@ -317,14 +317,38 @@
 		
 		}
 		
+		function orderedEpisodes() {
+		
+			global $db;
+			
+			$sql = "SELECT unordered FROM view_episodes WHERE episode_id = ".$this->id;
+			$unordered = $db->getOne($sql);
+			
+			if($unordered == 't')
+				return false;
+			else
+				return true;
+		
+		}
+		
 		function getEpisodeNumber() {
 		
 			global $db;
 			
-			// Find the # of episodes on previous discs for this season
-			$sql = "SELECT COUNT(1) FROM view_episodes e1 INNER JOIN view_episodes e2 ON e1.tv_show_id = e2.tv_show_id AND e1.season = e2.season AND e1.volume = e2.volume AND e1.disc_id != e2.disc_id WHERE e2.episode_id = ".$this->getID()." AND e1.season <= e2.season AND ((e1.disc_number < e2.disc_number) OR (e1.disc_number = e2.disc_number AND e1.side < e2.side)) AND ((e1.alt_title_id IS NULL AND e2.alt_title_id IS NULL) OR (e1.alt_title_id = e2.alt_title_id));";
+			if(!$this->orderedEpisodes())
+				return null;
+			
+			// Find the # of episodes on previous discs for this season (or volume)
+			$sql = "SELECT COUNT(1) ".
+				"FROM view_episodes e1 ".
+				"INNER JOIN view_episodes e2 ON e1.tv_show_id = e2.tv_show_id AND e1.volume = e2.volume AND e1.disc_id != e2.disc_id ".
+				"AND (e1.season = e2.season OR (e1.volume = e2.volume AND e1.season IS NULL AND e2.season IS NULL) OR (e1.volume = e2.volume AND e1.season = e2.season) ) ".
+				"WHERE e2.episode_id = ".$this->getID().
+				" AND ( e1.season <= e2.season  OR e1.season IS NULL AND e2.season IS NULL ) ".
+				" AND ((e1.disc_number < e2.disc_number) OR (e1.disc_number = e2.disc_number AND e1.side < e2.side)) AND ((e1.alt_title_id IS NULL AND e2.alt_title_id IS NULL) OR (e1.alt_title_id = e2.alt_title_id));";
 			$count = $db->getOne($sql);
-		
+			
+	
 			// Find the # of episodes before the one on the current disc
 			// TESTING Added a check for complete-series DVDs, where the query
 			// looks at the volume as well, not just the season.
