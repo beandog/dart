@@ -32,7 +32,7 @@
 	PEAR::setErrorHandling(PEAR_ERROR_CALLBACK, 'pear_error');
 	
 	$drip = new drip();
-	$dvd = new DVD("/dev/dvd");
+	
 	$storage_dir = "/var/media";
 	
 	$args = shell::parseArguments();
@@ -128,6 +128,15 @@
 		$mux_subs = true;
 	if($args['nosubs'])
 		$rip_subs = $mux_subs = false;
+		
+	if($args['device'])
+		$device = $args['device'];
+	elseif($ini['device'])
+		$device = $ini['device'];
+	else
+		$device = "/dev/dvd";
+		
+	$dvd = new DVD($device);
 	
 	// Re-archive disc
 	// Generally called if you want to update the webif
@@ -158,7 +167,7 @@
 		
 		foreach($arr_track_ids as $track_id) {
 			$drip_track = new DripTrack($track_id);
-			$dvd_track = new DVDTrack($drip_track->getTrackNumber());
+			$dvd_track = new DVDTrack($drip_track->getTrackNumber(), $device);
 			
 			// Update aspect ratio
 			if($drip_track->getAspectRatio() != $dvd_track->getAspectRatio()) {
@@ -484,7 +493,7 @@
 			
 				if($debug)
 					shell::msg("new DVDTrack()");
-				$dvd_track = new DVDTrack($track_number);
+				$dvd_track = new DVDTrack($track_number, $device);
 				
 				// Convert to minutes to check against max/min length
 				$track_length = bcdiv($dvd_track->getLength(), 60, 3);
@@ -644,7 +653,7 @@
 				$starting_chapter = $episode->getStartingChapter();
 				$ending_chapter = $episode->getEndingChapter();
 				
-				$dvd_track = new DVDTrack($track_number);
+				$dvd_track = new DVDTrack($track_number, $device);
 				$dvd_track->setBasename($basename);
 				$dvd_track->setStartingChapter($starting_chapter);
 				$dvd_track->setEndingChapter($ending_chapter);
