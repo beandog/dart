@@ -210,7 +210,7 @@
 			
 		}
 		
-		die;
+// 		die;
 	}
 	
 	// Archive disc if not in the db
@@ -343,6 +343,7 @@
 		}
 		
 		// Get the season
+		// FIXME Check if there are other seasons
 		if(!$season) {
 		
 			$last_season = $series->getLastSeasonNumber();
@@ -354,7 +355,7 @@
 				$default = null;
 			}
 		
-			$season = shell::ask("What season is this disc? [$guess]", $default);
+// 			$season = shell::ask("What season is this disc? [$guess]", $default);
 			if(!is_numeric($season))
 				$season = null;
 		}
