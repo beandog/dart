@@ -113,7 +113,7 @@
 	}
 	
 	// Closed Captioning
-	if($ini['rip_cc'] || $ini['mux_cc'] || $args['cc'])
+	if($ini['rip_cc'] || $args['cc'])
 		$rip_cc = true;
 	if($args['cc'] || $ini['mux_cc'])
 		$mux_cc = true;
@@ -122,7 +122,7 @@
 	$min_cc_filesize = 15;
 	
 	// DVD Subs (VobSubs)
-	if($ini['rip_subs'] || $ini['mux_subs'] || $args['subs'])
+	if($ini['rip_subs'] || $args['subs'])
 		$rip_subs = true;
 	if($args['subs'] || $ini['mux_subs'])
 		$mux_subs = true;
@@ -1007,7 +1007,8 @@
 				
 				$x++;
 				
-				echo "\n";
+				if($encode)
+					echo "\n";
 				
 			}
 			
