@@ -612,6 +612,8 @@
 			$str = "[Disc] Disc $disc_number$side";
 			if($max)
 				$str .= ", Max $max Episodes";
+			elseif($series->isUnordered())
+				$str .= ", $num_episodes Episodes";
 			else
 				$str .= ", Episodes $starting_episode_number - $ending_episode_number";
 			shell::msg($str);
@@ -739,7 +741,7 @@
 					
 					if(!$rip_subs && $vobsub) {
 						shell::msg("[DVD] Ignoring Subtitles");
-					} elseif(!$vobsub) {
+					} elseif($rip_subs && !$vobsub && !file_exists($vob)) {
 						shell::msg("[DVD] No Subtitles");
 					}
 					
