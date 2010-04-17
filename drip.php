@@ -844,8 +844,10 @@
 			$eject = false;
 		}
 		
-		if($eject)
+		if($eject) {
 			$dvd->eject();
+			$ejected = true;
+		}
 	
 	}
 	
@@ -1039,7 +1041,7 @@
  		$dvd->unmount();
 	
 	// Don't eject if you are just checking the queue
-	if(($eject && !$queue && $rip) || $args['eject'])
+	if(!$ejected && (($eject && !$queue && $rip) || $args['eject']))
 		$dvd->eject();
 		
 ?>
