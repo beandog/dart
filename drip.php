@@ -107,11 +107,6 @@
 		$verbose =& $drip->verbose;
 	}
 	
-	if($ini['mount'] && ($archive || $rip || $update)) {
-		$mount = true;
-  		$dvd->mount();
-	}
-	
 	// Closed Captioning
 	if($ini['rip_cc'] || $args['cc'])
 		$rip_cc = true;
@@ -137,6 +132,11 @@
 		$device = "/dev/dvd";
 		
 	$dvd = new DVD($device);
+	
+	if($ini['mount'] && ($archive || $rip || $update)) {
+		$mount = true;
+  		$dvd->mount();
+	}
 	
 	// Re-archive disc
 	// Generally called if you want to update the webif
