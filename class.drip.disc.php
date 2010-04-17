@@ -202,7 +202,7 @@
 		
 			$int = abs(intval($int));
 			
-			if($int == 0)
+			if(!$int)
 				$int = null;
 			
 			$arr_update = array(
