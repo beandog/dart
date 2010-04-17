@@ -959,19 +959,25 @@
 							$dvd_vob->dumpSRT();
 						}
 						
-						shell::msg("[MKV] Muxing to Matroska");
-					
 						$matroska = new Matroska($mkv);
 						
 						$matroska->addVideo($mpg);
 						$matroska->addAudio($ac3);
 						
-						if(file_exists($idx) && $mux_subs)
+						$mux = array("Video", "Audio");
+						
+						if(file_exists($idx) && $mux_subs) {
 							$matroska->addSubtitles($idx);
-						if(file_exists($srt) && filesize($srt) > 25 && $mux_cc)
+							$mux[] = "VobSub";
+						}
+						if(file_exists($srt) && filesize($srt) > 25 && $mux_cc) {
 							$matroska->addSubtitles($srt);
-						if(file_exists($txt))
+							$mux[] = "Closed Captioning";
+						}
+						if(file_exists($txt)) {
 							$matroska->addChapters($txt);
+							$mux[] = "Chapters";
+						}
 						if(file_exists($xml))
 							$matroska->addGlobalTags($xml);
 						
@@ -979,6 +985,10 @@
 						
 						if($drip_track->getAspectRatio())
 							$matroska->setAspectRatio($drip_track->getAspectRatio());
+							
+						$str_muxing = implode(", ", $mux);
+							
+						shell::msg("[MKV] Muxing to Matroska ($str_muxing)");
 						
 						$matroska->mux();
 							
