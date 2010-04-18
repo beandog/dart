@@ -960,6 +960,7 @@
 						}
 						
 						$matroska = new Matroska($mkv);
+						$matroska->setDebug($debug);
 						
 						$matroska->addVideo($mpg);
 						$matroska->addAudio($ac3);
