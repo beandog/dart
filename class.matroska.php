@@ -8,6 +8,8 @@
 		private $args = array();
 		private $streams = array();
 		private $dtd;
+		private $debug;
+		private $verbose;
 	
 		function __construct($filename = null) {
 		
@@ -26,6 +28,10 @@
 		
 		public function getFilename() {
 			return $this->filename;
+		}
+		
+		function setDebug($bool = true) {
+			$this->debug = $this->verbose = (boolean)$bool;
 		}
 		
 		/** Streams **/
@@ -160,7 +166,6 @@ XML;
 			if($this->title)
 				$flags['title'] = $this->title;
 				
-			// FIXME Can only handle one stream of each type		
 			foreach($this->streams as $arr) {
 			
 				switch($arr['type']) {
@@ -173,11 +178,11 @@ XML;
 						break;
 					
 					case 'audio':
-						$flags['no-video'] = $arr['filename'];
+						$flags['no-video'][] = $arr['filename'];
 						break;
 					
 					case 'subtitles':
-						$flags['default-track 0:no'] = $arr['filename'];
+						$flags['default-track 0:no'][] = $arr['filename'];
 						break;
 					
 					case 'chapters':
@@ -208,8 +213,13 @@ XML;
 			if($this->verbose || $this->debug)
 				$exec[] = "-v";
 			
-			foreach($this->flags as $option => $argument) {
-				$exec[] = "--$option ".escapeshellarg($argument);
+			foreach($this->flags as $option => $mixed) {
+			
+				if(is_array($mixed))
+					foreach($mixed as $argument)
+						$exec[] = "--$option ".escapeshellarg($argument);
+				else
+					$exec[] = "--$option ".escapeshellarg($mixed);
 			}
 			
 			foreach($this->args as $argument) {
