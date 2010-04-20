@@ -26,6 +26,7 @@
 				$this->isCartoon();
 				$this->isUnordered();
 				$this->hasCC();
+				$this->hasSDH();
 				$this->hasVolumes();
 				$this->getBroadcastYear();
 				$this->getProductionStudio();
@@ -341,6 +342,84 @@
 			}
 			
 			return $this->cc;
+		
+		}
+		
+		function setSDH($sdh) {
+		
+			global $db;
+		
+			if(is_null($sdh) || $sdh == -1)
+				$value = null;
+			elseif($sdh)
+				$value = true;
+			else
+				$value = false;
+			
+			$arr_update = array(
+				'sdh' => $value
+			);
+			
+			$db->autoExecute('tv_shows', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			
+			$this->sdh = $value;
+			
+		}
+		
+		function hasSDH() {
+		
+			if(is_null($this->sdh)) {
+				global $db;
+				$sql = "SELECT sdh FROM tv_shows WHERE id = ".$this->getID().";";
+				$value = $db->getOne($sql);
+				if($value === 't')
+					$this->sdh = true;
+				elseif(is_null($value))
+					$this->sdh = null;
+				else
+					$this->sdh = false;
+			}
+			
+			return $this->sdh;
+		
+		}
+		
+		function setVobSub($bool) {
+		
+			global $db;
+		
+			if(is_null($bool) || $bool == -1)
+				$value = null;
+			elseif($bool)
+				$value = true;
+			else
+				$value = false;
+			
+			$arr_update = array(
+				'vobsub' => $value
+			);
+			
+			$db->autoExecute('tv_shows', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			
+			$this->vobsub = $value;
+			
+		}
+		
+		function hasVobSub() {
+		
+			if(is_null($this->vobsub)) {
+				global $db;
+				$sql = "SELECT vobsub FROM tv_shows WHERE id = ".$this->getID().";";
+				$value = $db->getOne($sql);
+				if($value === 't')
+					$this->vobsub = true;
+				elseif(is_null($value))
+					$this->vobsub = null;
+				else
+					$this->vobsub = false;
+			}
+			
+			return $this->vobsub;
 		
 		}
 		
