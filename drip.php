@@ -6,6 +6,7 @@
 	require_once 'class.shell.php';
 	require_once 'class.drip.php';
 
+	// FIXME Use MDB2
 	require_once 'DB.php';
 	
 	// New OOP classes
@@ -23,7 +24,6 @@
 	
 	$db =& DB::connect("pgsql://steve@charlie/movies");
 	$db->setFetchMode(DB_FETCHMODE_ASSOC);
-// 	PEAR::setErrorHandling(PEAR_ERROR_DIE);
 	
 	function pear_error($obj) {
 		die($obj->getMessage() . "\n" . $obj->getDebugInfo());
@@ -79,6 +79,9 @@
 	if($args['max'])
 		$max = abs(intval($args['max']));
 	
+	if($ini['eject'] || $args['eject'])
+		$eject = true;
+	
 	if($args['debug']) {
 		$drip->debug = $drip->verbose = true;
 		$debug =& $drip->debug;
@@ -95,13 +98,10 @@
 	if($args['archive'])
 		$archive = true;
 	
-	$raw = true;
-	if($args['noraw'])
-		$raw = false;
+	$demux = true;
+	if($args['nodemux'])
+		$demux = false;
 	
-	if($ini['eject'] || $args['eject'])
-		$eject = true;
-		
 	if($args['v'] || $args['verbose'] || $ini['verbose'] || $debug) {
 		$drip->verbose = true;
 		$verbose =& $drip->verbose;
@@ -187,7 +187,6 @@
 				$drip_track->setLength($track_length);
 			}
 				
-				
 			// Add chapters
 			// This will only add chapters for the track, not set them for the episodes.
 			$num_chapters = $dvd_track->getNumChapters();
@@ -216,19 +215,10 @@
 					
 				}
  			}
-			
 		}
-		
-// 		die;
 	}
 	
 	// Archive disc if not in the db
-	
-	// Some series may span seasons across one disc, by accident or design (complete series)
-	// Normally the schema should prefer one entry per disc ID, but the simplest way to override
-	// the season number is just to add another entry for the disc.
-	// So, this statement will check to see if the disc is in the database OR if it is and
-	// we are manually passing a season #.
 	
 	if(($archive || $rip) && !$drip->inDatabase($dvd->getID())) {
 	
@@ -321,13 +311,10 @@
 					}
 				}
 			} while($input == 0);
-			
-			
 		}
 				
 		// Create a new series
 		if($new_series && !$series) {
-// 			$drip->title();
 			
 			shell::msg('');
 			shell::msg("Disc Title: ".$dvd->getTitle());
@@ -344,7 +331,6 @@
 			$series->setCartoon($cartoon);
 			$series_id = $series->getID();
 			
-// 			$series_id = $drip->newSeries($title, $min_len, $max_len, $cartoon);
 		} else {
 			if(!$series_id)
  				$series_id = $arr[($input - 1)]['id'];
@@ -463,7 +449,6 @@
 			} while($disc_number == 0);
 		}
 		
-		
 		if($series && $disc_number) {
 		
 			if($debug)
@@ -561,7 +546,6 @@
 						
 					}
 				}
-				
 			}
 		}
 	}
@@ -769,7 +753,8 @@
  					$matroska->setFilename($mkv);
  					if($episode_title)
  						$matroska->setTitle("TITLE", $episode->getTitle());
- 					$matroska->setAspectRatio($dvd_track->getAspectRatio());
+					if($dvd_track->getAspectRatio())
+ 						$matroska->setAspectRatio($dvd_track->getAspectRatio());
  					
  					$matroska->addTag();
 					
@@ -863,8 +848,6 @@
 		else
 			$arr = $drip->getQueue($max);
 		
-//  		print_r($arr);
-		
 		$todo = $count = count($arr);
 		
 		if($count) {
@@ -929,7 +912,7 @@
 						$dvd_vob->setDebug($debug);
 						$dvd_vob->setAID($audio_aid);
 					
-						if($raw) {
+						if($demux) {
 							shell::msg("[Episode] \"$episode_title\" ($x/$count)");
 							if($episode_number)
 								shell::msg("[Episode] Number $episode_number");
@@ -971,7 +954,7 @@
 							$matroska->addSubtitles($idx);
 							$mux[] = "VobSub";
 						}
-						if(file_exists($srt) && filesize($srt) > 25 && $mux_cc) {
+						if(file_exists($srt) && filesize($srt) > $min_cc_filesize && $mux_cc) {
 							$matroska->addSubtitles($srt);
 							$mux[] = "Closed Captioning";
 						}
@@ -1035,9 +1018,7 @@
 					echo "\n";
 				
 			}
-			
 		}
-		
 	}
 	
 	$finish = time();
@@ -1046,7 +1027,6 @@
 // 		$exec_time = shell::executionTime($start, $finish);
 // 		shell::msg("Total execution time: ".$exec_time['minutes']."m ".$exec_time['seconds']."s");
 	}
-	
 	
  	if($mount && ($archive || $rip) && !$queue && !$eject)
  		$dvd->unmount();
