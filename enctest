@@ -1,9 +1,0 @@
-#!/bin/sh
-
-F=`basename $1 .vob`
-
-AVI=${F}.avi
-
-if [[ ! -f ${AVI} ]]; then
-	mencoder $1 -o $AVI -ovc xvid -xvidencopts bitrate=2200 -oac copy -vf pullup,softskip -ofps 24000/1001
-fi
