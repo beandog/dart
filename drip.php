@@ -6,7 +6,6 @@
 	require_once 'class.shell.php';
 	require_once 'class.drip.php';
 
-	// FIXME Use MDB2
 	require_once 'DB.php';
 	
 	// New OOP classes
@@ -24,6 +23,7 @@
 	
 	$db =& DB::connect("pgsql://steve@charlie/movies");
 	$db->setFetchMode(DB_FETCHMODE_ASSOC);
+// 	PEAR::setErrorHandling(PEAR_ERROR_DIE);
 	
 	function pear_error($obj) {
 		die($obj->getMessage() . "\n" . $obj->getDebugInfo());
@@ -70,7 +70,10 @@
 	
 	if($args['q'] || $args['queue'])
 		$queue = true;
-		
+	
+	if($args['i'] || $args['info'])
+		$info = true;
+	
 	if($args['skip'])
 		$skip = abs(intval($args['skip']));
 	else
@@ -78,9 +81,6 @@
 		
 	if($args['max'])
 		$max = abs(intval($args['max']));
-	
-	if($ini['eject'] || $args['eject'])
-		$eject = true;
 	
 	if($args['debug']) {
 		$drip->debug = $drip->verbose = true;
@@ -98,10 +98,13 @@
 	if($args['archive'])
 		$archive = true;
 	
-	$demux = true;
-	if($args['nodemux'])
-		$demux = false;
+	$raw = true;
+	if($args['noraw'])
+		$raw = false;
 	
+	if($ini['eject'] || $args['eject'])
+		$eject = true;
+		
 	if($args['v'] || $args['verbose'] || $ini['verbose'] || $debug) {
 		$drip->verbose = true;
 		$verbose =& $drip->verbose;
@@ -133,9 +136,69 @@
 		
 	$dvd = new DVD($device);
 	
-	if($ini['mount'] && ($archive || $rip || $update)) {
+	if($ini['mount'] && ($archive || $rip || $update || $info)) {
 		$mount = true;
   		$dvd->mount();
+	}
+	
+	
+	// Display info about disc
+	if($info) {
+		
+		if(!$drip->inDatabase($dvd->getID())) {
+			shell::msg("Disc is not archived");
+			break;
+		}
+		
+		// Get the series ID
+		$sql = "SELECT id FROM view_discs WHERE disc_id = '".$dvd->getID()."';";
+		$drip_disc = new DripDisc($db->getOne($sql));
+		$series = new DripSeries($drip_disc->getSeriesID());
+		
+		$series_title = $series->getTitle();
+		
+		shell::msg($series_title);
+		$disc_number = $drip_disc->getDiscNumber();
+		$side = $drip_disc->getSide();
+		
+		$disc_season = $drip_disc->getSeason();
+		$disc_volume = $drip_disc->getVolume();
+		if($disc_season)
+			shell::msg("Season $disc_season");
+		if($disc_volume)
+			shell::msg("Volume $disc_volume");
+		
+		shell::msg("Disc: $disc_number$side");
+		
+		$sql = "SELECT episode_id FROM view_episodes WHERE bad_track = FALSE AND episode_title != '' AND disc_id = ".$drip_disc->getID()." ORDER BY track_order, season, episode_order, episode_title, track, episode_id $offset;";
+		$arr = $db->getCol($sql);
+		
+		$num_episodes = $count = count($arr);
+		
+		shell::msg("Episodes: $num_episodes");
+		
+		$x = 0;
+		
+		foreach($arr as $episode_id) {
+			
+			$episode = new DripEpisode($episode_id);
+			$episode_number = $episode->getEpisodeNumber();
+			$episode_title = $episode->getTitle();
+			$episode_part = $episode->getPart();
+			if($episode_part > 1)
+				$episode_title .= ", Part $episode_part";
+				
+			$track = new DripTrack($episode->getTrackID());
+			$track_number = $track->getTrackNumber();
+			$starting_chapter = $episode->getStartingChapter();
+			$ending_chapter = $episode->getEndingChapter();
+			
+			if($starting_chapter && $ending_chatper)
+				$display_chapter = " Chapter $starting_chapter-$ending_chapter";
+				
+			shell::msg("Track $track_number$display_chapter \"$episode_title\"");
+		}
+	
 	}
 	
 	// Re-archive disc
@@ -187,6 +250,7 @@
 				$drip_track->setLength($track_length);
 			}
 				
+				
 			// Add chapters
 			// This will only add chapters for the track, not set them for the episodes.
 			$num_chapters = $dvd_track->getNumChapters();
@@ -215,10 +279,19 @@
 					
 				}
  			}
+			
 		}
+		
+// 		die;
 	}
 	
 	// Archive disc if not in the db
+	
+	// Some series may span seasons across one disc, by accident or design (complete series)
+	// Normally the schema should prefer one entry per disc ID, but the simplest way to override
+	// the season number is just to add another entry for the disc.
+	// So, this statement will check to see if the disc is in the database OR if it is and
+	// we are manually passing a season #.
 	
 	if(($archive || $rip) && !$drip->inDatabase($dvd->getID())) {
 	
@@ -311,10 +384,13 @@
 					}
 				}
 			} while($input == 0);
+			
+			
 		}
 				
 		// Create a new series
 		if($new_series && !$series) {
+// 			$drip->title();
 			
 			shell::msg('');
 			shell::msg("Disc Title: ".$dvd->getTitle());
@@ -331,6 +407,7 @@
 			$series->setCartoon($cartoon);
 			$series_id = $series->getID();
 			
+// 			$series_id = $drip->newSeries($title, $min_len, $max_len, $cartoon);
 		} else {
 			if(!$series_id)
  				$series_id = $arr[($input - 1)]['id'];
@@ -449,6 +526,7 @@
 			} while($disc_number == 0);
 		}
 		
+		
 		if($series && $disc_number) {
 		
 			if($debug)
@@ -546,6 +624,7 @@
 						
 					}
 				}
+				
 			}
 		}
 	}
@@ -753,8 +832,7 @@
  					$matroska->setFilename($mkv);
  					if($episode_title)
  						$matroska->setTitle("TITLE", $episode->getTitle());
-					if($dvd_track->getAspectRatio())
- 						$matroska->setAspectRatio($dvd_track->getAspectRatio());
+ 					$matroska->setAspectRatio($dvd_track->getAspectRatio());
  					
  					$matroska->addTag();
 					
@@ -848,6 +926,8 @@
 		else
 			$arr = $drip->getQueue($max);
 		
+//  		print_r($arr);
+		
 		$todo = $count = count($arr);
 		
 		if($count) {
@@ -912,7 +992,7 @@
 						$dvd_vob->setDebug($debug);
 						$dvd_vob->setAID($audio_aid);
 					
-						if($demux) {
+						if($raw) {
 							shell::msg("[Episode] \"$episode_title\" ($x/$count)");
 							if($episode_number)
 								shell::msg("[Episode] Number $episode_number");
@@ -954,7 +1034,7 @@
 							$matroska->addSubtitles($idx);
 							$mux[] = "VobSub";
 						}
-						if(file_exists($srt) && filesize($srt) > $min_cc_filesize && $mux_cc) {
+						if(file_exists($srt) && filesize($srt) > 25 && $mux_cc) {
 							$matroska->addSubtitles($srt);
 							$mux[] = "Closed Captioning";
 						}
@@ -1018,7 +1098,9 @@
 					echo "\n";
 				
 			}
+			
 		}
+		
 	}
 	
 	$finish = time();
@@ -1027,6 +1109,7 @@
 // 		$exec_time = shell::executionTime($start, $finish);
 // 		shell::msg("Total execution time: ".$exec_time['minutes']."m ".$exec_time['seconds']."s");
 	}
+	
 	
  	if($mount && ($archive || $rip) && !$queue && !$eject)
  		$dvd->unmount();
