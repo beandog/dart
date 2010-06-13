@@ -299,7 +299,7 @@
 			file_exists($idx) && unlink($idx);
 			file_exists($sub) && unlink($sub);
 		}
-		if($mux_cc)
+		if($mux_cc || file_exists($srt))
 			file_exists($srt) && unlink($srt);
 	}
 	
