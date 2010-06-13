@@ -285,8 +285,8 @@
 			
 	}
 	
-	$scandir = preg_grep('/(vob|sub|idx|txt|avi|mkv|mpg|ac3)$/', scandir('./'));
-
+	$scandir = preg_grep('/(vob|sub|idx|txt|avi|mkv|mpg|ac3|srt)$/', scandir('./'));
+	
 	if(in_array($mkv, $scandir) && !$debug) {
 		if($verbose)
 			shell::msg('Deleting temporary files');
@@ -294,13 +294,10 @@
 		in_array($mpg, $scandir) && unlink($mpg);
 		in_array($ac3, $scandir) && unlink($ac3);
 		in_array($avi, $scandir) && unlink($avi);
-		file_exists($txt) && unlink($txt);
-		if($mux_subs) {
-			file_exists($idx) && unlink($idx);
-			file_exists($sub) && unlink($sub);
-		}
-		if($mux_cc || file_exists($srt))
-			file_exists($srt) && unlink($srt);
+		in_array($txt, $scandir) && unlink($txt);
+		in_array($srt, $scandir) && unlink($srt);
+		in_array($idx, $scandir) && unlink($idx);
+		in_array($sub, $scandir) && unlink($sub);
 	}
 	
 	unlock();
