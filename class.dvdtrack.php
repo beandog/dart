@@ -32,9 +32,11 @@
 		private $verbose = false;
 		private $debug = false;
 		
+		private $dvdnav = false;
+		
 		public $chapters;
 	
-		function __construct($track = 1, $device = "/dev/dvd") {
+		function __construct($track = 1, $device = "/dev/dvd", $dvdnav = true) {
 		
 			$this->setTrack($track);
 			
@@ -55,6 +57,9 @@
 			
 			// Have DTS audio track(s)
 			$this->dts = false;
+			
+			// Prefer dvdnav:// over dvd://
+			$this->dvdnav = $dvdnav;
 				
 			bcscale(3);
 			
@@ -97,6 +102,13 @@
 		
 		function getTrack() {
 			return $this->track;
+		}
+		
+		private function getProtocol() {
+			if($this->dvdnav)
+				return "dvdnav://";
+			else
+				return "dvd://";
 		}
 		
 		/** Metadata **/
@@ -616,7 +628,7 @@
 			$vob = $this->getBasename().".vob";
 			$aid = $this->getAudioAID();
 			
-			$flags[] = "dvd://$track";
+			$flags[] = $this.getProtocol().$track;
 			$flags[] = "-dvd-device $device";
 			$flags[] = "-aid $aid";
 			$flags[] = "-dumpstream -dumpfile \"$vob\"";
@@ -642,7 +654,7 @@
 			$starting_chapter = $this->getStartingChapter();
 			$ending_chapter = $this->getEndingChapter();
 			
-			$flags[] = "dvd://$track_number";
+			$flags[] = $this->getProtocol().$track_number;
 			$flags[] = "-dvd-device $device";
 			$flags[] = "-ovc copy";
 			$flags[] = "-nosound";
