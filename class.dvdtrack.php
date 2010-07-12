@@ -352,6 +352,10 @@
 			return $str;
 		}
 		
+		public function getAudioStreams() {
+			return $this->audio_streams();
+		}
+		
 		function getAudioIndex() {
 			if(!$this->audio_index)
 				$this->setAudioIndex();
