@@ -12,6 +12,7 @@
 	require_once 'class.dvd.php';
 	require_once 'class.dvdvob.php';
 	require_once 'class.dvdtrack.php';
+	require_once 'class.dvdaudio.php';
 	require_once 'class.matroska.php';
 	
 	require_once 'class.drip.series.php';
@@ -583,24 +584,57 @@
 				$drip_track->setLength($track_length);
 				$drip_track->setAspectRatio($dvd_track->getAspectRatio());
 				
+				// Fetch all the audio streams, and store them
+				// in the database.
+				$audio_streams = $dvd_track->getAudioStreams();
+				
+				// Get the # of audio tracks
+				$num_audio_tracks = count($audio_streams);
+				
+				// Pass the lsdvd XML output to DVDAudio class
+				$lsdvd_xml = $dvd_track->getXML();
+				
+				foreach($audio_streams as $stream_id) {
+				
+					$dvd_audio = new DVDAudio($lsdvd_xml, $stream_id);
+					
+					$drip_audio = new DripAudio();
+					
+					// Set the parent track ID
+					$drip_audio->setTrackID($drip_track->getID());
+					
+					// Set the index, the sequential # of order for the track
+					$drip_audio->setIndex($dvd_audio->getIX());
+					
+					// Set the 2-char langcode
+					$drip_audio->setLanguage($dvd_audio->getLangcode());
+					
+					// Set the # of channels
+					$drip_audio->setNumChannels($dvd_audio->getChannels());
+					
+					// Set the codec
+					$drip_audio->setFormat($dvd_audio->getFormat());
+				
+				}
+				
 				// Add audio tracks
 				$num_audio_tracks = $dvd_track->getNumAudioTracks();
 				
-				for($a = 0; $a < $num_audio_tracks; $a++) {
+// 				for($a = 0; $a < $num_audio_tracks; $a++) {
 				
-					$audio_index = $a + 1;
+// 					$audio_index = $a + 1;
 				
-					$audio = new DripAudio();
-					$audio->setTrackID($drip_track->getID());
-					$audio->setIndex($audio_index);
+// 					$audio = new DripAudio();
+// 					$audio->setTrackID($drip_track->getID());
+// 					$audio->setIndex($audio_index);
 					
-					$dvd_track->setAudioIndex($audio_index);
+// 					$dvd_track->setAudioIndex($audio_index);
 					
-					$audio->setLanguage($dvd_track->getAudioLangCode());
-					$audio->setNumChannels($dvd_track->getAudioChannels());
-					$audio->setFormat($dvd_track->getAudioFormat());
+// 					$audio->setLanguage($dvd_track->getAudioLangCode());
+// 					$audio->setNumChannels($dvd_track->getAudioChannels());
+// 					$audio->setFormat($dvd_track->getAudioFormat());
 					
-				}
+// 				}
 				
 				// Add chapters
 				$num_chapters = $dvd_track->getNumChapters();
