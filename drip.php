@@ -617,25 +617,6 @@
 				
 				}
 				
-				// Add audio tracks
-				$num_audio_tracks = $dvd_track->getNumAudioTracks();
-				
-// 				for($a = 0; $a < $num_audio_tracks; $a++) {
-				
-// 					$audio_index = $a + 1;
-				
-// 					$audio = new DripAudio();
-// 					$audio->setTrackID($drip_track->getID());
-// 					$audio->setIndex($audio_index);
-					
-// 					$dvd_track->setAudioIndex($audio_index);
-					
-// 					$audio->setLanguage($dvd_track->getAudioLangCode());
-// 					$audio->setNumChannels($dvd_track->getAudioChannels());
-// 					$audio->setFormat($dvd_track->getAudioFormat());
-					
-// 				}
-				
 				// Add chapters
 				$num_chapters = $dvd_track->getNumChapters();
 				if($num_chapters) {
