@@ -17,6 +17,9 @@
 		// Stream ID for audio
 		private $stream_id;
 		
+		// Helper variable for mplayer playback
+		private $aid;
+		
 		function __construct($xml, $stream_id = "0x80") {
 			$this->parse_xml($xml, $stream_id);
 		}
@@ -57,6 +60,24 @@
 		
 		function getFormat() {
 			return $this->format;
+		}
+		
+		/**
+		 * Helper function to get the audio index for mplayer.
+		 *
+		 * Starts at index 128.
+		 * 0x80 => 128, etc.
+		 *
+		 * @return int
+		 */
+		public function getAID() {
+		
+			$int = end(explode("x", $this->stream_id));
+			
+			$aid = $int + 48;
+			
+			return $aid;
+		
 		}
 		
 	}
