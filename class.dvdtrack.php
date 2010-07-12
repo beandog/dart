@@ -628,7 +628,7 @@
 			$vob = $this->getBasename().".vob";
 			$aid = $this->getAudioAID();
 			
-			$flags[] = $this.getProtocol().$track;
+			$flags[] = $this->getProtocol().$track;
 			$flags[] = "-dvd-device $device";
 			$flags[] = "-aid $aid";
 			$flags[] = "-dumpstream -dumpfile \"$vob\"";
