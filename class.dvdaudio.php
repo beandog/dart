@@ -17,8 +17,9 @@
 		// Stream ID for audio
 		private $stream_id;
 		
-		// Helper variable for mplayer playback
+		// Helper variables for mplayer playback
 		private $aid;
+		private $ix;
 		
 		function __construct($xml, $stream_id = "0x80") {
 			$this->parse_xml($xml, $stream_id);
@@ -77,6 +78,24 @@
 			$aid = $int + 48;
 			
 			return $aid;
+		
+		}
+		
+		/**
+		 * Helper function to get the index of the audio track,
+		 * in relation to the other ones.
+		 *
+		 * 0x80 => 1 (first track)
+		 *
+		 * @return int
+		 */
+		public function getIX() {
+		
+			$int = end(explode("x", $this->stream_id));
+			
+			$ix = $int - 79;
+			
+			return $ix;
 		
 		}
 		
