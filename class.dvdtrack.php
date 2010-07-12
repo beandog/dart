@@ -353,7 +353,7 @@
 		}
 		
 		public function getAudioStreams() {
-			return $this->audio_streams();
+			return $this->audio_streams;
 		}
 		
 		function getAudioIndex() {
