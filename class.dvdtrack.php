@@ -28,6 +28,7 @@
 		private $audio_codecs;
 		private $prefer_dts;
 		private $dts;
+		private $audio_streams;
 		
 		private $verbose = false;
 		private $debug = false;
@@ -141,6 +142,8 @@
 				// Audio Tracks
 				foreach($this->sxe->track->audio as $audio) {
 					$this->num_audio_tracks++;
+					
+					$this->audio_streams[] = (string)$audio->streamid;
 					
 					// Get the AID
  					$aid = end(explode("x", (string)$audio->streamid)) + 48;
