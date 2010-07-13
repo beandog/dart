@@ -29,6 +29,7 @@
 		private $prefer_dts;
 		private $dts;
 		private $audio_streams;
+		private $subtitle_streams;
 		
 		private $verbose = false;
 		private $debug = false;
@@ -160,7 +161,11 @@
 				
 				// Subtitles
 				foreach($this->sxe->track->subp as $subp) {
+					
 					$this->num_subtitles++;
+					
+					$this->subtitle_streams[] = (string)$subp->streamid;
+					
 					$this->subtitles[(int)$subp->ix] = array(
 						'langcode' => (string)$subp->langcode,
 						'language' => (string)$subp->language,
@@ -425,6 +430,10 @@
 			
 			return $this->num_subtitles;
 			
+		}
+		
+		public function getSubtitleStreams() {
+			return $this->subtitle_streams;
 		}
 		
 		function hasSubtitles() {
