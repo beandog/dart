@@ -1,0 +1,72 @@
+<?
+
+	class DVDSubs {
+	
+		// 2 character code for the language
+		private $langcode;
+		
+		// Full string for the language
+		private $language;	
+		
+		// Subtitle format (VobSub, CC)
+		private $format;
+		
+		// Stream ID for audio
+		private $stream_id;
+		
+		// Helper variables for mplayer playback
+		private $sid;
+		
+		function __construct($xml, $stream_id = "0x20") {
+			$this->parse_xml($xml, $stream_id);
+		}
+		
+		/** Metadata **/
+		private function parse_xml($str, $stream_id) {
+		
+			$sxe = simplexml_load_string($str) or die("Couldn't parse lsdvd XML output");
+			
+			// Subtitles
+			foreach($sxe->track->subp as $subp) {
+			
+				if($xml_stream_id == $stream_id) {
+				
+					$this->langcode = (string)$audio->langcode;
+					$this->language = (string)$audio->language;
+					$this->stream_id = (string)$audio->streamid;
+				
+				}
+				
+			}
+		
+		}
+		
+		public function getLanguage() {
+			return $this->language;
+		}
+		
+		public function getLangcode() {
+			return $this->langcode;
+		}
+		
+		/**
+		 * Helper function to get the subtitle index for mplayer (sid).
+		 *
+		 * Starts at index 1.
+		 * 0x20 => 1, etc.
+		 *
+		 * @return int
+		 */
+		public function getSID() {
+		
+			$int = end(explode("x", $this->stream_id));
+			
+			$sid = $int - 19;
+			
+			return $sid;
+		
+		}
+		
+	}
+	
+?>
