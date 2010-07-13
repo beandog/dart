@@ -6,6 +6,7 @@
 		private $track_id;
 		private $index;
 		private $language;
+		private $langcode;
 		private $num_channels;
 		private $format;
 	
@@ -154,6 +155,41 @@
 			}
 			
 			return $this->language;
+			
+		}
+		
+		/** Langcode **/
+		function setLangcode($str) {
+		
+			global $db;
+		
+			$str = trim($str);
+			if(empty($str) || !is_string($str))
+				return false;
+				
+			if(!$this->id)
+				$this->newRecord();
+			
+			$arr_update = array(
+				'langcode' => $str
+			);
+			
+			$db->autoExecute('subtitles', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			
+			$this->langcode = $str;
+		
+		}
+		
+		public function getLangcode() {
+			
+			global $db;
+			
+			if(is_null($this->language)) {
+				$sql = "SELECT langcode FROM subtitles WHERE id = ".$this->getID().";";
+				$this->langcode = $db->getOne($sql);
+			}
+			
+			return $this->langcode;
 			
 		}
 		
