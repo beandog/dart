@@ -7,7 +7,6 @@
 		private $index;
 		private $language;
 		private $langcode;
-		private $num_channels;
 		private $format;
 		private $stream_id;
 	
