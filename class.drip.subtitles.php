@@ -22,14 +22,18 @@
 				$this->newRecord();
 			}
 		}
+		
+		public function __toString() {
+			return $this->id;
+		}
 	
-		function setID($id) {
+		private function setID($id) {
 			$id = abs(intval($id));
 			if($id)
 				$this->id = $id;
 		}
 		
-		function newRecord() {
+		private function newRecord() {
 			
 			global $db;
 			$sql = "SELECT nextval('subtitles_id_seq');";
@@ -45,11 +49,11 @@
 			
 		}
 		
-		function getID() {
+		public function getID() {
 			return $this->id;
 		}
 		
-		function setTrackID($id) {
+		public function setTrackID($id) {
 		
 			global $db;
 		
@@ -70,7 +74,7 @@
 		
 		}
 		
-		function getTrackID() {
+		public function getTrackID() {
 		
 			global $db;
 		
@@ -86,7 +90,7 @@
 		
 		}
 		
-		function setIndex($int) {
+		public function setIndex($int) {
 		
 			global $db;
 		
@@ -107,7 +111,7 @@
 		
 		}
 		
-		function getIndex() {
+		public function getIndex() {
 		
 			global $db;
 		
@@ -124,7 +128,7 @@
 		}
 		
 		/** Language **/
-		function setLanguage($str) {
+		public function setLanguage($str) {
 		
 			global $db;
 		
@@ -159,7 +163,7 @@
 		}
 		
 		/** Langcode **/
-		function setLangcode($str) {
+		public function setLangcode($str) {
 		
 			global $db;
 		
@@ -194,7 +198,7 @@
 		}
 		
 		/** Stream ID **/
-		function setStreamID($int) {
+		public function setStreamID($int) {
 		
 			global $db;
 		
@@ -215,7 +219,7 @@
 		
 		}
 		
-		function getStreamID() {
+		public function getStreamID() {
 		
 			global $db;
 			
@@ -229,7 +233,7 @@
 		}
 		
 		/** Format */
-		function setFormat($str) {
+		public function setFormat($str) {
 		
 			global $db;
 		
