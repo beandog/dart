@@ -228,6 +228,7 @@
 			
 		}
 		
+		/** Format */
 		function setFormat($str) {
 		
 			global $db;
