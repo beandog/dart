@@ -31,9 +31,9 @@
 			
 				if($xml_stream_id == $stream_id) {
 				
-					$this->langcode = (string)$audio->langcode;
-					$this->language = (string)$audio->language;
-					$this->stream_id = (string)$audio->streamid;
+					$this->langcode = (string)$subp->langcode;
+					$this->language = (string)$subp->language;
+					$this->stream_id = (string)$subp->streamid;
 				
 				}
 				
