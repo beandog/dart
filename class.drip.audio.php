@@ -218,7 +218,7 @@
 			
 			if(is_null($this->format)) {
 				$sql = "SELECT format FROM audio_tracks WHERE id = ".$this->getID().";";
-				$this->audio_track_format = $db->getOne($sql);
+				$this->format = $db->getOne($sql);
 			}
 			
 			return $this->format;
