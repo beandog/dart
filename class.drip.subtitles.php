@@ -9,6 +9,7 @@
 		private $langcode;
 		private $num_channels;
 		private $format;
+		private $stream_id;
 	
 		function __construct($id = null) {
 			if($id) {
@@ -190,6 +191,41 @@
 			}
 			
 			return $this->langcode;
+			
+		}
+		
+		/** Stream ID **/
+		function setStreamID($int) {
+		
+			global $db;
+		
+			$str = trim($str);
+			if(empty($str) || !is_string($str))
+				return false;
+				
+			if(!$this->id)
+				$this->newRecord();
+			
+			$arr_update = array(
+				'stream_id' => $str
+			);
+			
+			$db->autoExecute('subtitles', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			
+			$this->stream_id = $str;
+		
+		}
+		
+		function getStreamID() {
+		
+			global $db;
+			
+			if(is_null($this->stream_id)) {
+				$sql = "SELECT stream_id FROM subtitles WHERE id = ".$this->getID().";";
+				$this->stream_id = $db->getOne($sql);
+			}
+			
+			return $this->stream_id;
 			
 		}
 		
