@@ -17,6 +17,9 @@
 		// Helper variables for mplayer playback
 		private $sid;
 		
+		// Sequential index
+		private $ix;
+		
 		function __construct($xml, $stream_id = "0x20") {
 			$this->parse_xml($xml, $stream_id);
 		}
@@ -29,16 +32,23 @@
 			// Subtitles
 			foreach($sxe->track->subp as $subp) {
 			
+				$xml_stream_id = (string)$subp->streamid;
+				
 				if($xml_stream_id == $stream_id) {
 				
 					$this->langcode = (string)$subp->langcode;
 					$this->language = (string)$subp->language;
 					$this->stream_id = (string)$subp->streamid;
+					$this->ix = (int)$subp->ix;
 				
 				}
 				
 			}
 		
+		}
+		
+		public function getIX() {
+			return $this->ix;
 		}
 		
 		public function getLanguage() {
