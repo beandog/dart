@@ -135,7 +135,7 @@
 				$this->newRecord();
 			
 			$arr_update = array(
-				'lang' => $str
+				'language' => $str
 			);
 			
 			$db->autoExecute('subtitles', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
