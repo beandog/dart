@@ -38,7 +38,7 @@
 		
 		public $chapters;
 	
-		function __construct($track = 1, $device = "/dev/dvd", $dvdnav = true) {
+		function __construct($track = 1, $device = "/dev/dvd", $dvdnav = false) {
 		
 			$this->setTrack($track);
 			
