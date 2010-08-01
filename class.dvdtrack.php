@@ -141,6 +141,8 @@
 				$this->height = (int)$this->sxe->track->height;
 				
 				// Audio Tracks
+				$this->audio_streams = array();
+				
 				foreach($this->sxe->track->audio as $audio) {
 					$this->num_audio_tracks++;
 					
