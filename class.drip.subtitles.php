@@ -1,6 +1,6 @@
 <?
 
-	class DripAudio {
+	class DripSubtitles {
 	
 		private $id;
 		private $track_id;
@@ -198,7 +198,7 @@
 		}
 		
 		/** Stream ID **/
-		public function setStreamID($int) {
+		public function setStreamID($str) {
 		
 			global $db;
 		
