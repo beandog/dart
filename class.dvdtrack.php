@@ -160,6 +160,8 @@
 				}
 				
 				// Subtitles
+				$this->subtitle_streams = array();
+				
 				foreach($this->sxe->track->subp as $subp) {
 					
 					$this->num_subtitles++;
