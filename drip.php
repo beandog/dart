@@ -13,12 +13,14 @@
 	require_once 'class.dvdvob.php';
 	require_once 'class.dvdtrack.php';
 	require_once 'class.dvdaudio.php';
+	require_once 'class.dvdsubs.php';
 	require_once 'class.matroska.php';
 	
 	require_once 'class.drip.series.php';
 	require_once 'class.drip.disc.php';
 	require_once 'class.drip.track.php';
 	require_once 'class.drip.audio.php';
+	require_once 'class.drip.subtitles.php';
 	require_once 'class.drip.chapter.php';
 	require_once 'class.drip.episode.php';
 	
