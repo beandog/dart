@@ -101,9 +101,9 @@
 	if($args['archive'])
 		$archive = true;
 	
-	$raw = true;
-	if($args['noraw'])
-		$raw = false;
+	$demux = true;
+	if($args['nodemux'])
+		$demux = false;
 	
 	if($ini['eject'] || $args['eject'])
 		$eject = true;
@@ -1037,7 +1037,7 @@
 						$dvd_vob->setDebug($debug);
 						$dvd_vob->setAID($audio_aid);
 					
-						if($raw) {
+						if($demux) {
 							shell::msg("[Episode] \"$episode_title\" ($x/$count)");
 							if($episode_number)
 								shell::msg("[Episode] Number $episode_number");
@@ -1058,8 +1058,6 @@
 								$dvd_vob->rawaudio($ac3);
 							}
 							
-						} else {
-							$mpg = $ac3 = $vob;
 						}
 						
 						if(!file_exists($srt) && $rip_cc && $series->hasCC()) {
@@ -1070,8 +1068,12 @@
 						$matroska = new Matroska($mkv);
 						$matroska->setDebug($debug);
 						
-						$matroska->addVideo($mpg);
-						$matroska->addAudio($ac3);
+						if($demux) {
+							$matroska->addVideo($mpg);
+							$matroska->addAudio($ac3);
+						} else {
+							$matroska->addFile($vob);
+						}
 						
 						$mux = array("Video", "Audio");
 						
