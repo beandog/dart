@@ -1036,16 +1036,17 @@
 						$dvd_vob = new DVDVOB($vob);
 						$dvd_vob->setDebug($debug);
 						$dvd_vob->setAID($audio_aid);
+						
+						shell::msg("[Episode] \"$episode_title\" ($x/$count)");
+						if($episode_number)
+							shell::msg("[Episode] Number $episode_number");
+						if($episode->getPart())
+							shell::msg("[Episode] Part ".$episode->getPart());
+						if(count($arr_todo)) {
+							shell::msg("[Episode] ".implode(", ", $arr_todo));
+						}
 					
 						if($demux) {
-							shell::msg("[Episode] \"$episode_title\" ($x/$count)");
-							if($episode_number)
-								shell::msg("[Episode] Number $episode_number");
-							if($episode->getPart())
-								shell::msg("[Episode] Part ".$episode->getPart());
-							if(count($arr_todo)) {
-								shell::msg("[Episode] ".implode(", ", $arr_todo));
-							}
 						
 							if(!file_exists($mpg)) {
 								shell::msg("[VOB] Demuxing Raw Video");
