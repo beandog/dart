@@ -56,7 +56,7 @@
 		shell::cmd("aplay /home/steve/beep.wav");
 	}
 	
-	$rip_subs = $rip_cc = $mux_subs = $mux_cc = false;
+	$nodemux = $rip_subs = $rip_cc = $mux_subs = $mux_cc = false;
 	
 	/** Get the configuration options */
 	$config = $config_dir."config";
@@ -241,29 +241,40 @@
 			} 
 		}
 		
-		// Raw Video
-		if(!in_array($mpg, $scandir)) {
-			shell::msg("[MPG] Demuxing VOB to Raw Video");
-			$dvdvob->rawvideo($mpg);
-		}
-		
-		// Raw Audio
-		if(!in_array($ac3, $scandir)) {
-			shell::msg("[AC3] Demuxing VOB to Raw Audio");
-			$dvdvob->rawaudio($ac3);
+		// Optionally demux the streams using MEncoder
+		if(!$nodemux) {
+			// Raw Video
+			if(!in_array($mpg, $scandir)) {
+				shell::msg("[MPG] Demuxing VOB to Raw Video");
+				$dvdvob->rawvideo($mpg);
+			}
+			
+			// Raw Audio
+			if(!in_array($ac3, $scandir)) {
+				shell::msg("[AC3] Demuxing VOB to Raw Audio");
+				$dvdvob->rawaudio($ac3);
+			}
 		}
 		
 		// Matroska
 		$matroska = new Matroska($mkv);
 		$matroska->setTitle($title);
-		if(file_exists($mpg)) {
-			shell::msg("[MKV] Video");
+		if($nodemux) {
+			shell::msg("[MKV] Audio/Video");
 			$matroska->setAspectRatio($dvdtrack->getAspectRatio());
-			$matroska->addVideo($mpg);
-		}
-		if(file_exists($ac3)) {
-			shell::msg("[MKV] Audio");
-			$matroska->addAudio($ac3);
+			// FIXME There's nothing here to specify which audio track to use.
+			if(file_exists($vob))
+				$matroska->addFile($vob);
+		} else {
+			if(file_exists($mpg)) {
+				shell::msg("[MKV] Video");
+				$matroska->setAspectRatio($dvdtrack->getAspectRatio());
+				$matroska->addVideo($mpg);
+			}
+			if(file_exists($ac3)) {
+				shell::msg("[MKV] Audio");
+				$matroska->addAudio($ac3);
+			}
 		}
 		if(file_exists($idx) && $mux_subs) {
 			shell::msg("[MKV] Subtitles");
