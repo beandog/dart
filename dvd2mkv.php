@@ -30,6 +30,15 @@
 	}
 	
 	$dvd =& new DVD();
+	
+	// FIXME Don't really need to mount the DVD until
+	// you know if you need to extract something.
+	// For example, you could already have "Movie Title.vob",
+	// and just need to continue from there.
+	//
+	// Will require moving *basename functions out of
+	// dvdtrack class and putting it in a generic place, or
+	// rewriting some of dvdtrack class.
 	$dvd->mount();
 	
 	$config_dir = getenv('HOME')."/.dvd2mkv/";
