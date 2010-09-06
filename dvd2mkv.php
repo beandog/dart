@@ -98,6 +98,9 @@
 		$eject = true;
 	if($args['noeject'])
 		$eject = false;
+	
+	if($arr_config['nodemux'] || $args['nodemux'])
+		$nodemux = true;
 		
 	if($args['lock'])
 		lock();
