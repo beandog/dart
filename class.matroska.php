@@ -238,6 +238,9 @@ XML;
 			
 			if(is_null($this->exec))
 				$str = $this->getCommandString();
+			
+			if($this->debug)
+				shell::msg("Executing: $str");
 				
 			shell::cmd($str, !$this->verbose, false, $this->debug, array(0,1));
 		
