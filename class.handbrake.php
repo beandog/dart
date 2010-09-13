@@ -277,8 +277,6 @@
 			
 			if($this->debug)
 				shell::msg($str);
-				
-			die;
 			
 			shell::cmd($str, !$this->verbose, false, $this->debug, array(0));
 			
