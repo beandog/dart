@@ -1,8 +1,13 @@
 <?
 
+	require_once 'class.shell.php';
+
 	class Handbrake {
 	
 		private $binary = "handbrake-svn";
+		
+		private $verbose = false;
+		private $debug = false;
 	
 		private $filename;
 		private $flags = array();
@@ -11,11 +16,11 @@
 		private $audio_tracks = array();
 		private $audio_encoders = array('ac3', 'dts');
 		
-		private $preset = 'High Profile';
+		private $preset = 'Normal';
 		private $format = 'mkv';
 		private $encoder = 'x264';
 		
-		private $add_chapters = true;
+		private $add_chapters = false;
 		private $video_quality = 20;
 		
 		private $crop = "0:0:0:0";
@@ -38,9 +43,18 @@
 		
 		}
 		
+		function debug($bool = true) {
+			$this->debug = $this->verbose = (boolean)$bool;
+		}
+		
+		function verbose($bool = true) {
+			$this->verbose = (boolean)$bool;
+		}
+		
 		/** Filename **/
 		public function input_filename($str) {
 			$this->input = $str;
+			$this->scan();
 		}
 		
 		public function output_filename($str) {
@@ -81,6 +95,12 @@
 			
 			$this->audio_tracks[] = $int;
 			
+		}
+		
+		public function add_audio_stream($stream_id) {
+		
+			$this->add_audio_track($this->audio_streams[$stream_id]);
+		
 		}
 		
 		public function autocrop($bool) {
@@ -249,6 +269,19 @@
 		
 		public function has_cc() {
 			return $this->cc;
+		}
+		
+		public function encode() {
+		
+			$str = $this->get_executable_string();
+			
+			if($this->debug)
+				shell::msg($str);
+				
+			die;
+			
+			shell::cmd($str, !$this->verbose, false, $this->debug, array(0));
+			
 		}
 		
 	}
