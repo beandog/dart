@@ -276,7 +276,7 @@
 			$str = $this->get_executable_string();
 			
 			if($this->debug)
-				shell::msg($str);
+				shell::msg("Executing: $str");
 			
 			shell::cmd($str, !$this->verbose, false, $this->debug, array(0));
 			
