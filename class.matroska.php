@@ -159,13 +159,18 @@ XML;
 		
 		private function arguments() {
 		
+			// FIXME in v4.2.0, this doesn't set English
+			// on all tracks.  Need to specify it manually
+			// with --language TID:eng
 			$flags['default-language'] = 'eng';
 			$flags['output'] = $this->getFilename();
 			$args = array();
 			
 			if($this->title)
 				$flags['title'] = $this->title;
-				
+			
+			// FIXME Clean this up so you can pass
+			// multiple options to one file.
 			foreach($this->streams as $arr) {
 			
 				switch($arr['type']) {
