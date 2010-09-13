@@ -68,6 +68,10 @@
 		shell::msg("  --debug\t\tEnable debugging");
 		shell::msg("  --update\t\tUpdate DVD specs in database");
 		shell::msg("  -q, --queue\t\tList episodes in queue");
+		
+		shell::msg("Subtitles:");
+		shell::msg("  --vobsub\t\tRip and mux VobSub subtitles");
+		shell::msg("  --cc\t\t\tRip and mux Closed Captioning subtitles");
 	
 		die;
 	}
@@ -121,7 +125,7 @@
 	}
 	
 	// Closed Captioning
-	if($ini['rip_cc'] || $args['cc'])
+	if($args['cc'] || $ini['rip_cc'])
 		$rip_cc = true;
 	if($args['cc'] || $ini['mux_cc'])
 		$mux_cc = true;
