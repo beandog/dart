@@ -32,6 +32,7 @@
 				$this->getBroadcastYear();
 				$this->getProductionStudio();
 				$this->useHandbrake();
+				$this->getHandbrakePreset();
 			} else {
 				$this->newSeries();
 			}
@@ -457,6 +458,35 @@
 			}
 			
 			return $this->vobsub;
+		
+		}
+		
+		function setHandbrakePreset($int) {
+		
+			global $db;
+		
+			if(!is_null($int))
+				$int = abs(intval($int));
+			
+			$arr_update = array(
+				'handbrake_preset' => $int
+			);
+			
+			$db->autoExecute('tv_shows', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			
+			$this->handbrake_preset = $int;
+		}
+		
+		function getHandbrakePreset() {
+		
+			if(is_null($this->handbrake_preset)) {
+				global $db;
+				$sql = "SELECT handbrake_preset FROM tv_shows WHERE id = ".$this->getID().";";
+				$value = $db->getOne($sql);
+				$this->handbrake_preset = $value;
+			}
+			
+			return $this->handbrake_preset;
 		
 		}
 		
