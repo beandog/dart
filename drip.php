@@ -1161,25 +1161,28 @@
 						
 						$reencode = true;
 						
-						if($reencode && !file_exists($x264)) {
+						if($reencode) {
 						
-							$stream_id = $drip_track->getDefaultStreamID();
-							
 							$handbrake = new Handbrake();
 							
 							if($debug)
 								$handbrake->debug();
 							elseif($verbose)
 								$handbrake->verbose();
+						
+							if(!file_exists($x264)) {
+								$stream_id = $drip_track->getDefaultStreamID();
 							
-							$handbrake->input_filename($vob);
-							$handbrake->output_filename($x264);
-							$handbrake->add_audio_stream($stream_id);
+								$handbrake->input_filename($vob);
+								$handbrake->output_filename($x264);
+								$handbrake->add_audio_stream($stream_id);
+								
+								shell::msg("[x264] Encoding Video");
+								$handbrake->encode();
+							}
 							
-							shell::msg("[x264] Encoding Video");
-							$handbrake->encode();
-							
-							$matroska->addFile($x264);
+							if(file_exists($x264))
+								$matroska->addFile($x264);
 						
 						}
 						
