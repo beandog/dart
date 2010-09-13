@@ -72,6 +72,10 @@
 		shell::msg("Subtitles:");
 		shell::msg("  --vobsub\t\tRip and mux VobSub subtitles");
 		shell::msg("  --cc\t\t\tRip and mux Closed Captioning subtitles");
+		
+		shell::msg("Handbrake:");
+		shell::msg("  --handbrake\t\tUse Handbrake to reencode video");
+		shell::msg("  --preset\t\tEncoding preset to use [$handbrake_preset]");
 	
 		die;
 	}
