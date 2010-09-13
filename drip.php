@@ -101,9 +101,9 @@
 	if($args['archive'])
 		$archive = true;
 	
-	$demux = true;
-	if($args['nodemux'])
-		$demux = false;
+	$demux = false;
+	if($args['demux'])
+		$demux = true;
 	
 	if($ini['eject'] || $args['eject'])
 		$eject = true;
