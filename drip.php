@@ -15,6 +15,7 @@
 	require_once 'class.dvdaudio.php';
 	require_once 'class.dvdsubs.php';
 	require_once 'class.matroska.php';
+	require_once 'class.handbrake.php';
 	
 	require_once 'class.drip.series.php';
 	require_once 'class.drip.disc.php';
@@ -1137,39 +1138,32 @@
 							shell::msg("[Episode] ".implode(", ", $arr_todo));
 						}
 						
-						print_r($dvd_vob);
-						print_r($drip_track);
-						print_r($audio_index);
-						die;
+						$matroska = new Matroska($mkv);
+						$matroska->setDebug($debug);
 					
 						if($demux) {
 						
 							if(!file_exists($mpg)) {
 								shell::msg("[VOB] Demuxing Raw Video");
 								$dvd_vob->rawvideo($mpg);
+								$matroska->addVideo($mpg);
 							}
 							
 							if(!file_exists($ac3)) {
 								shell::msg("[VOB] Demuxing Raw Audio");
 								// atrack will always be at least 1
 								$dvd_vob->rawaudio($ac3);
+								$matroska->addAudio($ac3);
 							}
 							
 						}
 						
+						if(!$demux && !$reencode)
+							$matroska->addFile($vob);
+						
 						if(!file_exists($srt) && $rip_cc && $series->hasCC()) {
 							shell::msg("[SRT] Ripping Closed Captioning");
 							$dvd_vob->dumpSRT();
-						}
-						
-						$matroska = new Matroska($mkv);
-						$matroska->setDebug($debug);
-						
-						if($demux) {
-							$matroska->addVideo($mpg);
-							$matroska->addAudio($ac3);
-						} else {
-							$matroska->addFile($vob);
 						}
 						
 						$mux = array("Video", "Audio");
