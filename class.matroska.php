@@ -213,6 +213,10 @@ XML;
 			if($this->verbose || $this->debug)
 				$exec[] = "-v";
 			
+			foreach($this->args as $argument) {
+				$exec[] = escapeshellarg($argument);
+			}
+			
 			foreach($this->flags as $option => $mixed) {
 			
 				if(is_array($mixed))
@@ -220,10 +224,6 @@ XML;
 						$exec[] = "--$option ".escapeshellarg($argument);
 				else
 					$exec[] = "--$option ".escapeshellarg($mixed);
-			}
-			
-			foreach($this->args as $argument) {
-				$exec[] = escapeshellarg($argument);
 			}
 			
 			$str = implode(" ", $exec);
