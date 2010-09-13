@@ -29,6 +29,8 @@
 		
 		private $srt_language = 'eng';
 		
+		private $cc = false;
+		
 		function __construct($filename = null) {
 		
 			if(!is_null($filename))
@@ -162,6 +164,8 @@
 			if(count($this->audio_tracks)) {
 				$str = implode(",", $this->audio_tracks);
 				$args['--audio'] = $str;
+			} else {
+				$args['--audio'] = 'none';
 			}
 			
 			// Add subtitle tracks
@@ -215,6 +219,36 @@
 			
 			return $str;
 		
+		}
+		
+		public function scan() {
+		
+			$exec = $this->binary." --scan --input ".escapeshellarg($this->input)." 2>&1";
+			exec($exec, $arr, $return);
+			
+			$audio = preg_grep("/.*add_audio_to_title.*/", $arr);
+			
+			$audio_index = 1;
+			
+			foreach($audio as $str) {
+				$stream_id = str_replace("bd", "", end(explode(" ", $str)));
+				$this->audio_streams[$stream_id] = $audio_index;
+				$audio_index++;
+			}
+			
+			$cc = preg_grep("/.*Closed Captions.*/", $arr);
+			
+			if(count($cc))
+				$this->cc = true;
+		
+		}
+		
+		public function get_audio_index($stream_id) {
+			return $this->audio_streams[$stream_id];
+		}
+		
+		public function has_cc() {
+			return $this->cc;
 		}
 		
 	}
