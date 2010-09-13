@@ -1161,12 +1161,16 @@
 						
 						$reencode = true;
 						
-						if($reencode) {
+						if($reencode && !file_exists($x264)) {
 						
 							$stream_id = $drip_track->getDefaultStreamID();
 							
 							$handbrake = new Handbrake();
-							$handbrake->debug();
+							
+							if($debug)
+								$handbrake->debug();
+							elseif($verbose)
+								$handbrake->verbose();
 							
 							$handbrake->input_filename($vob);
 							$handbrake->output_filename($x264);
@@ -1175,7 +1179,7 @@
 							shell::msg("[x264] Encoding Video");
 							$handbrake->encode();
 							
-							$matroska->addVideo($x264);
+							$matroska->addFile($x264);
 						
 						}
 						
