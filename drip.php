@@ -131,7 +131,7 @@
 		$mux_cc = true;
 	if($args['nocc'])
 		$rip_cc = $mux_cc = false;
-	$min_cc_filesize = 15;
+	$min_cc_filesize = 25;
 	
 	// DVD Subs (VobSubs)
 	if($args['vobsub'] || $ini['rip_vobsub'])
@@ -1093,7 +1093,7 @@
 							$matroska->addSubtitles($idx);
 							$mux[] = "VobSub";
 						}
-						if(file_exists($srt) && filesize($srt) > 25 && $mux_cc) {
+						if(file_exists($srt) && filesize($srt) > $min_cc_filesize && $mux_cc) {
 							$matroska->addSubtitles($srt);
 							$mux[] = "Closed Captioning";
 						}
