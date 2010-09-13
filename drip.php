@@ -48,23 +48,30 @@
 	if($args['h'] || $args['help']) {
 	
 		shell::msg("Options:");
-		shell::msg("  --rip\t\t\tRip DVD");
-		shell::msg("  --nosub\t\t\tDon't rip subtitles");
+		shell::msg("  -i, --info\t\tList episodes on DVD");
+		
+		shell::msg("  --rip\t\t\tRip everything on DVD");
+		shell::msg("  --nosub\t\tDon't rip VobSub subtitles");
 		shell::msg("  --encode\t\tEncode episodes in queue");
+		
+		shell::msg("  --archive\t\tAdd DVD to database");
 		shell::msg("  --season <int>\tSet season #");
 		shell::msg("  --volume <int>\tSet volume #");
 		shell::msg("  --disc <int>\t\tSet disc # for season");
 		shell::msg("  --series <int>\tPass TV Series ID");
+		
+		shell::msg("  --demux\t\tUse MEncoder to demux audio and video streams into separate files");
+		
 		shell::msg("  --skip <int>\t\tSkip # of episodes");
 		shell::msg("  --max <int>\t\tMax # of episodes to rip and/or encode");
-		shell::msg("  --v, -verbose\t\tVerbose output");
-		shell::msg("  --debug\t\t\tEnable debugging");
+		shell::msg("  -v, -verbose\t\tVerbose output");
+		shell::msg("  --debug\t\tEnable debugging");
+		shell::msg("  --update\t\tUpdate DVD specs in database");
+		shell::msg("  -q, --queue\t\tList episodes in queue");
 	
 		die;
 	}
 	
-//   	print_r($args);
-
 	if($args['p'] || $args['pretend'])
 		$pretend = true;
 	
@@ -123,12 +130,12 @@
 	$min_cc_filesize = 15;
 	
 	// DVD Subs (VobSubs)
-	if($ini['rip_subs'] || $args['subs'])
-		$rip_subs = true;
-	if($args['subs'] || $ini['mux_subs'])
-		$mux_subs = true;
-	if($args['nosubs'])
-		$rip_subs = $mux_subs = false;
+	if($args['vobsub'] || $ini['rip_vobsub'])
+		$rip_vobsub = true;
+	if($args['vobsub'] || $ini['mux_vobsub'])
+		$mux_vobsub = true;
+	if($args['novobsub'])
+		$rip_vobsub = $mux_vobsub = false;
 		
 	if($args['device'])
 		$device = $args['device'];
@@ -847,13 +854,13 @@
 						$vobsub = true;
 					}
 					
-					if(!$rip_subs && $vobsub) {
+					if(!$rip_vobsub && $vobsub) {
 						shell::msg("[DVD] Ignoring Subtitles");
-					} elseif($rip_subs && !$vobsub && !file_exists($vob)) {
+					} elseif($rip_vobsub && !$vobsub && !file_exists($vob)) {
 						shell::msg("[DVD] No Subtitles");
 					}
 					
-					if($vobsub && $rip_subs && !file_exists($sub)) {
+					if($vobsub && $rip_vobsub && !file_exists($sub)) {
 						if($pretend) {
 							shell::msg("[DVD] $sub");
 						} else {
@@ -863,7 +870,7 @@
 						}
 					}
 				
-				} elseif(file_exists($idx) && $rip_subs && $verbose) {
+				} elseif(file_exists($idx) && $rip_vobsub && $verbose) {
 					shell::msg("[DVD] Subtitles Ripped");
 				}
 				
@@ -1078,7 +1085,7 @@
 						
 						$mux = array("Video", "Audio");
 						
-						if(file_exists($idx) && $mux_subs) {
+						if(file_exists($idx) && $mux_vobsub) {
 							$matroska->addSubtitles($idx);
 							$mux[] = "VobSub";
 						}
@@ -1121,9 +1128,9 @@
 							unlink($mpg);
 						if(file_exists($ac3))
 							unlink($ac3);
-						if(file_exists($idx) && $mux_subs)
+						if(file_exists($idx) && $mux_vobsub)
 							unlink($idx);
-						if(file_exists($sub) && $mux_subs)
+						if(file_exists($sub) && $mux_vobsub)
 							unlink($sub);
 						if(file_exists($srt) && $mux_cc)
 							unlink($srt);
