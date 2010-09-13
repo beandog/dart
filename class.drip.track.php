@@ -337,6 +337,17 @@
 			
 		}
 		
+		public function getDefaultStreamID() {
+		
+			global $db;
+		
+			$sql = "SELECT stream_id from audio_tracks WHERE track = ".$this->getID()." ORDER BY lang = 'en' DESC, channels DESC, stream_id LIMIT 1;";
+			$var = $db->getOne($sql);
+			
+			return $var;
+				
+		}
+		
 	
 	}
 ?>
