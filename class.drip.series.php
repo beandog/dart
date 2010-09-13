@@ -14,7 +14,8 @@
 		private $broadcast_year;
 		private $production_studio;
 		private $arr_production_studios;
-		
+		private $handbrake;
+		private $handbrake_preset;
 		
 		function __construct($id = null) {
 			if(!is_null($id)) {
@@ -30,10 +31,11 @@
 				$this->hasVolumes();
 				$this->getBroadcastYear();
 				$this->getProductionStudio();
+				$this->useHandbrake();
 			} else {
 				$this->newSeries();
 			}
-				
+			
 			$this->arr_boxset = array(
 				'Seasons',
 				'Volumes',
@@ -233,6 +235,41 @@
 			}
 			
 			return $this->cartoon;
+		
+		}
+		
+		function setHandbrake($bool) {
+		
+			global $db;
+		
+			if($bool)
+				$value = true;
+			else
+				$value = false;
+			
+			$arr_update = array(
+				'handbrake' => $value
+			);
+			
+			$db->autoExecute('tv_shows', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			
+			$this->handbrake = $value;
+			
+		}
+		
+		function useHandbrake() {
+		
+			if(is_null($this->handbrake)) {
+				global $db;
+				$sql = "SELECT handbrake FROM tv_shows WHERE id = ".$this->getID().";";
+				$value = $db->getOne($sql);
+				if($value === 't')
+					$this->handbrake = true;
+				else
+					$this->handbrake = false;
+			}
+			
+			return $this->handbrake;
 		
 		}
 		
