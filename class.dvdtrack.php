@@ -362,6 +362,8 @@
 		}
 		
 		public function getAudioStreams() {
+			if(!$this->sxe)
+				$this->lsdvd();
 			return $this->audio_streams;
 		}
 		

@@ -219,6 +219,58 @@
 	
 	}
 	
+	// Update audio tracks
+	function update_audio_tracks($drip_track_id) {
+	
+		global $db;
+		global $device;
+	
+		$drip_track = new DripTrack($drip_track_id);
+		$dvd_track = new DVDTrack($drip_track->getTrackNumber(), $device);
+		
+		// Delete the old audio streams
+		
+		$sql = "DELETE FROM audio_tracks WHERE track = $drip_track_id;";
+		$db->query($sql);
+		
+		// Fetch all the audio streams, and store them
+		// in the database.
+		$audio_streams = $dvd_track->getAudioStreams();
+		
+		// Get the # of audio tracks
+		$num_audio_tracks = count($audio_streams);
+		
+		// Pass the lsdvd XML output to DVDAudio class
+		$lsdvd_xml = $dvd_track->getXML();
+		
+		foreach($audio_streams as $stream_id) {
+		
+			$dvd_audio = new DVDAudio($lsdvd_xml, $stream_id);
+			
+			$drip_audio = new DripAudio();
+			
+			// Set the stream ID
+			$drip_audio->setStreamID($stream_id);
+			
+			// Set the parent track ID
+			$drip_audio->setTrackID($drip_track->getID());
+			
+			// Set the index, the sequential # of order for the track
+			$drip_audio->setIndex($dvd_audio->getIX());
+			
+			// Set the 2-char langcode
+			$drip_audio->setLanguage($dvd_audio->getLangcode());
+			
+			// Set the # of channels
+			$drip_audio->setNumChannels($dvd_audio->getChannels());
+			
+			// Set the codec
+			$drip_audio->setFormat($dvd_audio->getFormat());
+		
+		}
+		
+	}
+	
 	// Re-archive disc
 	// Generally called if you want to update the webif
 	if($update && $drip->inDatabase($dvd->getID())) {
@@ -267,8 +319,14 @@
 				}
 				$drip_track->setLength($track_length);
 			}
-				
-				
+			
+			// Insert the audio tracks if they are missing from the new table
+			$sql = "SELECT COUNT(1) FROM audio_tracks WHERE track = $track_id;";
+			$num_db_audio_tracks = $db->getOne($sql);
+		
+ 			if(!$num_db_audio_tracks)
+				update_audio_tracks($track_id);
+			
 			// Add chapters
 			// This will only add chapters for the track, not set them for the episodes.
 			$num_chapters = $dvd_track->getNumChapters();
@@ -617,6 +675,9 @@
 					
 					$drip_audio = new DripAudio();
 					
+					// Set the stream ID
+					$drip_audio->setStreamID($stream_id);
+					
 					// Set the parent track ID
 					$drip_audio->setTrackID($drip_track->getID());
 					
@@ -695,6 +756,21 @@
 		$sql = "SELECT id FROM view_discs WHERE disc_id = '".$dvd->getID()."';";
 		$drip_disc = new DripDisc($db->getOne($sql));
 		$series = new DripSeries($drip_disc->getSeriesID());
+		
+		/** UPDATE DATABASE - NEW AUDIO TRACKS TABLE */
+		
+		$drip_track_ids = $drip_disc->getTrackIDs();
+		
+		foreach($drip_track_ids as $drip_track_id) {
+			// Insert the audio tracks if they are missing from the new table
+			$sql = "SELECT COUNT(1) FROM audio_tracks WHERE track = $drip_track_id;";
+			$num_db_audio_tracks = $db->getOne($sql);
+		
+ 			if(!$num_db_audio_tracks)
+				update_audio_tracks($drip_track_id);
+		}
+		
+		/** END MANDATORY UPDATE */
 		
 		// Create export dir
 		if(!is_dir($drip->export))
@@ -1060,6 +1136,11 @@
 						if(count($arr_todo)) {
 							shell::msg("[Episode] ".implode(", ", $arr_todo));
 						}
+						
+						print_r($dvd_vob);
+						print_r($drip_track);
+						print_r($audio_index);
+						die;
 					
 						if($demux) {
 						

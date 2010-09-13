@@ -157,6 +157,41 @@
 			
 		}
 		
+		/** Language **/
+		function setStreamID($str) {
+		
+			global $db;
+		
+			$str = trim($str);
+			if(empty($str) || !is_string($str))
+				return false;
+				
+			if(!$this->id)
+				$this->newAudio();
+			
+			$arr_update = array(
+				'stream_id' => $str
+			);
+			
+			$db->autoExecute('audio_tracks', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			
+			$this->stream_id = $str;
+		
+		}
+		
+		public function getStreamID() {
+			
+			global $db;
+			
+			if(is_null($this->stream_id)) {
+				$sql = "SELECT stream_id FROM audio_tracks WHERE id = ".$this->getID().";";
+				$this->stream_id = $db->getOne($sql);
+			}
+			
+			return $this->stream_id;
+			
+		}
+		
 		function setNumChannels($int) {
 		
 			global $db;
