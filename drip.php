@@ -1104,6 +1104,7 @@
 				$txt = "$basename.txt";
 				$mpg = "$basename.mpg";
 				$ac3 = "$basename.ac3";
+				$x264 = "$basename.x264";
 				
 				if($queue) {
 					
@@ -1158,6 +1159,26 @@
 							
 						}
 						
+						$reencode = true;
+						
+						if($reencode) {
+						
+							$stream_id = $drip_track->getDefaultStreamID();
+							
+							$handbrake = new Handbrake();
+							$handbrake->debug();
+							
+							$handbrake->input_filename($vob);
+							$handbrake->output_filename($x264);
+							$handbrake->add_audio_stream($stream_id);
+							
+							shell::msg("[x264] Encoding Video");
+							$handbrake->encode();
+							
+							$matroska->addVideo($x264);
+						
+						}
+						
 						if(!$demux && !$reencode)
 							$matroska->addFile($vob);
 						
@@ -1172,7 +1193,7 @@
 							$matroska->addSubtitles($idx);
 							$mux[] = "VobSub";
 						}
-						if(file_exists($srt) && filesize($srt) > $min_cc_filesize && $mux_cc) {
+						if(file_exists($srt) && (filesize($srt) > $min_cc_filesize) && $mux_cc) {
 							$matroska->addSubtitles($srt);
 							$mux[] = "Closed Captioning";
 						}
