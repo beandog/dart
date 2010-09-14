@@ -1086,6 +1086,7 @@
 				$export_title = $episode->getExportTitle();
 				$episode_number = $episode->getEpisodeNumber();
 				$episode_index = $episode->getEpisodeIndex();
+				$reencode = $series->useHandbrake();
 				
 				$export = $drip->export.$drip->formatTitle($episode->getExportTitle()).'/';
 	
@@ -1144,6 +1145,7 @@
 						
 						$matroska = new Matroska($mkv);
 						$matroska->setDebug($debug);
+						$matroska->setTitle($episode_title);
 					
 						if($demux) {
 						
@@ -1161,8 +1163,6 @@
 							}
 							
 						}
-						
-						$reencode = true;
 						
 						if($reencode) {
 						
@@ -1213,8 +1213,6 @@
 						}
 						if(file_exists($xml))
 							$matroska->addGlobalTags($xml);
-						
-						$matroska->setTitle($episode_title);
 						
 						if($drip_track->getAspectRatio())
 							$matroska->setAspectRatio($drip_track->getAspectRatio());
