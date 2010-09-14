@@ -829,10 +829,13 @@
  					mkdir($export, 0755) or die("Can't create export directory $export");
  				
  				// Create the directory in the storage_dir
-				$dir = $storage_dir."/dvds/$dir";
+ 				if($series->isCartoon())
+					$target_dir = "$storage_dir/cartoons/$dir";
+				else
+					$target_dir = "$storage_dir/dvds/$dir";
 				
-				if(!file_exists($dir))
-					mkdir($dir);
+				if(!file_exists($target_dir))
+					mkdir($target_dir);
 			
 				$rip_episode = false;
 			
@@ -1249,6 +1252,8 @@
 							unlink($xml);
 						if(file_exists($txt))
 							unlink($txt);
+						if(file_exists($x264) && $reencode)
+							unlink($x264);
 					}
 					
 					// Remove episode from queue
