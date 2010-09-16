@@ -859,6 +859,10 @@
 				$ending_chapter = $episode->getEndingChapter();
 				
 				$dvd_track = new DVDTrack($track_number, $device);
+				
+				if($debug)
+					$dvd_track->setDebug(true);
+				
 				$dvd_track->setBasename($basename);
 				$dvd_track->setStartingChapter($starting_chapter);
 				$dvd_track->setEndingChapter($ending_chapter);
@@ -903,13 +907,6 @@
 					
 					// FIXME Display MPEG2 + Codec + Num. Channels
 					shell::msg("[DVD] Ripping DVD Video (MPEG-2)");
-					
-					if($debug) {
- 						$msg = "mplayer dvd://$track_number";
- 						if($starting_chapter)
- 							$msg .= " -chapter $starting_chapter-$ending_chapter";
- 						shell::msg($msg);
-					}
 					
 					if($pretend) {
 						shell::msg("[VOB] $vob");
