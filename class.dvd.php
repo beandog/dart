@@ -5,6 +5,8 @@
 		private $device;
 		private $lsdvd;
 		private $id;
+		private $vmg_id;
+		private $provider_id;
 	
 		function __construct($device = "/dev/dvd") {
 		
@@ -73,6 +75,9 @@
 				$this->setTitle((string)$this->sxe->title);
 				$this->setLongestTrack((int)$this->sxe->longest_track);
 				
+				$this->vmg_id = (string)$this->sxe->vmg_id;
+				$this->provider_id = (string)$this->sxe->provider_id;
+				
 				foreach($this->sxe->track as $track) {
 					$this->num_tracks++;
 				}
@@ -113,6 +118,24 @@
 				$this->lsdvd();
 			
 			return $this->longest_track;
+		}
+		
+		public function getVMGID() {
+		
+			if(!$this->sxe)
+				$this->lsdvd();
+			
+			return $this->vmg_id;
+		
+		}
+		
+		public function getProviderID() {
+		
+			if(!$this->sxe)
+				$this->lsdvd();
+			
+			return $this->provider_id;
+		
 		}
 		
 	}
