@@ -21,6 +21,12 @@
 		private $aid;
 		private $ix;
 		
+		private $frequency;
+		private $quantization;
+		private $ap_mode;
+		private $content;
+		private $streamid;
+		
 		function __construct($xml, $stream_id = "0x80") {
 			$this->parse_xml($xml, $stream_id);
 		}
@@ -36,11 +42,16 @@
 				$xml_stream_id = (string)$audio->streamid;
 				
 				if($xml_stream_id == $stream_id) {
+					$this->ix = (int)$audio->ix;
 					$this->langcode = (string)$audio->langcode;
 					$this->language = (string)$audio->language;
 					$this->format = (string)$audio->format;
+					$this->frequency = (int)$audio->frequency;
+					$this->quantization = (string)$audio->quantization;
 					$this->channels = (int)$audio->channels;
-					$this->stream_id = (string)$audio->streamid;
+					$this->ap_mode = (int)$audio->ap_mode;
+					$this->content = (string)$audio->content;
+					$this->streamid = $this->stream_id = (string)$audio->streamid;
 				}
 				
 			}
@@ -61,6 +72,30 @@
 		
 		function getFormat() {
 			return $this->format;
+		}
+		
+		public function getXMLIX() {
+			return $this->ix;
+		}
+		
+		function getFrequency() {
+			return $this->frequency;
+		}
+		
+		function getQuantization() {
+			return $this->quantization;
+		}
+		
+		function getAPMode() {
+			return $this->ap_mode;
+		}
+		
+		function getContent() {
+			return $this->content;
+		}
+		
+		function getStreamID() {
+			return $this->stream_id;
 		}
 		
 		/**
@@ -98,6 +133,7 @@
 			return $ix;
 		
 		}
+		
 		
 	}
 	

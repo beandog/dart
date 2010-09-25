@@ -22,6 +22,19 @@
 		private $device;
 		private $lsdvd;
 		private $id;
+		
+		private $ix;		// integer
+		private $vts_id; 	// string
+		private $vts;		// integer
+		private $ttn;		// integer
+		private $fps;		// float
+		private $format;	// string
+		private $aspect;	// string
+		private $width;		// integer
+		private $height;	// integer
+		private $df;		// string
+		private $angles;	// integer
+		
 		private $track;
 		private $num_chapters = 0;
 		private $aspect_ratio;
@@ -30,6 +43,7 @@
 		private $dts;
 		private $audio_streams;
 		private $subtitle_streams;
+		private $palette_colors = array();
 		
 		private $verbose = false;
 		private $debug = false;
@@ -117,7 +131,7 @@
 		private function lsdvd() {
 		
 			if(is_null($this->xml)) {
-				$exec = "lsdvd -Ox -v -a -s -c -t ".$this->getTrack()." ".$this->getDevice();
+				$exec = "lsdvd -Ox -v -a -s -c -x -t ".$this->getTrack()." ".$this->getDevice();
 				$arr = shell::cmd($exec);
 				$str = implode("\n", $arr);
 				
@@ -133,12 +147,18 @@
 				
 				$this->sxe = simplexml_load_string($str) or die("Couldn't parse lsdvd XML output");
 				
+				$this->ix = (int)$this->sxe->track->ix;
 				$this->length = (float)$this->sxe->track->length;
+				$this->vts_id = (string)$this->sxe->track->vts_id;
+				$this->vts = (int)$this->sxe->track->vts;
+				$this->ttn = (int)$this->sxe->track->ttn;
 				$this->fps = (float)$this->sxe->track->fps;
-				$this->video_format = (string)$this->sxe->track->format;
-				$this->aspect_ratio = (string)$this->sxe->track->aspect;
+				$this->format = $this->video_format = (string)$this->sxe->track->format;
+				$this->aspect = $this->aspect_ratio = (string)$this->sxe->track->aspect;
 				$this->width = (int)$this->sxe->track->width;
 				$this->height = (int)$this->sxe->track->height;
+				$this->df = (string)$this->sxe->track->df;
+				$this->angles = (int)$this->sxe->track->angles;
 				
 				// Audio Tracks
 				$this->audio_streams = array();
@@ -193,6 +213,12 @@
 					$last_chapter_length = $length;
 				}
 				
+				// Palettes
+				foreach($this->sxe->track->palette->color as $obj) {
+					$color = (string)$obj;
+					$this->palette_colors[] = $color;
+				}
+				
 				// I've seen this regularly on some sources, especially
 				// cartoons where the last chapter is really short.  It
 				// makes navigation annoying, because you want to skip
@@ -216,6 +242,42 @@
 			if(!$this->xml)
 				$this->lsdvd();
 			return $this->xml;
+		}
+		
+		public function getIX() {
+			if(!$this->xml)
+				$this->lsdvd();
+			return $this->ix;
+		}
+		
+		public function getVTSID() {
+			if(!$this->xml)
+				$this->lsdvd();
+			return $this->vts_id;
+		}
+		
+		public function getVTS() {
+			if(!$this->xml)
+				$this->lsdvd();
+			return $this->vts;
+		}
+		
+		public function getTTN() {
+			if(!$this->xml)
+				$this->lsdvd();
+			return $this->ttn;
+		}
+		
+		public function getDF() {
+			if(!$this->xml)
+				$this->lsdvd();
+			return $this->df;
+		}
+		
+		public function getAngles() {
+			if(!$this->xml)
+				$this->lsdvd();
+			return $this->angles;
 		}
 		
 		public function getLength() {
@@ -253,6 +315,12 @@
 			if(!$this->sxe)
 				$this->lsdvd();
 			return $this->height;
+		}
+		
+		public function getPaletteColors() {
+			if(!$this->sxe)
+				$this->lsdvd();
+			return $this->palette_colors;
 		}
 		
 		/** Language **/
