@@ -112,9 +112,10 @@
 			$bool = (boolean)$bool;
 			
 			if($bool)
-				$this->crop = "0:0:0:0";
-			else
 				$this->crop = null;
+			else
+				$this->crop = "0:0:0:0";
+				
 		
 		}
 		
