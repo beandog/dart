@@ -969,7 +969,8 @@
  					$matroska->setFilename($mkv);
  					if($episode_title)
  						$matroska->setTitle("TITLE", $episode->getTitle());
- 					$matroska->setAspectRatio($dvd_track->getAspectRatio());
+ 					if(!$reencode)
+ 						$matroska->setAspectRatio($dvd_track->getAspectRatio());
  					
  					$matroska->addTag();
 					
