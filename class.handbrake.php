@@ -4,7 +4,7 @@
 
 	class Handbrake {
 	
-		private $binary = "handbrake-svn";
+		private $binary = "handbrake";
 		
 		private $verbose = false;
 		private $debug = false;
@@ -99,7 +99,11 @@
 		
 		public function add_audio_stream($stream_id) {
 		
-			$this->add_audio_track($this->audio_streams[$stream_id]);
+			$audio_track = $this->audio_streams[$stream_id];
+			
+			// Add the audio track only if the stream ID is available from scan
+			if(!is_null($audio_track))
+				$this->add_audio_track($this->audio_streams[$stream_id]);
 		
 		}
 		
@@ -184,6 +188,21 @@
 			if(count($this->audio_tracks)) {
 				$str = implode(",", $this->audio_tracks);
 				$args['--audio'] = $str;
+			} elseif(count($this->audio_streams)) {
+			
+				// FIXME temporary?
+				// Hit a but on a DVD where lsdvd reported
+				// 8 English audio tracks, but Handbrake
+				// correctly said there is only one.
+				// So, in this case, there are audio streams
+				// so encoding the first one will work, it's
+				// just that none were passed in.
+				
+				// This is an obvious workaround to the lsdvd
+				// bug.  The correct approach would be to sync
+				// up the output of lsdvd's report and handbrake's
+				// scan.
+				$args['--audio'] = 1;
 			} else {
 				$args['--audio'] = 'none';
 			}
@@ -277,7 +296,7 @@
 			
 			if($this->debug)
 				shell::msg("Executing: $str");
-			
+				
 			shell::cmd($str, !$this->verbose, false, $this->debug, array(0));
 			
 		}
