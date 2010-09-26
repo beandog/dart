@@ -1177,6 +1177,7 @@
 								$handbrake->input_filename($vob);
 								$handbrake->output_filename($x264);
 								$handbrake->add_audio_stream($stream_id);
+								$handbrake->autocrop();
 								
 								shell::msg("[x264] Encoding Video");
 								$handbrake->encode();
