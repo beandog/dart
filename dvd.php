@@ -28,7 +28,7 @@
 				'longest_track' => $dvd->getLongestTrack(),
 			);
 		
-			$d = dvds::create(array($arr));
+			$d = dvds::create($arr);
 		
 		}
 		
