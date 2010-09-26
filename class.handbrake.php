@@ -77,7 +77,7 @@
 		
 		}
 		
-		public function add_chapters($bool) {
+		public function add_chapters($bool = true) {
 			$this->add_chapters = (boolean)$bool;
 		}
 		
@@ -107,7 +107,7 @@
 		
 		}
 		
-		public function autocrop($bool) {
+		public function autocrop($bool = true) {
 		
 			$bool = (boolean)$bool;
 			
@@ -118,25 +118,25 @@
 		
 		}
 		
-		public function deinterlace($bool) {
+		public function deinterlace($bool = true) {
 		
 			$this->deinterlace = (boolean)$bool;
 		
 		}
 		
-		public function decomb($bool) {
+		public function decomb($bool = true) {
 		
 			$this->decomb = (boolean)$bool;
 		
 		}
 		
-		public function detelecine($bool) {
+		public function detelecine($bool = true) {
 		
 			$this->detelecine = (boolean)$bool;
 		
 		}
 		
-		public function grayscale($bool) {
+		public function grayscale($bool = true) {
 		
 			$this->grayscale = (boolean)$bool;
 		
