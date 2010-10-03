@@ -380,7 +380,7 @@
 		
 		}
 		
-		function setCC($cc) {
+		function setCC($cc = true) {
 		
 			global $db;
 		
@@ -419,7 +419,7 @@
 		
 		}
 		
-		function setSDH($sdh) {
+		function setSDH($sdh = true) {
 		
 			global $db;
 		
