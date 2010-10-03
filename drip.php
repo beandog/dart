@@ -976,7 +976,7 @@
  					if(!$reencode)
  						$matroska->setAspectRatio($dvd_track->getAspectRatio());
  					
- 					$matroska->addTag();
+//  					$matroska->addTag();
 					
 					$matroska->addTag();
 					$matroska->addTarget(70, "COLLECTION");
