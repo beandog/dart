@@ -769,6 +769,8 @@
 		$drip_disc = new DripDisc($db->getOne($sql));
 		$series = new DripSeries($drip_disc->getSeriesID());
 		
+		$movie = $series->isMovie();
+		
 		/** UPDATE DATABASE - NEW AUDIO TRACKS TABLE */
 		
 		$drip_track_ids = $drip_disc->getTrackIDs();
@@ -1092,6 +1094,7 @@
 				$drip_disc = new DripDisc($drip_track->getDiscID());
 				$series = new DripSeries($drip_disc->getSeriesID());
 				$series_title = $series->getTitle();
+				$movie = $series->isMovie();
 				$episode_title = $episode->getTitle();
 				$export_title = $episode->getExportTitle();
 				$episode_number = $episode->getEpisodeNumber();
