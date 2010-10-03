@@ -120,6 +120,9 @@
 	
 	if($args['archive'])
 		$archive = true;
+		
+	if($args['title'])
+		$title = $args['title'];
 	
 	$demux = false;
 	if($args['demux'])
@@ -476,10 +479,17 @@
 			
 			shell::msg('');
 			shell::msg("Disc Title: ".$dvd->getTitle());
-			$title = shell::ask("What is the title of this series? [TV Show]", 'TV Show');
-			$min_len = shell::ask("What is the minimum episode length (in minutes)? [20]", 20);
-			$max_len = shell::ask("What is the maximum episode length (in minutes)? [60]", 60);
-			$cartoon = shell::ask("Is this series animated? [y/N]", 0);
+			if(!$title)
+				$title = shell::ask("What is the title of this series? [TV Show]", 'TV Show');
+			if($movie) {
+				$min_len = 20;
+				$max_len = 300;
+				$cartoon = false;
+			} else {
+				$min_len = shell::ask("What is the minimum episode length (in minutes)? [20]", 20);
+				$max_len = shell::ask("What is the maximum episode length (in minutes)? [60]", 60);
+				$cartoon = shell::ask("Is this series animated? [y/N]", 0);
+			}
 			
 			$series = new DripSeries();
 			$series->setTitle($title);
