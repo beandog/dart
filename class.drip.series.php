@@ -27,6 +27,7 @@
 				$this->getMaxLength();
 				$this->isCartoon();
 				$this->isUnordered();
+				$this->isMovie();
 				$this->hasCC();
 				$this->hasSDH();
 				$this->hasVolumes();
