@@ -619,8 +619,12 @@
 			$disc->setDiscID($dvd->getID());
 			$disc->setTitle($dvd->getTitle());
 			$disc->setDiscNumber($disc_number);
-			$disc->setSeason($season);
-			$disc->setVolume($volume);
+			if($movie)
+				$series->setMovie();
+			else {
+				$disc->setSeason($season);
+				$disc->setVolume($volume);
+			}
 			$disc->setSeriesID($series->getID());
 			
 			$num_tracks = $dvd->getNumTracks();

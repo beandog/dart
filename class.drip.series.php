@@ -8,6 +8,7 @@
 		private $min_length;
 		private $max_length;
 		private $cartoon;
+		private $movie;
 		private $unordered;
 		private $cc;
 		private $volumes;
@@ -236,6 +237,41 @@
 			}
 			
 			return $this->cartoon;
+		
+		}
+		
+		function setMovie($bool) {
+		
+			global $db;
+		
+			if($bool)
+				$value = 4;
+			else
+				$value = 1;
+			
+			$arr_update = array(
+				'collection' => $value
+			);
+			
+			$db->autoExecute('tv_shows', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			
+			$this->movie = $value;
+			
+		}
+		
+		function isMovie() {
+		
+			if(is_null($this->movie)) {
+				global $db;
+				$sql = "SELECT collection FROM tv_shows WHERE id = ".$this->getID().";";
+				$value = $db->getOne($sql);
+				if($value === 4)
+					$this->movie = true;
+				else
+					$this->movie = false;
+			}
+			
+			return $this->movie;
 		
 		}
 		
