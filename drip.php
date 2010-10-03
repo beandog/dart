@@ -1220,6 +1220,8 @@
 								$handbrake->output_filename($x264);
 								$handbrake->add_audio_stream($stream_id);
 								$handbrake->autocrop();
+								if($series->isGrayscale())
+									$handbrake->grayscale();
 								
 								shell::msg("[x264] Encoding Video");
 								$handbrake->encode();
