@@ -1222,6 +1222,8 @@
 								$handbrake->autocrop();
 								if($series->isGrayscale())
 									$handbrake->grayscale();
+								if($series->getHandbrakePreset())
+									$handbrake->set_preset('High Profile');
 								
 								shell::msg("[x264] Encoding Video");
 								$handbrake->encode();
