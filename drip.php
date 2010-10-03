@@ -27,7 +27,6 @@
 	
 	$db =& DB::connect("pgsql://steve@charlie/movies");
 	$db->setFetchMode(DB_FETCHMODE_ASSOC);
-// 	PEAR::setErrorHandling(PEAR_ERROR_DIE);
 	
 	function pear_error($obj) {
 		die($obj->getMessage() . "\n" . $obj->getDebugInfo());
@@ -367,7 +366,6 @@
 			
 		}
 		
-// 		die;
 	}
 	
 	// Archive disc if not in the db
@@ -475,7 +473,6 @@
 				
 		// Create a new series
 		if($new_series && !$series) {
-// 			$drip->title();
 			
 			shell::msg('');
 			shell::msg("Disc Title: ".$dvd->getTitle());
@@ -492,7 +489,6 @@
 			$series->setCartoon($cartoon);
 			$series_id = $series->getID();
 			
-// 			$series_id = $drip->newSeries($title, $min_len, $max_len, $cartoon);
 		} else {
 			if(!$series_id)
  				$series_id = $arr[($input - 1)]['id'];
@@ -1071,8 +1067,6 @@
 		}
 		else
 			$arr = $drip->getQueue($max);
-		
-//  		print_r($arr);
 		
 		$todo = $count = count($arr);
 		
