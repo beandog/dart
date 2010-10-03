@@ -170,7 +170,6 @@
   		$dvd->mount();
 	}
 	
-	
 	// Display info about disc
 	if($info) {
 		
@@ -647,6 +646,7 @@
 			$disc->setSeriesID($series->getID());
 			
 			$num_tracks = $dvd->getNumTracks();
+			$longest_track = $dvd->getLongestTrack();
 			
 			$min_length = $series->getMinLength();
 			$max_length = $series->getMaxLength();
@@ -686,6 +686,17 @@
 				$drip_track->setTrackNumber($track_number);
 				$drip_track->setLength($track_length);
 				$drip_track->setAspectRatio($dvd_track->getAspectRatio());
+				
+				// If it's a movie, go ahead and set the longest track to the title
+				if($movie && $longest_track && ($longest_track == $track_number)) {
+					
+					require_once 'class.drip.episode.php';
+					
+					$drip_episode = new DripEpisode();
+					$drip_episode->setTrackID($drip_track->getID());
+					$drip_episode->setTitle($title);
+					
+				}
 				
 				// Fetch all the audio streams, and store them
 				// in the database.
