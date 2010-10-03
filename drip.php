@@ -433,49 +433,50 @@
 					
 			// Split the output into pages for the terminal (24 lines per display)
 			$arr_chunk = array_chunk($arr, 22, true);
-				
-			// Keep looping through the selection until they pick one
-			do {
-				// Display only 24 lines per selection at a time:
-				for($x = 0, $y = 1; $x < count($arr_chunk); $x++) {
-				
-					shell::msg("Current TV shows:");
-					for($z = 0; $z < count($arr_chunk[$x]); $z++) {
-						shell::msg("\t$y. {$arr_chunk[$x][($y - 1)]['title']}");
-						$y++;
-					}
+			
+			if(!$movie) {
+				// Keep looping through the selection until they pick one
+				do {
+					// Display only 24 lines per selection at a time:
+					for($x = 0, $y = 1; $x < count($arr_chunk); $x++) {
 					
-					$msg = '';
-					if(count($arr_chunk) > 1)
-						$msg = "[Page ".($x + 1)."/".count($arr_chunk)."]  Select TV show [NEXT PAGE/#/new]:";
-					else
-						$msg = "Select TV show [#/new]:";
+						shell::msg("Current TV shows:");
+						for($z = 0; $z < count($arr_chunk[$x]); $z++) {
+							shell::msg("\t$y. {$arr_chunk[$x][($y - 1)]['title']}");
+							$y++;
+						}
 						
-					$input = shell::ask($msg, '');
-					
-					if(strtolower(trim($input)) != 'new') {
-						$input = intval($input);
-					} else {
-						$new_series = true;
-						break 2;
+						$msg = '';
+						if(count($arr_chunk) > 1)
+							$msg = "[Page ".($x + 1)."/".count($arr_chunk)."]  Select TV show [NEXT PAGE/#/new]:";
+						else
+							$msg = "Select TV show [#/new]:";
+							
+						$input = shell::ask($msg, '');
+						
+						if(strtolower(trim($input)) != 'new') {
+							$input = intval($input);
+						} else {
+							$new_series = true;
+							break 2;
+						}
+						
+						// Break out once they have their selection
+						if($input > 0) {
+							if($input > $num_rows) {
+								shell::msg("Please enter a valid selection.", true);
+								$input = 0;
+							} else
+								break 1;
+						}
 					}
-					
-					// Break out once they have their selection
-					if($input > 0) {
-						if($input > $num_rows) {
-							shell::msg("Please enter a valid selection.", true);
-							$input = 0;
-						} else
-							break 1;
-					}
-				}
-			} while($input == 0);
-			
-			
+				} while($input == 0);
+			}
 		}
-				
+		
 		// Create a new series
-		if($new_series && !$series) {
+		// FIXME this assumes there's one disc per movie
+		if(($new_series && !$series) || $movie) {
 			
 			shell::msg('');
 			shell::msg("Disc Title: ".$dvd->getTitle());
@@ -597,24 +598,28 @@
 				$next_disc_side = "";
 			}
 			
-			do {
-				$disc_number = shell::ask("What number is this disc? [$next_disc$next_disc_side]", $next_disc.$next_disc_side);
-				
-				if(!$side)
-					$side = strtoupper(substr($disc_number, -1));
-				if(!($side == "A" || $side == "B"))
-					$side = "";
-				$disc_number = intval($disc_number);
-				
-				if(in_array($disc_number.$side, $arr_archives)) {
-					shell::msg("Disc $disc_number$side is already archived.  Choose another number.");
-					$disc_number = 0;
-				} elseif(is_numeric($disc_number) && empty($side) && (in_array($disc_number."A", $arr_archives) || in_array($disc_number."B", $arr_archives))) {
-					shell::msg("Need to specify a valid disc # and side.");
-					$disc_number = 0;
-				}
-				
-			} while($disc_number == 0);
+			if($movie || !($movie && $series->getNumDiscs() == 0)) {
+				$disc_number = 1;
+			} else {
+				do {
+					$disc_number = shell::ask("What number is this disc? [$next_disc$next_disc_side]", $next_disc.$next_disc_side);
+					
+					if(!$side)
+						$side = strtoupper(substr($disc_number, -1));
+					if(!($side == "A" || $side == "B"))
+						$side = "";
+					$disc_number = intval($disc_number);
+					
+					if(in_array($disc_number.$side, $arr_archives)) {
+						shell::msg("Disc $disc_number$side is already archived.  Choose another number.");
+						$disc_number = 0;
+					} elseif(is_numeric($disc_number) && empty($side) && (in_array($disc_number."A", $arr_archives) || in_array($disc_number."B", $arr_archives))) {
+						shell::msg("Need to specify a valid disc # and side.");
+						$disc_number = 0;
+					}
+					
+				} while($disc_number == 0);
+			}
 		}
 		
 		
@@ -631,7 +636,7 @@
 			$disc->setDiscNumber($disc_number);
 			if($movie) {
 				$series->setMovie();
-				$series->setUnordered(false);
+				$series->setUnordered(true);
 				$series->setVolumes(false);
 				$series->setHandbrake();
 			} else {
