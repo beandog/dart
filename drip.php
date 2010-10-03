@@ -1007,19 +1007,21 @@
 					}
 					
 					/** Episode **/
-					$matroska->addTag();
-					$matroska->addTarget(50, "EPISODE");
-					if($episode_title)
-						$matroska->addSimpleTag("TITLE", $episode_title);
-					if($episode_number)
-						$matroska->addSimpleTag("PART_NUMBER", $episode_number);
-					$matroska->addSimpleTag("DATE_TAGGED", date("Y-m-d"));
-					$matroska->addSimpleTag("PLAY_COUNTER", 0);
-					
-					if($episode->getPart() > 1) {
+					if(!$movie) {
 						$matroska->addTag();
-						$matroska->addTarget(40, "PART");
-						$matroska->addSimpleTag("PART_NUMBER", $episode->getPart());
+						$matroska->addTarget(50, "EPISODE");
+						if($episode_title)
+							$matroska->addSimpleTag("TITLE", $episode_title);
+						if($episode_number)
+							$matroska->addSimpleTag("PART_NUMBER", $episode_number);
+						$matroska->addSimpleTag("DATE_TAGGED", date("Y-m-d"));
+						$matroska->addSimpleTag("PLAY_COUNTER", 0);
+						
+						if($episode->getPart() > 1) {
+							$matroska->addTag();
+							$matroska->addTarget(40, "PART");
+							$matroska->addSimpleTag("PART_NUMBER", $episode->getPart());
+						}
 					}
 					
 					$str = $matroska->getXML();
