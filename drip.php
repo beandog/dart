@@ -988,6 +988,11 @@
 						$matroska->addSimpleTag("DATE_RELEASE", $series->getBroadcastYear());
 					$matroska->addSimpleTag("ORIGINAL_MEDIA_TYPE", "DVD");
 					
+					if($movie && $series->getBroadcastYear()) {
+						$year = $series->getBroadcastYear() + $season - 1;
+						$matroska->addSimpleTag("DATE_RELEASE", $year);
+					}
+					
 					/** Season **/
 					if($episode->getSeason() && !$movie) {
 					
