@@ -86,6 +86,14 @@
 		
 		}
 		
+		public function iso($str) {
+		
+			$dest = escapeshellarg($dest);
+		
+			$exec = "pv -ptre ".$this->getDevice()."  | dd of=\"$dest\"";
+		
+		}
+		
 		private function setTitle($str) {
 			$this->title = $str;
 		}
