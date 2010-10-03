@@ -77,6 +77,11 @@
 		shell::msg("Handbrake:");
 		shell::msg("  --handbrake\t\tUse Handbrake to reencode video");
 		shell::msg("  --preset\t\tEncoding preset to use [$handbrake_preset]");
+		
+		shell::msg("Movies:");
+		shell::msg("  --movie\t\tUse some settings to archive as a movie");
+		shell::msg("  --title\t\tMovie Title");
+		
 	
 		die;
 	}
@@ -145,6 +150,9 @@
 		$mux_vobsub = true;
 	if($args['novobsub'])
 		$rip_vobsub = $mux_vobsub = false;
+	
+	if($args['movie'])
+		$movie = true;
 		
 	if($args['device'])
 		$device = $args['device'];
