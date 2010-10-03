@@ -205,7 +205,7 @@
 			return $this->max_length;
 		}
 		
-		function setCartoon($bool) {
+		function setCartoon($bool = true) {
 		
 			global $db;
 		
@@ -240,7 +240,7 @@
 		
 		}
 		
-		function setMovie($bool) {
+		function setMovie($bool = true) {
 		
 			global $db;
 		
@@ -275,7 +275,7 @@
 		
 		}
 		
-		function setHandbrake($bool) {
+		function setHandbrake($bool = true) {
 		
 			global $db;
 		
@@ -310,7 +310,7 @@
 		
 		}
 		
-		function setVolumes($bool) {
+		function setVolumes($bool = true) {
 		
 			global $db;
 		
@@ -345,7 +345,7 @@
 		
 		}
 		
-		function setUnordered($bool) {
+		function setUnordered($bool = true) {
 		
 			global $db;
 		
@@ -458,7 +458,7 @@
 		
 		}
 		
-		function setVobSub($bool) {
+		function setVobSub($bool = true) {
 		
 			global $db;
 		
