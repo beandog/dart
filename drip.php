@@ -514,7 +514,7 @@
 		}
 		
 		// Get the volume
-		if(is_null($volume) && $series->hasVolumes()) {
+		if(is_null($volume) && $series->hasVolumes() && !$movie) {
 			$volume = shell::ask("What volume is this disc? [None]", null);
 			if(!is_numeric($volume))
 				$volume = 0;
