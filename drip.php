@@ -976,6 +976,7 @@
  					if(!$reencode)
  						$matroska->setAspectRatio($dvd_track->getAspectRatio());
  					
+ 					// FIXME this is a stray??
 //  					$matroska->addTag();
 					
 					$matroska->addTag();
