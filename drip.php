@@ -478,10 +478,11 @@
 		// FIXME this assumes there's one disc per movie
 		if(($new_series && !$series) || $movie) {
 			
-			shell::msg('');
-			shell::msg("Disc Title: ".$dvd->getTitle());
-			if(!$title)
+			if(!$title) {
+				shell::msg('');
+				shell::msg("Disc Title: ".$dvd->getTitle());
 				$title = shell::ask("What is the title of this series? [TV Show]", 'TV Show');
+			}
 			if($movie) {
 				$min_len = 20;
 				$max_len = 300;
