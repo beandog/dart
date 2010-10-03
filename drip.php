@@ -619,9 +619,12 @@
 			$disc->setDiscID($dvd->getID());
 			$disc->setTitle($dvd->getTitle());
 			$disc->setDiscNumber($disc_number);
-			if($movie)
+			if($movie) {
 				$series->setMovie();
-			else {
+				$series->setUnordered(false);
+				$series->setVolumes(false);
+				$series->setHandbrake();
+			} else {
 				$disc->setSeason($season);
 				$disc->setVolume($volume);
 			}
