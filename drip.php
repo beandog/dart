@@ -989,7 +989,7 @@
 					$matroska->addSimpleTag("ORIGINAL_MEDIA_TYPE", "DVD");
 					
 					/** Season **/
-					if($episode->getSeason()) {
+					if($episode->getSeason() && !$movie) {
 					
 						$season = $episode->getSeason();
 					
