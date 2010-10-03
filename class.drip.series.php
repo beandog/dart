@@ -8,6 +8,7 @@
 		private $min_length;
 		private $max_length;
 		private $cartoon;
+		private $grayscale;
 		private $movie;
 		private $unordered;
 		private $cc;
@@ -28,6 +29,7 @@
 				$this->isCartoon();
 				$this->isUnordered();
 				$this->isMovie();
+				$this->isGrayscale();
 				$this->hasCC();
 				$this->hasSDH();
 				$this->hasVolumes();
@@ -273,6 +275,41 @@
 			}
 			
 			return $this->movie;
+		
+		}
+		
+		function setGrayscale($bool = true) {
+		
+			global $db;
+		
+			if($bool)
+				$value = true;
+			else
+				$value = false;
+			
+			$arr_update = array(
+				'grayscale' => $value
+			);
+			
+			$db->autoExecute('tv_shows', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			
+			$this->grayscale = $value;
+			
+		}
+		
+		function isGrayscale() {
+		
+			if(is_null($this->grayscale)) {
+				global $db;
+				$sql = "SELECT grayscale FROM tv_shows WHERE id = ".$this->getID().";";
+				$value = $db->getOne($sql);
+				if($value === 't')
+					$this->grayscale = true;
+				else
+					$this->grayscale = false;
+			}
+			
+			return $this->grayscale;
 		
 		}
 		
