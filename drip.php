@@ -1215,10 +1215,21 @@
 						
 							if(!file_exists($x264)) {
 								$stream_id = $drip_track->getDefaultStreamID();
-							
+								
 								$handbrake->input_filename($vob);
 								$handbrake->output_filename($x264);
 								$handbrake->add_audio_stream($stream_id);
+								
+								// Check for a subtitle track
+								$subp_ix = $drip_track->getDefaultSubtitleIndex();
+								
+								// If we have a VobSub one, add it
+								// Otherwise, check for a CC stream, and add that
+								if($subp_ix && $mux_vobsub)
+									$handbrake->add_subtitle_track($subp_ix);
+								elseif($handbrake->has_cc() && $mux_cc)
+									$handbrake->add_subtitle_track($handbrake->get_cc_ix());
+								
 								$handbrake->autocrop();
 								if($series->isGrayscale())
 									$handbrake->grayscale();
