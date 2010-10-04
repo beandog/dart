@@ -35,6 +35,9 @@
 		private $srt_language = 'eng';
 		
 		private $cc = false;
+		private $cc_ix;
+		
+		private $num_bitmaps;
 		
 		function __construct($filename = null) {
 		
@@ -276,10 +279,16 @@
 				$audio_index++;
 			}
 			
+			$vobsubs = preg_grep("/.*(Bitmap).*/", $arr);
+			
+			$this->num_bitmaps = count($vobsubs);
+			
 			$cc = preg_grep("/.*Closed Captions.*/", $arr);
 			
-			if(count($cc))
+			if(count($cc)) {
 				$this->cc = true;
+				$this->cc_ix = (count($vobsubs) + 1);
+			}
 		
 		}
 		
@@ -289,6 +298,10 @@
 		
 		public function has_cc() {
 			return $this->cc;
+		}
+		
+		public function get_cc_ix() {
+			return $this->cc_ix;
 		}
 		
 		public function encode() {
