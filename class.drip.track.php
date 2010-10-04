@@ -366,6 +366,30 @@
 				
 		}
 		
+		/**
+		 * Unlike audio streams, you are not guaranteed a subtitle stream in English.
+		 * 
+		 */
+		public function getDefaultSubtitleIndex() {
+		
+			global $db;
+		
+			$sql = "SELECT id, ix, langcode FROM subtitles WHERE track = $track_id AND format = 'VobSub' ORDER BY langcode = 'en' DESC, ix;";
+			$arr = $db->getAssoc($sql);
+			
+			if(count($arr)) {
+				foreach($arr as $row) {
+					if($row['langcode'] == 'en') {
+						$track = $row['ix'];
+						break;
+					}
+				}
+			}
+			
+			return $track;
+				
+		}
+		
 	
 	}
 ?>
