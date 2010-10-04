@@ -341,10 +341,28 @@
 		
 			global $db;
 		
-			$sql = "SELECT stream_id from audio_tracks WHERE track = ".$this->getID()." ORDER BY lang = 'en' DESC, channels DESC, stream_id LIMIT 1;";
-			$var = $db->getOne($sql);
+// 			$sql = "SELECT stream_id from audio_tracks WHERE track = ".$this->getID()." ORDER BY lang = 'en' DESC, channels DESC, stream_id LIMIT 1;";
+// 			$var = $db->getOne($sql);
 			
-			return $var;
+			$sql = "SELECT id, ix, lang, stream_id FROM audio_tracks WHERE track = $track_id ORDER BY lang = 'en' DESC, channels DESC, format = 'dts' DESC, stream_id;";
+			$arr = $db->getAssoc($sql);
+			
+			if(count($arr)) {
+				foreach($arr as $row) {
+					if($row['lang'] == 'en') {
+						$audio_track = $row['stream_id'];
+						break;
+					}
+					
+					if(!$audio_track)
+						$audio_track = "0x80";
+					
+				}
+			} else {
+				$audio_track = "0x80";
+			}
+			
+			return $audio_track;
 				
 		}
 		
