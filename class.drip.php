@@ -640,6 +640,32 @@ XML;
 		
 		}
 		
+		function getDefaultAudioStreamID($track_id, $language = 'en') {
+		
+			global $db;
+			
+			$sql = "SELECT id, ix, lang, stream_id FROM audio_tracks WHERE track = $track_id ORDER BY ix;";
+			$arr = $db->getAssoc($sql);
+			
+			if(count($arr)) {
+				foreach($arr as $row) {
+					if($row['lang'] == 'en') {
+						$audio_track = $row['stream_id'];
+						break;
+					}
+					
+					if(!$audio_track)
+						$audio_track = "0x80";
+					
+				}
+			} else {
+				$audio_track = "0x80";
+			}
+			
+			return $audio_track;
+		
+		}
+		
 		function getDefaultAudioAID($track_id, $language = "en") {
 			if(is_null($this->audio-track)) {
 				$this->getDefaultAudioTrack($track_id, $language);
