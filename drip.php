@@ -1166,8 +1166,6 @@
 		
 			foreach($arr as $episode_id) {
 			
-				$iso = $drip->export.$drip->formatTitle($series->getTitle()." - Disc ".$drip_disc->getDiscNumber()).".iso";
-			
 				$episode = new DripEpisode($episode_id);
 				$track_id = $episode->getTrackID();
 				$drip_track = new DripTrack($track_id);
@@ -1181,6 +1179,8 @@
 				$episode_index = $episode->getEpisodeIndex();
 				$reencode = $series->useHandbrake();
 				$track_number = $drip_track->getTrackNumber();
+				
+				$iso = $drip->export.$drip->formatTitle($series->getTitle()." - Disc ".$drip_disc->getDiscNumber()).".iso";
 				
 				if($reencode && $dump_iso)
 					$dump_vob = false;
@@ -1252,7 +1252,7 @@
 						$matroska->setDebug($debug);
 						$matroska->setTitle($episode_title);
 					
-						if($demux) {
+						if($demux && $dump_vob) {
 						
 							if(!file_exists($mpg)) {
 								shell::msg("[VOB] Demuxing Raw Video");
