@@ -273,20 +273,27 @@
 		public function scan() {
 		
 			if($this->track)
-				$options = "--track ".$this->track;
+				$options = "--title ".$this->track;
 		
-			$exec = $this->binary." --scan --input $options ".escapeshellarg($this->input)." 2>&1";
+			$exec = $this->binary." --scan $options --input ".escapeshellarg($this->input)." 2>&1";
 			exec($exec, $arr, $return);
 			
-			$audio = preg_grep("/.*add_audio_to_title.*/", $arr);
+			$audio = preg_grep("/.*(add_audio_to_title|scan: audio 0x).*/", $arr);
 			
 			$audio_index = 1;
 			
 			foreach($audio as $str) {
-				$stream_id = str_replace("bd", "", end(explode(" ", $str)));
+			
+				$tmp = explode(" ", $str);
+				$str = current(preg_grep("/\.*bd.*/", $tmp));
+				
+				$stream_id = preg_replace("/bd.*/", "", $str);
+				
 				$this->audio_streams[$stream_id] = $audio_index;
 				$audio_index++;
 			}
+			
+			ksort($this->audio_streams);
 			
 			$vobsubs = preg_grep("/.*(Bitmap).*/", $arr);
 			
