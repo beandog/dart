@@ -344,7 +344,7 @@
 // 			$sql = "SELECT stream_id from audio_tracks WHERE track = ".$this->getID()." ORDER BY lang = 'en' DESC, channels DESC, stream_id LIMIT 1;";
 // 			$var = $db->getOne($sql);
 			
-			$sql = "SELECT id, ix, lang, stream_id FROM audio_tracks WHERE track = $track_id ORDER BY lang = 'en' DESC, channels DESC, format = 'dts' DESC, stream_id;";
+			$sql = "SELECT id, ix, lang, stream_id FROM audio_tracks WHERE track = ".$this->getID()." ORDER BY lang = 'en' DESC, channels DESC, format = 'dts' DESC, stream_id;";
 			$arr = $db->getAssoc($sql);
 			
 			if(count($arr)) {
@@ -374,7 +374,7 @@
 		
 			global $db;
 		
-			$sql = "SELECT id, ix, langcode FROM subtitles WHERE track = $track_id AND format = 'VobSub' ORDER BY langcode = 'en' DESC, ix;";
+			$sql = "SELECT id, ix, langcode FROM subtitles WHERE track = ".$this->getID()." AND format = 'VobSub' ORDER BY langcode = 'en' DESC, ix;";
 			$arr = $db->getAssoc($sql);
 			
 			if(count($arr)) {
