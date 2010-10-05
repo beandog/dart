@@ -86,13 +86,13 @@
 		
 		}
 		
-		public function iso($str) {
+		public function iso($dest) {
 		
 			$dest = escapeshellarg($dest);
 		
-			$exec = "pv -pter -w 80 ".$this->getDevice()."  | dd of=\"$dest\"";
+			$exec = "pv -pter -w 80 ".$this->getDevice()."  | dd of=$dest";
 			
-			shell::cmd($exec);
+ 			shell::cmd($exec);
 		
 		}
 		
