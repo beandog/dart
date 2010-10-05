@@ -191,6 +191,10 @@
 			$args['--input'] = $this->input;
 			$args['--output'] = $this->output;
 			
+			// Set track #
+			if($this->track)
+				$args['--title'] = $this->track;
+			
 			// Set encoder
 			$args['--encoder'] = $this->encoder;
 			
@@ -245,7 +249,7 @@
 			// Set cropping parameters
 			if(!is_null($this->crop))
 				$args['--crop'] = $this->crop;
-				
+			
 			return $args;
 			
 		}
