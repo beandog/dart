@@ -146,5 +146,23 @@
 		
 		}
 		
+		public function getSize() {
+		
+			$device = $this->getDevice();
+			
+			if(substr($device, 0, 4) == "/dev") {
+			
+				$exec = "/bin/df $device | tail -n 1 | tr -s '[:blank:]' '\\t' | cut -f 2";
+				
+				$var = shell::cmd($exec);
+				
+				return $var;
+			
+			}
+			
+			return null;
+		
+		}
+		
 	}
 ?>
