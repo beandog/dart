@@ -215,6 +215,31 @@
 		
 		}
 		
+		function getSize() {
+			global $db;
+			$sql = "SELECT size FROM discs WHERE id = ".$this->getID().";";
+			$var = $db->getOne($sql);
+			
+			return $var;
+		}
+		
+		function setSize($int) {
+		
+			global $db;
+		
+			$int = abs(intval($int));
+			
+			if(!$int)
+				$int = null;
+			
+			$arr_update = array(
+				'size' => $int
+			);
+			
+			$db->autoExecute('discs', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			
+		}
+		
 		function getSeason() {
 			if(!isset($this->season)) {
 				global $db;
