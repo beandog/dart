@@ -878,7 +878,7 @@
 		}
 		
 		// Extract episodes
-		if($num_episodes && !$dump_iso) {
+		if($num_episodes) {
 		
 			$num_ripped = array();
 			
@@ -938,7 +938,10 @@
 				$starting_chapter = $episode->getStartingChapter();
 				$ending_chapter = $episode->getEndingChapter();
 				
-				$dvd_track = new DVDTrack($track_number, $device);
+				if($dump_iso)
+					$dvd_track = new DVDTrack($track_number, $iso);
+				else
+					$dvd_track = new DVDTrack($track_number, $device);
 				
 				if($debug)
 					$dvd_track->setDebug(true);
