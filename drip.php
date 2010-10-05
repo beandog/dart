@@ -1289,12 +1289,37 @@
 								
 								$stream_id = $drip_track->getDefaultStreamID();
 								
-// 								print_r($handbrake);
+								// Some DVDs may report more audio streams than
+								// Handbrake does.  If that's the case, check
+								// each one that lsdvd reports, to see if Handbrake
+								// agrees, and add the first one that they both
+								// have found.
+								//
+								// By default, use the one we think is right.
+								if($handbrake->get_audio_index($stream_id))
+									$handbrake->add_audio_stream($stream_id);
+								else {
 								
-								var_dump($stream_id);
-								die;
-								
-								$handbrake->add_audio_stream($stream_id);
+									$audio_stream_ids = $drip_track->getAudioStreamIDs();
+									
+									$added_audio = false;
+									
+									foreach($audio_stream_ids as $arr) {
+									
+										$stream_id = $arr['stream_id'];
+										
+										if($handbrake->get_audio_index($stream_id) && !$added_audio) {
+											$handbrake->add_audio_stream($stream_id);
+											$added_audio = true;
+										}
+									}
+									
+									// If one hasn't been added by now, just use
+									// the default one.
+									if(!$added_audio)
+ 	 									$handbrake->add_audio_stream("0x80");
+									
+								}
 								
 								// Check for a subtitle track
 								$subp_ix = $drip_track->getDefaultSubtitleIndex();
@@ -1313,6 +1338,10 @@
 									$handbrake->set_preset('High Profile');
 								
 								shell::msg("[x264] Encoding Video");
+								
+								if($debug)
+									shell::msg("Executing: ".$handbrake->get_executable_string());
+								
 								$handbrake->encode();
 							}
 							
