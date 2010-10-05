@@ -810,6 +810,13 @@
 		
 		$movie = $series->isMovie();
 		
+		$reencode = $series->useHandbrake();
+				
+		if($reencode && $dump_iso)
+			$dump_vob = false;
+		else
+			$dump_vob = true;
+		
 		/** UPDATE DATABASE - NEW AUDIO TRACKS TABLE */
 		
 		$drip_track_ids = $drip_disc->getTrackIDs();
