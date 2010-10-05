@@ -1057,7 +1057,7 @@
  				// Metadata
  				if(!file_exists($xml) && !file_exists($mkv)) {
  				
-//  					shell::msg("[MKV] Metadata");
+  					shell::msg("[MKV] Metadata");
  				
  					$matroska = new Matroska();
  					
