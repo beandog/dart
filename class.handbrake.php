@@ -10,6 +10,7 @@
 		private $debug = false;
 	
 		private $filename;
+		private $track;
 		private $flags = array();
 		private $args = array();
 		
@@ -55,13 +56,18 @@
 		}
 		
 		/** Filename **/
-		public function input_filename($str) {
-			$this->input = $str;
+		public function input_filename($src, $track) {
+			$this->input = $src;
+			$this->track = $track;
 			$this->scan();
 		}
 		
 		public function output_filename($str) {
 			$this->output = $str;
+		}
+		
+		public function input_track($str) {
+			$this->track = $str;
 		}
 		
 		public function set_debug($bool = true) {
@@ -266,7 +272,10 @@
 		
 		public function scan() {
 		
-			$exec = $this->binary." --scan --input ".escapeshellarg($this->input)." 2>&1";
+			if($this->track)
+				$options = "--track ".$this->track;
+		
+			$exec = $this->binary." --scan --input $options ".escapeshellarg($this->input)." 2>&1";
 			exec($exec, $arr, $return);
 			
 			$audio = preg_grep("/.*add_audio_to_title.*/", $arr);
