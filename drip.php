@@ -1314,32 +1314,32 @@
 						
 						}
 						
-						if(!$demux && !$reencode)
+						if(!$demux && $dump_vob)
 							$matroska->addFile($vob);
 						
-						if(!file_exists($srt) && $rip_cc && $series->hasCC()) {
+						if(!file_exists($srt) && $rip_cc && $series->hasCC() && $dump_vob) {
 							shell::msg("[SRT] Ripping Closed Captioning");
 							$dvd_vob->dumpSRT();
 						}
 						
 						$mux = array("Video", "Audio");
 						
-						if(file_exists($idx) && $mux_vobsub) {
+						if(file_exists($idx) && $mux_vobsub && $dump_vob) {
 							$matroska->addSubtitles($idx);
 							$mux[] = "VobSub";
 						}
-						if(file_exists($srt) && (filesize($srt) > $min_cc_filesize) && $mux_cc) {
+						if(file_exists($srt) && (filesize($srt) > $min_cc_filesize) && $mux_cc && $dump_vob) {
 							$matroska->addSubtitles($srt);
 							$mux[] = "Closed Captioning";
 						}
-						if(file_exists($txt)) {
+						if(file_exists($txt) && $dump_vob) {
 							$matroska->addChapters($txt);
 							$mux[] = "Chapters";
 						}
 						if(file_exists($xml))
 							$matroska->addGlobalTags($xml);
 						
-						if($drip_track->getAspectRatio())
+						if($drip_track->getAspectRatio() && $dump_vob)
 							$matroska->setAspectRatio($drip_track->getAspectRatio());
 							
 						$str_muxing = implode(", ", $mux);
