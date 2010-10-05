@@ -162,7 +162,12 @@
 		$device = $ini['device'];
 	else
 		$device = "/dev/dvd";
-		
+	
+	if($args['iso'] || $ini['dump_iso'])
+		$dump_iso = true;
+	else
+		$dump_iso = false;
+	
 	$dvd = new DVD($device);
 	
 	if($ini['mount'] && ($archive || $rip || $update || $info)) {
