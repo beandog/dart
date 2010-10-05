@@ -1349,7 +1349,7 @@
 						$matroska->mux();
 							
 						
-					} elseif (!file_exists($vob) && !file_exists($mkv)) {
+					} elseif (!file_exists($src) && !file_exists($mkv)) {
 					
 						// At this point, it shouldn't be in the queue.
 						$sql = "DELETE FROM queue WHERE episode = $episode_id;";
