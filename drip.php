@@ -290,6 +290,9 @@
 		
 		$drip_disc = new DripDisc($drip_disc_id);
 		
+ 		if($mount && !$drip_disc->getSize())
+ 			$drip_disc->setSize($dvd->getSize());
+		
 		$arr_track_ids = $drip_disc->getTrackIDs();
 		
 		// Update disc number
@@ -629,6 +632,10 @@
 				shell::msg("new DripDisc()");
 			
 			$disc = new DripDisc();
+			
+			// Update disc size
+			if($mount && !$drip_disc->getSize())
+				$drip_disc->setSize($dvd->getSize());
 			
 			$disc->setSide($side);
 			$disc->setDiscID($dvd->getID());

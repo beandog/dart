@@ -154,7 +154,7 @@
 			
 				$exec = "/bin/df $device | tail -n 1 | tr -s '[:blank:]' '\\t' | cut -f 2";
 				
-				$var = shell::cmd($exec);
+				$var = current(shell::cmd($exec));
 				
 				return $var;
 			

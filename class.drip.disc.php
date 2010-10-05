@@ -227,9 +227,7 @@
 		
 			global $db;
 		
-			$int = abs(intval($int));
-			
-			if(!$int)
+			if(!is_numeric($int))
 				$int = null;
 			
 			$arr_update = array(
