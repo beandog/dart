@@ -275,19 +275,16 @@
 			if($this->track)
 				$options = "--title ".$this->track;
 		
-			$exec = $this->binary." --scan $options --input ".escapeshellarg($this->input)." 2>&1";
+			$exec = $this->binary." --scan --verbose $options --input ".escapeshellarg($this->input)." 2>&1";
 			exec($exec, $arr, $return);
 			
-			$audio = preg_grep("/.*(add_audio_to_title|scan: audio 0x).*/", $arr);
+			$audio = preg_grep("/.*(scan: id=8).*/", $arr);
 			
 			$audio_index = 1;
 			
 			foreach($audio as $str) {
 			
-				$tmp = explode(" ", $str);
-				$str = current(preg_grep("/\.*bd.*/", $tmp));
-				
-				$stream_id = preg_replace("/bd.*/", "", $str);
+				$stream_id = "0x".substr($str, 20, 2);
 				
 				$this->audio_streams[$stream_id] = $audio_index;
 				$audio_index++;
