@@ -1279,7 +1279,6 @@
 								$handbrake->verbose();
 						
 							if(!file_exists($x264)) {
-								$stream_id = $drip_track->getDefaultStreamID();
 								
 								if($dump_iso)
 									$handbrake->input_filename($src, $track_number);
@@ -1287,6 +1286,14 @@
 									$handbrake->input_filename($src);
 									
 								$handbrake->output_filename($x264);
+								
+								$stream_id = $drip_track->getDefaultStreamID();
+								
+// 								print_r($handbrake);
+								
+								var_dump($stream_id);
+								die;
+								
 								$handbrake->add_audio_stream($stream_id);
 								
 								// Check for a subtitle track

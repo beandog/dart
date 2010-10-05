@@ -341,11 +341,7 @@
 		
 			global $db;
 		
-// 			$sql = "SELECT stream_id from audio_tracks WHERE track = ".$this->getID()." ORDER BY lang = 'en' DESC, channels DESC, stream_id LIMIT 1;";
-// 			$var = $db->getOne($sql);
-			
-			$sql = "SELECT id, ix, lang, stream_id FROM audio_tracks WHERE track = ".$this->getID()." ORDER BY lang = 'en' DESC, channels DESC, format = 'dts' DESC, stream_id;";
-			$arr = $db->getAssoc($sql);
+			$arr = $this->getAudioStreamIDs();
 			
 			if(count($arr)) {
 				foreach($arr as $row) {
@@ -364,6 +360,17 @@
 			
 			return $audio_track;
 				
+		}
+		
+		public function getAudioStreamIDs() {
+		
+			global $db;
+		
+			$sql = "SELECT id, ix, lang, stream_id FROM audio_tracks WHERE track = ".$this->getID()." ORDER BY lang = 'en' DESC, channels DESC, format = 'dts' DESC, stream_id;";
+			$arr = $db->getAssoc($sql);
+			
+			return $arr;
+		
 		}
 		
 		/**
