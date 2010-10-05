@@ -90,7 +90,9 @@
 		
 			$dest = escapeshellarg($dest);
 		
-			$exec = "pv -ptre ".$this->getDevice()."  | dd of=\"$dest\"";
+			$exec = "pv -pter -w 80 ".$this->getDevice()."  | dd of=\"$dest\"";
+			
+			shell::cmd($exec);
 		
 		}
 		

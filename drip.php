@@ -843,16 +843,44 @@
 		
 		$arr = $db->getCol($sql);
 		
-		if(count($arr)) {
+		$num_episodes = $count = count($arr);
+		
+		// Common code
+		if($num_episodes) {
 		
 			$x = 1;
-			
-			$num_ripped = array();
 			
 			$series_title = $series->getTitle();
 			$disc_number = $drip_disc->getDiscNumber();
 			$side = $drip_disc->getSide();
-			$num_episodes = $count = count($arr);
+			
+		}
+		
+		// Dumping ISO
+		if($num_episodes && $dump_iso) {
+			
+			$iso = $drip->export.$drip->formatTitle($series->getTitle()." - Disc ".$drip_disc->getDiscNumber()).".iso";
+			
+			if($dump_iso && !file_exists($iso)) {
+				shell::msg("[DVD] Copying contents to harddrive");
+				$dvd->iso($iso);
+				break;
+			}
+			
+		}
+		
+		if(!$num_episodes) {
+			
+			shell::msg("The disc is archived, but there are no episodes to rip.");
+			shell::msg("Check the frontend to see if titles need to be added.");
+			$eject = false;
+		
+		}
+		
+		// Extract episodes
+		if($num_episodes && !$dump_iso) {
+		
+			$num_ripped = array();
 			
 			$episode = new DripEpisode(current($arr));
 			$starting_episode_number = $episode->getEpisodeNumber();
@@ -1094,10 +1122,6 @@
 				
 			}
 		
-		} else {
-			shell::msg("The disc is archived, but there are no episodes to rip.");
-			shell::msg("Check the frontend to see if titles need to be added.");
-			$eject = false;
 		}
 		
 		if($eject) {
@@ -1126,6 +1150,8 @@
 			$x = 1;
 		
 			foreach($arr as $episode_id) {
+			
+				$iso = $drip->export.$drip->formatTitle($series->getTitle()." - Disc ".$drip_disc->getDiscNumber());
 			
 				$episode = new DripEpisode($episode_id);
 				$track_id = $episode->getTrackID();
@@ -1164,7 +1190,7 @@
 				
 				if($queue) {
 					
-					if(!file_exists($vob) || file_exists($mkv)) {
+					if((!file_exists($vob) && !file_exists($iso)) || file_exists($mkv)) {
 						$sql = "DELETE FROM queue WHERE episode = $episode_id;";
 						$db->query($sql);
 						shell::msg("[Queue] ($x/$todo) Removing $series_title: Episode $episode_index: $episode_title");
