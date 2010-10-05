@@ -939,9 +939,14 @@
 				$ending_chapter = $episode->getEndingChapter();
 				
 				if($dump_iso)
-					$dvd_track = new DVDTrack($track_number, $iso);
+					$tmp = $iso;
 				else
-					$dvd_track = new DVDTrack($track_number, $device);
+					$tmp = $device;
+				
+				if($debug)
+					shell::msg("Using \"$tmp\" as source");
+				
+				$dvd_track = new DVDTrack($track_number, $tmp);
 				
 				if($debug)
 					$dvd_track->setDebug(true);
@@ -974,7 +979,7 @@
 				}
 				
 				// Actually start ripping
-				if($rip_episode) {
+				if($rip_episode && $dump_vob) {
 				
 					if($count > 1)
 						shell::msg("[DVD] Ripping Episode $x/$count");
@@ -1012,7 +1017,7 @@
  				}
 				
 				// Rip VobSub
-				if((!file_exists($sub) && !file_exists($mkv)) || $pretend) {
+				if(((!file_exists($sub) && !file_exists($mkv)) || $pretend) && $dump_vob) {
 				
 					$vobsub = false;
 					
@@ -1113,7 +1118,7 @@
 				}
 				
 				// Add episode to queue
-				if(file_exists($vob)) {
+				if(($dump_vob && file_exists($vob)) || ($dump_iso && file_exists($iso))) {
 					$drip->queue($episode_id);
 				}
 				
@@ -1169,6 +1174,11 @@
 				$episode_index = $episode->getEpisodeIndex();
 				$reencode = $series->useHandbrake();
 				$track_number = $drip_track->getTrackNumber();
+				
+				if($reencode && $dump_iso)
+					$dump_vob = false;
+				else
+					$dump_vob = true;
 				
 				$export = $drip->export.$drip->formatTitle($episode->getExportTitle()).'/';
 	
