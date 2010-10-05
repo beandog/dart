@@ -86,7 +86,7 @@
 		
 		}
 		
-		public function iso($dest) {
+		public function dump_iso($dest) {
 		
 			$dest = escapeshellarg($dest);
 		

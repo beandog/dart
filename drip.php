@@ -869,9 +869,9 @@
 			$iso = $drip->export.$drip->formatTitle($series->getTitle()." - Disc ".$drip_disc->getDiscNumber()).".iso";
 			
 			if($dump_iso && !file_exists($iso)) {
+			
 				shell::msg("[DVD] Copying contents to harddrive");
-				$dvd->iso($iso);
-				break;
+				$dvd->dump_iso($iso);
 			}
 			
 		}
