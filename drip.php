@@ -1151,7 +1151,7 @@
 		
 			foreach($arr as $episode_id) {
 			
-				$iso = $drip->export.$drip->formatTitle($series->getTitle()." - Disc ".$drip_disc->getDiscNumber());
+				$iso = $drip->export.$drip->formatTitle($series->getTitle()." - Disc ".$drip_disc->getDiscNumber()).".iso";
 			
 				$episode = new DripEpisode($episode_id);
 				$track_id = $episode->getTrackID();
@@ -1165,6 +1165,7 @@
 				$episode_number = $episode->getEpisodeNumber();
 				$episode_index = $episode->getEpisodeIndex();
 				$reencode = $series->useHandbrake();
+				$track_number = $drip_track->getTrackNumber();
 				
 				$export = $drip->export.$drip->formatTitle($episode->getExportTitle()).'/';
 	
@@ -1188,9 +1189,15 @@
 				$ac3 = "$basename.ac3";
 				$x264 = "$basename.x264";
 				
+				// Generic source file
+				if($dump_iso)
+					$src = $iso;
+				else
+					$src = $vob;
+				
 				if($queue) {
 					
-					if((!file_exists($vob) && !file_exists($iso)) || file_exists($mkv)) {
+					if((!file_exists($src)) || file_exists($mkv)) {
 						$sql = "DELETE FROM queue WHERE episode = $episode_id;";
 						$db->query($sql);
 						shell::msg("[Queue] ($x/$todo) Removing $series_title: Episode $episode_index: $episode_title");
@@ -1204,7 +1211,7 @@
 					$audio_aid = $drip->getDefaultAudioAID($track_id);
 				
 					// Check to see if file exists, if not, encode it
-					if(file_exists($vob) && !file_exists($mkv)) {
+					if(file_exists($src) && !file_exists($mkv)) {
 					
 						shell::msg("[Series] $series_title");
 					
@@ -1254,7 +1261,11 @@
 							if(!file_exists($x264)) {
 								$stream_id = $drip_track->getDefaultStreamID();
 								
-								$handbrake->input_filename($vob);
+								if($dump_iso)
+									$handbrake->input_filename($src, $track_number);
+								else
+									$handbrake->input_filename($src);
+									
 								$handbrake->output_filename($x264);
 								$handbrake->add_audio_stream($stream_id);
 								
