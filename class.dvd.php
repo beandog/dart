@@ -158,11 +158,9 @@
 		
 			$device = $this->getDevice();
 			
-			var_dump($device);
-			
 			if(substr($device, 0, 4) == "/dev") {
 			
-				echo $exec = "/bin/df $device | tail -n 1 | tr -s '[:blank:]' '\\t' | cut -f 2";
+				$exec = "/bin/df $device | tail -n 1 | tr -s '[:blank:]' '\\t' | cut -f 2";
 				
 				$var = current(shell::cmd($exec));
 				
