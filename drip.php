@@ -874,6 +874,11 @@
 				$dvd->dump_iso($iso);
 			}
 			
+			if($dump_iso && file_exists($iso) && !$drip_disc->getSize()) {
+				$size = sprintf("%u", filesize($iso)) / 1024;
+ 				$drip_disc->setSize($size);
+ 			}
+			
 		}
 		
 		if(!$num_episodes) {
