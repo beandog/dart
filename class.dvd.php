@@ -24,8 +24,14 @@
 				$this->device = $str;
 		}
 		
-		function getDevice() {
-			return escapeshellarg($this->device);
+		function getDevice($escape = false) {
+		
+			$str = $this->device;
+			
+			if($escape)
+				$str = escapeshellarg($str);
+		
+			return $str;
 		}
 		
 		function eject() {
@@ -45,7 +51,7 @@
 		/** Metadata **/
 		
 		private function disc_id() {
-			$arr = shell::cmd("disc_id ".$this->getDevice());
+			$arr = shell::cmd("disc_id ".$this->getDevice(true));
 			if(!empty($arr))
 				$this->id = current($arr);
 		}
@@ -59,7 +65,7 @@
 		private function lsdvd() {
 		
 			if(empty($this->lsdvd['output'])) {
-				$str = "lsdvd -Ox -v -a -s -c ".$this->getDevice();
+				$str = "lsdvd -Ox -v -a -s -c ".$this->getDevice(true);
 				$arr = shell::cmd($str);
 				$str = implode("\n", $arr);
 				
@@ -152,9 +158,11 @@
 		
 			$device = $this->getDevice();
 			
+			var_dump($device);
+			
 			if(substr($device, 0, 4) == "/dev") {
 			
-				$exec = "/bin/df $device | tail -n 1 | tr -s '[:blank:]' '\\t' | cut -f 2";
+				echo $exec = "/bin/df $device | tail -n 1 | tr -s '[:blank:]' '\\t' | cut -f 2";
 				
 				$var = current(shell::cmd($exec));
 				
