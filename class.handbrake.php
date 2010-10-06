@@ -250,6 +250,9 @@
 			if(!is_null($this->crop))
 				$args['--crop'] = $this->crop;
 			
+			// Set x264 encoding options
+			$args['--x264opts'] = $this->get_x264opts($this->preset);
+			
 			return $args;
 			
 		}
@@ -271,6 +274,22 @@
 			$str = $this->binary." ".implode(" ", $exec);
 			
 			return $str;
+		
+		}
+		
+		public function get_x264opts($profile) {
+		
+			switch($profile) {
+				case 'High Profile':
+					$opts = "b-adapt=2:rc-lookahead=50:keyint=30";
+					break;
+				default:
+				case 'Normal':
+					$opts = "ref=2:bframes=2:subme=6:mixed-refs=0:weightb=0:8x8dct=0:trellis=0:keyint=30";
+					break;
+			}
+			
+			return $opts;
 		
 		}
 		
