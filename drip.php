@@ -921,7 +921,7 @@
 				else
 					$target_dir = "$storage_dir/dvds/$dir";
 				
-				if(!file_exists($target_dir))
+				if(!file_exists($target_dir) && !$movie)
 					mkdir($target_dir);
 			
 				$rip_episode = false;
