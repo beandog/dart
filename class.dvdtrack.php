@@ -104,7 +104,7 @@
 		}
 		
 		function getDevice() {
-			return $this->device;
+			return escapeshellarg($this->device);
 		}
 		
 		private function setTrack($track) {

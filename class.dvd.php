@@ -25,7 +25,7 @@
 		}
 		
 		function getDevice() {
-			return $this->device;
+			return escapeshellarg($this->device);
 		}
 		
 		function eject() {
