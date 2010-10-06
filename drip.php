@@ -303,8 +303,8 @@
  		if($mount && !$drip_disc->getSize())
  			$drip_disc->setSize($dvd->getSize());
  		
- 		if($device_is_iso && file_exists($iso) && !$drip_disc->getSize()) {
-			$size = sprintf("%u", filesize($iso)) / 1024;
+ 		if($device_is_iso && file_exists($device) && !$drip_disc->getSize()) {
+			$size = sprintf("%u", filesize($device)) / 1024;
 			$drip_disc->setSize($size);
 		}
 		
@@ -652,6 +652,11 @@
 			if($mount && !$drip_disc->getSize())
 				$drip_disc->setSize($dvd->getSize());
 			
+			if($device_is_iso && file_exists($device) && !$drip_disc->getSize()) {
+				$size = sprintf("%u", filesize($device)) / 1024;
+				$drip_disc->setSize($size);
+			}
+			
 			$disc->setSide($side);
 			$disc->setDiscID($dvd->getID());
 			$disc->setTitle($dvd->getTitle());
@@ -817,6 +822,16 @@
 		$sql = "SELECT id FROM view_discs WHERE disc_id = '".$dvd->getID()."';";
 		$drip_disc = new DripDisc($db->getOne($sql));
 		$series = new DripSeries($drip_disc->getSeriesID());
+		
+		// Update disc size
+		// FIXME This is a hack to update the DB
+		if($mount && !$drip_disc->getSize())
+			$drip_disc->setSize($dvd->getSize());
+		
+		if($device_is_iso && file_exists($device) && !$drip_disc->getSize()) {
+			$size = sprintf("%u", filesize($device)) / 1024;
+			$drip_disc->setSize($size);
+		}
 		
 		$movie = $series->isMovie();
 		
