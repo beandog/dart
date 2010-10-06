@@ -163,6 +163,11 @@
 	else
 		$device = "/dev/dvd";
 	
+	if(substr($device, -4, 4) == ".iso")
+		$device_is_iso = true;
+	else
+		$device_is_iso = false;
+	
 	if($args['iso'] || $ini['dump_iso'])
 		$dump_iso = true;
 	else
@@ -170,7 +175,7 @@
 	
 	$dvd = new DVD($device);
 	
-	if($ini['mount'] && ($archive || $rip || $update || $info)) {
+	if($ini['mount'] && ($archive || $rip || $update || $info) && !$device_is_iso) {
 		$mount = true;
   		$dvd->mount();
 	}
@@ -297,6 +302,11 @@
 		
  		if($mount && !$drip_disc->getSize())
  			$drip_disc->setSize($dvd->getSize());
+ 		
+ 		if($device_is_iso && file_exists($iso) && !$drip_disc->getSize()) {
+			$size = sprintf("%u", filesize($iso)) / 1024;
+			$drip_disc->setSize($size);
+		}
 		
 		$arr_track_ids = $drip_disc->getTrackIDs();
 		
@@ -874,7 +884,7 @@
 				$dvd->dump_iso($iso);
 			}
 			
-			if($dump_iso && file_exists($iso) && !$drip_disc->getSize()) {
+			if($device_is_iso && file_exists($iso) && !$drip_disc->getSize()) {
 				$size = sprintf("%u", filesize($iso)) / 1024;
  				$drip_disc->setSize($size);
  			}
@@ -1446,11 +1456,11 @@
 	}
 	
 	
- 	if($mount && ($archive || $rip) && !$queue && !$eject)
+ 	if($mount && ($archive || $rip) && !$queue && !$eject && !$device_is_iso)
  		$dvd->unmount();
 	
 	// Don't eject if you are just checking the queue
-	if(!$ejected && (($eject && !$queue && $rip) || $args['eject']))
+	if(!$ejected && (($eject && !$queue && $rip) || $args['eject']) && !$device_is_iso)
 		$dvd->eject();
 		
 ?>
