@@ -175,13 +175,15 @@
 	
 	$dvd = new DVD($device);
 	
-	if($ini['mount'] && ($archive || $rip || $update || $info) && !$device_is_iso) {
+	if($ini['mount'] && (($archive || $rip || $update || $info) && !$device_is_iso)) {
 		$mount = true;
   		$dvd->mount();
 	}
 	
-	$dvd->load_css();
-	$dvd_id = $dvd->getID();
+	if(($archive || $rip || $update || $info) && !$device_is_iso) {
+		$dvd->load_css();
+		$dvd_id = $dvd->getID();
+	}
 	
 	// Display info about disc
 	if($info) {
@@ -899,7 +901,6 @@
 			if($dump_iso && !file_exists($iso)) {
 			
 				shell::msg("[DVD] Copying contents to harddrive");
-				$dvd->load_css();
 				$dvd->dump_iso($iso);
 			}
 			
@@ -1354,6 +1355,10 @@
  	 									$handbrake->add_audio_stream("0x80");
 									
 								}
+								
+								// Check for cartoon
+								if($series->isCartoon())
+									$handbrake->add_x264opts("ref=6:bframes=5");
 								
 								// Check for a subtitle track
 								$subp_ix = $drip_track->getDefaultSubtitleIndex();
