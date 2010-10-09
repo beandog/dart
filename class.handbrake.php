@@ -22,7 +22,7 @@
 		private $encoder = 'x264';
 		
 		private $add_chapters = false;
-		private $video_quality = 18;
+		private $video_quality = 20;
 		
 		private $crop = "0:0:0:0";
 		
