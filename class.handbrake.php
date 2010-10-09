@@ -39,6 +39,7 @@
 		private $cc_ix;
 		
 		private $num_bitmaps;
+		private $opts;
 		
 		function __construct($filename = null) {
 		
