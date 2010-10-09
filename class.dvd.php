@@ -101,7 +101,7 @@
 		 */
 		public function load_css() {
 		
-			$exec = "mplayer dvd:// -dvd-device ".escapeshellarg($this->getDevice())." -frames 1 -nosound -vo null -noconfig all";
+			$exec = "mplayer dvd:// -dvd-device ".escapeshellarg($this->getDevice())." -frames 60 -nosound -vo null -noconfig all";
 			shell::cmd($exec);
 		
 		}
