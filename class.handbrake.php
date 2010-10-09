@@ -277,6 +277,12 @@
 		
 		}
 		
+		public function add_x264opts($str) {
+		
+			$this->opts = $str;
+		
+		}
+		
 		public function get_x264opts($profile) {
 		
 			switch($profile) {
@@ -288,6 +294,9 @@
 					$opts = "ref=2:bframes=2:subme=6:mixed-refs=0:weightb=0:8x8dct=0:trellis=0:keyint=30";
 					break;
 			}
+			
+			if($this->opts)
+				$opts .= ":".$this->opts;
 			
 			return $opts;
 		
