@@ -896,6 +896,7 @@
 			if($dump_iso && !file_exists($iso)) {
 			
 				shell::msg("[DVD] Copying contents to harddrive");
+				$dvd->load_css();
 				$dvd->dump_iso($iso);
 			}
 			
