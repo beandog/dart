@@ -388,6 +388,46 @@
 					
 				}
  			}
+ 			
+ 			/** Subtitles **/
+ 			
+ 			$sql = "SELECT COUNT(1) FROM subtitles WHERE track = ".$drip_track->getID().";";
+ 			$num_subtitles = $db->getOne($sql);
+ 			
+ 			if(!$num_subtitles) {
+ 			
+				$sql = "DELETE FROM subtitles WHERE track = ".$drip_track->getID().";";
+				$db->query($sql);
+				
+				// Fetch all the subtitle streams, and store them
+				// in the database.
+				$subtitle_streams = $dvd_track->getSubtitleStreams();
+				
+				foreach($subtitle_streams as $stream_id) {
+				
+					$dvd_subs = new DVDSubs($dvd_track->getXML(), $stream_id);
+					
+					$drip_subtitles = new DripSubtitles();
+					
+					// Set the parent track ID
+					$drip_subtitles->setTrackID($drip_track->getID());
+					
+					// Set the index, the sequential # of order for the track
+					$drip_subtitles->setIndex($dvd_subs->getIX());
+					
+					// Set the stream ID
+					// Set the index, the sequential # of order for the track
+					$drip_subtitles->setStreamID($stream_id);
+					
+					// Set the 2-char langcode
+					$drip_subtitles->setLangcode($dvd_subs->getLangcode());
+					
+					// Set the language
+					$drip_subtitles->setLanguage($dvd_subs->getLanguage());
+				
+				}
+				
+			}
 			
 		}
 		
