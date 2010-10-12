@@ -91,6 +91,9 @@
 	if($args['update'])
 		$update = true;
 	
+	// FIXME: Update is true until ALL subtitles are fixed.
+	$update = true;
+	
 	if($args['q'] || $args['queue'])
 		$queue = true;
 	
