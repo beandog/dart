@@ -45,7 +45,7 @@
 	if(file_exists($config))
 		$ini = parse_ini_file($config);
 		
-	if($args['h'] || $args['help']) {
+	function display_help() {
 	
 		shell::msg("Options:");
 		shell::msg("  -i, --info\t\tList episodes on DVD");
@@ -75,13 +75,16 @@
 		
 		shell::msg("Handbrake:");
 		shell::msg("  --handbrake\t\tUse Handbrake to reencode video");
-		shell::msg("  --preset\t\tEncoding preset to use [$handbrake_preset]");
+		shell::msg("  --preset\t\tEncoding preset to use");
 		
 		shell::msg("Movies:");
 		shell::msg("  --movie\t\tUse some settings to archive as a movie");
 		shell::msg("  --title\t\tMovie Title");
-		
 	
+	}
+		
+	if($args['h'] || $args['help']) {
+		display_help();
 		die;
 	}
 	
