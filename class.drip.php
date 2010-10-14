@@ -194,6 +194,16 @@ XML;
 			
 		}
 		
+		function getDiscID($dvd_id) {
+		
+			$db = MDB2::singleton();
+			
+			$sql = "SELECT id FROM discs WHERE disc_id = '$dvd_id';";
+			$id = $db->getOne($sql);
+			
+			return $id;
+		
+		}
 
 
 		/**
