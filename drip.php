@@ -783,7 +783,7 @@
 		
 		// Create export dir
 		if(!is_dir($drip->export))
-			mkdir($drip->export, 0755);
+			@mkdir($drip->export, 0755);
 			
 		// Pull out the tracks that haven't been flagged to ignore in the database frontend
 		// This query has nothing to do with what has / hasn't been encoded
