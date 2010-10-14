@@ -8,6 +8,9 @@
 		private $length;
 		
 		function __construct($id = null) {
+		
+			$this->db = MDB2::singleton();
+		
 			if(!is_null($id)) {
 				$this->setID($id);
 				$this->getTrackID();
@@ -30,23 +33,20 @@
 		}
 		
 		function newChapter() {
-			global $db;
 			
 			$sql = "SELECT nextval('chapters_id_seq');";
-			$id = $db->getOne($sql);
+			$id = $this->db->getOne($sql);
 			
 			$arr_insert = array(
 				'id' => $id
 			);
 			
-			$db->autoExecute('chapters', $arr_insert, DB_AUTOQUERY_INSERT);
+			$this->db->autoExecute('chapters', $arr_insert, DB_AUTOQUERY_INSERT);
 			
 			$this->setId($id);
 		}
 		
 		function setTrackID($id) {
-		
-			global $db;
 		
 			$id = abs(intval($id));
 			if(!$id)
@@ -59,7 +59,7 @@
 				'track' => $id
 			);
 			
-			$db->autoExecute('chapters', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('chapters', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->track_id = $id;
 		}
@@ -69,8 +69,6 @@
 		}
 		
 		function setNumber($int) {
-		
-			global $db;
 		
 			$int = abs(intval($int));
 			if(!$int)
@@ -83,14 +81,12 @@
 				'number' => $int
 			);
 			
-			$db->autoExecute('chapters', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('chapters', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->number = $int;
 		}
 		
 		function setLength($float) {
-		
-			global $db;
 		
 			if(!is_numeric($float))
 				return false;
@@ -102,7 +98,7 @@
 				'length' => $float
 			);
 			
-			$db->autoExecute('chapters', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('chapters', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->length = $length;
 			
