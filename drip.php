@@ -161,15 +161,18 @@
 		$dvd_id = $dvd->getID();
 	}
 	
+	if($drip->inDatabase($dvd_id))
+		$disc_archived = true;
+	
 	// Display info about disc
-	if($info && $drip->inDatabase($dvd_id))
+	if($info && $disc_archived)
 		display_info($dvd_id);
 	else
 		shell::msg("Disc is not archived");
 	
 	// Re-archive disc
 	// Generally called if you want to update the webif
-	if($update && $drip->inDatabase($dvd_id)) {
+	if($update && $disc_archived) {
 		
 		$sql = "SELECT id FROM discs WHERE disc_id = '$dvd_id';";
 		$drip_disc_id = $db->getOne($sql);
@@ -312,7 +315,7 @@
 	// So, this statement will check to see if the disc is in the database OR if it is and
 	// we are manually passing a season #.
 	
-	if(($archive || $rip) && !$drip->inDatabase($dvd_id)) {
+	if(($archive || $rip) && !$disc_archived) {
 	
 		// Bypass archive confirmation if --new is passed
 		if(!$archive) {
