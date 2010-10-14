@@ -173,6 +173,7 @@
 	
 	// Re-archive disc
 	// Generally called if you want to update the webif
+	/** UPDATE **/
 	if($update && $disc_archived) {
 		
 		$sql = "SELECT id FROM discs WHERE disc_id = '$dvd_id';";
@@ -307,6 +308,7 @@
 		}
 		
 	}
+	/** END UPDATE **/
 	
 	// Archive disc if not in the db
 	
@@ -735,6 +737,8 @@
 			}
 		}
 	}
+	
+	/** RIPPING **/
 	
 	if($rip) {
 	
