@@ -149,6 +149,8 @@
 	
 	if($access_drive)
 		$dvd->close_tray();
+	else
+		$eject = false;
 	
 	if($mount)
   		$dvd->mount();
@@ -162,11 +164,16 @@
 		$disc_archived = true;
 	
 	// Display info about disc
-	if($info)
+	if($info) {
+		
+		if($access_drive)
+			$eject = false;
+		
 		if($disc_archived)
 			display_info($dvd_id);
 		else
 			shell::msg("Disc is not archived");
+	}
 	
 	// Re-archive disc
 	// Generally called if you want to update the webif
@@ -1387,7 +1394,6 @@
 		}
 		
 	}
-	
 	
  	if($mount)
  		$dvd->unmount();
