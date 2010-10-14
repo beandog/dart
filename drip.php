@@ -1020,9 +1020,6 @@
  					if(!$reencode)
  						$matroska->setAspectRatio($dvd_track->getAspectRatio());
  					
- 					// FIXME this is a stray??
-//  					$matroska->addTag();
-					
 					$matroska->addTag();
 					$matroska->addTarget(70, "COLLECTION");
 					$matroska->addSimpleTag("TITLE", $series->getTitle());
