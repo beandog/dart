@@ -111,12 +111,7 @@
 	if($args['update'])
 		$update = true;
 	
-	// FIXME: Update is true until ALL subtitles are fixed.
-	$update = true;
-	
-	
 	/** Subtitles **/
-	
 	// Closed Captioning
 	if($args['cc'] || $ini['rip_cc'])
 		$rip_cc = true;
@@ -134,6 +129,8 @@
 	if($args['novobsub'])
 		$rip_vobsub = $mux_vobsub = false;
 	
+	
+	/** Start everything **/
 	$dvd = new DVD($device);
 	
 	if($ini['mount'] && (($archive || $rip || $update || $info) && !$device_is_iso)) {
