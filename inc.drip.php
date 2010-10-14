@@ -75,8 +75,8 @@
 	
 	function display_info($dvd_id) {
 	
-		global $db;
-		
+		$db = MDB2::singleton();
+	
 		// Get the series ID
 		$sql = "SELECT id FROM view_discs WHERE disc_id = '$dvd_id';";
 		$drip_disc = new DripDisc($db->getOne($sql));

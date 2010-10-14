@@ -40,7 +40,7 @@
 				'id' => $id
 			);
 			
-			$this->db->autoExecute('audio_tracks', $arr_insert, DB_AUTOQUERY_INSERT);
+			$this->db->autoExecute('audio_tracks', $arr_insert, MDB2_AUTOQUERY_INSERT);
 			
 			$this->setId($id);
 			
@@ -63,7 +63,7 @@
 				'track' => $id
 			);
 			
-			$this->db->autoExecute('audio_tracks', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('audio_tracks', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->track_id = $id;
 		
@@ -96,7 +96,7 @@
 				'ix' => $int
 			);
 			
-			$this->db->autoExecute('audio_tracks', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('audio_tracks', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->index = $int;
 		
@@ -130,7 +130,7 @@
 				'lang' => $str
 			);
 			
-			$this->db->autoExecute('audio_tracks', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('audio_tracks', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->language = $str;
 		
@@ -161,7 +161,7 @@
 				'stream_id' => $str
 			);
 			
-			$this->db->autoExecute('audio_tracks', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('audio_tracks', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->stream_id = $str;
 		
@@ -191,7 +191,7 @@
 				'channels' => $int
 			);
 			
-			$this->db->autoExecute('audio_tracks', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('audio_tracks', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->num_channels = $int;
 		
@@ -221,7 +221,7 @@
 				'format' => $str
 			);
 			
-			$this->db->autoExecute('audio_tracks', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('audio_tracks', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->format = $str;
 		

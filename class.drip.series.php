@@ -22,7 +22,7 @@
 		function __construct($id = null) {
 		
 			$this->db = MDB2::singleton();
-		
+			
 			if(!is_null($id)) {
 				$this->setID($id);
 				$this->getTitle();
@@ -83,7 +83,7 @@
 				'id' => $id
 			);
 			
-			$this->db->autoExecute('tv_shows', $arr_insert, DB_AUTOQUERY_INSERT);
+			$this->db->autoExecute('tv_shows', $arr_insert, MDB2_AUTOQUERY_INSERT);
 			
 			$this->setId($id);
 		}
@@ -101,7 +101,7 @@
 				'title_long' => $str
 			);
 			
-			$this->db->autoExecute('tv_shows', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('tv_shows', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->title = $str;
 		}
@@ -119,7 +119,7 @@
 				'title' => $str
 			);
 			
-			$this->db->autoExecute('tv_shows', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('tv_shows', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->sorting_title = $str;
 		}
@@ -159,7 +159,7 @@
 				'min_len' => $length
 			);
 			
-			$this->db->autoExecute('tv_shows', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('tv_shows', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->min_length = $int;
 		}
@@ -175,7 +175,7 @@
 				'max_len' => $length
 			);
 			
-			$this->db->autoExecute('tv_shows', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('tv_shows', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->max_length = $int;
 		}
@@ -213,7 +213,7 @@
 				'cartoon' => $value
 			);
 			
-			$this->db->autoExecute('tv_shows', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('tv_shows', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->cartoon = $value;
 			
@@ -245,7 +245,7 @@
 				'collection' => $value
 			);
 			
-			$this->db->autoExecute('tv_shows', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('tv_shows', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->movie = $value;
 			
@@ -277,7 +277,7 @@
 				'grayscale' => $value
 			);
 			
-			$this->db->autoExecute('tv_shows', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('tv_shows', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->grayscale = $value;
 			
@@ -309,7 +309,7 @@
 				'handbrake' => $value
 			);
 			
-			$this->db->autoExecute('tv_shows', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('tv_shows', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->handbrake = $value;
 			
@@ -341,7 +341,7 @@
 				'volumes' => $value
 			);
 			
-			$this->db->autoExecute('tv_shows', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('tv_shows', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->volumes = $value;
 			
@@ -373,7 +373,7 @@
 				'unordered' => $value
 			);
 			
-			$this->db->autoExecute('tv_shows', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('tv_shows', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->unordered = $int;
 			
@@ -407,7 +407,7 @@
 				'cc' => $value
 			);
 			
-			$this->db->autoExecute('tv_shows', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('tv_shows', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->cc = $value;
 			
@@ -443,7 +443,7 @@
 				'sdh' => $value
 			);
 			
-			$this->db->autoExecute('tv_shows', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('tv_shows', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->sdh = $value;
 			
@@ -479,7 +479,7 @@
 				'vobsub' => $value
 			);
 			
-			$this->db->autoExecute('tv_shows', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('tv_shows', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->vobsub = $value;
 			
@@ -511,7 +511,7 @@
 				'handbrake_preset' => $int
 			);
 			
-			$this->db->autoExecute('tv_shows', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('tv_shows', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->handbrake_preset = $int;
 		}
@@ -537,7 +537,7 @@
 				'num_seasons' => $int
 			);
 			
-			$this->db->autoExecute('tv_shows', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('tv_shows', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->num_seasons = $int;
 		}
@@ -551,7 +551,7 @@
 				'num_episodes' => $int
 			);
 			
-			$this->db->autoExecute('tv_shows', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('tv_shows', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->num_episodes = $int;
 		}
@@ -585,7 +585,7 @@
 				'start_year' => $year
 			);
 			
-			$this->db->autoExecute('tv_shows', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('tv_shows', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->broadcast_year = $year;
 		}
@@ -616,7 +616,7 @@
 				'production_studio' => $str
 			);
 			
-			$this->db->autoExecute('tv_shows', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('tv_shows', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->production_studio = $str;
 		}
@@ -646,7 +646,7 @@
 				'episode_list' => $str
 			);
 			
-			$this->db->autoExecute('tv_shows', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('tv_shows', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->episode_list = $str;
 		}

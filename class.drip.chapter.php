@@ -41,7 +41,7 @@
 				'id' => $id
 			);
 			
-			$this->db->autoExecute('chapters', $arr_insert, DB_AUTOQUERY_INSERT);
+			$this->db->autoExecute('chapters', $arr_insert, MDB2_AUTOQUERY_INSERT);
 			
 			$this->setId($id);
 		}
@@ -59,7 +59,7 @@
 				'track' => $id
 			);
 			
-			$this->db->autoExecute('chapters', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('chapters', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->track_id = $id;
 		}
@@ -81,7 +81,7 @@
 				'number' => $int
 			);
 			
-			$this->db->autoExecute('chapters', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('chapters', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->number = $int;
 		}
@@ -98,7 +98,7 @@
 				'length' => $float
 			);
 			
-			$this->db->autoExecute('chapters', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('chapters', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->length = $length;
 			

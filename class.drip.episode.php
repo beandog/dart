@@ -14,6 +14,9 @@
 		private $episode_number;
 		
 		function __construct($id = null) {
+		
+			$this->db = MDB2::singleton();
+		
 			if(!is_null($id)) {
 				$this->setID($id);
 				$this->getTitle();
@@ -41,16 +44,15 @@
 		}
 		
 		private function newEpisode() {
-			global $db;
 			
 			$sql = "SELECT nextval('episodes_id_seq');";
-			$id = $db->getOne($sql);
+			$id = $this->db->getOne($sql);
 			
 			$arr_insert = array(
 				'id' => $id
 			);
 			
-			$db->autoExecute('episodes', $arr_insert, DB_AUTOQUERY_INSERT);
+			$this->db->autoExecute('episodes', $arr_insert, MDB2_AUTOQUERY_INSERT);
 			
 			$this->setId($id);
 		}
@@ -58,24 +60,21 @@
 		
 		function setTrackID($int) {
 		
-			global $db;
-		
 			$int = abs(intval($int));
 			
 			$arr_update = array(
 				'track' => $int
 			);
 			
-			$db->autoExecute('episodes', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('episodes', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->track_id = $int;
 		}
 		
 		function getTrackID() {
 			if(is_null($this->track_id)) {
-				global $db;
 				$sql = "SELECT track FROM episodes WHERE id = ".$this->getID().";";
-				$this->track_id = $db->getOne($sql);
+				$this->track_id = $this->db->getOne($sql);
 				if(is_null($this->track_id))
 					$this->track_id = "";
 			}
@@ -85,24 +84,21 @@
 		
 		function setSeason($int) {
 		
-			global $db;
-		
 			$int = abs(intval($int));
 			
 			$arr_update = array(
 				'season' => $int
 			);
 			
-			$db->autoExecute('episodes', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('episodes', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->season = $int;
 		}
 		
 		function getSeason() {
 			if(is_null($this->season)) {
-				global $db;
 				$sql = "SELECT season FROM episodes WHERE id = ".$this->getID().";";
-				$this->season = $db->getOne($sql);
+				$this->season = $this->db->getOne($sql);
 				if(is_null($this->season))
 					$this->season = "";
 			}
@@ -112,8 +108,6 @@
 		
 		function setPart($int) {
 		
-			global $db;
-		
 			$int = abs(intval($int));
 			if(!$int)
 				$int = null;
@@ -122,16 +116,15 @@
 				'part' => $int
 			);
 			
-			$db->autoExecute('episodes', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('episodes', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->part = $int;
 		}
 		
 		function getPart() {
 			if(is_null($this->part)) {
-				global $db;
 				$sql = "SELECT part FROM episodes WHERE id = ".$this->getID().";";
-				$this->part = $db->getOne($sql);
+				$this->part = $this->db->getOne($sql);
 				if(is_null($this->part))
 					$this->part = "";
 			}
@@ -142,24 +135,21 @@
 		/** Called by webif **/
 		function setStartingChapter($int) {
 		
-			global $db;
-		
 			$int = abs(intval($int));
 			
 			$arr_update = array(
 				'starting_chapter' => $int
 			);
 			
-			$db->autoExecute('episodes', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('episodes', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->starting_chapter = $int;
 		}
 		
 		function getStartingChapter() {
 			if(is_null($this->starting_chapter)) {
-				global $db;
 				$sql = "SELECT starting_chapter FROM episodes WHERE id = ".$this->getID().";";
-				$this->starting_chapter = $db->getOne($sql);
+				$this->starting_chapter = $this->db->getOne($sql);
 				if(is_null($this->starting_chapter))
 					$this->starting_chapter = "";
 			}
@@ -169,24 +159,21 @@
 		
 		function setEndingChapter($int) {
 		
-			global $db;
-		
 			$int = abs(intval($int));
 			
 			$arr_update = array(
 				'ending_chapter' => $int
 			);
 			
-			$db->autoExecute('episodes', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('episodes', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->ending_chapter = $int;
 		}
 		
 		function getEndingChapter() {
 			if(is_null($this->ending_chapter)) {
-				global $db;
 				$sql = "SELECT ending_chapter FROM episodes WHERE id = ".$this->getID().";";
-				$this->ending_chapter = $db->getOne($sql);
+				$this->ending_chapter = $this->db->getOne($sql);
 				if(is_null($this->ending_chapter))
 					$this->ending_chapter = "";
 			}
@@ -200,8 +187,6 @@
 			if(empty($str) || !is_string($str))
 				return false;
 				
-			global $db;
-		
 			if(!$this->id)
 				$this->newEpisode();
 			
@@ -209,16 +194,15 @@
 				'title' => $str
 			);
 			
-			$db->autoExecute('episodes', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('episodes', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->title = $str;
 		}
 		
 		function getTitle() {
 			if(is_null($this->title)) {
-				global $db;
 				$sql = "SELECT title FROM episodes WHERE id = ".$this->getID().";";
-				$this->title = $db->getOne($sql);
+				$this->title = $this->db->getOne($sql);
 				if(is_null($this->title))
 					$this->title = "";
 			}
@@ -229,8 +213,6 @@
 		
 		function setOrder($int) {
 		
-			global $db;
-		
 			$int = abs(intval($int));
 			if(!$int)
 				$int = null;
@@ -239,16 +221,15 @@
 				'episode_order' => $int
 			);
 			
-			$db->autoExecute('episodes', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('episodes', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->order = $int;
 		}
 		
 		function getOrder() {
 			if(is_null($this->order)) {
-				global $db;
 				$sql = "SELECT episode_order FROM episodes WHERE id = ".$this->getID().";";
-				$this->order = $db->getOne($sql);
+				$this->order = $this->db->getOne($sql);
 				if(is_null($this->order))
 					$this->order = "";
 			}
@@ -259,11 +240,10 @@
 		function getLength() {}
 		
 		function getAudioID($language = "en") {
-			global $db;
 			
 			if(is_null($this->audio_id)) {
 				$sql = "SELECT id, ix, language FROM audio_tracks WHERE track = ".$this->getTrackID()." ORDER BY ix;";
-				$arr = $db->getAssoc($sql);
+				$arr = $this->db->getAssoc($sql);
 				
 				if(count($arr) == 1) {
 					$this->audio_id = key($arr);
@@ -291,10 +271,9 @@
 		// Return the first audio track with the default language
 		// Seems to work for the most part.
 		function getAudioIndex($language = "en") {
-// 			global $db;
 			
-// 			$sql = "SELECT ix FROM audio_tracks WHERE track = ".$this->getTrackID()." AND lang = ".$db->quote($language)." ORDER BY ix;";
-// 			$arr = $db->getCol($sql);
+// 			$sql = "SELECT ix FROM audio_tracks WHERE track = ".$this->getTrackID()." AND lang = ".$this->db->quote($language)." ORDER BY ix;";
+// 			$arr = $this->db->getCol($sql);
 // 			
 // 			if(is_null($arr))
 // 				return 1;
@@ -319,10 +298,8 @@
 		
 		function orderedEpisodes() {
 		
-			global $db;
-			
 			$sql = "SELECT unordered FROM view_episodes WHERE episode_id = ".$this->id;
-			$unordered = $db->getOne($sql);
+			$unordered = $this->db->getOne($sql);
 			
 			if($unordered == 't')
 				return false;
@@ -333,8 +310,6 @@
 		
 		function getEpisodeNumber() {
 		
-			global $db;
-			
 			if(!$this->orderedEpisodes())
 				return null;
 			
@@ -346,7 +321,7 @@
 				"WHERE e2.episode_id = ".$this->getID().
 				" AND ( e1.season <= e2.season  OR e1.season IS NULL AND e2.season IS NULL ) ".
 				" AND ((e1.disc_number < e2.disc_number) OR (e1.disc_number = e2.disc_number AND e1.side < e2.side)) AND ((e1.alt_title_id IS NULL AND e2.alt_title_id IS NULL) OR (e1.alt_title_id = e2.alt_title_id));";
-			$count = $db->getOne($sql);
+			$count = $this->db->getOne($sql);
 			
 	
 			// Find the # of episodes before the one on the current disc
@@ -360,7 +335,7 @@
 				"AND e1.episode_id != e2.episode_id ".
 				"WHERE e2.episode_id = ".$this->getID().
 				"AND ((e1.alt_title_id IS NULL AND e2.alt_title_id IS NULL) OR (e1.alt_title_id = e2.alt_title_id));";
-			$count += $db->getOne($sql);
+			$count += $this->db->getOne($sql);
 			
 			// Add one because we start counting at 1, not 0
 			$count++;
@@ -387,8 +362,6 @@
 		
 		function setAltTitleID($int) {
 		
-			global $db;
-		
 			$int = abs(intval($int));
 			if(!$int)
 				$int = null;
@@ -397,7 +370,7 @@
 				'alt_title_id' => $int
 			);
 			
-			$db->autoExecute('episodes', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('episodes', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->alt_title_id = $int;
 		
@@ -408,10 +381,9 @@
  			if($this->alt_title_id)
  				return $this->alt_title_id;
 			
-			global $db;
 			$sql = "SELECT alt_title_id FROM episodes WHERE id = ".$this->getID().";";
 			
-			$id = $db->getOne($sql);
+			$id = $this->db->getOne($sql);
 			
 			$this->alt_title_id = $id;
 			
@@ -424,8 +396,6 @@
 			if($this->export_title)
 				return $this->export_title;
 				
-			global $db;
-		
 			$alt_title_id = $this->getAltTitleID();
 		
 			if($alt_title_id) {
@@ -434,7 +404,7 @@
 				$sql = "SELECT tv_show_title FROM view_episodes WHERE episode_id = ".$this->getID().";";
 			}
 			
-			$title = $db->getOne($sql);
+			$title = $this->db->getOne($sql);
 			
 			$this->export_title = $title;
 			
@@ -444,13 +414,11 @@
 		
 		function getNumChapters() {
 		
-			global $db;
-			
 			if($this->getEndingChapter()) {
 				$int = $this->getEndingChapter - $this->getStartingChapter();
 			} else {
-				$sql = "SELECT COUNT(1) FROM chapters WHERE track = ".$db->quote($this->track_id).";";
-				$int = $db->getOne($sql);
+				$sql = "SELECT COUNT(1) FROM chapters WHERE track = ".$this->db->quote($this->track_id).";";
+				$int = $this->db->getOne($sql);
 			}
 			
 			if($int < 0)

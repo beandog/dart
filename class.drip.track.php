@@ -14,6 +14,9 @@
 		private $disc_id;
 	
 		function __construct($id = null) {
+		
+			$this->db = MDB2::singleton();
+		
 			if($id) {
 				$this->setID($id);
 				$this->getDiscID();
@@ -37,15 +40,14 @@
 		
 		function newTrack() {
 			
-			global $db;
 			$sql = "SELECT nextval('tracks_id_seq');";
-			$id = $db->getOne($sql);
+			$id = $this->db->getOne($sql);
 			
 			$arr_insert = array(
 				'id' => $id
 			);
 			
-			$db->autoExecute('tracks', $arr_insert, DB_AUTOQUERY_INSERT);
+			$this->db->autoExecute('tracks', $arr_insert, MDB2_AUTOQUERY_INSERT);
 			
 			$this->setId($id);
 			
@@ -56,8 +58,6 @@
 		}
 		
 		function setDiscID($id) {
-		
-			global $db;
 		
 			$id = abs(intval($id));
 			if(!$id)
@@ -70,7 +70,7 @@
 				'disc' => $id
 			);
 			
-			$db->autoExecute('tracks', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('tracks', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->disc = $id;
 		
@@ -78,13 +78,11 @@
 		
 		function getDiscID() {
 		
-			global $db;
-		
 			if($this->disc)
 				return $this->disc;
 			
 			$sql = "SELECT disc FROM tracks WHERE id = ".$this->getID().";";
-			$id = $db->getOne($sql);
+			$id = $this->db->getOne($sql);
 			
 			$this->disc = $id;
 			
@@ -93,8 +91,6 @@
 		}
 		
 		function setTrackNumber($int) {
-		
-			global $db;
 		
 			$int = abs(intval($int));
 			if(!$int)
@@ -107,7 +103,7 @@
 				'track' => $int
 			);
 			
-			$db->autoExecute('tracks', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('tracks', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->track = $int;
 		
@@ -115,13 +111,11 @@
 		
 		function getTrackNumber() {
 		
-			global $db;
-		
 			if($this->track)
 				return $this->track;
 			
 			$sql = "SELECT track FROM tracks WHERE id = ".$this->getID().";";
-			$track = $db->getOne($sql);
+			$track = $this->db->getOne($sql);
 			
 			$this->track = $track;
 			
@@ -130,8 +124,6 @@
 		}
 		
 		function setLength($float) {
-		
-			global $db;
 		
 			if(!is_numeric($float))
 				return false;
@@ -143,7 +135,7 @@
 				'len' => $float
 			);
 			
-			$db->autoExecute('tracks', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('tracks', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->length = $float;
 		
@@ -151,13 +143,11 @@
 		
 		function getLength() {
 		
-			global $db;
-		
 			if($this->length)
 				return $this->length;
 			
 			$sql = "SELECT len FROM tracks WHERE id = ".$this->getID().";";
-			$length = $db->getOne($sql);
+			$length = $this->db->getOne($sql);
 			
 			$this->length = $length;
 			
@@ -167,8 +157,6 @@
 		
 		function setBadTrack($bool = true) {
 		
-			global $db;
-			
 			if(!$this->id)
 				$this->newTrack();
 			
@@ -184,19 +172,17 @@
 				'bad_track' => $bad_track
 			);
 			
-			$db->autoExecute('tracks', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('tracks', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 		}
 		
 		function isBadTrack() {
 		
-			global $db;
-			
 			if(isset($this->bad))
 				return $this->bad;
 			
 			$sql = "SELECT bad_track FROM tracks WHERE id = ".$this->getID().";";
-			$bad_track = $db->getOne($sql);
+			$bad_track = $this->db->getOne($sql);
 			
 			if($bad_track == "t")
 				$this->bad = true;
@@ -208,8 +194,6 @@
 		}
 		
 		function setAspectRatio($str) {
-		
-			global $db;
 		
 			$str = trim($str);
 			if(empty($str) || !is_string($str))
@@ -225,7 +209,7 @@
 				'aspect' => $str
 			);
 			
-			$db->autoExecute('tracks', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('tracks', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->aspect_ratio = $str;
 		
@@ -233,21 +217,17 @@
 		
 		public function getAspectRatio() {
 			
-			global $db;
-			
 			if($this->aspect_ratio)
 				return $this->aspect_ratio;
 			
 			$sql = "SELECT aspect FROM tracks WHERE id = ".$this->getID().";";
-			$this->aspect_ratio = $db->getOne($sql);
+			$this->aspect_ratio = $this->db->getOne($sql);
 			
 			return $this->aspect_ratio;
 			
 		}
 		
 		function setOrder($int) {
-		
-			global $db;
 		
 			$int = abs(intval($int));
 			if(!$int)
@@ -260,7 +240,7 @@
 				'order' => $int
 			);
 			
-			$db->autoExecute('tracks', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('tracks', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->order = $int;
 		
@@ -268,13 +248,11 @@
 		
 		function getOrder() {
 		
-			global $db;
-		
 			if($this->order)
 				return $this->order;
 			
 			$sql = "SELECT track_order FROM tracks WHERE id = ".$this->getID().";";
-			$this->order = $db->getOne($sql);
+			$this->order = $this->db->getOne($sql);
 			
 			return $this->order;
 		
@@ -283,9 +261,8 @@
 		function getNumChapters() {
 		
 			if(is_null($this->num_chapters)) {
-				global $db;
 				$sql = "SELECT COUNT(1) FROM chapters WHERE track = ".$this->getID().";";
-				$num_chapters = $db->getOne($sql);
+				$num_chapters = $this->db->getOne($sql);
 				
 				$this->num_chapters = $num_chapters;
 			}
@@ -294,10 +271,8 @@
 		
 		function getEpisodeIDs() {
 		
-			global $db;
-			
 			$sql = "SELECT id FROM episodes WHERE track = ".$this->getID()." ORDER BY season, episode_order, starting_chapter, id;";
-			$arr = $db->getCol($sql);
+			$arr = $this->db->getCol($sql);
 			
 			return $arr;
 		}
@@ -305,9 +280,8 @@
 		function getNumEpisodes() {
 		
 			if(is_null($this->num_episodes)) {
-				global $db;
 				$sql = "SELECT COUNT(1) FROM episodes WHERE track = ".$this->getID().";";
-				$int = $db->getOne($sql);
+				$int = $this->db->getOne($sql);
 				
 				return $int;
 			} else {
@@ -322,10 +296,9 @@
 		
 			if(is_null($this->valid_length)) {
 		
-				global $db;
 				$sql = "SELECT min_len, max_len FROM tv_shows tv INNER JOIN discs d ON d.tv_show_id = tv.id INNER JOIN tracks t ON t.disc = d.id WHERE t.id = ".$this->getID().";";
 				
-				$row = $db->getRow($sql);
+				$row = $this->db->getRow($sql);
 				
 				if(($this->getLength() >= $row['min_len']) && ($this->getLength() <= $row['max_len']))
 					return true;
@@ -338,8 +311,6 @@
 		}
 		
 		public function getDefaultStreamID() {
-		
-			global $db;
 		
 			$arr = $this->getAudioStreamIDs();
 			
@@ -364,10 +335,8 @@
 		
 		public function getAudioStreamIDs() {
 		
-			global $db;
-		
 			$sql = "SELECT id, ix, lang, stream_id FROM audio_tracks WHERE track = ".$this->getID()." ORDER BY lang = 'en' DESC, channels DESC, format = 'dts' DESC, stream_id;";
-			$arr = $db->getAssoc($sql);
+			$arr = $this->db->getAssoc($sql);
 			
 			return $arr;
 		
@@ -379,10 +348,8 @@
 		 */
 		public function getDefaultSubtitleIndex() {
 		
-			global $db;
-		
 			$sql = "SELECT id, ix, langcode FROM subtitles WHERE track = ".$this->getID()." AND format = 'VobSub' ORDER BY langcode = 'en' DESC, ix;";
-			$arr = $db->getAssoc($sql);
+			$arr = $this->db->getAssoc($sql);
 			
 			if(count($arr)) {
 				foreach($arr as $row) {
@@ -396,7 +363,6 @@
 			return $track;
 				
 		}
-		
 	
 	}
 ?>
