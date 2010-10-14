@@ -747,6 +747,7 @@
 	if($rip) {
 	
 		// Get the series ID
+		// FIXME make a function
 		$sql = "SELECT id FROM view_discs WHERE disc_id = '$dvd_id';";
 		$drip_disc = new DripDisc($db->getOne($sql));
 		$series = new DripSeries($drip_disc->getSeriesID());
@@ -776,6 +777,7 @@
 		
 		foreach($drip_track_ids as $drip_track_id) {
 			// Insert the audio tracks if they are missing from the new table
+			// FIXME make a function
 			$sql = "SELECT COUNT(1) FROM audio_tracks WHERE track = $drip_track_id;";
 			$num_db_audio_tracks = $db->getOne($sql);
 		
@@ -799,6 +801,7 @@
 			$offset = '';
 		
 		// Rip in sequential order by season, episode order, then title
+		// FIXME make a function
 		$sql = "SELECT episode_id FROM view_episodes WHERE bad_track = FALSE AND episode_title != '' AND disc_id = ".$drip_disc->getID()." ORDER BY track_order, season, episode_order, episode_title, track, episode_id $offset;";
 		
 		$arr = $db->getCol($sql);
