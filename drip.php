@@ -244,6 +244,7 @@
 			
 				// Delete the old records (if any)
  				if($drip_track->getNumChapters()) {
+ 					// FIXME make a function
 					$sql = "DELETE FROM chapters WHERE track = ".$drip_track->getID().";";
 					$db->query($sql);
  				}
@@ -1176,6 +1177,7 @@
 				if($queue) {
 					
 					if((!file_exists($src)) || file_exists($mkv)) {
+						// FIXME make a function
 						$sql = "DELETE FROM queue WHERE episode = $episode_id;";
 						$db->query($sql);
 						shell::msg("[Queue] ($x/$todo) Removing $series_title: Episode $episode_index: $episode_title");
@@ -1350,6 +1352,7 @@
 					} elseif (!file_exists($src) && !file_exists($mkv)) {
 					
 						// At this point, it shouldn't be in the queue.
+						// FIXME make a function
 						$sql = "DELETE FROM queue WHERE episode = $episode_id;";
 						$db->query($sql);
 					
@@ -1379,6 +1382,7 @@
 					
 					// Remove episode from queue
 					if($encode && file_exists($mkv)) {
+						// FIXME make a function
 						$sql = "DELETE FROM queue WHERE episode = $episode_id;";
 						$db->query($sql);
 					}
