@@ -84,7 +84,8 @@
 		
 		$series_title = $series->getTitle();
 		
-		shell::msg($series_title);
+		shell::msg("Title: $series_title");
+		shell::msg("Series ID: $series");
 		$disc_number = $drip_disc->getDiscNumber();
 		$side = $drip_disc->getSide();
 		
