@@ -163,7 +163,7 @@
 	
 	// Display info about disc
 	if($info && $drip->inDatabase($dvd_id))
-		get_info();
+		display_info();
 	else
 		shell::msg("Disc is not archived");
 	
