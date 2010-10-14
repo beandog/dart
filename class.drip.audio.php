@@ -10,6 +10,10 @@
 		private $format;
 	
 		function __construct($id = null) {
+		
+			global $db;
+			$this->db = $db;
+		
 			if($id) {
 				$this->setID($id);
 				$this->getTrackID();
@@ -30,15 +34,14 @@
 		
 		function newAudio() {
 			
-			global $db;
 			$sql = "SELECT nextval('audio_tracks_id_seq');";
-			$id = $db->getOne($sql);
+			$id = $this->db->getOne($sql);
 			
 			$arr_insert = array(
 				'id' => $id
 			);
 			
-			$db->autoExecute('audio_tracks', $arr_insert, DB_AUTOQUERY_INSERT);
+			$this->db->autoExecute('audio_tracks', $arr_insert, DB_AUTOQUERY_INSERT);
 			
 			$this->setId($id);
 			
@@ -49,8 +52,6 @@
 		}
 		
 		function setTrackID($id) {
-		
-			global $db;
 		
 			$id = abs(intval($id));
 			if(!$id)
@@ -63,7 +64,7 @@
 				'track' => $id
 			);
 			
-			$db->autoExecute('audio_tracks', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('audio_tracks', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->track_id = $id;
 		
@@ -71,13 +72,11 @@
 		
 		function getTrackID() {
 		
-			global $db;
-		
 			if($this->track_id)
 				return $this->track_id;
 			
 			$sql = "SELECT track FROM audio_tracks WHERE id = ".$this->getID().";";
-			$id = $db->getOne($sql);
+			$id = $this->db->getOne($sql);
 			
 			$this->track_id = $id;
 			
@@ -86,8 +85,6 @@
 		}
 		
 		function setIndex($int) {
-		
-			global $db;
 		
 			$int = abs(intval($int));
 			if(!$int)
@@ -100,7 +97,7 @@
 				'ix' => $int
 			);
 			
-			$db->autoExecute('audio_tracks', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('audio_tracks', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->index = $int;
 		
@@ -108,13 +105,11 @@
 		
 		function getIndex() {
 		
-			global $db;
-		
 			if($this->index)
 				return $this->index;
 			
 			$sql = "SELECT ix FROM audio_tracks WHERE id = ".$this->getID().";";
-			$track = $db->getOne($sql);
+			$track = $this->db->getOne($sql);
 			
 			$this->index = $track;
 			
@@ -124,8 +119,6 @@
 		
 		/** Language **/
 		function setLanguage($str) {
-		
-			global $db;
 		
 			$str = trim($str);
 			if(empty($str) || !is_string($str))
@@ -138,7 +131,7 @@
 				'lang' => $str
 			);
 			
-			$db->autoExecute('audio_tracks', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('audio_tracks', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->language = $str;
 		
@@ -146,11 +139,9 @@
 		
 		public function getLanguage() {
 			
-			global $db;
-			
 			if(is_null($this->language)) {
 				$sql = "SELECT lang FROM audio_tracks WHERE id = ".$this->getID().";";
-				$this->language = $db->getOne($sql);
+				$this->language = $this->db->getOne($sql);
 			}
 			
 			return $this->language;
@@ -159,8 +150,6 @@
 		
 		/** Language **/
 		function setStreamID($str) {
-		
-			global $db;
 		
 			$str = trim($str);
 			if(empty($str) || !is_string($str))
@@ -173,7 +162,7 @@
 				'stream_id' => $str
 			);
 			
-			$db->autoExecute('audio_tracks', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('audio_tracks', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->stream_id = $str;
 		
@@ -181,11 +170,9 @@
 		
 		public function getStreamID() {
 			
-			global $db;
-			
 			if(is_null($this->stream_id)) {
 				$sql = "SELECT stream_id FROM audio_tracks WHERE id = ".$this->getID().";";
-				$this->stream_id = $db->getOne($sql);
+				$this->stream_id = $this->db->getOne($sql);
 			}
 			
 			return $this->stream_id;
@@ -193,8 +180,6 @@
 		}
 		
 		function setNumChannels($int) {
-		
-			global $db;
 		
 			$int = abs(intval($int));
 			if(!$int)
@@ -207,7 +192,7 @@
 				'channels' => $int
 			);
 			
-			$db->autoExecute('audio_tracks', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('audio_tracks', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->num_channels = $int;
 		
@@ -215,11 +200,9 @@
 		
 		function getNumChannels() {
 		
-			global $db;
-		
 			if(is_null($this->num_channels)) {
 				$sql = "SELECT channels FROM audio_tracks WHERE id = ".$this->getID().";";
-				$this->num_channels = $db->getOne($sql);
+				$this->num_channels = $this->db->getOne($sql);
 			}
 			
 			return $this->num_channels;
@@ -227,8 +210,6 @@
 		}
 		
 		function setFormat($str) {
-		
-			global $db;
 		
 			$str = trim($str);
 			if(empty($str) || !is_string($str))
@@ -241,7 +222,7 @@
 				'format' => $str
 			);
 			
-			$db->autoExecute('audio_tracks', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
+			$this->db->autoExecute('audio_tracks', $arr_update, DB_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
 			$this->format = $str;
 		
@@ -249,11 +230,9 @@
 		
 		public function getFormat() {
 			
-			global $db;
-			
 			if(is_null($this->format)) {
 				$sql = "SELECT format FROM audio_tracks WHERE id = ".$this->getID().";";
-				$this->format = $db->getOne($sql);
+				$this->format = $this->db->getOne($sql);
 			}
 			
 			return $this->format;
