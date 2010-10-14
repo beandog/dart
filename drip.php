@@ -573,7 +573,7 @@
 			if($debug)
 				shell::msg("new DripDisc()");
 			
-			$disc = new DripDisc();
+			$drip_disc = new DripDisc();
 			
 			// Update disc size
 			if($mount && !$drip_disc->getSize())
@@ -584,20 +584,20 @@
 				$drip_disc->setSize($size);
 			}
 			
-			$disc->setSide($side);
-			$disc->setDiscID($dvd_id);
-			$disc->setTitle($dvd->getTitle());
-			$disc->setDiscNumber($disc_number);
+			$drip_disc->setSide($side);
+			$drip_disc->setDiscID($dvd_id);
+			$drip_disc->setTitle($dvd->getTitle());
+			$drip_disc->setDiscNumber($disc_number);
 			if($movie) {
 				$series->setMovie();
 				$series->setUnordered(true);
 				$series->setVolumes(false);
 				$series->setHandbrake();
 			} else {
-				$disc->setSeason($season);
-				$disc->setVolume($volume);
+				$drip_disc->setSeason($season);
+				$drip_disc->setVolume($volume);
 			}
-			$disc->setSeriesID($series->getID());
+			$drip_disc->setSeriesID($series->getID());
 			
 			$num_tracks = $dvd->getNumTracks();
 			$longest_track = $dvd->getLongestTrack();
@@ -636,7 +636,7 @@
 					shell::msg("new DripTrack()");
 				
 				$drip_track = new DripTrack();
-				$drip_track->setDiscID($disc->getID());
+				$drip_track->setDiscID($drip_disc->getID());
 				$drip_track->setTrackNumber($track_number);
 				$drip_track->setLength($track_length);
 				$drip_track->setAspectRatio($dvd_track->getAspectRatio());
