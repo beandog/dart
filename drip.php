@@ -82,7 +82,6 @@
 		$drip->debug = $drip->verbose = true;
 		$debug =& $drip->debug;
 		$verbose =& $drip->verbose;
-		$eject = false;
 	}
 	
 	if($args['encode'])
@@ -101,7 +100,7 @@
 	if($args['demux'])
 		$demux = true;
 	
-	if($ini['eject'] || $args['eject'])
+	if(($ini['eject'] || $args['eject']) && !$debug)
 		$eject = true;
 		
 	if($args['v'] || $args['verbose'] || $ini['verbose'] || $debug) {
