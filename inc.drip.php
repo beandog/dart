@@ -3,7 +3,8 @@
 	require_once 'class.shell.php';
 	require_once 'class.drip.php';
 
-	require_once 'DB.php';
+// 	require_once 'DB.php';
+	require_once 'mdb2/charlie.movies.php';
 	
 	// New OOP classes
 	require_once 'class.dvd.php';
@@ -23,12 +24,14 @@
 	require_once 'class.drip.episode.php';
 	
 	/** PEAR **/
-	$db =& DB::connect("pgsql://steve@charlie/movies");
-	$db->setFetchMode(DB_FETCHMODE_ASSOC);
-	function pear_error($obj) {
-		die($obj->getMessage() . "\n" . $obj->getDebugInfo());
-	}
-	PEAR::setErrorHandling(PEAR_ERROR_CALLBACK, 'pear_error');
+// 	$db =& DB::connect("pgsql://steve@charlie/movies");
+// 	$db->setFetchMode(DB_FETCHMODE_ASSOC);
+// 	function pear_error($obj) {
+// 		die($obj->getMessage() . "\n" . $obj->getDebugInfo());
+// 	}
+// 	PEAR::setErrorHandling(PEAR_ERROR_CALLBACK, 'pear_error');
+
+	
 	
 	$drip = new drip();
 
