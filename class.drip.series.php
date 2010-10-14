@@ -56,6 +56,10 @@
 			);
 			
 		}
+		
+		function __toString() {
+			return (string)$this->id;
+		}
 	
 		function setID($id) {
 			$id = abs(intval($id));
