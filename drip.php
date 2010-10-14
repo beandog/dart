@@ -162,63 +162,10 @@
 	}
 	
 	// Display info about disc
-	if($info) {
-		
-		if(!$drip->inDatabase($dvd_id)) {
-			shell::msg("Disc is not archived");
-			break;
-		}
-		
-		// Get the series ID
-		$sql = "SELECT id FROM view_discs WHERE disc_id = '$dvd_id';";
-		$drip_disc = new DripDisc($db->getOne($sql));
-		$series = new DripSeries($drip_disc->getSeriesID());
-		
-		$series_title = $series->getTitle();
-		
-		shell::msg($series_title);
-		$disc_number = $drip_disc->getDiscNumber();
-		$side = $drip_disc->getSide();
-		
-		$disc_season = $drip_disc->getSeason();
-		$disc_volume = $drip_disc->getVolume();
-		if($disc_season)
-			shell::msg("Season $disc_season");
-		if($disc_volume)
-			shell::msg("Volume $disc_volume");
-		
-		shell::msg("Disc: $disc_number$side");
-		
-		$sql = "SELECT episode_id FROM view_episodes WHERE bad_track = FALSE AND episode_title != '' AND disc_id = ".$drip_disc->getID()." ORDER BY track_order, season, episode_order, episode_title, track, episode_id $offset;";
-		$arr = $db->getCol($sql);
-		
-		$num_episodes = $count = count($arr);
-		
-		shell::msg("Episodes: $num_episodes");
-		
-		$x = 0;
-		
-		foreach($arr as $episode_id) {
-			
-			$episode = new DripEpisode($episode_id);
-			$episode_number = $episode->getEpisodeNumber();
-			$episode_title = $episode->getTitle();
-			$episode_part = $episode->getPart();
-			if($episode_part > 1)
-				$episode_title .= ", Part $episode_part";
-				
-			$track = new DripTrack($episode->getTrackID());
-			$track_number = $track->getTrackNumber();
-			$starting_chapter = $episode->getStartingChapter();
-			$ending_chapter = $episode->getEndingChapter();
-			
-			if($starting_chapter && $ending_chatper)
-				$display_chapter = " Chapter $starting_chapter-$ending_chapter";
-				
-			shell::msg("Track $track_number$display_chapter \"$episode_title\"");
-		}
-	
-	}
+	if($info && $drip->inDatabase($dvd_id))
+		get_info();
+	else
+		shell::msg("Disc is not archived");
 	
 	// Update audio tracks
 	function update_audio_tracks($drip_track_id) {
