@@ -36,6 +36,9 @@
 			
 			// Episode number
 			$this->episode = 0;
+			
+			global $db;
+			$this->db = $db;
 		
 		}
 		
@@ -44,15 +47,13 @@
 		 */
 		function globalTags($episode) {
 		
-			global $db;
-		
 			/**
 			 * Need:
 			 * series title, season #, season year, episode #, episode title, production studio
 			 */
 			 
 			$sql = "SELECT * FROM view_episodes WHERE episode_id = $episode;";
-			$arr = $db->getRow($sql);
+			$arr = $this->db->getRow($sql);
 			
 			
 			if(!count($arr))
@@ -184,10 +185,8 @@ XML;
 			else
 				$this->disc_id = $disc_id;
 		
-			global $db;
-		
 			$sql = "SELECT COUNT(1) FROM discs WHERE disc_id = '$disc_id';";
-			$num_rows = $db->getOne($sql);
+			$num_rows = $this->db->getOne($sql);
 			
 			if($num_rows)
 				return true;
@@ -326,24 +325,21 @@ XML;
 			$hostname = pg_escape_string($this->hostname);
 			
 			if($episode) {
-				global $db;
 				$this->removeQueue($episode);
 				
 				$sql = "INSERT INTO queue(queue, episode) VALUES ('$hostname', $episode);";
-				$db->query($sql);
+				$this->db->query($sql);
 			}
 			
 		}
 		
 		function removeQueue($episode_id) {
 		
-			global $db;
-			
 			$hostname = pg_escape_string($this->hostname);
 			
 			if($episode_id) {
 				$sql = "DELETE FROM queue WHERE queue = '$hostname' AND episode = $episode_id;";
-				$db->query($sql);
+				$this->db->query($sql);
 			}
 		
 		}
@@ -375,8 +371,6 @@ XML;
 		
 			$episode = abs(intval($episode));
 		
-			global $db;
-		
 			// This query dynamically returns the correct episode # out of the entire season for a TV show based on its track #.
 			// It works by calculating the number of valid tracks that come before it
 			// So, you can archive discs outside of their order, just don't transcode them
@@ -384,7 +378,7 @@ XML;
 // 			$sql = "SELECT d.tv_show, d.season, d.disc AS disc_number, d.side, e.episode_order, t.track, t.track_order FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id WHERE e.id = $episode;";
 			$sql = "SELECT tv_show_id AS tv_show, season, disc AS disc_number, volume, side, episode_order, track, track_order FROM view_episodes WHERE episode_id = $episode;";
 //  			shell::msg($sql);
-			$row = $db->getRow($sql);
+			$row = $this->db->getRow($sql);
 			extract($row);
 			
 			if(is_null($track_order))
@@ -398,7 +392,7 @@ XML;
 			// # of episodes on current disc plus current track plus earlier episodes
 			$sql = "SELECT (count(e.id) + 1) FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id WHERE d.tv_show = $tv_show AND e.season = $season AND t.bad_track = FALSE AND e.title != '' AND ( (d.disc < $disc_number) OR ( d.disc = $disc_number AND d.side < '$side' ) OR ( e.season = $season AND d.volume < $volume) OR (d.disc = $disc_number AND t.track != $track AND t.track_order <= $track_order AND e.episode_order <= $episode_order ));";
 //     			shell::msg($sql); die;
-			$int = $db->getOne($sql);
+			$int = $this->db->getOne($sql);
 			
 			// I'm not padding the seasons, because I'm assuming there's not
 			// going to be any show that has more than 9, of which
@@ -430,14 +424,12 @@ XML;
 			// to the first function, even if its the first episode,
 			// since it will only add 0 to the returned integer.
 			
-			global $db;
-			
 			// Find the episodes, and their order, that belong
 			// on the same disc
 			$sql = "SELECT episodes.id, season FROM episodes INNER JOIN tracks ON episodes.track = tracks.id WHERE disc IN (SELECT d.id FROM discs d INNER JOIN tracks t ON t.disc = d.id INNER JOIN episodes e ON e.track = t.id AND e.id = $episode) AND tracks.bad_track = FALSE AND title != '' ORDER BY track_order, episode_order, title;";
 // 			shell::msg($sql);
 			
-			$arr = $db->getAssoc($sql);
+			$arr = $this->db->getAssoc($sql);
 			
 // 			print_r($arr);
 			
@@ -586,13 +578,12 @@ XML;
 			else
 				$limit = '';
 		
-			global $db;
 			$sql = "SELECT e.id, tv.id AS series, tv.title AS series_title, e.title, e.season, e.part, d.disc, t.id AS track_id, t.track, t.aspect, tv.unordered, e.starting_chapter, e.ending_chapter, e.episode_order FROM episodes e INNER JOIN tracks t ON e.track = t.id INNER JOIN discs d ON t.disc = d.id INNER JOIN tv_shows tv ON d.tv_show_id = tv.id INNER JOIN queue q ON q.episode = e.id AND q.queue = '".pg_escape_string($this->hostname)."' WHERE t.bad_track = FALSE AND e.title != '' ORDER BY insert_date $limit;";
-			$arr = $db->getAssoc($sql);
+			$arr = $this->db->getAssoc($sql);
 			
 			$sql = "SELECT episode_id FROM view_episodes e INNER JOIN queue q ON q.episode = e.episode_id AND q.queue = '".pg_escape_string($this->hostname)."' WHERE e.bad_track = FALSE AND e.episode_title != '' ORDER BY insert_date $limit;";
 			
-			$arr = $db->getCol($sql);
+			$arr = $this->db->getCol($sql);
 			
 			return $arr;
 		
@@ -600,10 +591,8 @@ XML;
 		
 		function getDefaultAudioTrack($track_id, $language = "en") {
 		
-			global $db;
-			
 			$sql = "SELECT id, ix, lang FROM audio_tracks WHERE track = $track_id ORDER BY ix;";
-			$arr = $db->getAssoc($sql);
+			$arr = $this->db->getAssoc($sql);
 			
 			if(count($arr)) {
 				foreach($arr as $row) {
