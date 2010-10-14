@@ -909,8 +909,7 @@
 				
 				$dvd_track = new DVDTrack($track_number, $tmp);
 				
-				if($debug)
-					$dvd_track->setDebug(true);
+				$dvd_track->setDebug($debug);
 				
 				$dvd_track->setBasename($basename);
 				$dvd_track->setStartingChapter($starting_chapter);
