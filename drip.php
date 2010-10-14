@@ -1175,7 +1175,7 @@
 				if($queue) {
 					if((!file_exists($src)) || file_exists($mkv)) {
 						shell::msg("[Queue] ($x/$todo) Removing $series_title: Episode $episode_index: $episode_title");
-						$drip->deleteQueue($episode_id);
+						$drip->removeQueue($episode_id);
 					} else
 						shell::msg("[Queue] ($x/$todo) $series_title: Episode $episode_index: $episode_title");
 				}
@@ -1346,7 +1346,7 @@
 						
 					} elseif (!file_exists($src) && !file_exists($mkv)) {
 						// At this point, it shouldn't be in the queue.
-						$drip->deleteQueue($episode_id);
+						$drip->removeQueue($episode_id);
 					}
 					
 					// Delete old files
@@ -1373,7 +1373,7 @@
 					
 					// Remove episode from queue
 					if($encode && file_exists($mkv)) {
-						$drip->deleteQueue($episode_id);
+						$drip->removeQueue($episode_id);
 					}
 				}
 				
