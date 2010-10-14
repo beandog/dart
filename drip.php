@@ -1,8 +1,5 @@
 #!/usr/bin/php
 <?
-
-	$start = time();
-
 	// DRIP Functions
 	require_once 'inc.drip.php';
 
@@ -1389,13 +1386,6 @@
 			
 		}
 		
-	}
-	
-	$finish = time();
-	
-	if($verbose) {
-// 		$exec_time = shell::executionTime($start, $finish);
-// 		shell::msg("Total execution time: ".$exec_time['minutes']."m ".$exec_time['seconds']."s");
 	}
 	
 	
