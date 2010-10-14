@@ -80,6 +80,12 @@
 	/** --max [number] **/
 	if($args['max'])
 		$max = abs(intval($args['max']));
+		
+	/** --mount **/
+	if($args['mount'] || $ini['mount'])
+		$mount = true;
+	else
+		$mount = false;
 	
 	/** --movie **/
 	if($args['movie'])
@@ -129,14 +135,22 @@
 	if($args['novobsub'])
 		$rip_vobsub = $mux_vobsub = false;
 	
-	
 	/** Start everything **/
 	$dvd = new DVD($device);
 	
-	if($ini['mount'] && (($archive || $rip || $update || $info) && !$device_is_iso)) {
-		$mount = true;
-  		$dvd->mount();
+	// Determine whether we need physical access to a disc.
+	if(!$device_is_iso && ($archive || $rip || $update || $info))
+		$access_drive = true;
+	else {
+		$access_drive = false;
+		$mount = false;
 	}
+	
+	if($access_drive)
+		$dvd->close_tray();
+	
+	if($mount)
+  		$dvd->mount();
 	
 	if(($archive || $rip || $update || $info) && !$device_is_iso) {
 		$dvd->load_css();
