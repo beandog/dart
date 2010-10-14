@@ -1389,11 +1389,10 @@
 	}
 	
 	
- 	if($mount && ($archive || $rip) && !$queue && !$eject && !$device_is_iso)
+ 	if($mount)
  		$dvd->unmount();
 	
-	// Don't eject if you are just checking the queue
-	if(!$ejected && (($eject && !$queue && $rip) || $args['eject']) && !$device_is_iso)
+	if($eject)
 		$dvd->eject();
 		
 ?>
