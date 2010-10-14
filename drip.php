@@ -158,10 +158,11 @@
   	if($access_device) {
   		$dvd->load_css();
 		$dvd_id = $dvd->getID();
+		
+		if($drip->inDatabase($dvd_id))
+			$disc_archived = true;
+		
 	}
-	
-	if($drip->inDatabase($dvd_id))
-		$disc_archived = true;
 	
 	// Display info about disc
 	if($info)
