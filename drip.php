@@ -1175,12 +1175,9 @@
 					$src = $vob;
 				
 				if($queue) {
-					
 					if((!file_exists($src)) || file_exists($mkv)) {
-						// FIXME make a function
-						$sql = "DELETE FROM queue WHERE episode = $episode_id;";
-						$db->query($sql);
 						shell::msg("[Queue] ($x/$todo) Removing $series_title: Episode $episode_index: $episode_title");
+						$drip->deleteQueue($episode_id);
 					} else
 						shell::msg("[Queue] ($x/$todo) $series_title: Episode $episode_index: $episode_title");
 				}
