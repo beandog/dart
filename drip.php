@@ -60,7 +60,7 @@
 		$device_is_iso = false;
 	
 	/** --eject **/
-	if(($ini['eject'] && !$debug) || $args['eject'])
+	if((($ini['eject'] && !$debug) || $args['eject']) && !$args['noeject'])
 		$eject = true;
 	
 	/** --encode **/
