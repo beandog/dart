@@ -34,6 +34,11 @@
 			return $str;
 		}
 		
+		function close_tray() {
+			// Ignore exit code if it dies
+			shell::cmd("eject -t ".$this->getDevice(), false, true);
+		}
+		
 		function eject() {
 			// Ignore exit code if it dies
 			shell::cmd("eject ".$this->getDevice(), false, true);
