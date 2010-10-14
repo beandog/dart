@@ -11,8 +11,7 @@
 	
 		function __construct($id = null) {
 		
-			global $db;
-			$this->db = $db;
+			$this->db = MDB2::singleton();
 		
 			if($id) {
 				$this->setID($id);
