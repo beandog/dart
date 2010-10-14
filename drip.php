@@ -868,6 +868,7 @@
  				if(!is_dir($export))
  					mkdir($export, 0755) or die("Can't create export directory $export");
  				
+ 				// FIXME Check your collections, and do this right.
  				// Create the directory in the storage_dir
 //  				if($series->isCartoon())
 // 					$target_dir = "$storage_dir/cartoons/$dir";
