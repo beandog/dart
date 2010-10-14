@@ -56,10 +56,6 @@
 	else
 		$device_is_iso = false;
 	
-	/** --eject **/
-	if((($ini['eject'] && !$debug) || $args['eject']) && !$args['noeject'])
-		$eject = true;
-	
 	/** --encode **/
 	if($args['encode'])
 		$encode = true;
@@ -114,6 +110,10 @@
 	if($args['update'])
 		$update = true;
 	
+	/** --eject **/
+	if((($ini['eject'] && !$debug && !$info) || $args['eject']) && !$args['noeject'])
+		$eject = true;
+	
 	/** Subtitles **/
 	// Closed Captioning
 	if($args['cc'] || $ini['rip_cc'])
@@ -164,16 +164,11 @@
 		$disc_archived = true;
 	
 	// Display info about disc
-	if($info) {
-		
-		if($access_drive)
-			$eject = false;
-		
+	if($info)
 		if($disc_archived)
 			display_info($dvd_id);
 		else
 			shell::msg("Disc is not archived");
-	}
 	
 	// Re-archive disc
 	// Generally called if you want to update the webif
@@ -1398,7 +1393,7 @@
  	if($mount)
  		$dvd->unmount();
 	
-	if($eject || $args['eject'])
+	if($eject)
 		$dvd->eject();
 		
 ?>
