@@ -138,8 +138,12 @@
 	/** Start everything **/
 	$dvd = new DVD($device);
 	
+	// Determine whether we are reading the device
+	if($archive || $rip || $update || $info)
+		$access_device = true;
+	
 	// Determine whether we need physical access to a disc.
-	if(!$device_is_iso && ($archive || $rip || $update || $info))
+	if(!$device_is_iso && $access_device)
 		$access_drive = true;
 	else {
 		$access_drive = false;
@@ -151,9 +155,9 @@
 	
 	if($mount)
   		$dvd->mount();
-	
-	if(($archive || $rip || $update || $info) && !$device_is_iso) {
-		$dvd->load_css();
+  	
+  	if($access_device) {
+  		$dvd->load_css();
 		$dvd_id = $dvd->getID();
 	}
 	
