@@ -183,8 +183,10 @@ XML;
 				$disc_id = $this->disc_id;
 			else
 				$this->disc_id = $disc_id;
+				
+			$str = pg_escape_string($disc_id);
 		
-			$sql = "SELECT COUNT(1) FROM discs WHERE disc_id = '$disc_id';";
+			$sql = "SELECT COUNT(1) FROM discs WHERE disc_id = $str;";
 			$num_rows = $this->db->getOne($sql);
 			
 			if($num_rows)
@@ -198,7 +200,9 @@ XML;
 		
 			$db = MDB2::singleton();
 			
-			$sql = "SELECT id FROM discs WHERE disc_id = '$dvd_id';";
+			$str = pg_escape_string($dvd_id);
+			
+			$sql = "SELECT id FROM discs WHERE disc_id = $str;";
 			$id = $db->getOne($sql);
 			
 			return $id;
