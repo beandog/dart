@@ -132,8 +132,9 @@
 	// Update audio tracks
 	function update_audio_tracks($drip_track_id) {
 	
-		global $db;
 		global $device;
+		
+		$db = MDB2::singleton();
 	
 		$drip_track = new DripTrack($drip_track_id);
 		$dvd_track = new DVDTrack($drip_track->getTrackNumber(), $device);
