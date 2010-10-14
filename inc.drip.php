@@ -70,7 +70,7 @@
 	
 	}
 	
-	function display_info() {
+	function display_info($dvd_id) {
 	
 		global $db;
 		
@@ -121,6 +121,58 @@
 				$display_chapter = " Chapter $starting_chapter-$ending_chapter";
 				
 			shell::msg("Track $track_number$display_chapter \"$episode_title\"");
+		}
+		
+	}
+	
+	// Update audio tracks
+	function update_audio_tracks($drip_track_id) {
+	
+		global $db;
+		global $device;
+	
+		$drip_track = new DripTrack($drip_track_id);
+		$dvd_track = new DVDTrack($drip_track->getTrackNumber(), $device);
+		
+		// Delete the old audio streams
+		
+		$sql = "DELETE FROM audio_tracks WHERE track = $drip_track_id;";
+		$db->query($sql);
+		
+		// Fetch all the audio streams, and store them
+		// in the database.
+		$audio_streams = $dvd_track->getAudioStreams();
+		
+		// Get the # of audio tracks
+		$num_audio_tracks = count($audio_streams);
+		
+		// Pass the lsdvd XML output to DVDAudio class
+		$lsdvd_xml = $dvd_track->getXML();
+		
+		foreach($audio_streams as $stream_id) {
+		
+			$dvd_audio = new DVDAudio($lsdvd_xml, $stream_id);
+			
+			$drip_audio = new DripAudio();
+			
+			// Set the stream ID
+			$drip_audio->setStreamID($stream_id);
+			
+			// Set the parent track ID
+			$drip_audio->setTrackID($drip_track->getID());
+			
+			// Set the index, the sequential # of order for the track
+			$drip_audio->setIndex($dvd_audio->getIX());
+			
+			// Set the 2-char langcode
+			$drip_audio->setLanguage($dvd_audio->getLangcode());
+			
+			// Set the # of channels
+			$drip_audio->setNumChannels($dvd_audio->getChannels());
+			
+			// Set the codec
+			$drip_audio->setFormat($dvd_audio->getFormat());
+		
 		}
 		
 	}
