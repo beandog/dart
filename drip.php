@@ -55,54 +55,67 @@
 		die;
 	}
 	
+	/** --pretend **/
 	if($args['p'] || $args['pretend'])
 		$pretend = true;
 	
+	/** --update **/
 	if($args['update'])
 		$update = true;
 	
 	// FIXME: Update is true until ALL subtitles are fixed.
 	$update = true;
 	
+	/** --queue **/
 	if($args['q'] || $args['queue'])
 		$queue = true;
 	
+	/** --info **/
 	if($args['i'] || $args['info'])
 		$info = true;
 	
+	/** --skip **/
 	if($args['skip'])
 		$skip = abs(intval($args['skip']));
 	else
 		$skip = 0;
-		
+	
+	/** --max **/
 	if($args['max'])
 		$max = abs(intval($args['max']));
 	
+	/** --debug **/
 	if($args['debug']) {
 		$drip->debug = $drip->verbose = true;
 		$debug =& $drip->debug;
 		$verbose =& $drip->verbose;
 	}
 	
+	/** --encode **/
 	if($args['encode'])
 		$encode = true;
 	
+	/** --rip **/
 	if($args['rip'])
 		$rip = true;
 	
+	/** --archive **/
 	if($args['archive'])
 		$archive = true;
-		
+	
+	/** --title **/
 	if($args['title'])
 		$title = $args['title'];
 	
-	$demux = false;
+	/** --demux **/
 	if($args['demux'])
 		$demux = true;
 	
+	/** --eject **/
 	if(($ini['eject'] && !$debug) || $args['eject'])
 		$eject = true;
-		
+	
+	/** --verbose **/
 	if($args['v'] || $args['verbose'] || $ini['verbose'] || $debug) {
 		$drip->verbose = true;
 		$verbose =& $drip->verbose;
