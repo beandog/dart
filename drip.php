@@ -1395,9 +1395,6 @@
 		
 	}
 	
- 	if($mount)
- 		$dvd->unmount();
-	
 	if($eject)
 		$dvd->eject();
 		
