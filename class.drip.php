@@ -327,13 +327,25 @@ XML;
 			
 			if($episode) {
 				global $db;
-				$sql = "DELETE FROM queue WHERE queue = '$hostname' AND episode = $episode;";
-				$db->query($sql);
+				$this->removeQueue($episode);
 				
 				$sql = "INSERT INTO queue(queue, episode) VALUES ('$hostname', $episode);";
 				$db->query($sql);
 			}
 			
+		}
+		
+		function removeQueue($episode_id) {
+		
+			global $db;
+			
+			$hostname = pg_escape_string($this->hostname);
+			
+			if($episode_id) {
+				$sql = "DELETE FROM queue WHERE queue = '$hostname' AND episode = $episode_id;";
+				$db->query($sql);
+			}
+		
 		}
 		
 		/**
