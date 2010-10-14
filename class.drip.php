@@ -582,32 +582,6 @@ XML;
 			
 			$arr = $db->getCol($sql);
 			
-// 			// TODO: Get chapters
-// 			// This query works to get the relevant chapters for that track,
-// 			// but it's not checking to see if they apply (one episode per track or not)
-// 			foreach($arr as $id => $arr_track) {
-// 
-// 				// Get audio tracks, find the first English one
-// 				$sql = "SELECT * FROM audio_tracks WHERE track = ".$arr_track['track_id']." ORDER BY audio_track;";
-// 				$arr_audio_tracks = $db->getAssoc($sql);
-// 				
-// 				if(count($arr_audio_tracks)) {
-// 					foreach($arr_audio_tracks as $arr_audio) {
-// 						if($arr_audio['lang'] == 'en') {
-// 							$atrack = ($arr_audio['audio_track'] + 1);
-// 							break;
-// 						}
-// 					}
-// 				} else
-// 					$atrack = 1;
-// 				
-// 				$arr[$id]['atrack'] = $atrack;
-// 
-// 				// Unused
-// 				unset($arr[$id]['track_id']);
-/*				
-			}*/
-			
 			return $arr;
 		
 		}
