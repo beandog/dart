@@ -1398,7 +1398,7 @@
  	if($mount)
  		$dvd->unmount();
 	
-	if($eject)
+	if($eject || $args['eject'])
 		$dvd->eject();
 		
 ?>
