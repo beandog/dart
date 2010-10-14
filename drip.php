@@ -175,6 +175,7 @@
 	/** UPDATE **/
 	if($update && $disc_archived) {
 		
+		// FIXME make a function
 		$sql = "SELECT id FROM discs WHERE disc_id = '$dvd_id';";
 		$drip_disc_id = $db->getOne($sql);
 		
@@ -229,6 +230,7 @@
 			}
 			
 			// Insert the audio tracks if they are missing from the new table
+			// FIXME make a function
 			$sql = "SELECT COUNT(1) FROM audio_tracks WHERE track = $track_id;";
 			$num_db_audio_tracks = $db->getOne($sql);
 		
@@ -265,12 +267,13 @@
  			}
  			
  			/** Subtitles **/
- 			
+ 			// FIXME make a function
  			$sql = "SELECT COUNT(1) FROM subtitles WHERE track = ".$drip_track->getID().";";
  			$num_subtitles = $db->getOne($sql);
  			
  			if(!$num_subtitles) {
  			
+ 				// FIXME make a function
 				$sql = "DELETE FROM subtitles WHERE track = ".$drip_track->getID().";";
 				$db->query($sql);
 				
@@ -363,6 +366,7 @@
 		
 		if(!$series) {
 			// Get the current TV show titles
+			// FIXME make a function
 			$sql = "SELECT id, title, min_len, max_len, cartoon FROM tv_shows ORDER BY title;";
 			$arr = $db->getAll($sql);
 			$num_rows = count($arr);
@@ -480,11 +484,12 @@
 			// Set the default to the next one in line
 			if($series->getNumDiscs()) {
 			
+			
+				// FIXME make a function call
 				if(is_null($season))
 					$str_season = "NULL";
 				else
 					$str_season = $season;
-			
 				$sql = "SELECT DISTINCT disc_number, TRIM(side) AS side, disc_id FROM view_episodes WHERE tv_show_id = ".$series->getID()." AND season = $str_season AND volume = $volume ORDER BY disc_number, side;";
 				$arr = $db->getAll($sql);
 				
