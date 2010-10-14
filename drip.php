@@ -100,7 +100,7 @@
 	if($args['demux'])
 		$demux = true;
 	
-	if(($ini['eject'] || $args['eject']) && !$debug)
+	if(($ini['eject'] && !$debug) || $args['eject'])
 		$eject = true;
 		
 	if($args['v'] || $args['verbose'] || $ini['verbose'] || $debug) {
