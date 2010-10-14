@@ -1347,12 +1347,9 @@
 							
 						
 					} elseif (!file_exists($src) && !file_exists($mkv)) {
-					
 						// At this point, it shouldn't be in the queue.
 						// FIXME make a function
-						$sql = "DELETE FROM queue WHERE episode = $episode_id;";
-						$db->query($sql);
-					
+						$drip->deleteQueue($episode_id);
 					}
 					
 					// Delete old files
@@ -1379,9 +1376,7 @@
 					
 					// Remove episode from queue
 					if($encode && file_exists($mkv)) {
-						// FIXME make a function
-						$sql = "DELETE FROM queue WHERE episode = $episode_id;";
-						$db->query($sql);
+						$drip->deleteQueue($episode_id);
 					}
 				}
 				
