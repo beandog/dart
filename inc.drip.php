@@ -1,4 +1,37 @@
 <?
+
+	require_once 'class.shell.php';
+	require_once 'class.drip.php';
+
+	require_once 'DB.php';
+	
+	// New OOP classes
+	require_once 'class.dvd.php';
+	require_once 'class.dvdvob.php';
+	require_once 'class.dvdtrack.php';
+	require_once 'class.dvdaudio.php';
+	require_once 'class.dvdsubs.php';
+	require_once 'class.matroska.php';
+	require_once 'class.handbrake.php';
+	
+	require_once 'class.drip.series.php';
+	require_once 'class.drip.disc.php';
+	require_once 'class.drip.track.php';
+	require_once 'class.drip.audio.php';
+	require_once 'class.drip.subtitles.php';
+	require_once 'class.drip.chapter.php';
+	require_once 'class.drip.episode.php';
+	
+	/** PEAR **/
+	$db =& DB::connect("pgsql://steve@charlie/movies");
+	$db->setFetchMode(DB_FETCHMODE_ASSOC);
+	function pear_error($obj) {
+		die($obj->getMessage() . "\n" . $obj->getDebugInfo());
+	}
+	PEAR::setErrorHandling(PEAR_ERROR_CALLBACK, 'pear_error');
+	
+	$drip = new drip();
+
 	function display_help() {
 	
 		shell::msg("Options:");

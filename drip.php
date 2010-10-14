@@ -6,43 +6,9 @@
 	// DRIP Functions
 	require_once 'inc.drip.php';
 
-	require_once 'class.shell.php';
-	require_once 'class.drip.php';
-
-	require_once 'DB.php';
-	
-	// New OOP classes
-	require_once 'class.dvd.php';
-	require_once 'class.dvdvob.php';
-	require_once 'class.dvdtrack.php';
-	require_once 'class.dvdaudio.php';
-	require_once 'class.dvdsubs.php';
-	require_once 'class.matroska.php';
-	require_once 'class.handbrake.php';
-	
-	require_once 'class.drip.series.php';
-	require_once 'class.drip.disc.php';
-	require_once 'class.drip.track.php';
-	require_once 'class.drip.audio.php';
-	require_once 'class.drip.subtitles.php';
-	require_once 'class.drip.chapter.php';
-	require_once 'class.drip.episode.php';
-	
-	
-	
-	$db =& DB::connect("pgsql://steve@charlie/movies");
-	$db->setFetchMode(DB_FETCHMODE_ASSOC);
-	
-	function pear_error($obj) {
-		die($obj->getMessage() . "\n" . $obj->getDebugInfo());
-	}
-	
-	PEAR::setErrorHandling(PEAR_ERROR_CALLBACK, 'pear_error');
-	
-	$drip = new drip();
-	
 	$storage_dir = "/var/media";
 	
+	/** Get options **/
 	$args = shell::parseArguments();
 	
 	$ini = array();
@@ -55,34 +21,7 @@
 		die;
 	}
 	
-	/** --pretend **/
-	if($args['p'] || $args['pretend'])
-		$pretend = true;
-	
-	/** --update **/
-	if($args['update'])
-		$update = true;
-	
-	// FIXME: Update is true until ALL subtitles are fixed.
-	$update = true;
-	
-	/** --queue **/
-	if($args['q'] || $args['queue'])
-		$queue = true;
-	
-	/** --info **/
-	if($args['i'] || $args['info'])
-		$info = true;
-	
-	/** --skip **/
-	if($args['skip'])
-		$skip = abs(intval($args['skip']));
-	else
-		$skip = 0;
-	
-	/** --max **/
-	if($args['max'])
-		$max = abs(intval($args['max']));
+	/** Verbosity **/
 	
 	/** --debug **/
 	if($args['debug']) {
@@ -91,35 +30,92 @@
 		$verbose =& $drip->verbose;
 	}
 	
-	/** --encode **/
-	if($args['encode'])
-		$encode = true;
-	
-	/** --rip **/
-	if($args['rip'])
-		$rip = true;
-	
-	/** --archive **/
-	if($args['archive'])
-		$archive = true;
-	
-	/** --title **/
-	if($args['title'])
-		$title = $args['title'];
-	
-	/** --demux **/
-	if($args['demux'])
-		$demux = true;
-	
-	/** --eject **/
-	if(($ini['eject'] && !$debug) || $args['eject'])
-		$eject = true;
-	
 	/** --verbose **/
 	if($args['v'] || $args['verbose'] || $ini['verbose'] || $debug) {
 		$drip->verbose = true;
 		$verbose =& $drip->verbose;
 	}
+	
+	/** Command line arguments **/
+	
+	/** --archive **/
+	if($args['archive'])
+		$archive = true;
+		
+	/** --demux **/
+	if($args['demux'])
+		$demux = true;
+	
+	/** --device [name] **/
+	if($args['device'])
+		$device = $args['device'];
+	elseif($ini['device'])
+		$device = $ini['device'];
+	else
+		$device = "/dev/dvd";
+	
+	if(substr($device, -4, 4) == ".iso")
+		$device_is_iso = true;
+	else
+		$device_is_iso = false;
+	
+	/** --eject **/
+	if(($ini['eject'] && !$debug) || $args['eject'])
+		$eject = true;
+	
+	/** --encode **/
+	if($args['encode'])
+		$encode = true;
+	
+	/** --info **/
+	if($args['i'] || $args['info'])
+		$info = true;
+		
+	/** --iso, --dump-iso **/
+	if($args['iso'] || $ini['dump_iso'])
+		$dump_iso = true;
+	else
+		$dump_iso = false;
+		
+	/** --max [number] **/
+	if($args['max'])
+		$max = abs(intval($args['max']));
+	
+	/** --movie **/
+	if($args['movie'])
+		$movie = true;
+	
+	/** --pretend **/
+	if($args['p'] || $args['pretend'])
+		$pretend = true;
+	
+	/** --queue **/
+	if($args['q'] || $args['queue'])
+		$queue = true;
+	
+	/** --rip **/
+	if($args['rip'])
+		$rip = true;
+	
+	/** --skip [number] **/
+	if($args['skip'])
+		$skip = abs(intval($args['skip']));
+	else
+		$skip = 0;
+	
+	/** --title [name] **/
+	if($args['title'])
+		$title = $args['title'];
+	
+	/** --update **/
+	if($args['update'])
+		$update = true;
+	
+	// FIXME: Update is true until ALL subtitles are fixed.
+	$update = true;
+	
+	
+	/** Subtitles **/
 	
 	// Closed Captioning
 	if($args['cc'] || $ini['rip_cc'])
@@ -137,26 +133,6 @@
 		$mux_vobsub = true;
 	if($args['novobsub'])
 		$rip_vobsub = $mux_vobsub = false;
-	
-	if($args['movie'])
-		$movie = true;
-		
-	if($args['device'])
-		$device = $args['device'];
-	elseif($ini['device'])
-		$device = $ini['device'];
-	else
-		$device = "/dev/dvd";
-	
-	if(substr($device, -4, 4) == ".iso")
-		$device_is_iso = true;
-	else
-		$device_is_iso = false;
-	
-	if($args['iso'] || $ini['dump_iso'])
-		$dump_iso = true;
-	else
-		$dump_iso = false;
 	
 	$dvd = new DVD($device);
 	
