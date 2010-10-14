@@ -3,6 +3,8 @@
 	class drip {
 		function __construct() {
 		
+			$this->db = MDB2::singleton();
+		
 			// Default config variables
 			$this->device = '/dev/dvd';
 			$this->export = getenv('HOME').'/dvds/';
@@ -36,9 +38,6 @@
 			
 			// Episode number
 			$this->episode = 0;
-			
-			global $db;
-			$this->db = $db;
 		
 		}
 		
