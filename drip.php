@@ -165,10 +165,11 @@
 		$disc_archived = true;
 	
 	// Display info about disc
-	if($info && $disc_archived)
-		display_info($dvd_id);
-	else
-		shell::msg("Disc is not archived");
+	if($info)
+		if($disc_archived)
+			display_info($dvd_id);
+		else
+			shell::msg("Disc is not archived");
 	
 	// Re-archive disc
 	// Generally called if you want to update the webif
