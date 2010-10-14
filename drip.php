@@ -869,13 +869,13 @@
  					mkdir($export, 0755) or die("Can't create export directory $export");
  				
  				// Create the directory in the storage_dir
- 				if($series->isCartoon())
-					$target_dir = "$storage_dir/cartoons/$dir";
-				else
-					$target_dir = "$storage_dir/dvds/$dir";
-				
-				if(!file_exists($target_dir) && !$movie)
-					mkdir($target_dir);
+//  				if($series->isCartoon())
+// 					$target_dir = "$storage_dir/cartoons/$dir";
+// 				else
+// 					$target_dir = "$storage_dir/dvds/$dir";
+// 				
+// 				if(!file_exists($target_dir) && !$movie)
+// 					mkdir($target_dir);
 			
 				$rip_episode = false;
 			
