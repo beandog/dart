@@ -175,9 +175,7 @@
 	/** UPDATE **/
 	if($update && $disc_archived) {
 		
-		// FIXME make a function
-		$sql = "SELECT id FROM discs WHERE disc_id = '$dvd_id';";
-		$drip_disc_id = $db->getOne($sql);
+		$drip_disc_id = $drip->getDiscID($dvd_id);
 		
 		$drip_disc = new DripDisc($drip_disc_id);
 		
@@ -749,8 +747,8 @@
 	
 		// Get the series ID
 		// FIXME make a function
-		$sql = "SELECT id FROM view_discs WHERE disc_id = '$dvd_id';";
-		$drip_disc = new DripDisc($db->getOne($sql));
+		$drip_disc_id = $drip->getDiscID($dvd_id);
+		$drip_disc = new DripDisc($drip_disc_id);
 		$series = new DripSeries($drip_disc->getSeriesID());
 		
 		// Update disc size
@@ -1348,7 +1346,6 @@
 						
 					} elseif (!file_exists($src) && !file_exists($mkv)) {
 						// At this point, it shouldn't be in the queue.
-						// FIXME make a function
 						$drip->deleteQueue($episode_id);
 					}
 					
