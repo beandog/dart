@@ -366,7 +366,7 @@
 		
 		public function deleteChapters() {
 		
-			$sql = "DELETE FROM chapters WHERE track_id = ".$this->getID().";";
+			$sql = "DELETE FROM chapters WHERE track = ".$this->getID().";";
 			$this->db->query($sql);
 		
 		}
