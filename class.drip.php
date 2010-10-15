@@ -191,7 +191,7 @@ XML;
 			
 		}
 		
-		function getUniqID($dvd_id) {
+		function getDiscID($dvd_id) {
 		
 			$db = MDB2::singleton();
 			
