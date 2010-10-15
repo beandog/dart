@@ -197,7 +197,7 @@ XML;
 			
 			$str = pg_escape_string($dvd_id);
 			
-			$sql = "SELECT id FROM discs WHERE disc_id = $str;";
+			$sql = "SELECT id FROM discs WHERE disc_id = '$str';";
 			$id = $db->getOne($sql);
 			
 			return $id;
