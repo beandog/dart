@@ -181,7 +181,7 @@ XML;
 		
 			$str = pg_escape_string($dvd_id);
 		
-			$sql = "SELECT COUNT(1) FROM discs WHERE disc_id = '$str';";
+			$sql = "SELECT COUNT(1) FROM discs WHERE uniq_id = '$str';";
 			$count = $this->db->getOne($sql);
 			
 			if($count)
@@ -191,13 +191,13 @@ XML;
 			
 		}
 		
-		function getDiscID($dvd_id) {
+		function getUniqID($dvd_id) {
 		
 			$db = MDB2::singleton();
 			
 			$str = pg_escape_string($dvd_id);
 			
-			$sql = "SELECT id FROM discs WHERE disc_id = '$str';";
+			$sql = "SELECT id FROM discs WHERE uniq_id = '$str';";
 			$id = $db->getOne($sql);
 			
 			return $id;

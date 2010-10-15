@@ -4,7 +4,7 @@
 	
 		private $id;
 		private $series_id;
-		private $disc_id;
+		private $uniq_id;
 		private $title;
 		private $side;
 		private $season;
@@ -18,7 +18,7 @@
 			if(!is_null($id)) {
 				$this->setID($id);
 				$this->getTitle();
-				$this->getDiscID();
+				$this->getUniqID();
 				$this->getSide();
 				$this->getVolume();
 				$this->getSeason();
@@ -76,7 +76,7 @@
 			return $this->series_id;
 		}
 		
-		public function setDiscID($str) {
+		public function setUniqID($str) {
 		
 			$str = trim($str);
 			if(empty($str) || !is_string($str))
@@ -86,23 +86,23 @@
 				$this->newDisc();
 			
 			$arr_update = array(
-				'disc_id' => $str
+				'uniq_id' => $str
 			);
 			
 			$this->db->autoExecute('discs', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->getID());
 			
-			$this->disc_id = $str;
+			$this->uniq_id = $str;
 		}
 		
-		function getDiscID() {
-			if(is_null($this->disc_id)) {
-				$sql = "SELECT disc_id FROM discs WHERE id = ".$this->getID().";";
-				$this->disc_id = $this->db->getOne($sql);
-				if(is_null($this->disc_id))
-					$this->disc_id = "";
+		function getUniqID() {
+			if(is_null($this->uniq_id)) {
+				$sql = "SELECT uniq_id FROM discs WHERE id = ".$this->getID().";";
+				$this->uniq_id = $this->db->getOne($sql);
+				if(is_null($this->uniq_id))
+					$this->uniq_id = "";
 			}
 			
-			return $this->disc_id;
+			return $this->uniq_id;
 			
 		}
 		
