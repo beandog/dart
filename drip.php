@@ -229,11 +229,7 @@
 			}
 			
 			// Insert the audio tracks if they are missing from the new table
-			// FIXME make a function
-			$sql = "SELECT COUNT(1) FROM audio_tracks WHERE track = $track_id;";
-			$num_db_audio_tracks = $db->getOne($sql);
-		
- 			if(!$num_db_audio_tracks)
+ 			if(!count($drip_track->getAudioStreamIDs())
 				update_audio_tracks($track_id);
 			
 			// Add chapters
@@ -777,12 +773,8 @@
 		
 		foreach($drip_track_ids as $drip_track_id) {
 			// Insert the audio tracks if they are missing from the new table
-			// FIXME make a function
-			$sql = "SELECT COUNT(1) FROM audio_tracks WHERE track = $drip_track_id;";
-			$num_db_audio_tracks = $db->getOne($sql);
-		
- 			if(!$num_db_audio_tracks)
-				update_audio_tracks($drip_track_id);
+			if(!count($drip_track->getAudioStreamIDs())
+				update_audio_tracks($track_id);
 		}
 		
 		/** END MANDATORY UPDATE */
