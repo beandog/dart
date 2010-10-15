@@ -734,7 +734,6 @@
 	if($rip) {
 	
 		// Get the series ID
-		// FIXME make a function
 		$drip_disc_id = $drip->getDiscID($dvd_id);
 		$drip_disc = new DripDisc($drip_disc_id);
 		$series = new DripSeries($drip_disc->getSeriesID());
