@@ -177,19 +177,14 @@ XML;
 		
 		}
 		
-		function inDatabase($disc_id = null) {
+		function archived($dvd_id) {
 		
-			if(is_null($disc_id) && $this->disc_id)
-				$disc_id = $this->disc_id;
-			else
-				$this->disc_id = $disc_id;
-				
-			$str = pg_escape_string($disc_id);
+			$str = pg_escape_string($dvd_id);
 		
-			$sql = "SELECT COUNT(1) FROM discs WHERE disc_id = $str;";
-			$num_rows = $this->db->getOne($sql);
+			$sql = "SELECT COUNT(1) FROM discs WHERE disc_id = '$str';";
+			$count = $this->db->getOne($sql);
 			
-			if($num_rows)
+			if($count)
 				return true;
 			else
 				return false;

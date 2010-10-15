@@ -159,7 +159,7 @@
   		$dvd->load_css();
 		$dvd_id = $dvd->getID();
 		
-		if($drip->inDatabase($dvd_id))
+		if($drip->archived($dvd_id))
 			$disc_archived = true;
 		
 	}
