@@ -348,8 +348,7 @@
 		 */
 		public function getDefaultSubtitleIndex() {
 		
-			$sql = "SELECT id, ix, langcode FROM subtitles WHERE track = ".$this->getID()." AND format = 'VobSub' ORDER BY langcode = 'en' DESC, ix;";
-			$arr = $this->db->getAssoc($sql);
+			$arr = $this->getSubtitles();
 			
 			if(count($arr)) {
 				foreach($arr as $row) {
@@ -368,6 +367,15 @@
 		
 			$sql = "DELETE FROM chapters WHERE track = ".$this->getID().";";
 			$this->db->query($sql);
+		
+		}
+		
+		public function getSubtitles() {
+		
+			$sql = "SELECT id, ix, langcode FROM subtitles WHERE track = ".$this->getID()." AND format = 'VobSub' ORDER BY langcode = 'en' DESC, ix;";
+			$arr = $this->db->getAssoc($sql);
+			
+			return $arr;
 		
 		}
 	

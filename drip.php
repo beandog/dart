@@ -260,11 +260,7 @@
  			}
  			
  			/** Subtitles **/
- 			// FIXME make a function
- 			$sql = "SELECT COUNT(1) FROM subtitles WHERE track = ".$drip_track->getID().";";
- 			$num_subtitles = $db->getOne($sql);
- 			
- 			if(!$num_subtitles) {
+ 			if(!count($drip_track->getSubtitles())) {
  			
  				// FIXME make a function
 				$sql = "DELETE FROM subtitles WHERE track = ".$drip_track->getID().";";
