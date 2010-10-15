@@ -51,6 +51,7 @@
 		private $dvdnav = false;
 		
 		public $chapters;
+		public $cells;
 	
 		function __construct($track = 1, $device = "/dev/dvd", $dvdnav = false) {
 		
@@ -203,14 +204,26 @@
 				 
 				foreach($this->sxe->track->chapter as $obj) {
 					$length = (float)$obj->length;
+					$ix = (int)$obj->ix;
+					$startcell = (int)$obj->startcell;
 					$this->chapters[$chapter_number] = array(
 						'length' => $length,
-						'name' => "",
+// 						'name' => "",
+						'ix' => $ix,
+						'startcell' => $startcell,
 					);
 					
 					$chapter_number++;
 					
 					$last_chapter_length = $length;
+				}
+				
+				// Cells
+				
+				foreach($this->sxe->track->cell as $obj) {
+					$ix = (int)$obj->ix;
+					$length = (float)$obj->length;
+					$this->cells[$ix] = $length;
 				}
 				
 				// Palettes
@@ -315,6 +328,18 @@
 			if(!$this->sxe)
 				$this->lsdvd();
 			return $this->height;
+		}
+		
+		public function getChapters() {
+			if(!$this->chapters)
+				$this->lsdvd();
+			return $this->chapters;
+		}
+		
+		public function getCells() {
+			if(!$this->cells)
+				$this->lsdvd();
+			return $this->cells;
 		}
 		
 		public function getPaletteColors() {
