@@ -363,6 +363,13 @@
 			return $track;
 				
 		}
+		
+		public function deleteChapters() {
+		
+			$sql = "DELETE FROM chapters WHERE track_id = ".$this->getID().";";
+			$this->db->query($sql);
+		
+		}
 	
 	}
 ?>

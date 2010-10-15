@@ -238,11 +238,8 @@
  			if($num_chapters != $drip_track->getNumChapters()) {
 			
 				// Delete the old records (if any)
- 				if($drip_track->getNumChapters()) {
- 					// FIXME make a function
-					$sql = "DELETE FROM chapters WHERE track = ".$drip_track->getID().";";
-					$db->query($sql);
- 				}
+ 				if($drip_track->getNumChapters())
+ 					$drip_track->deleteChapters();
 				
 				if($verbose) {
 					shell::msg("Chapters: $num_chapters");
