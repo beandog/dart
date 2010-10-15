@@ -363,6 +363,15 @@
 				
 		}
 		
+		public function getSubtitles() {
+		
+			$sql = "SELECT id, ix, langcode FROM subtitles WHERE track = ".$this->getID()." AND format = 'VobSub' ORDER BY langcode = 'en' DESC, ix;";
+			$arr = $this->db->getAssoc($sql);
+			
+			return $arr;
+		
+		}
+		
 		public function deleteChapters() {
 		
 			$sql = "DELETE FROM chapters WHERE track = ".$this->getID().";";
@@ -370,12 +379,10 @@
 		
 		}
 		
-		public function getSubtitles() {
+		public function deleteSubtitles() {
 		
-			$sql = "SELECT id, ix, langcode FROM subtitles WHERE track = ".$this->getID()." AND format = 'VobSub' ORDER BY langcode = 'en' DESC, ix;";
-			$arr = $this->db->getAssoc($sql);
-			
-			return $arr;
+			$sql = "DELETE FROM subtitles WHERE track = ".$this->getID().";";
+			$this->db->query($sql);
 		
 		}
 	
