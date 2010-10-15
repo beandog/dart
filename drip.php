@@ -229,7 +229,7 @@
 			}
 			
 			// Insert the audio tracks if they are missing from the new table
- 			if(!count($drip_track->getAudioStreamIDs())
+ 			if(!count($drip_track->getAudioStreamIDs()))
 				update_audio_tracks($track_id);
 			
 			// Add chapters
@@ -763,7 +763,7 @@
 		
 		foreach($drip_track_ids as $drip_track_id) {
 			// Insert the audio tracks if they are missing from the new table
-			if(!count($drip_track->getAudioStreamIDs())
+			if(!count($drip_track->getAudioStreamIDs()))
 				update_audio_tracks($track_id);
 		}
 		
