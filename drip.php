@@ -262,9 +262,7 @@
  			/** Subtitles **/
  			if(!count($drip_track->getSubtitles())) {
  			
- 				// FIXME make a function
-				$sql = "DELETE FROM subtitles WHERE track = ".$drip_track->getID().";";
-				$db->query($sql);
+ 				$drip_track->deleteSubtitles();
 				
 				// Fetch all the subtitle streams, and store them
 				// in the database.
