@@ -161,7 +161,6 @@
 		
 		if($drip->archived($dvd_id))
 			$disc_archived = true;
-		
 	}
 	
 	// Display info about disc
@@ -1120,6 +1119,8 @@
 				$export_title = $episode->getExportTitle();
 				$episode_number = $episode->getEpisodeNumber();
 				$episode_index = $episode->getEpisodeIndex();
+				$starting_chapter = $episode->getStartingChapter();
+				$ending_chapter = $episode->getEndingChapter();
 				$reencode = $series->useHandbrake();
 				$track_number = $drip_track->getTrackNumber();
 				
@@ -1275,6 +1276,9 @@
 									$handbrake->add_subtitle_track($subp_ix);
 								elseif($handbrake->has_cc() && $mux_cc)
 									$handbrake->add_subtitle_track($handbrake->get_cc_ix());
+								
+								// Set Chapters
+								$handbrake->set_chapters($starting_chapter, $ending_chapter);
 								
 								$handbrake->autocrop();
 								if($series->isGrayscale())

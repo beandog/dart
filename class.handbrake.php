@@ -22,6 +22,8 @@
 		private $encoder = 'x264';
 		
 		private $add_chapters = false;
+		private $starting_chapter;
+		private $ending_chapter;
 		private $video_quality = 20;
 		
 		private $crop = "0:0:0:0";
@@ -251,6 +253,12 @@
 			if(!is_null($this->crop))
 				$args['--crop'] = $this->crop;
 			
+			// Add chapters
+			if(!is_null($this->starting_chapter))
+				$args['--chapters'] = $this->starting_chapter."-";
+			 if(!is_null($this->ending_chapter))
+			 	$args['--chapters'] .= $this->ending_chapter;
+			
 			// Set x264 encoding options
 			$args['--x264opts'] = $this->get_x264opts($this->preset);
 			
@@ -335,6 +343,13 @@
 				$this->cc = true;
 				$this->cc_ix = (count($vobsubs) + 1);
 			}
+		
+		}
+		
+		public function set_chapters($a, $b) {
+		
+			$this->starting_chapter = $a;
+			$this->ending_chapter = $b;
 		
 		}
 		
