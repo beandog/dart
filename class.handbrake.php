@@ -42,6 +42,7 @@
 		
 		private $num_bitmaps;
 		private $opts;
+		private $x264;
 		
 		function __construct($filename = null) {
 		
@@ -75,11 +76,6 @@
 		
 		public function set_debug($bool = true) {
 			$this->debug = $this->verbose = (boolean)$bool;
-		}
-		
-		public function set_preset($str) {
-			if($str == 'Normal' || $str == 'High Profile')
-				$this->preset = $str;
 		}
 		
 		public function output_format() {
@@ -254,9 +250,9 @@
 				$args['--crop'] = $this->crop;
 			
 			// Add chapters
-			if(!is_null($this->starting_chapter))
+			if(!empty($this->starting_chapter))
 				$args['--chapters'] = $this->starting_chapter."-";
-			 if(!is_null($this->ending_chapter))
+			 if(!empty($this->ending_chapter))
 			 	$args['--chapters'] .= $this->ending_chapter;
 			
 			// Set x264 encoding options
@@ -286,26 +282,85 @@
 		
 		}
 		
+		public function set_x264($key, $value) {
+			
+			if(is_null($value) && array_key_exists($key, $this->x264))
+				unset($this->x264[$key]);
+			elseif(!is_null($value))
+				$this->x264[$key] = $value;
+		
+		}
+		
 		public function add_x264opts($str) {
 		
 			$this->opts = $str;
 		
 		}
 		
-		public function get_x264opts($profile) {
+		public function set_preset($preset) {
 		
-			switch($profile) {
+			// Default options set by Handbrake
+			// Don't need to set them since they are included
+			// in the presets.
+			//
+			// Just override what you want. :)
+			
+// 			$this->set_x264('ref', 3);
+// 			$this->set_x264('bframes', 3);
+// 			$this->set_x264('b-adapt', 'fast');
+// 			$this->set_x264('direct', 'spatial');
+// 			$this->set_x264('b-pyramid', 'normal');
+// 			$this->set_x264('weightp', 2);
+// 			$this->set_x264('me', 'hex');
+// 			$this->set_x264('merange', 16);
+// 			$this->set_x264('subme', 7);
+// 			$this->set_x264('partitions', 'p8x8,b8x8,i8x8,i4x4');
+// 			$this->set_x264('8x8dct', 1);
+// 			$this->set_x264('deblock', '0,0');
+// 			$this->set_x264('trellis', 1);
+// 			$this->set_x264('psy-rd', '1,0');
+// 			$this->set_x264('aq-strength', '1.0');
+// 			$this->set_x264('no-fast-pskip', 0);
+// 			$this->set_x264('no-dct-decimate', 0);
+// 			$this->set_x264('cabac', 1);
+		
+			$this->set_x264('keyint', 30);
+		
+			switch($preset) {
+			
 				case 'High Profile':
-					$opts = "b-adapt=2:rc-lookahead=50:keyint=30";
+				
+					$this->set_x264('b-adapt', 2);
+					$this->set_x264('rc-lookahead', 50);
+					
 					break;
+					
 				default:
 				case 'Normal':
-					$opts = "ref=2:bframes=2:subme=6:mixed-refs=0:weightb=0:8x8dct=0:trellis=0:keyint=30";
+				
+					$this->set_x264('ref', 2);
+					$this->set_x264('bframes', 2);
+					$this->set_x264('subme', 6);
+					$this->set_x264('mixed-refs', 0);
+					$this->set_x264('weightb', 0);
+					$this->set_x264('8x8dct', 0);
+					$this->set_x264('trellis', 0);
+					
 					break;
-			}
 			
-			if($this->opts)
-				$opts .= ":".$this->opts;
+			}
+		
+		}
+		
+		public function get_x264opts() {
+		
+			if($this->x264) {
+			
+				foreach($this->x264 as $key => $value)
+					$arr[] = "$key:$value";
+			
+				$opts = implode(",", $arr);
+			}
 			
 			return $opts;
 		

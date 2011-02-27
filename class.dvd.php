@@ -56,9 +56,10 @@
 		/** Metadata **/
 		
 		private function disc_id() {
-			$arr = shell::cmd("disc_id ".$this->getDevice(true));
-			if(!empty($arr))
-				$this->id = current($arr);
+			$arr = shell::cmd("dvd_id ".$this->getDevice(true));
+			$var = current($arr);
+			if(strlen($var) == 32)
+				$this->id = $var;
 		}
 		
 		public function getID() {
