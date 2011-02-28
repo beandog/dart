@@ -292,12 +292,6 @@
 		
 		}
 		
-		public function add_x264opts($str) {
-		
-			$this->opts = $str;
-		
-		}
-		
 		public function set_preset($preset) {
 		
 			// Default options set by Handbrake
