@@ -1264,8 +1264,10 @@
 								}
 								
 								// Check for cartoon
-								if($series->isCartoon())
-									$handbrake->add_x264opts("ref=6:bframes=5");
+								if($series->isCartoon()) {
+									$handbrake->set_x264('ref', 6);
+									$handbrake->set_x264('bframes', 5);
+								}
 								
 								// Check for a subtitle track
 								$subp_ix = $drip_track->getDefaultSubtitleIndex();
