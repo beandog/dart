@@ -41,7 +41,6 @@
 		private $cc_ix;
 		
 		private $num_bitmaps;
-		private $opts;
 		private $x264;
 		
 		function __construct($filename = null) {
@@ -354,10 +353,10 @@
 				foreach($this->x264 as $key => $value)
 					$arr[] = "$key:$value";
 			
-				$opts = implode(",", $arr);
+				$str = implode(",", $arr);
 			}
 			
-			return $opts;
+			return $str;
 		
 		}
 		
