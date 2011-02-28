@@ -256,7 +256,8 @@
 			 	$args['--chapters'] .= $this->ending_chapter;
 			
 			// Set x264 encoding options
-			$args['--x264opts'] = $this->get_x264opts($this->preset);
+			if(count($this->x264))
+				$args['--x264opts'] = $this->get_x264opts();
 			
 			return $args;
 			
@@ -277,13 +278,13 @@
 				$exec[] = "$key ".escapeshellarg($value);
 				
 			$str = $this->binary." ".implode(" ", $exec);
-			
+		
 			return $str;
 		
 		}
 		
 		public function set_x264($key, $value) {
-			
+
 			if(is_null($value) && array_key_exists($key, $this->x264))
 				unset($this->x264[$key]);
 			elseif(!is_null($value))
@@ -353,7 +354,7 @@
 		}
 		
 		public function get_x264opts() {
-		
+
 			if($this->x264) {
 			
 				foreach($this->x264 as $key => $value)
