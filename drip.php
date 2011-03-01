@@ -806,7 +806,7 @@
 		// Dumping ISO
 		if($num_episodes && $dump_iso) {
 			
-			$iso = $drip->export.$drip->formatTitle($series->getTitle()." - Disc ".$drip_disc->getDiscNumber()).".iso";
+			$iso = $drip->export.$drip->formatTitle($series->getTitle()." - Disc ".$drip_disc->getDiscNumber()).".".$drip_disc->getID().".iso";
 			
 			if($dump_iso && !file_exists($iso)) {
 			
@@ -1124,7 +1124,7 @@
 				$reencode = $series->useHandbrake();
 				$track_number = $drip_track->getTrackNumber();
 				
-				$iso = $drip->export.$drip->formatTitle($series->getTitle()." - Disc ".$drip_disc->getDiscNumber()).".iso";
+				$iso = $drip->export.$drip->formatTitle($series->getTitle()." - Disc ".$drip_disc->getDiscNumber()).".".$drip_disc->getID().".iso";
 				
 				if($reencode && $dump_iso)
 					$dump_vob = false;
