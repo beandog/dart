@@ -186,9 +186,6 @@
 		
 			$args = array();
 			
-			$args['--input'] = $this->input;
-			$args['--output'] = $this->output;
-			
 			// Set track #
 			if($this->track)
 				$args['--title'] = $this->track;
@@ -257,6 +254,9 @@
 			// Set x264 encoding options
 			if(count($this->x264))
 				$args['--x264opts'] = $this->get_x264opts();
+
+			$args['--input'] = $this->input;
+			$args['--output'] = $this->output;
 			
 			return $args;
 			
