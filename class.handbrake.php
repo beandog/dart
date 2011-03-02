@@ -15,7 +15,7 @@
 		private $args = array();
 		
 		private $audio_tracks = array();
-		private $audio_encoders = array('ac3', 'dts');
+		private $audio_encoders = array('copy');
 		
 		private $preset = 'Normal';
 		private $format = 'mkv';
