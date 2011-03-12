@@ -1111,6 +1111,13 @@
 				$ending_chapter = $episode->getEndingChapter();
 				$reencode = $series->useHandbrake();
 				$track_number = $drip_track->getTrackNumber();
+
+				$display = "$series_title: $episode_title";
+				if($episode->getPart())
+					$display .= ", Part ".$episode->getPart();
+				if($episode_number)
+					$display = "[$episode_number] $display";
+				shell::msg($display);
 				
 				$iso = $drip->export.$drip->formatTitle($series->getTitle()." - Disc ".$drip_disc->getDiscNumber()).".".$drip_disc->getID().".iso";
 				
