@@ -1092,11 +1092,7 @@
 	
 		$arr = getQueue();
 		
-		$todo = $count = count($arr);
-		
-		if($count) {
-		
-			$x = 1;
+		if(count($arr)) {
 		
 			foreach($arr as $episode_id) {
 			
@@ -1153,10 +1149,10 @@
 				
 				if($queue) {
 					if((!file_exists($src)) || file_exists($mkv)) {
-						shell::msg("[Queue] ($x/$todo) Removing $series_title: Episode $episode_index: $episode_title");
+						shell::msg("[Queue] Removing $series_title: $episode_title");
 						$drip->removeQueue($episode_id);
 					} else
-						shell::msg("[Queue] ($x/$todo) $series_title: Episode $episode_index: $episode_title");
+						shell::msg("[Queue] $series_title: $episode_title");
 				}
 				
 				if($encode) {
@@ -1167,19 +1163,22 @@
 					// Check to see if file exists, if not, encode it
 					if(file_exists($src) && !file_exists($mkv)) {
 					
-						shell::msg("[Series] $series_title");
+						if($verbose)
+							shell::msg("[Series] $series_title");
 					
 						$dvd_vob = new DVDVOB($vob);
 						$dvd_vob->setDebug($debug);
 						$dvd_vob->setAID($audio_aid);
 						
-						shell::msg("[Episode] \"$episode_title\" ($x/$count)");
-						if($episode_number)
-							shell::msg("[Episode] Number $episode_number");
-						if($episode->getPart())
-							shell::msg("[Episode] Part ".$episode->getPart());
-						if(count($arr_todo)) {
-							shell::msg("[Episode] ".implode(", ", $arr_todo));
+						if($verbose) {
+							shell::msg("[Episode] \"$episode_title\"");
+							if($episode_number)
+								shell::msg("[Episode] Number $episode_number");
+							if($episode->getPart())
+								shell::msg("[Episode] Part ".$episode->getPart());
+							if(count($arr_todo)) {
+								shell::msg("[Episode] ".implode(", ", $arr_todo));
+							}
 						}
 						
 						$matroska = new Matroska($mkv);
@@ -1189,13 +1188,15 @@
 						if($demux && $dump_vob) {
 						
 							if(!file_exists($mpg)) {
-								shell::msg("[VOB] Demuxing Raw Video");
+								if($verbose)
+									shell::msg("[VOB] Demuxing Raw Video");
 								$dvd_vob->rawvideo($mpg);
 								$matroska->addVideo($mpg);
 							}
 							
 							if(!file_exists($ac3)) {
-								shell::msg("[VOB] Demuxing Raw Audio");
+								if($verbose)
+									shell::msg("[VOB] Demuxing Raw Audio");
 								// atrack will always be at least 1
 								$dvd_vob->rawaudio($ac3);
 								$matroska->addAudio($ac3);
@@ -1280,7 +1281,8 @@
 								if($series->getHandbrakePreset())
 									$handbrake->set_preset('High Profile');
 								
-								shell::msg("[x264] Encoding Video");
+								if($verbose)
+									shell::msg("[x264] Encoding Video");
 								
 								if($debug)
 									shell::msg("Executing: ".$handbrake->get_executable_string());
@@ -1297,7 +1299,8 @@
 							$matroska->addFile($vob);
 						
 						if(!file_exists($srt) && $rip_cc && $series->hasCC() && $dump_vob) {
-							shell::msg("[SRT] Ripping Closed Captioning");
+							if($verbose)
+								shell::msg("[SRT] Ripping Closed Captioning");
 							$dvd_vob->dumpSRT();
 						}
 						
@@ -1322,8 +1325,9 @@
 							$matroska->setAspectRatio($drip_track->getAspectRatio());
 							
 						$str_muxing = implode(", ", $mux);
-							
-						shell::msg("[MKV] Muxing to Matroska ($str_muxing)");
+						
+						if($verbose)
+							shell::msg("[MKV] Muxing to Matroska ($str_muxing)");
 						
 						$matroska->mux();
 							
@@ -1360,11 +1364,6 @@
 						$drip->removeQueue($episode_id);
 					}
 				}
-				
-				$x++;
-				
-				if($encode)
-					echo "\n";
 				
 				// Refresh the queue
 				$arr = getQueue();
