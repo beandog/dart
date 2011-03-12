@@ -1090,15 +1090,7 @@
 	
 	if($encode || $queue) {
 	
-		// If you pass --max and --rip, chances are you want *those* exact
-		// episodes to be ripped *and* encoded.  So, skip over the queue
-		// and just touch those.
-		if($rip && $max) {
-			$arr = $drip->getQueue();
- 			$arr = array_slice($arr, count($arr) - $max);
-		}
-		else
-			$arr = $drip->getQueue($max);
+		$arr = getQueue();
 		
 		$todo = $count = count($arr);
 		
@@ -1374,6 +1366,9 @@
 				if($encode)
 					echo "\n";
 				
+				// Refresh the queue
+				$arr = getQueue();
+
 			}
 			
 		}

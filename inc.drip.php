@@ -181,3 +181,23 @@
 		}
 		
 	}
+
+	function getQueue() {
+
+		global $rip;
+		global $max;
+		global $drip;
+
+		// If you pass --max and --rip, chances are you want *those* exact
+		// episodes to be ripped *and* encoded.  So, skip over the queue
+		// and just touch those.
+		if($rip && $max) {
+			$arr = $drip->getQueue();
+ 			$arr = array_slice($arr, count($arr) - $max);
+		}
+		else
+			$arr = $drip->getQueue($max);
+
+		return $arr;
+
+	}
