@@ -56,6 +56,12 @@
 	else
 		$device_is_iso = false;
 	
+	/** --devices **/
+	if($ini['devices'])
+		$devices = explode(",", $ini['devices']);
+	else
+		$devices = array($device);
+	
 	/** --encode **/
 	if($args['encode'])
 		$encode = true;
@@ -95,6 +101,10 @@
 	/** --rip **/
 	if($args['rip'])
 		$rip = true;
+	
+	/** --all **/
+	if($args['all'])
+		$all = true;
 	
 	/** --skip [number] **/
 	if($args['skip'])
@@ -570,7 +580,7 @@
 			}
 			
 			$drip_disc->setSide($side);
-			$drip_disc->setDiscID($dvd_id);
+			$drip_disc->setUniqID($dvd_id);
 			$drip_disc->setTitle($dvd->getTitle());
 			$drip_disc->setDiscNumber($disc_number);
 			if($movie) {
