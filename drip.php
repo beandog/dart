@@ -1092,7 +1092,7 @@
 	
 		$arr = getQueue();
 		
-		if(count($arr)) {
+		do {
 		
 			foreach($arr as $episode_id) {
 			
@@ -1158,8 +1158,7 @@
 					if((!file_exists($src)) || file_exists($mkv)) {
 						shell::msg("[Queue] Removing $series_title: $episode_title");
 						$drip->removeQueue($episode_id);
-					} else
-						shell::msg("[Queue] $series_title: $episode_title");
+					}
 				}
 				
 				if($encode) {
@@ -1377,7 +1376,7 @@
 
 			}
 			
-		}
+		} while(count($arr) && $encode);
 		
 	}
 	
