@@ -1271,6 +1271,10 @@
  	 									$handbrake->add_audio_stream("0x80");
 									
 								}
+
+								// FIXME Add preset support (big wishlist item)
+								// For now, assume everything is 'Normal' profile.
+								$handbrake->set_preset('Normal');
 								
 								// Check for cartoon
 								if($series->isCartoon()) {
