@@ -16,6 +16,7 @@
 		
 		private $audio_tracks = array();
 		private $audio_encoders = array('copy');
+		private $audio_streams = array();
 		
 		private $preset = 'Normal';
 		private $format = 'mkv';
@@ -59,7 +60,7 @@
 		}
 		
 		/** Filename **/
-		public function input_filename($src, $track) {
+		public function input_filename($src, $track = 1) {
 			$this->input = $src;
 			$this->track = $track;
 			$this->scan();
@@ -351,9 +352,9 @@
 			if($this->x264) {
 			
 				foreach($this->x264 as $key => $value)
-					$arr[] = "$key:$value";
+					$arr[] = "$key=$value";
 			
-				$str = implode(",", $arr);
+				$str = implode(":", $arr);
 			}
 			
 			return $str;
