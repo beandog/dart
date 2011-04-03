@@ -40,7 +40,7 @@
 		 */
 		function cddetect() {
 
-			$exec = "cddetect -d".$this->getDevice();
+			$exec = "cddetect -d".$this->getDevice()." &> /dev/null";
 			exec($exec, $arr, $return);
 
 			if($return === 0)
