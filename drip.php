@@ -822,7 +822,7 @@
 		// Dumping ISO
 		if($num_episodes && $dump_iso) {
 			
-			$iso = $drip_disc->getFilename();
+			$iso = $drip->export.$drip_disc->getFilename();
 
 			if($dump_iso && !file_exists($iso)) {
 			
@@ -1107,6 +1107,7 @@
 	if($encode || $queue) {
 	
 		$arr = getQueue();
+
 		
 		do {
 		
@@ -1135,7 +1136,7 @@
 					$display = "[$episode_number] $display";
 				shell::msg($display);
 				
-				$iso = $drip_disc->getFilename();
+				$iso = $drip->export.$drip_disc->getFilename();
 				
 				if($reencode && $dump_iso)
 					$dump_vob = false;
@@ -1395,6 +1396,21 @@
 				$arr = getQueue();
 
 			}
+
+			// Remove any old ISOs
+			$discs = $drip->getDiscQueue();
+
+			$queue_isos = array();
+
+			foreach($discs as $queue_disc_id) {
+
+				$queue_drip_disc = new DripDisc($queue_disc_id);
+				$queue_isos[] = $drip->export.$queue_drip_disc->getFilename();
+
+			}
+
+			if(!in_array($iso, $queue_isos) && !$debug)
+				unlink($iso);
 			
 		} while(count($arr) && $encode);
 		
@@ -1406,6 +1422,8 @@
 	// If polling for a new disc, check to see if one is in the
 	// drive.  If there is, start over.
 	if($poll && $rip) {
+
+		$notice = false;
 		
 		while(true) {
 
@@ -1413,7 +1431,9 @@
 				shell::msg("Found a disc, starting over!");
 				goto start;
 			} else {
-				shell::msg("Waiting for a new disc.");
+				if(!$notice)
+					shell::msg("Waiting for a new disc on $device");
+				$notice = true;
 				sleep(60);
 			}
 

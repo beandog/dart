@@ -573,6 +573,20 @@ XML;
 			}
 		
 		}
+
+		/**
+		 * Find all the discs that are in the queue.
+		 */
+		function getDiscQueue() {
+
+			$sql = "SELECT disc_id FROM view_episodes e INNER JOIN queue q ON q.episode = e.episode_id AND q.queue = '".pg_escape_string($this->hostname)."' WHERE e.bad_track = FALSE AND e.episode_title != '' ORDER BY insert_date;";
+			
+			$arr = $this->db->getCol($sql);
+			$arr = array_unique($arr);
+
+			return $arr;
+
+		}
 		
 		/**
 		 * Fetch the array of episodes in the queue to encode,
