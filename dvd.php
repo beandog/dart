@@ -16,6 +16,17 @@
 		$device = "/dev/dvd";
 
 	$dvd = new DVD($device);
+
+	if($action == "cddetect") {
+		
+		$var = $dvd->cddetect();
+
+		if($var)
+			exit(0);
+		else
+			exit(1);
+	
+	}
 	
 	if($action == "import") {
 	
