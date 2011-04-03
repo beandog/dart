@@ -90,6 +90,10 @@
 	if($args['movie'])
 		$movie = true;
 	
+	/** --poll **/
+	if($args['poll'])
+		$poll = true;
+	
 	/** --pretend **/
 	if($args['p'] || $args['pretend'])
 		$pretend = true;
