@@ -145,6 +145,8 @@
 		$mux_vobsub = true;
 	if($args['novobsub'])
 		$rip_vobsub = $mux_vobsub = false;
+
+	start:
 	
 	/** Start everything **/
 	$dvd = new DVD($device);
@@ -1397,8 +1399,27 @@
 		} while(count($arr) && $encode);
 		
 	}
-	
+
 	if($eject)
 		$dvd->eject();
+	
+	// If polling for a new disc, check to see if one is in the
+	// drive.  If there is, start over.
+	if($poll && $rip) {
+		
+		while(true) {
+
+			if($dvd->cddetect()) {
+				shell::msg("Found a disc, starting over!");
+				goto start;
+			} else {
+				shell::msg("Waiting for a new disc.");
+				sleep(60);
+			}
+
+		}
+
+	}
+	
 		
 ?>
