@@ -33,6 +33,22 @@
 		
 			return $str;
 		}
+
+		/**
+		 * Poll the drive for a ready status and loaded
+		 *
+		 */
+		function cddetect() {
+
+			$exec = "cddetect -d".$this->getDevice();
+			exec($exec, $arr, $return);
+
+			if($return === 0)
+				return true;
+			else
+				return false;
+
+		}
 		
 		function close_tray() {
 			// Ignore exit code if it dies
