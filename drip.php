@@ -822,8 +822,8 @@
 		// Dumping ISO
 		if($num_episodes && $dump_iso) {
 			
-			$iso = $drip->export.$drip->formatTitle($series->getTitle()." - Disc ".$drip_disc->getDiscNumber()).".".$drip_disc->getID().".iso";
-			
+			$iso = $drip_disc->getFilename();
+
 			if($dump_iso && !file_exists($iso)) {
 			
 				shell::msg("[DVD] Copying contents to harddrive");
@@ -1135,7 +1135,7 @@
 					$display = "[$episode_number] $display";
 				shell::msg($display);
 				
-				$iso = $drip->export.$drip->formatTitle($series->getTitle()." - Disc ".$drip_disc->getDiscNumber()).".".$drip_disc->getID().".iso";
+				$iso = $drip_disc->getFilename();
 				
 				if($reencode && $dump_iso)
 					$dump_vob = false;

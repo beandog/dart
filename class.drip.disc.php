@@ -10,6 +10,7 @@
 		private $season;
 		private $volume;
 		private $disc_number;
+		private $filename;
 		
 		function __construct($id = null) {
 		
@@ -37,7 +38,16 @@
 		function getID() {
 			return $this->id;
 		}
-		
+
+		public function getFilename() {
+
+			$str = $this->getID().".";
+			$str .= $this->getTitle();
+			$str .= ".iso";
+			return $str;
+
+		}
+
 		private function newDisc() {
 			
 			$sql = "SELECT nextval('discs_id_seq');";
