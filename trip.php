@@ -61,8 +61,8 @@
 		$tivo_media_access_key= $args['media-access-key'];
 	elseif($args['m'])
 		$tivo_media_access_key = $args['m'];
-	elseif($arr_config['media-access-key'])
-		$tivo_media_access_key = $arr_config['media-access-key'];
+	elseif($arr_config['mak'])
+		$tivo_media_access_key = $arr_config['mak'];
 	else
 		die("Neeed the Media Access Key");
 	
@@ -70,8 +70,8 @@
 		$tivo_ip_address = $args['address'];
 	elseif($args['a'])
 		$tivo_ip_address = $args['a'];
-	elseif($arr_config['ip-address'])
-		$tivo_ip_address = $arr_config['ip-address'];
+	elseif($arr_config['host'])
+		$tivo_ip_address = $arr_config['host'];
 	else
 		die("Need the IP address of the TiVo");
 
