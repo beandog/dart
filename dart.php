@@ -1,5 +1,8 @@
 #!/usr/bin/php
 <?
+
+	require_once 'Console/ProgressBar.php';
+
 	// dart Functions
 	require_once 'inc.dart.php';
 	$queue_model = new Queue_Model;
@@ -272,6 +275,9 @@
 // 				var_dump($episode_number);
 // 			
 // 			}
+
+			$bar = new Console_ProgressBar('[%bar%] %percent%'." ($num_episodes episodes to rip)", ':', ' :D ', 80, $num_episodes);
+			$i = 0;
 			
 			foreach($dvd_episodes as $episode_id) {
 			
@@ -327,15 +333,6 @@
 				// Check to see if file exists, if not, rip it 				
 				if(!file_exists($mkv))
 					$rip_episode = true;
-					
-				if($rip_episode && $verbose) {
-					echo "\n";
-					shell::msg("[Episode] \"$episode_title\" ($x/$num_episodes)");
-					if($episode_number)
-						shell::msg("[Episode] Number $episode_number");
-// 					if($episode->getPart())
-// 						shell::msg("[Episode] Part ".$episode->getPart());
-				}
 				
 				/** LEGACY: Handbrake should copy chapters over into MKV it creates */
 				// Chapters
@@ -345,11 +342,80 @@
 // 					$num_ripped['chapters']++;
 //  				}
 				
- 				// Metadata
+				// Add episode to queue, and override previous instance
+				if(file_exists($iso))
+					$queue_model->add_episode($episode_id, php_uname('n'));
+				
+				$i++;
+				
+				$bar->update($i);
+				
+				if(($i + 1) == $max)
+					break(2);
+				
+			}
+		
+		}
+		
+		if($eject) {
+			$dvd->eject();
+			$ejected = true;
+		}
+	
+	}
+	
+	echo "\n";
+	
+	/**
+	 * --encode
+	 *
+	 * Encode the episodes in the queue
+	 *
+	 */
+	if($encode) {
+	
+		$queue_episodes = $queue_model->get_episodes(php_uname('n'));
+		
+		$encode_index = 1;
+		$bar = new Console_ProgressBar('[%bar%] %percent%'." [Encoding #$encode_index of ".count($queue_episodes)."]", ':', ' :D ', 80, count($queue_episodes));
+		$bar->update(0);
+		
+		do {
+		
+			foreach($queue_episodes as $episode_id) {
+			
+				// Legacy
+				$reencode = true;
+				
+				$episodes_model = new Episodes_Model($episode_id);
+				$episode_title = $episodes_model->title;
+				$track_id = $episodes_model->track_id;
+				$episode_number = $episodes_model->get_number();
+				$episode_index = $episodes_model->ix;
+				$episode_starting_chapter = $episodes_model->starting_chapter;
+				$episode_ending_chapter = $episodes_model->ending_chapter;
+				$episode_part = $episodes_model->part;
+				$episode_season = $episodes_model->get_season();
+				$episode_filename = $dart->get_episode_filename($episode_id);
+				
+				$tracks_model = new Tracks_Model($track_id);
+				$track_number = $tracks_model->ix;
+				
+				$dvds_model = new Dvds_Model($tracks_model->dvd_id);
+				
+				$series_model = new Series_Model($episodes_model->get_series_id());
+				$series_title = $series_model->title;
+				$series_dir = $dart->export.$dart->formatTitle($series_title)."/";
+				
+				$iso = $dart->export.$dvds_model->id.".".$dvds_model->title.".iso";
+				$xml = "$episode_filename.xml";
+				$mkv = "$episode_filename.mkv";
+				$txt = "$episode_filename.txt";
+				$x264 = "$episode_filename.x264";
+				
+				/** Matroska Metadata */
  				if(!file_exists($xml) && !file_exists($mkv)) {
  				
-  					shell::msg("[MKV] Metadata");
-  					
   					$production_studio = $series_model->production_studio;
   					$production_year = $series_model->production_year;
  				
@@ -411,73 +477,8 @@
  					if($str)
 						file_put_contents($xml, $str);
 					
-					$num_ripped['xml']++;
-					
 				}
 				
-				// Add episode to queue, and override previous instance
-				if(($dump_vob && file_exists($vob)) || ($dump_iso && file_exists($iso)))
-					$queue_model->add_episode($episode_id, php_uname('n'));
-				
-				$x++;
-				
-				if($x == $max)
-					break(2);
-				
-			}
-		
-		}
-		
-		if($eject) {
-			$dvd->eject();
-			$ejected = true;
-		}
-	
-	}
-	
-	/**
-	 * --encode
-	 *
-	 * Encode the episodes in the queue
-	 *
-	 */
-	if($encode) {
-	
-		$queue_episodes = $queue_model->get_episodes(php_uname('n'));
-		
-		do {
-		
-			foreach($queue_episodes as $episode_id) {
-			
-				// Legacy
-				$reencode = true;
-				
-				$episodes_model = new Episodes_Model($episode_id);
-				$episode_title = $episodes_model->title;
-				$track_id = $episodes_model->track_id;
-				$episode_number = $episodes_model->get_number();
-				$episode_index = $episodes_model->ix;
-				$episode_starting_chapter = $episodes_model->starting_chapter;
-				$episode_ending_chapter = $episodes_model->ending_chapter;
-				$episode_part = $episodes_model->part;
-				$episode_season = $episodes_model->get_season();
-				$episode_filename = $dart->get_episode_filename($episode_id);
-				
-				$tracks_model = new Tracks_Model($track_id);
-				$track_number = $tracks_model->ix;
-				
-				$dvds_model = new Dvds_Model($tracks_model->dvd_id);
-				
-				$series_model = new Series_Model($episodes_model->get_series_id());
-				$series_title = $series_model->title;
-				$series_dir = $dart->export.$dart->formatTitle($series_title)."/";
-				
-				$iso = $dart->export.$dvds_model->id.".".$dvds_model->title.".iso";
-				$xml = "$episode_filename.xml";
-				$mkv = "$episode_filename.mkv";
-				$txt = "$episode_filename.txt";
-				$x264 = "$episode_filename.x264";
-	
 				// FIXME put somewhere else
 // 				if($queue) {
 // 					if((!file_exists($src)) || file_exists($mkv)) {
@@ -493,20 +494,6 @@
 				// Check to see if file exists, if not, encode it
 				if(file_exists($iso) && !file_exists($mkv)) {
 				
-					if($verbose)
-						shell::msg("[Series] $series_title");
-				
-					if($verbose) {
-						shell::msg("[Episode] \"$episode_title\"");
-						if($episode_number)
-							shell::msg("[Episode] Number $episode_number");
-						if($episode_part)
-							shell::msg("[Episode] Part $episode_part");
-						if(count($arr_todo)) {
-							shell::msg("[Episode] ".implode(", ", $arr_todo));
-						}
-					}
-					
 					$matroska = new Matroska($mkv);
 					$matroska->setDebug($debug);
 					$matroska->setTitle($episode_title);
@@ -575,9 +562,6 @@
 // 								if($series->getHandbrakePreset())
 // 									$handbrake->set_preset('High Profile');
 								
-						if($verbose)
-							shell::msg("[x264] Encoding Video");
-						
 						if($debug)
 							shell::msg("Executing: ".$handbrake->get_executable_string());
 						
@@ -586,7 +570,6 @@
 					
 					if(file_exists($x264))
 						$matroska->addFile($x264);
-					
 						
 // 						if(!file_exists($srt) && $rip_cc && $series->hasCC() && $dump_vob) {
 // 							if($verbose)
@@ -598,6 +581,8 @@
 						$matroska->addGlobalTags($xml);
 					
 					$matroska->mux();
+					
+					$queue_model->remove_episode($episode_id);
 					
 				} elseif (!file_exists($iso) && !file_exists($mkv)) {
 					// At this point, it shouldn't be in the queue.
@@ -615,34 +600,41 @@
 				}
 				
 				// Remove episode from queue
-				if(file_exists($mkv)) {
-					
-					$queue_model->remove_episode($episode_id);
-
-					// Remove any old ISOs
-					$discs = $dart->getDiscQueue();
-
-					$queue_isos = array();
-
-					foreach($discs as $queue_disc_id) {
-						$queue_dart_disc = new dartDvd($queue_disc_id);
-						$queue_isos[] = $dart->export.$queue_dart_disc->getFilename();
-					}
-
-					if(!in_array($iso, $queue_isos) && !$debug) {
-						unlink($iso);
-					}
-				}
+// 				if(file_exists($mkv)) {
+// 					
+// 					$queue_model->remove_episode($episode_id);
+// 
+// 					// Remove any old ISOs
+// 					$discs = $dart->getDiscQueue();
+// 
+// 					$queue_isos = array();
+// 
+// 					foreach($discs as $queue_disc_id) {
+// 						$queue_dart_disc = new dartDvd($queue_disc_id);
+// 						$queue_isos[] = $dart->export.$queue_dart_disc->getFilename();
+// 					}
+// 
+// 					if(!in_array($iso, $queue_isos) && !$debug) {
+// 						unlink($iso);
+// 					}
+// 				}
 				
 				// Refresh the queue
 				$queue_episodes = $queue_model->get_episodes(php_uname('n'));
-
+				
+				$bar->erase();
+				$count = count($queue_episodes);
+				$encode_index++;
+				$bar->reset('[%bar%] %percent%'." [Encoding #$encode_index of ".count($queue_episodes)."]", ':', ' :D ', 80, $count);
+				$bar->update($encode_index);
 
 			}
 			
 		} while(count($queue_episodes) && $encode);
 		
 	}
+	
+	echo "\n";
 
 	if($eject)
 		$dvd->eject();

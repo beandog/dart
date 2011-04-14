@@ -94,7 +94,7 @@
 			
 			$count1 = count(array_unique($episodes));
 			
- 			echo "# episodes on PREVIOUS DISCS: $count1\n";
+//  			echo "# episodes on PREVIOUS DISCS: $count1\n";
 			
 //   			echo "$sql\n";
 	
@@ -112,7 +112,7 @@
 				";";
  			$count2 = $this->db->getOne($sql);
  			
- 			echo "# PREVIOUS EPISODES on SAME DISC: $count2\n";
+//  			echo "# PREVIOUS EPISODES on SAME DISC: $count2\n";
  			
  			// Add one because we start counting at 1, not 0
  			$count = $count1 + $count2 + 1;
