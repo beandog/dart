@@ -304,8 +304,8 @@
 				shell::msg("Removing DRM");
 				tivoDecode($save_file_to, $mpg, $tivo_media_access_key);
 
-				if(file_exists($mpg))
-					unlink($save_file_to);
+// 				if(file_exists($mpg))
+// 					unlink($save_file_to);
 
 			}
 			

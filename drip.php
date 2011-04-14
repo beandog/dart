@@ -1389,28 +1389,28 @@
 					// Remove episode from queue
 					if($encode && file_exists($mkv)) {
 						$drip->removeQueue($episode_id);
+
+						// Remove any old ISOs
+						$discs = $drip->getDiscQueue();
+
+						$queue_isos = array();
+
+						foreach($discs as $queue_disc_id) {
+							$queue_drip_disc = new DripDisc($queue_disc_id);
+							$queue_isos[] = $drip->export.$queue_drip_disc->getFilename();
+						}
+
+						if(!in_array($iso, $queue_isos) && !$debug) {
+							unlink($iso);
+						}
 					}
+					
+					// Refresh the queue
+					$arr = getQueue();
+
 				}
-				
-				// Refresh the queue
-				$arr = getQueue();
 
 			}
-
-			// Remove any old ISOs
-			$discs = $drip->getDiscQueue();
-
-			$queue_isos = array();
-
-			foreach($discs as $queue_disc_id) {
-
-				$queue_drip_disc = new DripDisc($queue_disc_id);
-				$queue_isos[] = $drip->export.$queue_drip_disc->getFilename();
-
-			}
-
-			if(!in_array($iso, $queue_isos) && !$debug)
-				unlink($iso);
 			
 		} while(count($arr) && $encode);
 		

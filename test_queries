@@ -1,0 +1,21 @@
+// Returns three discs with same disc ix
+SELECT  e1.episode_ix, e1.episode_title, e1.season, e1.episode_season, e1.series_dvds_volume, e1.series_dvds_ix FROM view_episodes e1 INNER JOIN view_episodes e2 ON e1.series_id = e2.series_id AND e1.dvd_id != e2.dvd_id 
+AND (e1.season = e2.season OR (e1.series_dvds_volume = e2.series_dvds_volume AND e1.season IS NULL AND e2.season IS NULL) OR (e1.series_dvds_volume = e2.series_dvds_volume AND e1.season = e2.season) ) 
+WHERE e2.episode_id = 278
+AND ( e1.season <= e2.season OR e1.season IS NULL AND e2.season IS NULL ) 
+AND ((e1.series_dvds_ix < e2.series_dvds_ix ) OR (e1.series_dvds_ix = e2.series_dvds_ix AND (e1.series_dvds_side < e2.series_dvds_side) ) );
+
+// I dont remember
+
+SELECT  e1.episode_ix, e1.episode_title, e1.season, e1.episode_season, e1.series_dvds_volume, e1.series_dvds_ix FROM view_episodes e1 INNER JOIN view_episodes e2 ON e1.series_id = e2.series_id AND e1.dvd_id != e2.dvd_id 
+AND (e1.season = e2.season OR (e1.series_dvds_volume = e2.series_dvds_volume AND e1.season IS NULL AND e2.season IS NULL) OR (e1.series_dvds_volume = e2.series_dvds_volume AND e1.season = e2.season) ) 
+AND ( e1.season <= e2.season OR e1.season IS NULL AND e2.season IS NULL ) 
+AND ( (e1.series_dvds_ix < e2.series_dvds_ix ) OR (e1.series_dvds_ix = e2.series_dvds_ix AND (e1.series_dvds_side < e2.series_dvds_side) ) )
+WHERE e2.episode_id = 278;
+
+// More tests
+
+SELECT e2.episode_title, e1.episode_ix, e1.episode_title, e1.season, e1.episode_season, e1.series_dvds_volume, e1.series_dvds_ix FROM view_episodes e1 INNER JOIN view_episodes e2 ON e1.series_id = e2.series_id AND e1.dvd_id != e2.dvd_id 
+AND ( ( e1.season = e2.season AND e1.series_dvds_ix < e2.series_dvds_ix ) OR ( e1.season IS NULL AND e2.season IS NULL ) )
+AND ( e1.series_dvds_volume = e2.series_dvds_volume OR ( e1.series_dvds_volume IS NULL AND e2.series_dvds_volume IS NULL ) OR ( e1.series_dvds_volume < e2.series_dvds_volume AND e1.series_dvds_volume IS NOT NULL AND e2.series_dvds_volume IS NOT NULL ) )
+WHERE e2.episode_id = 278;

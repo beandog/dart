@@ -323,7 +323,6 @@
 				" AND ((e1.disc_number < e2.disc_number) OR (e1.disc_number = e2.disc_number AND e1.side < e2.side)) AND ((e1.alt_title_id IS NULL AND e2.alt_title_id IS NULL) OR (e1.alt_title_id = e2.alt_title_id));";
 			$count = $this->db->getOne($sql);
 			
-	
 			// Find the # of episodes before the one on the current disc
 			// TESTING Added a check for complete-series DVDs, where the query
 			// looks at the volume as well, not just the season.

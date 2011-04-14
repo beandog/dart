@@ -1,0 +1,175 @@
+MPlayer playback / resume position script
+
+	This PHP script will save the playback position of a file
+	you watch with MPlayer.  Once you start playing the same file
+	again, it will resume from last playback position.
+
+	The *only* way this script will work is if you pass the
+	"get_time_pos" command to MPlayer through an input event,
+	mapped by either LIRC or the keyboard.
+
+	The script captures the output and saves it to a file in
+	the playback directory for each media file.
+
+	See http://www.mplayerhq.hu/DOCS/tech/slave.txt for more
+	commands that work on both backends.
+
+Installation:
+
+	To execute this program, either call it using the PHP
+	binary, or make it executable.	Whichever you like best. :)
+
+	$ php mplayer-resume movie.avi
+
+		# cp mplayer-resume /usr/local/bin/
+		# chmod +x /usr/local/bin/mplayer-resume
+		$ mplayer-resume --filename movie.avi
+
+	The script should parse any arguments that you want to send
+	mplayer at the same time, regardless of whether you start
+	it as a standalone program or with php.
+
+	Standalone:
+		$ mplayer-resume --filename movie.avi -vo xv
+
+	With php:
+		$ php mplayer-resume --filename movie.avi -vo xv
+
+Syntax:
+
+	mplayer-resume --filename <filename> [options] [mplayer options]
+
+	As of v2.0, the syntax has changed.  Previously, mplayer-resume
+	would attempt to guess the correct filename, but in cases of movies
+	with spaces in the file, it would cause problems.  Now, you must
+	define the filename manually with the --filename argument.
+
+MPlayer optional arguments:
+
+	You can still pass all the normal arguments you would normally use
+	when running mplayer.  They will be passed to the command line
+	after mplayer-resume has added it's own.
+
+	$ mplayer-resume --filename "My movie.mkv" -vo xv -fs -ao sdl
+
+	The *only* extra arguments that this script will add to your
+	mplayer command is -ss to seek to resume a file, and
+	-quiet so it can correctly grab the output.
+
+	The script will also strip out any commands that are known to
+	break the output.  Currently the only one being stripped is
+	"-really-quiet".
+
+Optional arguments:
+
+	Currently, mplayer-resume only supports one extra argument, a 
+	small feature added to the script to scratch a personal itch of mine.
+
+	Passing --use-dir-conf to mplayer-resume will look for a file named
+	"mplayer.conf" in the same directory of the filename you are playing,
+	and if one exists, it will pass "-include <filename>" to the mplayer
+	binary.
+
+	This is just a little workaround to add a feature that mplayer doesn't
+	currently implement. :)
+
+LIRC:
+
+	Setup your ~/.lircrc file to do three things when you hit
+	the stop button:
+
+		1) Get the time position
+		2) Get the filename
+		3) Stop playing
+	
+	Here's an example configuration:
+
+		begin
+			prog = mplayer
+			button = stop
+			config = get_time_pos
+		end
+		begin
+			prog = mplayer
+			button = stop
+			config = get_filename
+		end
+		begin
+			prog = mplayer
+			button = stop
+			config = quit
+		end
+
+	You can of course map any button on your remote that you'd like
+	to use this function for.
+
+Keyboard:
+
+	Map a key with ~/.mplayer/input.conf to run 'get_time_pos'
+
+	Sample entry:
+
+		g get_time_pos
+
+	When you want to save the position, hit 'g', and then 'q'
+	to quit playback.
+
+	You can also do it manually using mplayer's slave mode,
+	which is useful for debugging:
+
+		$ mplayer -slave -quiet movie.avi
+		get_time_pos
+		quit
+
+Configuration:
+
+	This script will save a text file for each media file you
+	watch using this script.  The text files are saved in the
+	config variable $save_files_to defined in the script, which
+	must be a directory that this script can read / write to.
+
+	The script will try to automatically create a directory, and
+	uses /home/username/.mplayer/resume/ by default.
+
+MythTV:
+
+	If you are using MythVideo (http://www.mythtv.org/) and want to
+	use mplayer-resume as your playback script instead of mplayer,
+	it's easy to setup.
+
+	From the main menu, go to:
+
+		Utilities/Setup
+		Video Settings
+		Player Settings
+
+	Change the entry for Default Player to:
+
+		mplayer-resume %s
+
+	Please note that you *do not* need to put quotes around the
+	filename (as of v0.20.x), as MythTV will do it by itself.
+
+	You can of course add any other extra MPlayer arguments as you
+	normally may here.
+
+		mplayer-resume -fs -vo xv -aspect 16/9 %s
+
+Notes:
+
+	If your CLI version of PHP is dumping version information
+	each time it runs, add -q to the top line to supress the
+	output.
+
+		#!/usr/bin/php -q
+
+Bugs:
+
+	Doesn't save cwd with the file, so you can only have one
+	entry per filename
+
+Help:
+
+	If you get stuck, don't hesitate to contact me.
+
+	http://wonkabar.org/contact-me
