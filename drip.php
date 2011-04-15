@@ -1283,6 +1283,9 @@
 								// For now, assume everything is 'Normal' profile.
 								$handbrake->set_preset('Normal');
 								
+								// Better seeking
+								$handbrake->set_x264('keyint', 30);
+								
 								// Check for cartoon
 								if($series->isCartoon()) {
 									$handbrake->set_x264('ref', 6);

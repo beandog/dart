@@ -487,10 +487,6 @@
 // 					}
 // 				}
 				
-				$audio_streams = $tracks_model->get_audio_streams();
-				
-				$default_audio_streamid = $dart->get_default_audio_streamid($audio_streams, $dvds_model->get_audio_preference());
-				
 				// Check to see if file exists, if not, encode it
 				if(file_exists($iso) && !file_exists($mkv)) {
 				
@@ -510,6 +506,23 @@
 						$handbrake->input_filename($iso, $track_number);
 						$handbrake->output_filename($x264);
 						
+						$handbrake_base_preset = $series_model->get_handbrake_base_preset();
+						$x264opts = $series_model->get_x264opts();
+						$crf = $series_model->get_crf();
+						
+						// Find the audio track to use
+						$best_quality_audio_streamid = $tracks_model->get_best_quality_audio_streamid();
+						$first_english_streamid = $tracks_model->get_first_english_streamid();
+						
+						$audio_preference = $dvds_model->get_audio_preference();
+						
+						if($audio_preference === "0")
+							$default_audio_streamid = $best_quality_audio_streamid;
+						elseif($audio_preference === "1")
+							$default_audio_streamid = $first_english_streamid;
+						elseif($audio_preference === "2")
+							$default_audio_streamid = $best_quality_audio_streamid;
+							
 						// Some DVDs may report more audio streams than
 						// Handbrake does.  If that's the case, check
 						// each one that lsdvd reports, to see if Handbrake
@@ -520,10 +533,10 @@
 						if($handbrake->get_audio_index($default_audio_streamid))
 							$handbrake->add_audio_stream($default_audio_streamid);
 						else {
-						
-							$audio_stream_ids = $dart_track->getAudioStreamIDs();
 							
 							$added_audio = false;
+							
+							$audio_streams = $tracks_model->get_audio_streams();
 							
 							foreach($audio_streams as $arr) {
 								if($handbrake->get_audio_index($arr['stream_id']) && !$added_audio) {
@@ -543,24 +556,25 @@
 						// For now, assume everything is 'Normal' profile.
 						$handbrake->set_preset('Normal');
 								
-								// Check for a subtitle track
-// 								$subp_ix = $dart_track->getDefaultSubtitleIndex();
+						// Check for a subtitle track
+						$subp_ix = $tracks_model->get_first_english_subp();
 								
-								// If we have a VobSub one, add it
-								// Otherwise, check for a CC stream, and add that
-// 								if($subp_ix && $mux_vobsub)
-// 									$handbrake->add_subtitle_track($subp_ix);
-// 								elseif($handbrake->has_cc() && $mux_cc)
-// 									$handbrake->add_subtitle_track($handbrake->get_cc_ix());
+						// If we have a VobSub one, add it
+						// Otherwise, check for a CC stream, and add that
+						if(!is_null($subp_ix))
+							$handbrake->add_subtitle_track($subp_ix);
+						elseif($handbrake->has_cc())
+							$handbrake->add_subtitle_track($handbrake->get_cc_ix());
 								
 						// Set Chapters
 						$handbrake->set_chapters($episode_starting_chapter, $episode_ending_chapter);
 						
 						$handbrake->autocrop();
-// 								if($series->isGrayscale())
-// 									$handbrake->grayscale();
-// 								if($series->getHandbrakePreset())
-// 									$handbrake->set_preset('High Profile');
+						if($series_model->grayscale == 't')
+							$handbrake->grayscale();
+						$handbrake->set_preset($handbrake_base_preset);
+						$handbrake->set_x264opts($x264opts);
+						$handbrake->set_video_quality($crf);
 								
 						if($debug)
 							shell::msg("Executing: ".$handbrake->get_executable_string());
@@ -570,12 +584,6 @@
 					
 					if(file_exists($x264))
 						$matroska->addFile($x264);
-						
-// 						if(!file_exists($srt) && $rip_cc && $series->hasCC() && $dump_vob) {
-// 							if($verbose)
-// 								shell::msg("[SRT] Ripping Closed Captioning");
-// 							$dvd_vob->dumpSRT();
-// 						}
 						
 					if(file_exists($xml))
 						$matroska->addGlobalTags($xml);

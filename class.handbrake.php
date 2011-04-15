@@ -292,58 +292,20 @@
 		
 		}
 		
+		public function set_x264opts($str) {
+		
+			$arr = explode(":", $str);
+			
+			foreach($arr as $str2) {
+				$arr2 = explode("=", $str2);
+				$this->set_x264($arr2[0], $arr2[1]);
+			}
+		
+		}
+		
 		public function set_preset($preset) {
 		
-			// Default options set by Handbrake
-			// Don't need to set them since they are included
-			// in the presets.
-			//
-			// Just override what you want. :)
-			
-// 			$this->set_x264('ref', 3);
-// 			$this->set_x264('bframes', 3);
-// 			$this->set_x264('b-adapt', 'fast');
-// 			$this->set_x264('direct', 'spatial');
-// 			$this->set_x264('b-pyramid', 'normal');
-// 			$this->set_x264('weightp', 2);
-// 			$this->set_x264('me', 'hex');
-// 			$this->set_x264('merange', 16);
-// 			$this->set_x264('subme', 7);
-// 			$this->set_x264('partitions', 'p8x8,b8x8,i8x8,i4x4');
-// 			$this->set_x264('8x8dct', 1);
-// 			$this->set_x264('deblock', '0,0');
-// 			$this->set_x264('trellis', 1);
-// 			$this->set_x264('psy-rd', '1,0');
-// 			$this->set_x264('aq-strength', '1.0');
-// 			$this->set_x264('no-fast-pskip', 0);
-// 			$this->set_x264('no-dct-decimate', 0);
-// 			$this->set_x264('cabac', 1);
-		
-			$this->set_x264('keyint', 30);
-		
-			switch($preset) {
-			
-				case 'High Profile':
-				
-					$this->set_x264('b-adapt', 2);
-					$this->set_x264('rc-lookahead', 50);
-					
-					break;
-					
-				default:
-				case 'Normal':
-				
-					$this->set_x264('ref', 2);
-					$this->set_x264('bframes', 2);
-					$this->set_x264('subme', 6);
-					$this->set_x264('mixed-refs', 0);
-					$this->set_x264('weightb', 0);
-					$this->set_x264('8x8dct', 0);
-					$this->set_x264('trellis', 0);
-					
-					break;
-			
-			}
+			$this->preset = $preset;
 		
 		}
 		
