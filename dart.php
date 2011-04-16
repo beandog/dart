@@ -43,9 +43,9 @@
 		$device_is_iso = true;
 	
 	// Determine whether we are reading the device
-	if($rip || $info || $import)
+	if($rip || $info || $import || $dvd->cddetect(true))
 		$access_device = true;
-	
+		
 	// Determine whether we need physical access to a disc.
 	if(!$device_is_iso && $access_device)
 		$access_drive = true;

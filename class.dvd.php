@@ -38,12 +38,12 @@
 		 * Poll the drive for a ready status and loaded
 		 *
 		 */
-		function cddetect() {
+		function cddetect($accept_drive_not_ready = false) {
 
-			$exec = "cddetect -d".$this->getDevice()." &> /dev/null";
+			$exec = "cddetect -d".$this->getDevice()." 2>/dev/null";
 			exec($exec, $arr, $return);
-
-			if($return === 0)
+			
+			if($return === 0 || ($accept_drive_not_ready && current($arr) == "drive not ready!"))
 				return true;
 			else
 				return false;
