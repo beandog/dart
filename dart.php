@@ -1,6 +1,7 @@
 #!/usr/bin/php
 <?
 
+	require_once 'Console/CommandLine.php';
 	require_once 'Console/ProgressBar.php';
 
 	require_once 'class.shell.php';
@@ -23,127 +24,98 @@
 	require_once 'models/tracks.php';
 	require_once 'models/queue.php';
 	
-	$dart = new dart();
+	$parser = new Console_CommandLine();
+	$parser->description = "DVD Archiving Tool";
+	$parser->addArgument('device', array('optional' => true));
+	$parser->addOption('verbose', array(
+		'short_name' => '-v',
+		'long_name' => '--verbose',
+		'description' => 'Be verbose',
+		'action' => 'StoreTrue',
+	));
+	$parser->addOption('debug', array(
+		'short_name' => '-z',
+		'long_name' => '--debug',
+		'description' => 'Print out debugging information',
+		'action' => 'StoreTrue',
+	));
+	$parser->addOption('encode', array(
+		'short_name' => '-e',
+		'long_name' => '--encode',
+		'description' => 'Encode episodes in the queue',
+		'action' => 'StoreTrue',
+	));
+	$parser->addOption('info', array(
+		'short_name' => '-i',
+		'long_name' => '--info',
+		'description' => 'Display metadata about a DVD',
+		'action' => 'StoreTrue',
+	));
+	$parser->addOption('dump_iso', array(
+		'short_name' => '-o',
+		'long_name' => '--iso',
+		'description' => 'Copy the DVD filesystem to an ISO',
+		'action' => 'StoreTrue',
+	));
+	$parser->addOption('max', array(
+		'short_name' => '-m',
+		'long_name' => '--max',
+		'description' => 'Max # of episodes to rip or encode',
+		'action' => 'StoreInt',
+	));
+	$parser->addOption('mount', array(
+		'short_name' => '-n',
+		'long_name' => '--mount',
+		'description' => 'Mount the file if it is a device',
+		'action' => 'StoreTrue',
+	));
+	$parser->addOption('poll', array(
+		'short_name' => '-p',
+		'long_name' => '--poll',
+		'description' => 'Continue to monitor the drive after ripping, and the queue after encoding',
+		'action' => 'StoreTrue',
+	));
+	$parser->addOption('queue', array(
+		'short_name' => '-q',
+		'long_name' => '--queue',
+		'description' => 'Display the episodes in the queue to be encoded',
+		'action' => 'StoreTrue',
+	));
+	$parser->addOption('rip', array(
+		'short_name' => '-r',
+		'long_name' => '--rip',
+		'description' => 'Rip the episodes from a DVD device or ISO',
+		'action' => 'StoreTrue',
+	));
+	$parser->addOption('skip', array(
+		'short_name' => '-s',
+		'long_name' => '--skip',
+		'description' => 'Skip the number of episodes to rip or encode',
+		'action' => 'StoreInt',
+	));
+	$parser->addOption('eject', array(
+		'short_name' => '-t',
+		'long_name' => '--eject',
+		'description' => 'Eject the DVD drive when finished accessing it',
+		'action' => 'StoreTrue',
+	));
 	
-	$queue_model = new Queue_Model;
-	$dvd_episodes = array();
+	$result = $parser->parse();
 	
-	$storage_dir = "/var/media";
+	extract($result->args);
+	extract($result->options);
 	
-	$device = "/dev/dvd";
-	
-	/** Get options **/
-	$args = shell::parseArguments();
-	
-	$ini = array();
-	$config = getenv('HOME').'/.dart/config';
-	if(file_exists($config))
-		$ini = parse_ini_file($config);
-		
-	if($args['h'] || $args['help']) {
-		display_help();
-		exit(0);
-	}
-	
-	/** Verbosity **/
-	
-	/** --debug **/
-	if($args['debug']) {
-		$dart->debug = $dart->verbose = true;
-		$debug =& $dart->debug;
-		$verbose =& $dart->verbose;
-	}
-	
-	/** --verbose **/
-	if($args['v'] || $args['verbose'] || $ini['verbose'] || $debug) {
-		$dart->verbose = true;
-		$verbose =& $dart->verbose;
-	}
-	
-	/** Command line arguments **/
-	
-	/** --encode **/
-	if($args['encode'])
-		$encode = true;
-	
-	/** --info **/
-	if($args['info']) {
-		$info = true;
-		if(strpos($args['info'], 0, 1) != "-")
-			$device = $args['info'];
-	}
-	
-	/** --info **/
-	if($args['iso'])
-		$dump_iso = true;
-	
-	/** --max [number] **/
-	if($args['max'])
-		$max = abs(intval($args['max']));
-		
-	/** --mount **/
-	if($args['mount'] || $ini['mount'])
-		$mount = true;
-	else
-		$mount = false;
-	
-	/** --movie **/
-	if($args['movie'])
-		$movie = true;
-	
-	/** --poll **/
-	if($args['poll'])
-		$poll = true;
-	
-	/** --queue **/
-	if($args['q'] || $args['queue'])
-		$queue = true;
-	
-	/** --rip and optionally setting device **/
-	if($args['rip']) {
-		$rip = true;
-		if(strpos($args['rip'], 0, 1) != "-")
-			$device = $args['rip'];
-	}
-	
-	// Check if device is an ISO file
-	if(substr($device, -4, 4) == ".iso")
-		$device_is_iso = true;
-	else
-		$device_is_iso = false;
-	
-	/** --skip [number] **/
-	if($args['skip'])
-		$skip = abs(intval($args['skip']));
-	else
-		$skip = 0;
-	
-	/** --eject **/
-	if((($ini['eject'] && !$debug && !$info) || $args['eject']) && !$args['noeject'])
-		$eject = true;
-	
-	/** Subtitles **/
-	// Closed Captioning
-	if($args['cc'] || $ini['rip_cc'])
-		$rip_cc = true;
-	if($args['cc'] || $ini['mux_cc'])
-		$mux_cc = true;
-	if($args['nocc'])
-		$rip_cc = $mux_cc = false;
-	$min_cc_filesize = 25;
-	
-	// DVD Subs (VobSubs)
-	if($args['vobsub'] || $ini['rip_vobsub'])
-		$rip_vobsub = true;
-	if($args['vobsub'] || $ini['mux_vobsub'])
-		$mux_vobsub = true;
-	if($args['novobsub'])
-		$rip_vobsub = $mux_vobsub = false;
-
 	start:
 	
 	/** Start everything **/
 	$dvd = new DVD($device);
+	$dvds_model = new Dvds_Model;
+	$queue_model = new Queue_Model;
+	$dvd_episodes = array();
+	$dart = new dart();
+	
+	if(substr($device, -4, 4) == ".iso")
+		$device_is_iso = true;
 	
 	// Determine whether we are reading the device
 	if($rip || $info || $import)
@@ -164,8 +136,6 @@
 	
 	if($mount)
   		$dvd->mount();
-  	
-  	$dvds_model = new Dvds_Model;
   	
   	if($access_device) {
   		
@@ -220,11 +190,11 @@
 	// Check if needed
 	if(($rip || $dump_iso) && !file_exists($iso) && !$device_is_iso) {
 			
-			$tmpfname = tempnam($dart->export, "tmp");
-		
-			$dvd->dump_iso($tmpfname);
-			rename($tmpfname, $iso);
-			unset($tmpfname);
+		$tmpfname = tempnam($dart->export, "tmp");
+	
+		$dvd->dump_iso($tmpfname);
+		rename($tmpfname, $iso);
+		unset($tmpfname);
 	
 	}
 	
@@ -679,43 +649,4 @@
 
 	}
 	
-	function display_help() {
-	
-		shell::msg("Options:");
-		shell::msg("  --info\t\tList episodes on DVD");
-		
-		shell::msg("  --rip\t\t\tRip everything on DVD");
-		shell::msg("  --nosub\t\tDon't rip VobSub subtitles");
-		shell::msg("  --encode\t\tEncode episodes in queue");
-		
-		shell::msg("  --archive\t\tAdd DVD to database");
-		shell::msg("  --season <int>\tSet season #");
-		shell::msg("  --volume <int>\tSet volume #");
-		shell::msg("  --disc <int>\t\tSet disc # for season");
-		shell::msg("  --series <int>\tPass TV Series ID");
-		
-		shell::msg("  --demux\t\tUse MEncoder to demux audio and video streams into separate files");
-		
-		shell::msg("  --skip <int>\t\tSkip # of episodes");
-		shell::msg("  --max <int>\t\tMax # of episodes to rip and/or encode");
-		shell::msg("  -v, -verbose\t\tVerbose output");
-		shell::msg("  --debug\t\tEnable debugging");
-		shell::msg("  --update\t\tUpdate DVD specs in database");
-		shell::msg("  -q, --queue\t\tList episodes in queue");
-		
-		shell::msg("Subtitles:");
-		shell::msg("  --vobsub\t\tRip and mux VobSub subtitles");
-		shell::msg("  --cc\t\t\tRip and mux Closed Captioning subtitles");
-		
-		shell::msg("Handbrake:");
-		shell::msg("  --handbrake\t\tUse Handbrake to reencode video");
-		shell::msg("  --preset\t\tEncoding preset to use");
-		
-		shell::msg("Movies:");
-		shell::msg("  --movie\t\tUse some settings to archive as a movie");
-		shell::msg("  --title\t\tMovie Title");
-	
-	}
-	
-		
 ?>
