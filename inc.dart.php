@@ -33,7 +33,7 @@
 	function display_help() {
 	
 		shell::msg("Options:");
-		shell::msg("  -i, --info\t\tList episodes on DVD");
+		shell::msg("  --info\t\tList episodes on DVD");
 		
 		shell::msg("  --rip\t\t\tRip everything on DVD");
 		shell::msg("  --nosub\t\tDon't rip VobSub subtitles");

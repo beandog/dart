@@ -10,6 +10,8 @@
 	
 	$storage_dir = "/var/media";
 	
+	$device = "/dev/dvd";
+	
 	/** Get options **/
 	$args = shell::parseArguments();
 	
@@ -40,32 +42,16 @@
 	
 	/** Command line arguments **/
 	
-	/** --device [name] **/
-	if($args['device'])
-		$device = $args['device'];
-	elseif($ini['device'])
-		$device = $ini['device'];
-	else
-		$device = "/dev/dvd";
-	
-	if(substr($device, -4, 4) == ".iso")
-		$device_is_iso = true;
-	else
-		$device_is_iso = false;
-	
-	/** --devices **/
-	if($ini['devices'])
-		$devices = explode(",", $ini['devices']);
-	else
-		$devices = array($device);
-	
 	/** --encode **/
 	if($args['encode'])
 		$encode = true;
 	
 	/** --info **/
-	if($args['i'] || $args['info'])
+	if($args['info']) {
 		$info = true;
+		if(strpos($args['info'], 0, 1) != "-")
+			$device = $args['info'];
+	}
 	
 	/** --info **/
 	if($args['iso'])
@@ -93,9 +79,18 @@
 	if($args['q'] || $args['queue'])
 		$queue = true;
 	
-	/** --rip **/
-	if($args['rip'])
+	/** --rip and optionally setting device **/
+	if($args['rip']) {
 		$rip = true;
+		if(strpos($args['rip'], 0, 1) != "-")
+			$device = $args['rip'];
+	}
+	
+	// Check if device is an ISO file
+	if(substr($device, -4, 4) == ".iso")
+		$device_is_iso = true;
+	else
+		$device_is_iso = false;
 	
 	/** --skip [number] **/
 	if($args['skip'])
