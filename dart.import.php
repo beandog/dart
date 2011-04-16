@@ -5,6 +5,8 @@
 		$uniq_id = $dvd->getID();
 	
 		$d = dvds::find_by_uniq_id($uniq_id);
+		
+		echo "Importing: ".$dvd->getTitle()."\n";
 
 		if(is_null($d->id)) {
 		
@@ -201,5 +203,5 @@
 		$dvd->eject();
 		// Give it a few seconds so that cddetect won't catch
 		// it while tray is busy.
-		sleep(2);
+		sleep(4);
 	}

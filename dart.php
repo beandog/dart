@@ -51,6 +51,7 @@
 		$queue_model = new Queue_Model;
 		$dvd_episodes = array();
 		$dart = new dart();
+		$num_empty_polls = 0;
 		
 		if($reset_queue)
 			$queue_model->reset();
@@ -133,18 +134,15 @@
 		// drive.  If there is, start over.
 		if($poll && ($rip || $import)) {
 	
-			$notice = false;
-			
-			while(true) {
+			// If nothing given for 30 minutes, then bail.
+			$sleepy_time = 12;
+			while(true && $num_empty_polls < ((60 / $sleepy_time) * 30)) {
 	
 				if($dvd->cddetect(true)) {
-					shell::msg("Found a disc, starting over!");
 					goto start;
 				} else {
-					if(!$notice)
-						shell::msg("Waiting for a new disc on $device");
-					$notice = true;
-					sleep(15);
+					sleep($sleepy_time);
+					$num_empty_polls++;
 				}
 	
 			}
