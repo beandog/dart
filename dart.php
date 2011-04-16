@@ -28,6 +28,8 @@
 	start:
 	
 	/** Start everything **/
+	if(is_null($device))
+		$device = "/dev/dvd";
 	$dvd = new DVD($device);
 	$dvds_model = new Dvds_Model;
 	$queue_model = new Queue_Model;
