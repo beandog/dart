@@ -26,7 +26,7 @@
 				$episode_ending_chapter = $episodes_model->ending_chapter;
 				$episode_part = $episodes_model->part;
 				$episode_season = $episodes_model->get_season();
-				$episode_filename = $dart->get_episode_filename($episode_id);
+				$episode_filename = get_episode_filename($episode_id);
 				$display_name = $episodes_model->get_display_name();
 				
 				$tracks_model = new Tracks_Model($track_id);
