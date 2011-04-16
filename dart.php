@@ -25,124 +25,132 @@
 	
 	require_once 'dart.parser.php';
 	
-	start:
-	
 	/** Start everything **/
-	$devices = array('/dev/dvd', '/dev/dvd1');
+	$all_devices = array('/dev/dvd', '/dev/dvd1');
 
 	if($eject_trays)
-		foreach($devices as $str) {
+		foreach($all_devices as $str) {
 			$dvd = new DVD($str);
 			$dvd->eject();
 		}
-
+	
 	if(is_null($device))
-		$device = "/dev/dvd";
+		$devices[] = "/dev/dvd";
 	if($alt_device)
-		$device = "/dev/dvd1";
-	$dvd = new DVD($device);
-	$dvds_model = new Dvds_Model;
-	$queue_model = new Queue_Model;
-	$dvd_episodes = array();
-	$dart = new dart();
+		$devices[] = "/dev/dvd1";
 	
-	if($reset_queue)
-		$queue_model->reset();
+	if($all)
+		$devices = $all_devices;
 	
-	if(substr($device, -4, 4) == ".iso")
-		$device_is_iso = true;
+	foreach($devices as $device) {
+
+		start:
 		
-	// Determine whether we are reading the device
-	if($rip || $info || $import || ($argc == 1 && $dvd->cddetect(true)) || ($argc == 2 && $alt_device && $dvd->cddetect(true)))
-		$access_device = true;
+		$dvd = new DVD($device);
+		$dvds_model = new Dvds_Model;
+		$queue_model = new Queue_Model;
+		$dvd_episodes = array();
+		$dart = new dart();
 		
-	// Determine whether we need physical access to a disc.
-	if(!$device_is_iso && $access_device)
-		$access_drive = true;
-	else {
-		$access_drive = false;
-		$mount = false;
-	}
-	
-	if($access_drive)
-		$dvd->close_tray();
-	else
-		$eject = false;
-	
-	if($mount)
-  		$dvd->mount();
-  	
-  	if($access_device) {
-  		
-  		$dvd->load_css();
-		$uniq_id = $dvd->getID();
+		if($reset_queue)
+			$queue_model->reset();
 		
-		$dvds_model_id = $dvds_model->find_id('uniq_id', $uniq_id);
-		
-		if($dvds_model_id) {
+		if(substr($device, -4, 4) == ".iso")
+			$device_is_iso = true;
 			
-			$dvds_model->load($dvds_model_id);
+		// Determine whether we are reading the device
+		if($rip || $info || $import || ($argc == 1 && $dvd->cddetect(true)) || ($argc == 2 && $alt_device && $dvd->cddetect(true)))
+			$access_device = true;
 			
-			$dvd_episodes = $dvds_model->get_episodes();
+		// Determine whether we need physical access to a disc.
+		if(!$device_is_iso && $access_device)
+			$access_drive = true;
+		else {
+			$access_drive = false;
+			$mount = false;
+		}
+		
+		if($access_drive)
+			$dvd->close_tray();
+		else
+			$eject = false;
+		
+		if($mount)
+			$dvd->mount();
+		
+		if($access_device) {
 			
-			if(!is_null($dvds_model->longest_track))
-				$disc_archived = true;
-			else
+			$dvd->load_css();
+			$uniq_id = $dvd->getID();
+			
+			$dvds_model_id = $dvds_model->find_id('uniq_id', $uniq_id);
+			
+			if($dvds_model_id) {
+				
+				$dvds_model->load($dvds_model_id);
+				
+				$dvd_episodes = $dvds_model->get_episodes();
+				
+				if(!is_null($dvds_model->longest_track))
+					$disc_archived = true;
+				else
+					$disc_archived = false;
+				
+				$num_episodes = count($dvd_episodes);
+				
+				// Update disc size
+				/** Set the filesize of the DVD disc **/
+				if(is_null($dvds_model->filesize)) {
+				
+					// FIXME Kind of pointless if only checks if mounted..
+					// FIXME reads udev amount
+					if($mount)
+						$dvds_model->filesize = $dvd->getSize();
+					
+					if($device_is_iso && file_exists($device)) {
+						$filesize = sprintf("%u", filesize($device)) / 1024;
+						$dvds_model->filesize = $filesize;
+						unset($filesize);
+					}
+				}
+			
+			} else
 				$disc_archived = false;
 			
-			$num_episodes = count($dvd_episodes);
-			
-			// Update disc size
-			/** Set the filesize of the DVD disc **/
-			if(is_null($dvds_model->filesize)) {
-			
-				// FIXME Kind of pointless if only checks if mounted..
-				// FIXME reads udev amount
-				if($mount)
-					$dvds_model->filesize = $dvd->getSize();
-				
-				if($device_is_iso && file_exists($device)) {
-					$filesize = sprintf("%u", filesize($device)) / 1024;
-					$dvds_model->filesize = $filesize;
-					unset($filesize);
-				}
-			}
-		
-		} else
-			$disc_archived = false;
-		
-	}
-	
-	require 'dart.info.php';
-	require 'dart.import.php';
-	require 'dart.iso.php';
-	require 'dart.queue.php';
-	require 'dart.rip.php';	
-	require 'dart.encode.php';
-	
-	if($eject)
-		$dvd->eject();
-	
-	// If polling for a new disc, check to see if one is in the
-	// drive.  If there is, start over.
-	if($poll && $rip) {
-
-		$notice = false;
-		
-		while(true) {
-
-			if($dvd->cddetect()) {
-				shell::msg("Found a disc, starting over!");
-				goto start;
-			} else {
-				if(!$notice)
-					shell::msg("Waiting for a new disc on $device");
-				$notice = true;
-				sleep(60);
-			}
-
 		}
-
+		
+		require 'dart.info.php';
+		require 'dart.import.php';
+		require 'dart.iso.php';
+		require 'dart.queue.php';
+		require 'dart.rip.php';	
+		require 'dart.encode.php';
+		
+		if($eject)
+			$dvd->eject();
+		
+		// If polling for a new disc, check to see if one is in the
+		// drive.  If there is, start over.
+		if($poll && $rip) {
+	
+			$notice = false;
+			
+			while(true) {
+	
+				if($dvd->cddetect()) {
+					shell::msg("Found a disc, starting over!");
+					goto start;
+				} else {
+					if(!$notice)
+						shell::msg("Waiting for a new disc on $device");
+					$notice = true;
+					sleep(60);
+				}
+	
+			}
+	
+		}
+		
 	}
 	
 ?>

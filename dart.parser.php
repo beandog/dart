@@ -88,7 +88,7 @@
 		'action' => 'StoreTrue',
 	));
 	$parser->addOption('alt_device', array(
-		'short_name' => '-a',
+		'short_name' => '-d',
 		'long_name' => '--dvd1',
 		'description' => 'Use /dev/dvd1 as block device',
 		'action' => 'StoreTrue',
@@ -97,6 +97,12 @@
 		'short_name' => '-j',
 		'long_name' => '--eject-trays',
 		'description' => 'Open all DVD trays',
+		'action' => 'StoreTrue',
+	));
+	$parser->addOption('all', array(
+		'short_name' => '-a',
+		'long_name' => '--all',
+		'description' => 'Run commands on all devices',
 		'action' => 'StoreTrue',
 	));
 	
