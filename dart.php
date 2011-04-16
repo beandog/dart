@@ -249,12 +249,6 @@
  		if(!is_dir($dart->export))
  			@mkdir($dart->export, 0755);
  		
- 		// Don't re-rip any episodes already in queue
- 		// MAYBE LATER?  FIXME
- 		// I want to re-rip them to make sure I get all the metadata ...
- 		// Maybe make that one a separate action
- 		$rip_episodes = array_diff($dvd_episodes, $queue_episodes);
- 		
 		// Extract episodes
 		if(count($dvd_episodes)) {
 		
@@ -331,18 +325,6 @@
 				
 				// Check to see if file exists, if not, rip it 				
 				if(!file_exists($mkv))
-					$rip_episode = true;
-				
-				/** LEGACY: Handbrake should copy chapters over into MKV it creates */
-				// Chapters
-//  				if(!file_exists($txt) && $episode->getNumChapters() > 1) {
-// 					shell::msg("[DVD] Chapters");
-// 					$dvd_track->dumpChapters();
-// 					$num_ripped['chapters']++;
-//  				}
-				
-				// Add episode to queue, and override previous instance
-				if(file_exists($iso))
 					$queue_model->add_episode($episode_id, php_uname('n'));
 				
 				$i++;
@@ -403,19 +385,18 @@
 				$series_title = $series_model->title;
 				$series_dir = $dart->export.$dart->formatTitle($series_title)."/";
 				
+				// Clean up any old tmp files
+				$scandir = scandir($series_dir);
+				
+				if(count($arr = preg_grep('/(^x264|xml$)/', $scandir)))
+					foreach($arr as $filename)
+						unlink($series_dir.$filename);
+				
 				$iso = $dart->export.$dvds_model->id.".".$dvds_model->title.".iso";
 				$xml = "$episode_filename.xml";
 				$mkv = "$episode_filename.mkv";
 				$txt = "$episode_filename.txt";
 				$x264 = "$episode_filename.x264";
-				
-				// FIXME put somewhere else
-// 				if($queue) {
-// 					if((!file_exists($src)) || file_exists($mkv)) {
-// 						shell::msg("[Queue] Removing $series_title: $episode_title");
-// 						$dart->removeQueue($episode_id);
-// 					}
-// 				}
 				
 				// Check to see if file exists, if not, encode it
 				if(file_exists($iso) && !file_exists($mkv)) {
