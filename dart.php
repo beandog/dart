@@ -35,9 +35,9 @@
 		}
 	
 	if(is_null($device))
-		$devices[] = "/dev/dvd";
+		$devices = array("/dev/dvd");
 	if($alt_device)
-		$devices[] = "/dev/dvd1";
+		$devices = array("/dev/dvd1");
 	
 	if($all)
 		$devices = $all_devices;
@@ -131,13 +131,13 @@
 		
 		// If polling for a new disc, check to see if one is in the
 		// drive.  If there is, start over.
-		if($poll && $rip) {
+		if($poll && ($rip || $import)) {
 	
 			$notice = false;
 			
 			while(true) {
 	
-				if($dvd->cddetect()) {
+				if($dvd->cddetect(true)) {
 					shell::msg("Found a disc, starting over!");
 					goto start;
 				} else {
