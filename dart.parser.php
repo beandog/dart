@@ -93,6 +93,12 @@
 		'description' => 'Use /dev/dvd1 as block device',
 		'action' => 'StoreTrue',
 	));
+	$parser->addOption('eject_trays', array(
+		'short_name' => '-j',
+		'long_name' => '--eject-trays',
+		'description' => 'Open all DVD trays',
+		'action' => 'StoreTrue',
+	));
 	
 	$result = $parser->parse();
 	

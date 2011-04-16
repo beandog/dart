@@ -28,6 +28,14 @@
 	start:
 	
 	/** Start everything **/
+	$devices = array('/dev/dvd', '/dev/dvd1');
+
+	if($eject_trays)
+		foreach($devices as $str) {
+			$dvd = new DVD($str);
+			$dvd->eject();
+		}
+
 	if(is_null($device))
 		$device = "/dev/dvd";
 	if($alt_device)
