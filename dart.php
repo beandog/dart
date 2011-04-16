@@ -394,8 +394,6 @@
 				$episode_filename = $dart->get_episode_filename($episode_id);
 				$display_name = $episodes_model->get_display_name();
 				
-				echo("$display_name\n");
-				
 				$tracks_model = new Tracks_Model($track_id);
 				$track_number = $tracks_model->ix;
 				
@@ -421,6 +419,8 @@
 				
 				// Check to see if file exists, if not, encode it
 				if(file_exists($iso) && !file_exists($mkv)) {
+				
+					echo("$display_name\n");
 				
 					$matroska = new Matroska($mkv);
 					$matroska->setDebug($debug);
@@ -588,9 +588,6 @@
 					if(file_exists($x264))
 						$matroska->addFile($x264);
 					
-					
-					
-						
 					if(file_exists($xml))
 						$matroska->addGlobalTags($xml);
 					
@@ -604,34 +601,41 @@
 				}
 				
 				// Delete old files
-				if(file_exists($mkv) && !$debug) {
-					if(file_exists($xml))
-						unlink($xml);
-					if(file_exists($txt))
-						unlink($txt);
-					if(file_exists($x264))
-						unlink($x264);
-				}
-				
 				if(file_exists($mkv)) {
-					
+				
 					$queue_model->remove_episode($episode_id);
-
-					// Remove any old ISOs
-					$queue_dvds = $queue_model->get_dvds(php_uname('n'));
-
-					$queue_isos = array();
-
-					foreach($queue_dvds as $queue_dvd_id) {
+				
+					if(!$debug) {
+						if(file_exists($xml))
+							unlink($xml);
+						if(file_exists($txt))
+							unlink($txt);
+						if(file_exists($x264))
+							unlink($x264);
+	
+						/** Remove any old ISOs */
+						$queue_isos = array();
 						
-						$dvds_model = new Dvds_Model($queue_dvd_id);
+						// Get the dvd_ids from episodes that are in the entire queue
+						$queue_dvds = $queue_model->get_dvds(php_uname('n'));
+	
+						// For each of those DVDs, build an array of ISO filenames
+						foreach($queue_dvds as $queue_dvd_id) {
+							
+							$dvds_model = new Dvds_Model($queue_dvd_id);
+							
+							$queue_isos[] = $dart->export.$dvds_model->id.".".$dvds_model->title.".iso";
+							
+						}
+	
+						if(!in_array($iso, $queue_isos) && file_exists($iso)) {
 						
-						$queue_isos[] = $dart->export.$dvds_model->id.".".$dvds_model->title.".iso";
+// 							print_r($queue_isos);
+							
+// 							echo "Removing $iso\n";
 						
-					}
-
-					if(!in_array($iso, $queue_isos) && !$debug && file_exists($iso)) {
-						unlink($iso);
+ 							unlink($iso);
+						}
 					}
 				}
 				
