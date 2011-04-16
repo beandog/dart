@@ -188,7 +188,7 @@
 	$iso = $dart->export.$dvds_model->id.".".$dvds_model->title.".iso";
 	
 	// Check if needed
-	if(($rip || $dump_iso) && !file_exists($iso) && !$device_is_iso) {
+	if($rip && !file_exists($iso) && !$device_is_iso) {
 			
 		$tmpfname = tempnam($dart->export, "tmp");
 	
@@ -233,8 +233,6 @@
 	}
 	
 	if($rip && $disc_archived && $num_episodes) {
-	
-		$dump_iso = true;
 	
 		/** Create directory to dump files to */
  		if(!is_dir($dart->export))
