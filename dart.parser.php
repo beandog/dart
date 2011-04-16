@@ -59,6 +59,11 @@
 		'description' => 'Display the episodes in the queue to be encoded',
 		'action' => 'StoreTrue',
 	));
+	$parser->addOption('reset_queue', array(
+		'long_name' => '--reset',
+		'description' => 'Remove all episodes from the queue',
+		'action' => 'StoreTrue',
+	));
 	$parser->addOption('rip', array(
 		'short_name' => '-r',
 		'long_name' => '--rip',

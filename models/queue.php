@@ -56,5 +56,13 @@
  			
 		}
 		
+		public function reset() {
+		
+			$sql = "DELETE FROM queue;";
+			
+			$this->db->query($sql);
+		
+		}
+		
 	}
 ?>

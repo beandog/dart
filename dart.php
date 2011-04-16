@@ -34,6 +34,9 @@
 	$dvd_episodes = array();
 	$dart = new dart();
 	
+	if($reset_queue)
+		$queue_model->reset();
+	
 	if(substr($device, -4, 4) == ".iso")
 		$device_is_iso = true;
 	
