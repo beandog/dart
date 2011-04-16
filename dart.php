@@ -308,7 +308,6 @@
 				if($episode_part > 1)
 					$episode_suffix = ", Part $episode_part";
 				
-				$xml = "$episode_filename.xml";
 				$mkv = "$episode_filename.mkv";
 				$txt = "$episode_filename.txt";
 				
