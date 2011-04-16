@@ -1,6 +1,6 @@
 <?
 	
-	if($import || $disc_archived === false) {
+	if($import && $disc_archived === false) {
 	
 		$uniq_id = $dvd->getID();
 	
@@ -194,4 +194,12 @@
 				
 		}
 		
+	}
+	
+	// Eject the disc if we are polling, and nothing else
+	if($import && $poll && !$rip) {
+		$dvd->eject();
+		// Give it a few seconds so that cddetect won't catch
+		// it while tray is busy.
+		sleep(2);
 	}
