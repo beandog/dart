@@ -309,7 +309,6 @@
 					$episode_suffix = ", Part $episode_part";
 				
 				$mkv = "$episode_filename.mkv";
-				$txt = "$episode_filename.txt";
 				
 				// Check to see if file exists, if not, rip it 				
 				if(!file_exists($mkv))
