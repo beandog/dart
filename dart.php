@@ -23,6 +23,8 @@
 	require_once 'models/tracks.php';
 	require_once 'models/queue.php';
 	
+	require_once 'dart.parser.php';
+	
 	start:
 	
 	/** Start everything **/
@@ -89,14 +91,7 @@
 		
 	}
 	
-	// FIXME
-	// Display info about disc
-// 	if($info)
-// 		if($disc_archived)
-// 			display_info($uniq_id);
-// 		else
-// 			shell::msg("Disc is not archived");
-	
+	require 'dart.info.php';
 	require 'dart.iso.php';
 	require 'dart.queue.php';
 	require 'dart.rip.php';	
