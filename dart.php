@@ -49,7 +49,6 @@
 		$dvds_model = new Dvds_Model;
 		$queue_model = new Queue_Model;
 		$dvd_episodes = array();
-		$dart = new dart();
 		$num_empty_polls = 0;
 		$export_dir = getenv('HOME').'/dvds/';
 		

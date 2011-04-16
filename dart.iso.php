@@ -10,7 +10,7 @@
 	// Check if needed
 	if($rip && !file_exists($iso) && !$device_is_iso) {
 			
-		$tmpfname = tempnam($dart->export, "tmp");
+		$tmpfname = tempnam($export_dir, "tmp");
 	
 		$dvd->dump_iso($tmpfname);
 		rename($tmpfname, $iso);
