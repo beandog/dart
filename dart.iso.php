@@ -5,7 +5,7 @@
 	 * Copy a disc's content to the harddrive
 	 */
 	// Get the target filename
-	$iso = $dart->export.$dvds_model->id.".".$dvds_model->title.".iso";
+	$iso = $export_dir.$dvds_model->id.".".$dvds_model->title.".iso";
 	
 	// Check if needed
 	if($rip && !file_exists($iso) && !$device_is_iso) {

@@ -52,6 +52,7 @@
 		$dvd_episodes = array();
 		$dart = new dart();
 		$num_empty_polls = 0;
+		$export_dir = getenv('HOME').'/dvds/';
 		
 		if($reset_queue)
 			$queue_model->reset();
@@ -175,7 +176,7 @@
 		
 		$series_model = new Series_Model($episodes_model->get_series_id());
 		$series_title = $series_model->title;
-		$series_dir = $this->export.$this->formatTitle($series_title)."/";
+		$series_dir = $export_dir.formatTitle($series_title)."/";
 		
 		/** Build the episode filename **/
 		if($series_model->indexed == 't' && $episode_season)
@@ -185,7 +186,7 @@
 			$episode_suffix = ", Part $episode_part";
 		
 		/** Filenames **/
-		$episode_filename = $series_dir.$this->formatTitle($episode_prefix.$episode_title.$episode_suffix);
+		$episode_filename = $series_dir.formatTitle($episode_prefix.$episode_title.$episode_suffix);
 		
 		return $episode_filename;
 	

@@ -36,7 +36,7 @@
 				
 				$series_model = new Series_Model($episodes_model->get_series_id());
 				$series_title = $series_model->title;
-				$series_dir = $dart->export.formatTitle($series_title)."/";
+				$series_dir = $export_dir.formatTitle($series_title)."/";
 				
 				// Clean up any old tmp files
 				$scandir = scandir($series_dir);
@@ -45,7 +45,7 @@
 					foreach($arr as $filename)
 						unlink($series_dir.$filename);
 				
-				$iso = $dart->export.$dvds_model->id.".".$dvds_model->title.".iso";
+				$iso = $export_dir.$dvds_model->id.".".$dvds_model->title.".iso";
 				$xml = "$episode_filename.xml";
 				$mkv = "$episode_filename.mkv";
 				$txt = "$episode_filename.txt";
@@ -256,7 +256,7 @@
 							
 							$dvds_model = new Dvds_Model($queue_dvd_id);
 							
-							$queue_isos[] = $dart->export.$dvds_model->id.".".$dvds_model->title.".iso";
+							$queue_isos[] = $export_dir.$dvds_model->id.".".$dvds_model->title.".iso";
 							
 						}
 	

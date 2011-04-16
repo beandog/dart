@@ -18,8 +18,8 @@
 	if($rip && $disc_archived && $num_episodes) {
 	
 		/** Create directory to dump files to */
- 		if(!is_dir($dart->export))
- 			@mkdir($dart->export, 0755);
+ 		if(!is_dir($export_dir))
+ 			@mkdir($export_dir, 0755);
  		
 		// Extract episodes
 		if(count($dvd_episodes)) {
@@ -71,7 +71,7 @@
 				$series_title = $series_model->title;
 				
 				// Get and create our export directory
-				$series_dir = $dart->export.formatTitle($series_title)."/";
+				$series_dir = $export_dir.formatTitle($series_title)."/";
  				if(!is_dir($series_dir))
  					mkdir($series_dir, 0755) or die("Can't create export directory $series_dir");
  				
