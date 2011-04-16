@@ -24,9 +24,14 @@
 		'action' => 'StoreTrue',
 	));
 	$parser->addOption('info', array(
-		'short_name' => '-i',
 		'long_name' => '--info',
 		'description' => 'Display metadata about a DVD',
+		'action' => 'StoreTrue',
+	));
+	$parser->addOption('import', array(
+		'short_name' => '-i',
+		'long_name' => '--import',
+		'description' => 'Import DVD metadata into database',
 		'action' => 'StoreTrue',
 	));
 	$parser->addOption('dump_iso', array(

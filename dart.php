@@ -97,6 +97,7 @@
 	}
 	
 	require 'dart.info.php';
+	require 'dart.import.php';
 	require 'dart.iso.php';
 	require 'dart.queue.php';
 	require 'dart.rip.php';	
