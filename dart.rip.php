@@ -41,7 +41,7 @@
 // 			
 // 			}
 
-			$bar = new Console_ProgressBar('[%bar%] %percent%'." ($num_episodes episodes to rip)", ':', ' :D ', 80, $num_episodes);
+			$bar = new Console_ProgressBar('[%bar%] %percent%'." ($num_episodes episodes)", ':', ' :D ', 80, $num_episodes);
 			$i = 0;
 			
 			foreach($dvd_episodes as $episode_id) {

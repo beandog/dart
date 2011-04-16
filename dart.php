@@ -69,30 +69,34 @@
 		
 		$dvds_model_id = $dvds_model->find_id('uniq_id', $uniq_id);
 		
-		if($dvds_model_id)
+		if($dvds_model_id) {
+			
 			$disc_archived = true;
 		
-		$dvds_model->load($dvds_model_id);
-		
-		$dvd_episodes = $dvds_model->get_episodes();
-		
-		$num_episodes = count($dvd_episodes);
-		
-		// Update disc size
-		/** Set the filesize of the DVD disc **/
-		if(is_null($dvds_model->filesize)) {
-		
-			// FIXME Kind of pointless if only checks if mounted..
-			// FIXME reads udev amount
- 			if($mount)
- 				$dvds_model->filesize = $dvd->getSize();
+			$dvds_model->load($dvds_model_id);
 			
-			if($device_is_iso && file_exists($device)) {
-				$filesize = sprintf("%u", filesize($device)) / 1024;
-				$dvds_model->filesize = $filesize;
-				unset($filesize);
+			$dvd_episodes = $dvds_model->get_episodes();
+			
+			$num_episodes = count($dvd_episodes);
+			
+			// Update disc size
+			/** Set the filesize of the DVD disc **/
+			if(is_null($dvds_model->filesize)) {
+			
+				// FIXME Kind of pointless if only checks if mounted..
+				// FIXME reads udev amount
+				if($mount)
+					$dvds_model->filesize = $dvd->getSize();
+				
+				if($device_is_iso && file_exists($device)) {
+					$filesize = sprintf("%u", filesize($device)) / 1024;
+					$dvds_model->filesize = $filesize;
+					unset($filesize);
+				}
 			}
-		}
+		
+		} else
+			$disc_archived = false;
 		
 	}
 	
