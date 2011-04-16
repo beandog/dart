@@ -1,0 +1,19 @@
+<?
+	/**
+	 * --iso
+	 *
+	 * Copy a disc's content to the harddrive
+	 */
+	// Get the target filename
+	$iso = $dart->export.$dvds_model->id.".".$dvds_model->title.".iso";
+	
+	// Check if needed
+	if($rip && !file_exists($iso) && !$device_is_iso) {
+			
+		$tmpfname = tempnam($dart->export, "tmp");
+	
+		$dvd->dump_iso($tmpfname);
+		rename($tmpfname, $iso);
+		unset($tmpfname);
+	
+	}
