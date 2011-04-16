@@ -36,7 +36,7 @@
 				
 				$series_model = new Series_Model($episodes_model->get_series_id());
 				$series_title = $series_model->title;
-				$series_dir = $dart->export.$dart->formatTitle($series_title)."/";
+				$series_dir = $dart->export.formatTitle($series_title)."/";
 				
 				// Clean up any old tmp files
 				$scandir = scandir($series_dir);

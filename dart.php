@@ -151,4 +151,16 @@
 		
 	}
 	
+	/**
+	 * Format a title for saving to filesystem
+	 *
+	 * @param string original title
+	 * @return new title
+	 */
+	function formatTitle($str = 'Title', $underlines = true) {
+		$str = preg_replace("/[^A-Za-z0-9 \-,.?':!]/", '', $str);
+		$underlines && $str = str_replace(' ', '_', $str);
+		return $str;
+	}
+	
 ?>
