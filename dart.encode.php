@@ -120,10 +120,6 @@
 							
 						}
 
-						// FIXME Add preset support (big wishlist item)
-						// For now, assume everything is 'Normal' profile.
-						$handbrake->set_preset('Normal');
-								
 						// Check for a subtitle track
 						$subp_ix = $tracks_model->get_first_english_subp();
 								
