@@ -2,6 +2,12 @@
 
 	class dart {
 	
+		function __construct() {
+		
+			$this->export = getenv('HOME').'/dvds/';
+		
+		}
+	
 		function archived($dvd_id) {
 		
 			$dvd = dvds::find_by_uniq_id($dvd_id);
