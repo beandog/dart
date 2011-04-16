@@ -601,6 +601,8 @@
 					
 					$matroska->mux();
 					
+					$num_encoded++;
+					
 				} elseif (!file_exists($iso) && !file_exists($mkv)) {
 					// At this point, it shouldn't be in the queue.
 					$queue_model->remove_episode($episode_id);
@@ -642,7 +644,6 @@
 				$queue_episodes = $queue_model->get_episodes(php_uname('n'), $skip);
 				
 				$count = count($queue_episodes);
-				$num_encoded++;
 				
 			}
 			
