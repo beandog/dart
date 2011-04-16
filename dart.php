@@ -635,7 +635,7 @@
 						
 					}
 
-					if(!in_array($iso, $queue_isos) && !$debug) {
+					if(!in_array($iso, $queue_isos) && !$debug && file_exists($iso)) {
 						unlink($iso);
 					}
 				}
