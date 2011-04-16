@@ -97,14 +97,34 @@
 // 		else
 // 			shell::msg("Disc is not archived");
 	
-	require_once 'dart.iso.php';
-	require_once 'dart.queue.php';
-	require_once 'dart.rip.php';	
-	require_once 'dart.encode.php';
+	require 'dart.iso.php';
+	require 'dart.queue.php';
+	require 'dart.rip.php';	
+	require 'dart.encode.php';
 	
 	if($eject)
 		$dvd->eject();
 	
-	require_once 'dart.poll.php';
+	// If polling for a new disc, check to see if one is in the
+	// drive.  If there is, start over.
+	if($poll && $rip) {
+
+		$notice = false;
+		
+		while(true) {
+
+			if($dvd->cddetect()) {
+				shell::msg("Found a disc, starting over!");
+				goto start;
+			} else {
+				if(!$notice)
+					shell::msg("Waiting for a new disc on $device");
+				$notice = true;
+				sleep(60);
+			}
+
+		}
+
+	}
 	
 ?>
