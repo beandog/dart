@@ -1,4 +1,5 @@
 <?
+
 	/**
 	 * --encode
 	 *
@@ -160,7 +161,6 @@
 					
 						$matroska = new Matroska();
 						
-						$matroska->setFilename($mkv);
 						if($episode_title)
 							$matroska->setTitle("TITLE", $episode_title);
 						if(!$reencode)
@@ -224,7 +224,10 @@
 					if(file_exists($xml))
 						$matroska->addGlobalTags($xml);
 					
+					$tmpfname = tempnam(dirname($episode_filename), "mkv.$episode_id.");
+					$matroska->setFilename($tmpfname);
 					$matroska->mux();
+					rename($tmpfname, $mkv);
 					
 					$num_encoded++;
 					
