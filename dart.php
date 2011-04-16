@@ -144,7 +144,7 @@
 					if(!$notice)
 						shell::msg("Waiting for a new disc on $device");
 					$notice = true;
-					sleep(60);
+					sleep(15);
 				}
 	
 			}
