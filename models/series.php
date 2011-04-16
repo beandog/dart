@@ -34,9 +34,13 @@
 		
 		function get_x264opts() {
 		
+			$sql = "SELECT x264opts FROM presets WHERE name = ".$this->db->quote($this->get_handbrake_base_preset()).";";
+			$arr[] = $this->db->getOne($sql);
+		
 			$sql = "SELECT presets.x264opts FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->db->quote($this->id).";";
+			$arr[] = $this->db->getOne($sql);
 			
-			$var = $this->db->getOne($sql);
+			$var = implode(":", $arr);
 			
 			return $var;
 		

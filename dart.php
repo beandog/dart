@@ -219,11 +219,15 @@
 	 *
 	 */
 	
-	$queue_episodes = $queue_model->get_episodes(php_uname('n'));
+	$queue_episodes = $queue_model->get_episodes(php_uname('n'), $skip, $max);
 	
 	if($queue) {
 	
-		print_r($queue_episodes);
+		foreach($queue_episodes as $episode_id) {
+			$episodes_model = new Episodes_Model($episode_id);
+			$display_name = $episodes_model->get_display_name();
+			echo("$display_name\n");
+		}
 	
 	}
 	
@@ -361,10 +365,10 @@
 			$dvd->eject();
 			$ejected = true;
 		}
+		
+		echo "\n";
 	
 	}
-	
-	echo "\n";
 	
 	/**
 	 * --encode
@@ -374,11 +378,7 @@
 	 */
 	if($encode) {
 	
-		$queue_episodes = $queue_model->get_episodes(php_uname('n'));
-		
-		$encode_index = 1;
-		$bar = new Console_ProgressBar('[%bar%] %percent%'." [Encoding #$encode_index of ".count($queue_episodes)."]", ':', ' :D ', 80, count($queue_episodes));
-		$bar->update(0);
+		$queue_episodes = $queue_model->get_episodes(php_uname('n'), $skip, $max);
 		
 		do {
 		
@@ -397,6 +397,9 @@
 				$episode_part = $episodes_model->part;
 				$episode_season = $episodes_model->get_season();
 				$episode_filename = $dart->get_episode_filename($episode_id);
+				$display_name = $episodes_model->get_display_name();
+				
+				echo("$display_name\n");
 				
 				$tracks_model = new Tracks_Model($track_id);
 				$track_number = $tracks_model->ix;
@@ -412,72 +415,6 @@
 				$mkv = "$episode_filename.mkv";
 				$txt = "$episode_filename.txt";
 				$x264 = "$episode_filename.x264";
-				
-				/** Matroska Metadata */
- 				if(!file_exists($xml) && !file_exists($mkv)) {
- 				
-  					$production_studio = $series_model->production_studio;
-  					$production_year = $series_model->production_year;
- 				
- 					$matroska = new Matroska();
- 					
- 					$matroska->setFilename($mkv);
- 					if($episode_title)
- 						$matroska->setTitle("TITLE", $episode_title);
- 					if(!$reencode)
- 						$matroska->setAspectRatio($tracks_model->aspect);
- 					
-					$matroska->addTag();
-					$matroska->addTarget(70, "COLLECTION");
-					$matroska->addSimpleTag("TITLE", $series_model->title_long);
-					$matroska->addSimpleTag("SORT_WITH", $series_model->title);
-					if($production_studio)
-						$matroska->addSimpleTag("PRODUCTION_STUDIO", $production_studio);
-					if($production_year)
-						$matroska->addSimpleTag("DATE_RELEASE", $production_year);
-					$matroska->addSimpleTag("ORIGINAL_MEDIA_TYPE", "DVD");
-					
-					/** Season **/
-					if($episodes_model->season) {
-					
-						$season = $episodes_model->season;
-					
-						$matroska->addTag();
-						$matroska->addTarget(60, "SEASON");
-						
-						if($series_model->production_year) {
-							$year = $production_year + $season - 1;
-							$matroska->addSimpleTag("DATE_RELEASE", $year);
-						}
-						
-						$matroska->addSimpleTag("PART_NUMBER", $season);
-						
-					}
-					
-					/** Episode **/
-					if(!$movie) {
-						$matroska->addTag();
-						$matroska->addTarget(50, "EPISODE");
-						if($episode_title)
-							$matroska->addSimpleTag("TITLE", $episode_title);
-						if($episode_number)
-							$matroska->addSimpleTag("PART_NUMBER", $episode_number);
-						$matroska->addSimpleTag("DATE_TAGGED", date("Y-m-d"));
-						$matroska->addSimpleTag("PLAY_COUNTER", 0);
-						
-						if($episodes_model->part > 1) {
-							$matroska->addTag();
-							$matroska->addTarget(40, "PART");
-							$matroska->addSimpleTag("PART_NUMBER", $episodes_model->part);
-						}
-					}
-					
-					$str = $matroska->getXML();
-					
- 					if($str)
-						file_put_contents($xml, $str);
-					
-				}
 				
 				// FIXME put somewhere else
 // 				if($queue) {
@@ -502,9 +439,11 @@
 						$handbrake->verbose();
 				
 					if(!file_exists($x264)) {
+					
+						$tmpfname = tempnam(dirname($episode_filename), "x264.$episode_id.");
 						
 						$handbrake->input_filename($iso, $track_number);
-						$handbrake->output_filename($x264);
+						$handbrake->output_filename($tmpfname);
 						
 						$handbrake_base_preset = $series_model->get_handbrake_base_preset();
 						$x264opts = $series_model->get_x264opts();
@@ -580,17 +519,87 @@
 							shell::msg("Executing: ".$handbrake->get_executable_string());
 						
 						$handbrake->encode();
+						
+						rename($tmpfname, $x264);
+						
+					}
+					
+					/** Matroska Metadata */
+					if(!file_exists($xml) && !file_exists($mkv)) {
+					
+						$production_studio = $series_model->production_studio;
+						$production_year = $series_model->production_year;
+					
+						$matroska = new Matroska();
+						
+						$matroska->setFilename($mkv);
+						if($episode_title)
+							$matroska->setTitle("TITLE", $episode_title);
+						if(!$reencode)
+							$matroska->setAspectRatio($tracks_model->aspect);
+						
+						$matroska->addTag();
+						$matroska->addTarget(70, "COLLECTION");
+						$matroska->addSimpleTag("TITLE", $series_model->title_long);
+						$matroska->addSimpleTag("SORT_WITH", $series_model->title);
+						if($production_studio)
+							$matroska->addSimpleTag("PRODUCTION_STUDIO", $production_studio);
+						if($production_year)
+							$matroska->addSimpleTag("DATE_RELEASE", $production_year);
+						$matroska->addSimpleTag("ORIGINAL_MEDIA_TYPE", "DVD");
+						
+						/** Season **/
+						if($episodes_model->season) {
+						
+							$season = $episodes_model->season;
+						
+							$matroska->addTag();
+							$matroska->addTarget(60, "SEASON");
+							
+							if($series_model->production_year) {
+								$year = $production_year + $season - 1;
+								$matroska->addSimpleTag("DATE_RELEASE", $year);
+							}
+							
+							$matroska->addSimpleTag("PART_NUMBER", $season);
+							
+						}
+						
+						/** Episode **/
+						if(!$movie) {
+							$matroska->addTag();
+							$matroska->addTarget(50, "EPISODE");
+							if($episode_title)
+								$matroska->addSimpleTag("TITLE", $episode_title);
+							if($episode_number)
+								$matroska->addSimpleTag("PART_NUMBER", $episode_number);
+							$matroska->addSimpleTag("DATE_TAGGED", date("Y-m-d"));
+							$matroska->addSimpleTag("PLAY_COUNTER", 0);
+							
+							if($episodes_model->part > 1) {
+								$matroska->addTag();
+								$matroska->addTarget(40, "PART");
+								$matroska->addSimpleTag("PART_NUMBER", $episodes_model->part);
+							}
+						}
+						
+						$str = $matroska->getXML();
+						
+						if($str)
+							file_put_contents($xml, $str);
+						
 					}
 					
 					if(file_exists($x264))
 						$matroska->addFile($x264);
+					
+					
+					
 						
 					if(file_exists($xml))
 						$matroska->addGlobalTags($xml);
 					
 					$matroska->mux();
-					
-					$queue_model->remove_episode($episode_id);
 					
 				} elseif (!file_exists($iso) && !file_exists($mkv)) {
 					// At this point, it shouldn't be in the queue.
@@ -607,43 +616,42 @@
 						unlink($x264);
 				}
 				
-				// Remove episode from queue
-// 				if(file_exists($mkv)) {
-// 					
-// 					$queue_model->remove_episode($episode_id);
-// 
-// 					// Remove any old ISOs
-// 					$discs = $dart->getDiscQueue();
-// 
-// 					$queue_isos = array();
-// 
-// 					foreach($discs as $queue_disc_id) {
-// 						$queue_dart_disc = new dartDvd($queue_disc_id);
-// 						$queue_isos[] = $dart->export.$queue_dart_disc->getFilename();
-// 					}
-// 
-// 					if(!in_array($iso, $queue_isos) && !$debug) {
-// 						unlink($iso);
-// 					}
-// 				}
+				if(file_exists($mkv)) {
+					
+					$queue_model->remove_episode($episode_id);
+
+					// Remove any old ISOs
+					$queue_dvds = $queue_model->get_dvds(php_uname('n'));
+
+					$queue_isos = array();
+
+					foreach($queue_dvds as $queue_dvd_id) {
+						
+						$dvds_model = new Dvds_Model($queue_dvd_id);
+						
+						$queue_isos[] = $dart->export.$dvds_model->id.".".$dvds_model->title.".iso";
+						
+					}
+
+					if(!in_array($iso, $queue_isos) && !$debug) {
+						unlink($iso);
+					}
+				}
 				
 				// Refresh the queue
-				$queue_episodes = $queue_model->get_episodes(php_uname('n'));
+				$queue_episodes = $queue_model->get_episodes(php_uname('n'), $skip);
 				
-				$bar->erase();
 				$count = count($queue_episodes);
-				$encode_index++;
-				$bar->reset('[%bar%] %percent%'." [Encoding #$encode_index of ".count($queue_episodes)."]", ':', ' :D ', 80, $count);
-				$bar->update($encode_index);
-
+				$num_encoded++;
+				
 			}
 			
-		} while(count($queue_episodes) && $encode);
+		} while(count($queue_episodes) && $encode && (!$max || ($num_encoded < $max)));
+		
+// 		echo "\n";
 		
 	}
 	
-	echo "\n";
-
 	if($eject)
 		$dvd->eject();
 	

@@ -30,6 +30,21 @@
 		
 		}
 		
+		public function get_display_name() {
+		
+			$sql = "SELECT series_title, episode_title, episode_part FROM view_episodes WHERE episode_id = ".$this->db->quote($this->id).";";
+			
+			$arr = $this->db->getRow($sql);
+			
+			if(empty($arr[2]))
+				array_pop($arr);
+			
+			$str = implode(": ", $arr);
+			
+			return $str;
+		
+		}
+		
 		
 		public function get_number() {
 		
