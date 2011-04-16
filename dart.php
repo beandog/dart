@@ -41,9 +41,9 @@
 	
 	if(substr($device, -4, 4) == ".iso")
 		$device_is_iso = true;
-	
+		
 	// Determine whether we are reading the device
-	if($rip || $info || $import || $dvd->cddetect(true))
+	if($rip || $info || $import || ($argc == 1 && $dvd->cddetect(true)))
 		$access_device = true;
 		
 	// Determine whether we need physical access to a disc.
@@ -71,11 +71,14 @@
 		
 		if($dvds_model_id) {
 			
-			$disc_archived = true;
-		
 			$dvds_model->load($dvds_model_id);
 			
 			$dvd_episodes = $dvds_model->get_episodes();
+			
+			if(!is_null($dvds_model->longest_track))
+				$disc_archived = true;
+			else
+				$disc_archived = false;
 			
 			$num_episodes = count($dvd_episodes);
 			
