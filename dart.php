@@ -30,6 +30,8 @@
 	/** Start everything **/
 	if(is_null($device))
 		$device = "/dev/dvd";
+	if($alt_device)
+		$device = "/dev/dvd1";
 	$dvd = new DVD($device);
 	$dvds_model = new Dvds_Model;
 	$queue_model = new Queue_Model;
@@ -43,7 +45,7 @@
 		$device_is_iso = true;
 		
 	// Determine whether we are reading the device
-	if($rip || $info || $import || ($argc == 1 && $dvd->cddetect(true)))
+	if($rip || $info || $import || ($argc == 1 && $dvd->cddetect(true)) || ($argc == 2 && $alt_device && $dvd->cddetect(true)))
 		$access_device = true;
 		
 	// Determine whether we need physical access to a disc.
