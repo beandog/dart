@@ -161,7 +161,7 @@
 						$matroska = new Matroska();
 						
 						if($episode_title)
-							$matroska->setTitle("TITLE", $episode_title);
+							$matroska->setTitle($episode_title);
 						if(!$reencode)
 							$matroska->setAspectRatio($tracks_model->aspect);
 						
