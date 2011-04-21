@@ -17,3 +17,8 @@
 		unset($tmpfname);
 	
 	}
+	
+	// Check if the device is an ISO, and we need
+	// a symlink to the standardized ISO filename
+	if($device_is_iso && !file_exists($iso))
+		symlink($device, $iso);
