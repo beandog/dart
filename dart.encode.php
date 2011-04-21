@@ -167,8 +167,7 @@
 						
 						$matroska->addTag();
 						$matroska->addTarget(70, "COLLECTION");
-						$matroska->addSimpleTag("TITLE", $series_model->title_long);
-						$matroska->addSimpleTag("SORT_WITH", $series_model->title);
+						$matroska->addSimpleTag("TITLE", $series_model->title);
 						if($production_studio)
 							$matroska->addSimpleTag("PRODUCTION_STUDIO", $production_studio);
 						if($production_year)
