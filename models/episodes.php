@@ -26,7 +26,12 @@
 		
 			$sql = "SELECT season FROM view_episodes WHERE episode_id = ".$this->db->quote($this->id)." LIMIT 1;";
 			
-			return $this->db->getOne($sql);
+			$var = $this->db->getOne($sql)
+			
+			if($var === 0)
+				$var = null;
+			
+			return;
 		
 		}
 		
