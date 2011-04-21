@@ -37,6 +37,8 @@
 	
 	if(is_null($device))
 		$devices = array("/dev/dvd");
+	else
+		$devices = array($device);
 	if($alt_device)
 		$devices = array("/dev/dvd1");
 	
