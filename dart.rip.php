@@ -48,7 +48,7 @@
 			
 				// New instance of a DB episode
 				$episodes_model = new Episodes_Model($episode_id);
-				$episode_season = $episodes_model->season;
+				$episode_season = $episodes_model->get_season();
 				$episode_title = $episodes_model->title;
 				$episode_part = $episodes_model->part;
 				$episode_filename = get_episode_filename($episode_id);
@@ -76,10 +76,14 @@
  					mkdir($series_dir, 0755) or die("Can't create export directory $series_dir");
  				
 				// Get the episode #
+				// FIXME This should be a function call to keep the names the same
 				if($series_model->indexed == 't') {
 					
 					$indexed_series = true;
 					$episode_number = $episodes_model->get_number();
+					
+					if(!$episode_season)
+						$episode_season = 1;
 					
 					if($episode_season)
 						$episode_prefix = "${episode_season}x${episode_number}._";
