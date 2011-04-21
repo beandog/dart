@@ -190,7 +190,7 @@
 		$series_dir = $export_dir.formatTitle($series_title)."/";
 		
 		/** Build the episode filename **/
-		if($series_model->indexed == 't' && $episode_season)
+		if($series_model->indexed == 't')
 			$episode_prefix = "${display_season}x${display_episode_number}._";
 		
 		if($episode_part > 1)
