@@ -75,25 +75,6 @@
  				if(!is_dir($series_dir))
  					mkdir($series_dir, 0755) or die("Can't create export directory $series_dir");
  				
-				// Get the episode #
-				// FIXME This should be a function call to keep the names the same
-				if($series_model->indexed == 't') {
-					
-					$indexed_series = true;
-					$episode_number = $episodes_model->get_number();
-					
-					if(!$episode_season)
-						$episode_season = 1;
-					
-					if($episode_season)
-						$episode_prefix = "${episode_season}x${episode_number}._";
-					
-				} else
-					$indexed_series= false;
-				
-				if($episode_part > 1)
-					$episode_suffix = ", Part $episode_part";
-				
 				$mkv = "$episode_filename.mkv";
 				
 				// Check to see if file exists, if not, rip it 				

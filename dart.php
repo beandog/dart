@@ -176,6 +176,7 @@
 		$display_episode_number = str_pad($episode_number, 2, 0, STR_PAD_LEFT);
 		$episode_part = $episodes_model->part;
 		$episode_season = $episodes_model->get_season();
+		$series_model = new Series_Model($episodes_model->get_series_id());
 		
 		// FIXME Take into account 10+seasons
 		if($series_model->indexed == 't') {
@@ -183,15 +184,13 @@
 				$display_season = 1;
 			else
 				$display_season = $episode_season;
+			
+			$episode_prefix = "${display_season}x${display_episode_number}._";
 		}
 		
 		$series_model = new Series_Model($episodes_model->get_series_id());
 		$series_title = $series_model->title;
 		$series_dir = $export_dir.formatTitle($series_title)."/";
-		
-		/** Build the episode filename **/
-		if($series_model->indexed == 't')
-			$episode_prefix = "${display_season}x${display_episode_number}._";
 		
 		if($episode_part > 1)
 			$episode_suffix = ", Part $episode_part";
