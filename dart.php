@@ -33,6 +33,8 @@
 			$dvd->eject();
 		}
 	
+	$devices = array();
+	
 	if(is_null($device))
 		$devices = array("/dev/dvd");
 	if($alt_device)
