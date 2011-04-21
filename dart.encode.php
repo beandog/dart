@@ -42,8 +42,11 @@
 				$scandir = scandir($series_dir);
 				
 				if(count($arr = preg_grep('/(^x264|xml$)/', $scandir)))
-					foreach($arr as $filename)
-						unlink($series_dir.$filename);
+					foreach($arr as $filename) {
+						$filename = $series_dir.$filename;
+						if(is_writable($filename))
+							unlink($filename);
+					}
 				
 				$iso = $export_dir.$dvds_model->id.".".$dvds_model->title.".iso";
 				$xml = "$episode_filename.xml";
@@ -265,8 +268,8 @@
 // 							print_r($queue_isos);
 							
 // 							echo "Removing $iso\n";
-						
- 							unlink($iso);
+							if(is_writable($iso))
+ 								unlink($iso);
 						}
 					}
 				}
