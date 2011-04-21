@@ -48,19 +48,6 @@
 		
 		public function get_number() {
 		
-			// Find the # of episodes on PREVIOUS DISCS for this season and/or volume
-// 			$sql = "SELECT COUNT(1) ".
-// 				"FROM view_episodes e1 ".
-// 				"INNER JOIN view_episodes e2 ON e1.series_id = e2.series_id ".
-// 				"AND e1.series_dvds_volume = e2.series_dvds_volume ".
-// 				"AND e1.dvd_id != e2.dvd_id ".
-// 				"AND (e1.season = e2.season OR (e1.series_dvds_volume <= e2.series_dvds_volume AND e1.season IS NULL AND e2.season IS NULL) OR (e1.series_dvds_volume <= e2.series_dvds_volume AND e1.season = e2.season) ) ".
-// 				"WHERE e2.episode_id = ".$this->db->quote($this->id).
-// 				" AND ( e1.season <= e2.season  OR e1.season IS NULL AND e2.season IS NULL ) ".
-// 				" AND ((e1.series_dvds_ix < e2.series_dvds_ix ) OR (e1.series_dvds_ix = e2.series_dvds_ix AND e1.series_dvds_side < e2.series_dvds_side));";
-// 			
-// 			$count1 = $this->db->getOne($sql);
-
 			/**
 			 * I'm taking a different approach here.  Instead of trying to write one
 			 * massive query that checks all conditions, this one looks at three
@@ -72,34 +59,49 @@
 			 */
 			
 			// Same season, same volume, other discs
-			$sql = "SELECT DISTINCT e1.episode_id 
-				FROM view_episodes e1 INNER JOIN view_episodes e2 ON e1.series_id = e2.series_id 
-				AND e1.dvd_id != e2.dvd_id 
-				AND (
-					( e1.season = e2.season OR ( e1.season IS NULL AND e2.season IS NULL ) ) 
-					AND e1.series_dvds_ix < e2.series_dvds_ix 
-					AND ( 
-						e1.series_dvds_volume = e2.series_dvds_volume OR ( e1.series_dvds_volume IS NULL AND e2.series_dvds_volume IS NULL )
-					)
-				)
-				WHERE e2.episode_id = ".$this->db->quote($this->id)."
-				ORDER BY e1.episode_id;";
+			$sql = "SELECT DISTINCT e1.episode_id ".
+				"FROM view_episodes e1 INNER JOIN view_episodes e2 ON ".
+				// Same series
+				"e1.series_id = e2.series_id ".
+				// Same season
+				"AND e1.season = e2.season ".
+				// Same volume
+				"AND e1.series_dvds_volume = e2.series_dvds_volume ".
+				// Not the same DVD
+// 				"AND e1.dvd_id != e2.dvd_id ".
+				// Previous DVD index
+				"AND e1.series_dvds_ix < e2.series_dvds_ix ".
+				"WHERE e2.episode_id = ".$this->db->quote($this->id).
+				" ORDER BY e1.episode_id;";
 				
 			$episodes = $this->db->getCol($sql);
 			
+			$i = count($episodes);
+			
 			// Earlier seasons
+			/** For the life of me, on a re-edit, where I fixed things so
+			that the volume and season are always the same (set to zero, to avoid
+			the extra conditional checks for null values), I cannot now remember
+			why in the world this query is in here.
+			*/
+// 			$sql = "SELECT DISTINCT e1.episode_id 
+// 				FROM view_episodes e1 INNER JOIN view_episodes e2 ON e1.series_id = e2.series_id 
+// 				AND e1.dvd_id != e2.dvd_id 
+// 				AND e1.season < e2.season 
+// 				WHERE e2.episode_id = ".$this->db->quote($this->id)."
+// 				ORDER BY e1.episode_id;";
+// 			
+// 			$episodes = array_unique(array_merge($episodes, $this->db->getCol($sql)));
+// 			
+// 			$i = count($episodes);
+// 			
+// 			echo ("count: $i\n");
+			
+			// Earlier volumes, same SEASON
+			// Fetching this because a SEASON can go across many VOLUMEs
 			$sql = "SELECT DISTINCT e1.episode_id 
 				FROM view_episodes e1 INNER JOIN view_episodes e2 ON e1.series_id = e2.series_id 
-				AND e1.dvd_id != e2.dvd_id 
-				AND e1.season < e2.season 
-				WHERE e2.episode_id = ".$this->db->quote($this->id)."
-				ORDER BY e1.episode_id;";
-			
-			$episodes = array_merge($episodes, $this->db->getCol($sql));
-			
-			// Earlier volumes
-			$sql = "SELECT DISTINCT e1.episode_id 
-				FROM view_episodes e1 INNER JOIN view_episodes e2 ON e1.series_id = e2.series_id 
+				AND e1.season = e2.season
 				AND e1.dvd_id != e2.dvd_id 
 				AND e1.series_dvds_volume < e2.series_dvds_volume 
 				WHERE e2.episode_id = ".$this->db->quote($this->id)."
@@ -116,16 +118,29 @@
 			// Find the # of episodes ON THE CURRENT DISC before this episode
 			// TESTING Added a check for complete-series DVDs, where the query
 			// looks at the volume as well, not just the season.
+			
 			$sql = "SELECT COUNT(1) FROM view_episodes e1 ".
 				"INNER JOIN view_episodes e2 ON e1.dvd_id = e2.dvd_id ".
+				// Same series
 				"AND e1.series_id = e2.series_id ".
-				"AND ((e1.episode_ix < e2.episode_ix) OR (e1.episode_ix = e2.episode_ix AND e1.episode_ix < e2.episode_ix)) ".
+				// Same season
+				"AND e1.season = e2.season ".
+				// Same volume
+				"AND e2.series_dvds_volume = e2.series_dvds_volume ".
+				// Same DVD
+				"AND e2.dvd_id = e2.dvd_id ".
+				// Same side
 				"AND e1.series_dvds_side = e2.series_dvds_side ".
- 				"AND (e1.season = e2.season OR (e1.series_dvds_volume = e2.series_dvds_volume AND e1.season IS NULL AND e2.season IS NULL) OR (e1.series_dvds_volume = e2.series_dvds_volume AND e1.season = e2.season) ) ".
+				// Lesser episode IF they are not the same (zero)
+ 				"AND ((e1.episode_ix != e2.episode_ix AND e1.episode_ix < e2.episode_ix)".
+ 					"OR (e1.episode_ix = e2.episode_ix AND e1.episode_id < e2.episode_id)) ".
+ 				// Not the same episode
 				"AND e1.episode_id != e2.episode_id ".
 				"WHERE e2.episode_id = ".$this->db->quote($this->id).
 				";";
  			$count2 = $this->db->getOne($sql);
+ 			
+//  			echo "$count2\n";
  			
 //  			echo "# PREVIOUS EPISODES on SAME DISC: $count2\n";
  			

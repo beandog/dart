@@ -17,9 +17,13 @@
 			if($verbose) {
 				
 				$episode_number = $episodes_model->get_number();
+				$episode_season = $episodes_model->get_season();
+				
+				if(!$episode_season)
+					$episode_season = 1;
 				
 				if($episode_number)
-					$str .= " (#$episode_number)";
+					$str .= " (#${episode_season}x${episode_number})";
 				
 			}
 			
