@@ -173,8 +173,17 @@
 		$episode_title = $episodes_model->title;
 		$track_id = $episodes_model->track_id;
 		$episode_number = $episodes_model->get_number();
+		$display_episode_number = str_pad($episode_number, 2, 0, STR_PAD_LEFT);
 		$episode_part = $episodes_model->part;
 		$episode_season = $episodes_model->get_season();
+		
+		// FIXME Take into account 10+seasons
+		if($series_model->indexed == 't') {
+			if(!$episode_season)
+				$display_season = 1;
+			else
+				$display_season = $episode_season;
+		}
 		
 		$series_model = new Series_Model($episodes_model->get_series_id());
 		$series_title = $series_model->title;
@@ -182,7 +191,7 @@
 		
 		/** Build the episode filename **/
 		if($series_model->indexed == 't' && $episode_season)
-				$episode_prefix = "${episode_season}x${episode_number}._";
+			$episode_prefix = "${display_season}x${display_episode_number}._";
 		
 		if($episode_part > 1)
 			$episode_suffix = ", Part $episode_part";
