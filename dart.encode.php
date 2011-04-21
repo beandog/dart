@@ -49,10 +49,10 @@
 					}
 				
 				$iso = $export_dir.$dvds_model->id.".".$dvds_model->title.".iso";
-				$xml = "$episode_filename.xml";
-				$mkv = "$episode_filename.mkv";
-				$txt = "$episode_filename.txt";
-				$x264 = "$episode_filename.x264";
+				$xml = $export_dir."$episode_filename.xml";
+				$mkv = $export_dir."$episode_filename.mkv";
+				$txt = $export_dir."$episode_filename.txt";
+				$x264 = $export_dir."$episode_filename.x264";
 				
 				// Check to see if file exists, if not, encode it
 				if(file_exists($iso) && !file_exists($mkv)) {
@@ -72,7 +72,7 @@
 				
 					if(!file_exists($x264)) {
 					
-						$tmpfname = tempnam(dirname($episode_filename), "x264.$episode_id.");
+						$tmpfname = tempnam($export_dir.dirname($episode_filename), "x264.$episode_id.");
 						
 						$handbrake->input_filename($iso, $track_number);
 						$handbrake->output_filename($tmpfname);
@@ -220,7 +220,7 @@
 					if(file_exists($xml))
 						$matroska->addGlobalTags($xml);
 					
-					$tmpfname = tempnam(dirname($episode_filename), "mkv.$episode_id.");
+					$tmpfname = tempnam($export_dir.dirname($episode_filename), "mkv.$episode_id.");
 					$matroska->setFilename($tmpfname);
 					$matroska->mux();
 					rename($tmpfname, $mkv);
