@@ -26,12 +26,12 @@
 		
 			$sql = "SELECT season FROM view_episodes WHERE episode_id = ".$this->db->quote($this->id)." LIMIT 1;";
 			
-			$var = $this->db->getOne($sql)
+			$var = $this->db->getOne($sql);
 			
 			if($var === 0)
 				$var = null;
 			
-			return;
+			return $var;
 		
 		}
 		
@@ -39,12 +39,12 @@
 		
 			$sql = "SELECT series_dvds_volume FROM view_episodes WHERE episode_id = ".$this->db->quote($this->id)." LIMIT 1;";
 			
-			$var = $this->db->getOne($sql)
+			$var = $this->db->getOne($sql);
 			
 			if($var === 0)
 				$var = null;
 			
-			return;
+			return $var;
 		
 		}
 		
