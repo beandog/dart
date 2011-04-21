@@ -35,6 +35,19 @@
 		
 		}
 		
+		public function get_volume() {
+		
+			$sql = "SELECT series_dvds_volume FROM view_episodes WHERE episode_id = ".$this->db->quote($this->id)." LIMIT 1;";
+			
+			$var = $this->db->getOne($sql)
+			
+			if($var === 0)
+				$var = null;
+			
+			return;
+		
+		}
+		
 		public function get_display_name() {
 		
 			$sql = "SELECT series_title, episode_title, episode_part FROM view_episodes WHERE episode_id = ".$this->db->quote($this->id).";";
