@@ -176,19 +176,17 @@
 						$matroska->addSimpleTag("ORIGINAL_MEDIA_TYPE", "DVD");
 						
 						/** Season **/
-						if($episodes_model->season) {
-						
-							$season = $episodes_model->season;
+						if($episode_season) {
 						
 							$matroska->addTag();
 							$matroska->addTarget(60, "SEASON");
 							
 							if($series_model->production_year) {
-								$year = $production_year + $season - 1;
+								$year = $production_year + $episode_season - 1;
 								$matroska->addSimpleTag("DATE_RELEASE", $year);
 							}
 							
-							$matroska->addSimpleTag("PART_NUMBER", $season);
+							$matroska->addSimpleTag("PART_NUMBER", $episode_season);
 							
 						}
 						
