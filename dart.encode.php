@@ -148,7 +148,12 @@
 						
 						$handbrake->encode();
 						
-						rename($tmpfname, $x264);
+						// Handbrake can exit successfully and not actually encode anything,
+						// by leaving an empty file.
+						if(sprintf("%u", filesize($tmpfname)))
+							rename($tmpfname, $x264);
+						else
+							shell::msg("$episode_filename didn't encode properly: zero filesize");
 						
 					}
 					
