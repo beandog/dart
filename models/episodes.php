@@ -87,8 +87,8 @@
 				"AND e1.series_dvds_volume = e2.series_dvds_volume ".
 				// Not the same DVD
 // 				"AND e1.dvd_id != e2.dvd_id ".
-				// Previous DVD index
-				"AND e1.series_dvds_ix < e2.series_dvds_ix ".
+				// Previous DVD index or same index and other side
+				"AND ( (e1.series_dvds_ix < e2.series_dvds_ix ) OR ((e1.series_dvds_ix = e2.series_dvds_ix) AND (e1.series_dvds_side < e2.series_dvds_side))) ".
 				"WHERE e2.episode_id = ".$this->db->quote($this->id).
 				" ORDER BY e1.episode_id;";
 				
