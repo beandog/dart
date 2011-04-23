@@ -80,7 +80,7 @@
 			$device_is_iso = true;
 			
 		// Determine whether we are reading the device
-		if($rip || $info || $import || ($argc == 1 && $dvd->cddetect(true)) || ($argc == 2 && $alt_device && $dvd->cddetect(true)))
+		if($rip || $info || $import)
 			$access_device = true;
 			
 		// Determine whether we need physical access to a disc.
