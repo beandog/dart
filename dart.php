@@ -45,6 +45,11 @@
 	if($all)
 		$devices = $all_devices;
 	
+	// Process request to reset the queue
+	$queue_model = new Queue_Model;
+	if($reset_queue)
+		$queue_model->reset();
+	
 	foreach($devices as $device) {
 
 		start:
@@ -70,9 +75,6 @@
 		
 		// If it's DVD drive, can it be accessed
 		$access_drive = false;
-		
-		if($reset_queue)
-			$queue_model->reset();
 		
 		if(substr($device, -4, 4) == ".iso")
 			$device_is_iso = true;
