@@ -112,8 +112,15 @@
 				
 				// A disc is archived if it meets the latest schema
 				// In this case, just check to see if the longest track is set.
-				if(!is_null($dvds_model->longest_track))
+				if(!is_null($dvds_model->longest_track)) {
 					$disc_archived = true;
+					// Disable importing if it was turned on
+					$import = false;
+				} else {
+					// Override previous import command: we have access
+					// to the device, go ahead and import it into the database.
+					$import = true;
+				}
 				
 				// Update disc size
 				/** Set the filesize of the DVD disc **/

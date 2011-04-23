@@ -29,6 +29,9 @@
 			
 		$d->save();
 		
+		// Flag it as indexed
+		$disc_indexed = true;
+		
 		/** Tracks **/
 		
 		$num_tracks = $dvd->getNumTracks();
@@ -195,6 +198,9 @@
 			}
 				
 		}
+		
+		// Now flag it as archived. :D
+		$disc_archived = true;
 		
 	}
 	
