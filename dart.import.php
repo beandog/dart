@@ -3,7 +3,7 @@
 	if($import) {
 	
 		if($verbose)
-			shell::msg("--import");
+			shell::msg("[Import]");
 	
 		$uniq_id = $dvd->getID();
 	

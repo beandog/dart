@@ -4,7 +4,7 @@
 	if($info && $disc_archived) {
 	
 		if($verbose)
-			shell::msg("--info");
+			shell::msg("[Info]");
 		
 		$dvd_episodes = $dvds_model->get_episodes();
 		

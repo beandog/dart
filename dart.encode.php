@@ -8,6 +8,9 @@
 	 */
 	if($encode) {
 	
+		if($verbose)
+			shell::msg("[Encode]");
+	
 		$queue_episodes = $queue_model->get_episodes(php_uname('n'), $skip, $max);
 		
 		do {
@@ -38,6 +41,9 @@
 				$series_title = $series_model->title;
 				$series_dir = $export_dir.formatTitle($series_title)."/";
 				
+				if(!is_dir($series_dir))
+					mkdir($series_dir);
+				
 				// Clean up any old tmp files
 				$scandir = scandir($series_dir);
 				
@@ -51,7 +57,6 @@
 				$iso = $export_dir.$dvds_model->id.".".$dvds_model->title.".iso";
 				$xml = $export_dir."$episode_filename.xml";
 				$mkv = $export_dir."$episode_filename.mkv";
-				$txt = $export_dir."$episode_filename.txt";
 				$x264 = $export_dir."$episode_filename.x264";
 				
 				// Check to see if file exists, if not, encode it
@@ -67,7 +72,7 @@
 					
 					if($debug)
 						$handbrake->debug();
-					elseif($verbose)
+					if($verbose)
 						$handbrake->verbose();
 				
 					if(!file_exists($x264)) {
@@ -143,9 +148,6 @@
 						$handbrake->set_x264opts($x264opts);
 						$handbrake->set_video_quality($crf);
 								
-						if($debug)
-							shell::msg("Executing: ".$handbrake->get_executable_string());
-						
 						$handbrake->encode();
 						
 						// Handbrake can exit successfully and not actually encode anything,
@@ -243,11 +245,9 @@
 					$queue_model->remove_episode($episode_id);
 				
 					if(!$debug) {
-						if(file_exists($xml))
+						if(file_exists($xml) && is_writable($xml))
 							unlink($xml);
-						if(file_exists($txt))
-							unlink($txt);
-						if(file_exists($x264))
+						if(file_exists($x264) && is_writable($x264))
 							unlink($x264);
 	
 						/** Remove any old ISOs */

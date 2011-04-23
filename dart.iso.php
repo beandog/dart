@@ -11,7 +11,7 @@
 	if($rip && !file_exists($iso) && !$device_is_iso) {
 	
 		if($verbose)
-			shell::msg("--iso");
+			shell::msg("[ISO]");
 			
 		$tmpfname = tempnam($export_dir, "tmp");
 	

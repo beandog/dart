@@ -10,7 +10,7 @@
 	if($rip && $disc_archived) {
 	
 		if($verbose)
-			shell::msg("--rip");
+			shell::msg("[Rip]");
 	
 		$dvd_episodes = $dvds_model->get_episodes();
 				
