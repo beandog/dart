@@ -12,5 +12,6 @@
 			echo("$display_name\n");
 		}
 		
-	} else
+	} elseif($info && !$disc_archived){
 		shell::msg("Disc is not archived");
+	}
