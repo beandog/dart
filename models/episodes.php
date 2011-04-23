@@ -57,6 +57,8 @@
 			if(empty($arr[2]))
 				array_pop($arr);
 			
+			$arr = array_unique($arr);
+			
 			$str = implode(": ", $arr);
 			
 			return $str;
