@@ -96,36 +96,34 @@
 		
 		if($access_device) {
 			
+			// Decrypt the CSS to avoid disc access errors
 			$dvd->load_css();
+			
+			// Get the uniq ID for the disc
 			$uniq_id = $dvd->getID();
 			
 			$dvds_model_id = $dvds_model->find_id('uniq_id', $uniq_id);
 			
 			if($dvds_model_id) {
 				
+				$disc_indexed = true;
+				
 				$dvds_model->load($dvds_model_id);
 				
-				$dvd_episodes = $dvds_model->get_episodes();
-				
+				// A disc is archived if it meets the latest schema
+				// In this case, just check to see if the longest track is set.
 				if(!is_null($dvds_model->longest_track))
 					$disc_archived = true;
-				else
-					$disc_archived = false;
-				
-				$num_episodes = count($dvd_episodes);
 				
 				// Update disc size
 				/** Set the filesize of the DVD disc **/
-				if(is_null($dvds_model->filesize)) {
-					if($device_is_iso && file_exists($device)) {
-						$filesize = sprintf("%u", filesize($device)) / 1024;
-						$dvds_model->filesize = $filesize;
-						unset($filesize);
-					}
+				if(is_null($dvds_model->filesize) && $device_is_iso && file_exists($device)) {
+					$filesize = sprintf("%u", filesize($device)) / 1024;
+					$dvds_model->filesize = $filesize;
+					unset($filesize);
 				}
 			
-			} else
-				$disc_archived = false;
+			}
 			
 		}
 		
@@ -147,6 +145,7 @@
 			$sleepy_time = 12;
 			while(true && $num_empty_polls < ((60 / $sleepy_time) * 30)) {
 	
+				// Check to see if a disc is present or being loaded
 				if($dvd->cddetect(true)) {
 					goto start;
 				} else {

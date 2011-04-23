@@ -7,40 +7,25 @@
 	 *
 	 */
 	 
-	if($rip && $disc_archived && !$num_episodes) {
+	if($rip && $disc_archived) {
 	
-		shell::msg("The disc is archived, but there are no episodes to rip.");
-		shell::msg("Check the frontend to see if titles need to be added.");
-		$eject = false;
-	
-	}
-	
-	if($rip && $disc_archived && $num_episodes) {
-	
-		/** Create directory to dump files to */
- 		if(!is_dir($export_dir))
- 			@mkdir($export_dir, 0755);
- 		
-		// Extract episodes
-		if(count($dvd_episodes)) {
+		$dvd_episodes = $dvds_model->get_episodes();
+				
+		$num_episodes = count($dvd_episodes);
 		
-			/** Testing DVD episodes #s for a disc **/
-// 			foreach($dvd_episodes as $episode_id) {
-// 			
-// 				$episodes_model = new Episodes_Model($episode_id);
-// 				$series_id = $episodes_model->get_series_id();
-// 				$series_model = new Series_Model($series_id);
-// 				
-// 				$episode_number = $episodes_model->get_number();
-// 				
-// 				echo "Episode ID: ";
-// 				echo $episodes_model->id."\n";
-// 				echo $episodes_model->title."\n";
-// 				
-// 				var_dump($episode_number);
-// 			
-// 			}
-
+		// Passed the argument to rip it, but there are no
+		// episodes ... so cancel ejecting it since access
+		// is probably likely.
+		if(!$num_episodes) {
+			shell::msg("The disc is archived, but there are no episodes to rip.");
+			shell::msg("Check the frontend to see if titles need to be added.");
+			$eject = false;
+		} else {
+		
+			/** Create directory to dump files to */
+ 			if(!is_dir($export_dir))
+ 				@mkdir($export_dir, 0755);
+		
 			$bar = new Console_ProgressBar('[%bar%] %percent%'." ($num_episodes episodes)", ':', ' :D ', 80, $num_episodes);
 			$i = 0;
 			
