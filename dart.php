@@ -96,12 +96,21 @@
 		
 		if($access_device) {
 			
+			if($verbose)
+				shell::msg("[Access Device]");
+			
 			// Decrypt the CSS to avoid disc access errors
-			$dvd->load_css();
+			if($verbose)
+				shell::msg("* Decrypting CSS");
+			$dvd->load_css(true);
 			
 			// Get the uniq ID for the disc
+			if($verbose)
+				shell::msg("* Getting disc ID");
 			$uniq_id = $dvd->getID();
 			
+			if($verbose)
+				shell::msg("* Searching for database record");
 			$dvds_model_id = $dvds_model->find_id('uniq_id', $uniq_id);
 			
 			if($dvds_model_id) {
@@ -125,6 +134,10 @@
 				// Update disc size
 				/** Set the filesize of the DVD disc **/
 				if(is_null($dvds_model->filesize) && $device_is_iso && file_exists($device)) {
+				
+					if($verbose)
+						shell::msg("* Recording filesize");
+				
 					$filesize = sprintf("%u", filesize($device)) / 1024;
 					$dvds_model->filesize = $filesize;
 					unset($filesize);
@@ -132,6 +145,18 @@
 			
 			}
 			
+		}
+		
+		if($verbose) {
+			if($disc_indexed) {
+				shell::msg("* Indexed");
+				if($disc_archived)
+					shell::msg("* Archived");
+				else
+					shell::msg("* Unarchived");
+					
+			} else
+				shell::msg("* Unindexed");
 		}
 		
 		require 'dart.info.php';
