@@ -56,6 +56,21 @@
 		$num_empty_polls = 0;
 		$export_dir = getenv('HOME').'/dvds/';
 		
+		// If disc has an entry in the database
+		$disc_indexed = false;
+		
+		// If all the disc metadata is in the database
+		$disc_archived = false;
+	
+		// Is the device an ISO file
+		$device_is_iso = false;
+		
+		// Can we poll the file or device
+		$access_device = false;
+		
+		// If it's DVD drive, can it be accessed
+		$access_drive = false;
+		
 		if($reset_queue)
 			$queue_model->reset();
 		
