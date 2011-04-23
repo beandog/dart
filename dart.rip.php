@@ -44,13 +44,6 @@
 				$tracks_model = new Tracks_Model($episodes_model->track_id);
  				$track_number = $tracks_model->ix;
  				
- 				$dvd_track = new DVDTrack($track_number, $iso);
-				
-				$dvd_track->setDebug($debug);
-				$dvd_track->setBasename($episode_filename);
-				$dvd_track->setStartingChapter($episodes_model->starting_chapter);
-				$dvd_track->setEndingChapter($episodes_model->ending_chapter);
-				
 				// Get the series ID
 				$series_id = $episodes_model->get_series_id();
 				
