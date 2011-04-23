@@ -5,10 +5,11 @@
 	 * Copy a disc's content to the harddrive
 	 */
 	
-	if($verbose)
-		shell::msg("[ISO]");
-	
 	if($access_device) {
+	
+		if($verbose)
+			shell::msg("[ISO]");
+	
 		// Get the target filename
 		$iso = $export_dir.$dvds_model->id.".".$dvds_model->title.".iso";
 		

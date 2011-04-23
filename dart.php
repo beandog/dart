@@ -149,18 +149,18 @@
 				$import = true;
 			}
 			
-		}
-		
-		if($verbose) {
-			if($disc_indexed) {
-				shell::msg("* Indexed");
-				if($disc_archived)
-					shell::msg("* Archived");
-				else
-					shell::msg("* Unarchived");
-					
-			} else
-				shell::msg("* Unindexed");
+			if($verbose) {
+				if($disc_indexed) {
+					shell::msg("* Indexed");
+					if($disc_archived)
+						shell::msg("* Archived");
+					else
+						shell::msg("* Unarchived");
+						
+				} else
+					shell::msg("* Unindexed");
+			}
+			
 		}
 		
 		require 'dart.info.php';
