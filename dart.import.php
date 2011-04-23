@@ -2,6 +2,9 @@
 	
 	if($import) {
 	
+		if($verbose)
+			shell::msg("--import");
+	
 		$uniq_id = $dvd->getID();
 	
 		$d = dvds::find_by_uniq_id($uniq_id);

@@ -9,6 +9,9 @@
 	 
 	if($rip && $disc_archived) {
 	
+		if($verbose)
+			shell::msg("--rip");
+	
 		$dvd_episodes = $dvds_model->get_episodes();
 				
 		$num_episodes = count($dvd_episodes);

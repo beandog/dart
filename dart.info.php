@@ -2,6 +2,9 @@
 	
 	// Display info about disc
 	if($info && $disc_archived) {
+	
+		if($verbose)
+			shell::msg("--info");
 		
 		$dvd_episodes = $dvds_model->get_episodes();
 		
