@@ -1,6 +1,6 @@
 <?
 	
-	if($import || $disc_archived === false) {
+	if($import) {
 	
 		$uniq_id = $dvd->getID();
 	
