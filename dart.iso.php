@@ -4,27 +4,35 @@
 	 *
 	 * Copy a disc's content to the harddrive
 	 */
-	// Get the target filename
-	$iso = $export_dir.$dvds_model->id.".".$dvds_model->title.".iso";
 	
-	// Dump the DVD contents to an ISO on the filesystem
-	if($rip && !file_exists($iso) && !$device_is_iso) {
+	if($verbose)
+		shell::msg("[ISO]");
 	
-		if($verbose)
-			shell::msg("[ISO]");
-			
-		$tmpfname = tempnam($export_dir, "tmp");
-	
-		$dvd->dump_iso($tmpfname);
-		rename($tmpfname, $iso);
-		unset($tmpfname);
+	if($access_device) {
+		// Get the target filename
+		$iso = $export_dir.$dvds_model->id.".".$dvds_model->title.".iso";
 		
-		$dvd->eject();
-		$ejected = true;
-	
+		if($verbose)
+			shell::msg("* Filename: $iso");
+		
+		// Dump the DVD contents to an ISO on the filesystem
+		if($rip && !file_exists($iso) && !$device_is_iso) {
+		
+			$tmpfname = tempnam($export_dir, "tmp");
+		
+			if($verbose)
+				shell::msg("* Dumping contents");
+			$dvd->dump_iso($tmpfname);
+			rename($tmpfname, $iso);
+			unset($tmpfname);
+			
+			$dvd->eject();
+			$ejected = true;
+		
+		}
+		
+		// Check if the device is an ISO, and we need
+		// a symlink to the standardized ISO filename
+		if($device_is_iso && !file_exists($iso))
+			symlink($device, $iso);
 	}
-	
-	// Check if the device is an ISO, and we need
-	// a symlink to the standardized ISO filename
-	if($device_is_iso && !file_exists($iso))
-		symlink($device, $iso);
