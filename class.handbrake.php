@@ -384,7 +384,10 @@
 			if($this->debug)
 				shell::msg("Executing: $str");
 				
-			shell::cmd($str, !$this->verbose, false, $this->debug, array(0));
+			if($this->verbose && !$this->debug)
+				shell::cmd("$str", true, false, $this->verbose, array(0));
+			else
+				shell::cmd($str, !$this->verbose, false, $this->debug, array(0));
 			
 		}
 		
