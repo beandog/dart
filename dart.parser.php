@@ -46,12 +46,6 @@
 		'description' => 'Max # of episodes to rip or encode',
 		'action' => 'StoreInt',
 	));
-	$parser->addOption('mount', array(
-		'short_name' => '-n',
-		'long_name' => '--mount',
-		'description' => 'Mount the file if it is a device',
-		'action' => 'StoreTrue',
-	));
 	$parser->addOption('poll', array(
 		'short_name' => '-p',
 		'long_name' => '--poll',

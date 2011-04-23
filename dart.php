@@ -76,9 +76,6 @@
 		// If it's DVD drive, can it be accessed
 		$access_drive = false;
 		
-		// Allowed to mount the drive
-		$mount = false;
-		
 		if(substr($device, -4, 4) == ".iso")
 			$device_is_iso = true;
 			
@@ -96,10 +93,6 @@
 			$dvd->close_tray();
 		else
 			$eject = false;
-		
-		// Mount the drive if requested
-		if($mount)
-			$dvd->mount();
 		
 		if($access_device) {
 			
@@ -124,12 +117,6 @@
 				// Update disc size
 				/** Set the filesize of the DVD disc **/
 				if(is_null($dvds_model->filesize)) {
-				
-					// FIXME Kind of pointless if only checks if mounted..
-					// FIXME reads udev amount
-					if($mount)
-						$dvds_model->filesize = $dvd->getSize();
-					
 					if($device_is_iso && file_exists($device)) {
 						$filesize = sprintf("%u", filesize($device)) / 1024;
 						$dvds_model->filesize = $filesize;
