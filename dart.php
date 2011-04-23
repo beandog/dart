@@ -76,6 +76,9 @@
 		// If it's DVD drive, can it be accessed
 		$access_drive = false;
 		
+		// Allowed to mount the drive
+		$mount = false;
+		
 		if(substr($device, -4, 4) == ".iso")
 			$device_is_iso = true;
 			
@@ -86,16 +89,15 @@
 		// Determine whether we need physical access to a disc.
 		if(!$device_is_iso && $access_device)
 			$access_drive = true;
-		else {
-			$access_drive = false;
-			$mount = false;
-		}
 		
+		// Override any eject preference if we can't
+		// access the drive.
 		if($access_drive)
 			$dvd->close_tray();
 		else
 			$eject = false;
 		
+		// Mount the drive if requested
 		if($mount)
 			$dvd->mount();
 		
