@@ -76,8 +76,10 @@
 		// If it's DVD drive, can it be accessed
 		$access_drive = false;
 		
-		if(substr($device, -4, 4) == ".iso")
+		if(substr($device, -4, 4) == ".iso") {
 			$device_is_iso = true;
+			$device = getcwd()."/".$device;
+		}
 			
 		// Determine whether we are reading the device
 		if($rip || $info || $import)
@@ -143,6 +145,8 @@
 					unset($filesize);
 				}
 			
+			} else {
+				$import = true;
 			}
 			
 		}
