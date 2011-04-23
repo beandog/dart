@@ -84,9 +84,9 @@
 			return $this->id;
 		}
 		
-		private function lsdvd() {
+		private function lsdvd($force = false) {
 		
-			if(empty($this->lsdvd['output'])) {
+			if(empty($this->lsdvd['output']) || $force) {
 				$str = "lsdvd -Ox -v -a -s -c ".$this->getDevice(true);
 				$arr = shell::cmd($str);
 				$str = implode("\n", $arr);
@@ -121,9 +121,12 @@
 		 * to access the disc.  By decoding the CSS once,
 		 * it should prevent problems. :)
 		 */
-		public function load_css() {
+		public function load_css($use_lsdvd = false) {
 		
-			$exec = "mplayer dvd:// -dvd-device ".escapeshellarg($this->getDevice())." -frames 60 -nosound -vo null -noconfig all";
+			if($use_lsdvd)
+				$this->lsdvd(true);
+			else
+				$exec = "mplayer dvd:// -dvd-device ".escapeshellarg($this->getDevice())." -frames 60 -nosound -vo null -noconfig all";
 			shell::cmd($exec);
 		
 		}
