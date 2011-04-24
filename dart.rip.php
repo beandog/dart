@@ -64,6 +64,10 @@
 				if(!file_exists($mkv))
 					$queue_model->add_episode($episode_id, php_uname('n'));
 				
+				// Bump up the queue if we are accessing the drive directly
+				if($handbrake)
+					$queue_model->prioritize();
+				
 				$i++;
 				
 				$bar->update($i);
