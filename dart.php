@@ -54,6 +54,8 @@
 
 		start:
 		
+		clearstatcache();
+		
 		$dvd = new DVD($device);
 		$dvds_model = new Dvds_Model;
 		$queue_model = new Queue_Model;

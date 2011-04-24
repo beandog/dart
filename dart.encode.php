@@ -17,6 +17,8 @@
 		
 			foreach($queue_episodes as $episode_id) {
 			
+				clearstatcache();
+			
 				// Legacy
 				$reencode = true;
 				

@@ -34,6 +34,8 @@
 			
 			foreach($dvd_episodes as $episode_id) {
 			
+				clearstatcache();
+			
 				// New instance of a DB episode
 				$episodes_model = new Episodes_Model($episode_id);
 				$episode_season = $episodes_model->get_season();
