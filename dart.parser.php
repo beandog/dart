@@ -17,6 +17,18 @@
 		'description' => 'Print out debugging information',
 		'action' => 'StoreTrue',
 	));
+	$parser->addOption('import', array(
+		'short_name' => '-i',
+		'long_name' => '--import',
+		'description' => 'Import DVD metadata into database',
+		'action' => 'StoreTrue',
+	));
+	$parser->addOption('rip', array(
+		'short_name' => '-r',
+		'long_name' => '--rip',
+		'description' => 'Rip the episodes from a DVD device or ISO',
+		'action' => 'StoreTrue',
+	));
 	$parser->addOption('encode', array(
 		'short_name' => '-e',
 		'long_name' => '--encode',
@@ -26,12 +38,6 @@
 	$parser->addOption('info', array(
 		'long_name' => '--info',
 		'description' => 'Display metadata about a DVD',
-		'action' => 'StoreTrue',
-	));
-	$parser->addOption('import', array(
-		'short_name' => '-i',
-		'long_name' => '--import',
-		'description' => 'Import DVD metadata into database',
 		'action' => 'StoreTrue',
 	));
 	$parser->addOption('dump_iso', array(
@@ -63,12 +69,6 @@
 		'description' => 'Remove all episodes from the queue',
 		'action' => 'StoreTrue',
 	));
-	$parser->addOption('rip', array(
-		'short_name' => '-r',
-		'long_name' => '--rip',
-		'description' => 'Rip the episodes from a DVD device or ISO',
-		'action' => 'StoreTrue',
-	));
 	$parser->addOption('skip', array(
 		'short_name' => '-s',
 		'long_name' => '--skip',
@@ -97,6 +97,12 @@
 		'short_name' => '-a',
 		'long_name' => '--all',
 		'description' => 'Run commands on all devices',
+		'action' => 'StoreTrue',
+	));
+	$parser->addOption('ftp', array(
+		'short_name' => '-f',
+		'long_name' => '--ftp',
+		'description' => 'FTP finished files',
 		'action' => 'StoreTrue',
 	));
 	
