@@ -152,6 +152,10 @@
 								
 						$handbrake->encode();
 						
+						// One line break to clear out the encoding line from handbrake
+						if($verbose)
+							echo("\n");
+						
 						// Handbrake can exit successfully and not actually encode anything,
 						// by leaving an empty file.
 						if(sprintf("%u", filesize($tmpfname)))
