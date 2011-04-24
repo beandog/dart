@@ -251,6 +251,14 @@ XML;
 			shell::cmd($str, !$this->verbose, false, $this->debug, array(0,1));
 		
 		}
+		
+		public function mkvpropedit($xml, $mkv) {
+		
+			$str = "mkvpropedit -t global:$xml $mkv";
+			
+			shell::cmd($str, !$this->verbose, false, $this->debug, array(0,1));
+		
+		}
 	
 	}
 ?>
