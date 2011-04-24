@@ -12,6 +12,18 @@
 			
 		}
 		
+		public function get_iso() {
+		
+			$sql = "SELECT d.id, d.title FROM series s INNER JOIN series_dvds sd ON sd.series_id = s.id INNER JOIN dvds d ON d.id = sd.dvd_id INNER JOIN tracks t ON t.dvd_id = d.id INNER JOIN episodes e ON e.track_id = t.id WHERE e.id = ".$this->db->quote($this->id)." LIMIT 1;";
+			
+			$arr = $this->db->getRow($sql);
+			
+			$var = implode(".", $arr).".iso";
+			
+			return $var;
+		
+		}
+		
 		public function get_series_id() {
 		
 			$sql = "SELECT s.id FROM series s INNER JOIN series_dvds sd ON sd.series_id = s.id INNER JOIN dvds d ON d.id = sd.dvd_id INNER JOIN tracks t ON t.dvd_id = d.id INNER JOIN episodes e ON e.track_id = t.id WHERE e.id = ".$this->db->quote($this->id)." LIMIT 1;";
