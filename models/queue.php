@@ -58,6 +58,14 @@
  			
 		}
 		
+		public function prioritize() {
+		
+			$this->db->set('priority', 0);
+			$this->db->where('id', $this->id);
+			$this->db->update();
+		
+		}
+		
 		public function reset() {
 		
 			$sql = "DELETE FROM queue;";
