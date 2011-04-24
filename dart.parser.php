@@ -105,6 +105,12 @@
 		'description' => 'FTP finished files',
 		'action' => 'StoreTrue',
 	));
+	$parser->addOption('handbrake', array(
+		'short_name' => '-b',
+		'long_name' => '--handbrake',
+		'description' => 'Rip disc directly from HandBrake',
+		'action' => 'StoreTrue',
+	));
 	
 	$result = $parser->parse();
 	
