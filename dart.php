@@ -76,7 +76,9 @@
 		// If it's DVD drive, can it be accessed
 		$access_drive = false;
 		
-		if(substr($device, -4, 4) == ".iso") {
+		$pathinfo = pathinfo($device);
+		
+		if($pathinfo['extension'] == "iso") {
 			$device_is_iso = true;
 			$device = getcwd()."/".$device;
 		}
