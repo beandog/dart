@@ -132,12 +132,13 @@ XML;
 			$this->tag = $this->sxe->addChild("Tag");
 		}
 		
-		function addSimpleTag($name, $string, $language = "eng") {
+		function addSimpleTag($name, $string, $language = "eng", $tag_language = false) {
 		
 			$this->simple = $this->tag->addChild("Simple");
 			$this->simple->addChild("Name", $name);
 			$this->simple->addChild("String", $string);
-			$this->simple->addChild("TagLanguage", $language);
+			if($tag_language)
+				$this->simple->addChild("TagLanguage", $language);
 		
 		}
 		
