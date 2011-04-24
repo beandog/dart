@@ -7,7 +7,7 @@
 	 *
 	 */
 	 
-	if($rip && $disc_archived) {
+	if($rip && $disc_archived && file_exists($iso)) {
 	
 		if($verbose)
 			shell::msg("[Rip]");
