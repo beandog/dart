@@ -60,9 +60,11 @@
 		
 		public function prioritize() {
 		
-			$this->db->set('priority', 0);
-			$this->db->where('id', $this->id);
-			$this->db->update();
+			$arr_update = array(
+				'priority' => 0
+			);
+			
+			$this->db->autoExecute('queue', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->id);
 		
 		}
 		
