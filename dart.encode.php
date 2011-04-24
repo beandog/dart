@@ -56,7 +56,7 @@
 							unlink($filename);
 					}
 				
-				$iso = $export_dir.$dvds_model->id.".".$dvds_model->title.".iso";
+				$iso = $export_dir.$episodes_model->get_iso();
 				$xml = $export_dir."$episode_filename.xml";
 				$mkv = $export_dir."$episode_filename.mkv";
 				$x264 = $export_dir."$episode_filename.x264";
