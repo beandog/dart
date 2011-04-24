@@ -269,7 +269,20 @@
 	
 						if(!in_array($iso, $queue_isos) && file_exists($iso)) {
 						
-// 							print_r($queue_isos);
+							
+							// If we told it to rip from the disc, and the ISO
+							// is a symlink to the device, then eject the disc
+							// drive now that we're finished with it.
+							if($handbrake && is_link($iso)) {
+							
+								$readlink = readlink($iso);
+							
+								if(substr($readlink, 0, 4) == "/dev") {
+									$dvd->eject();
+								}
+							
+							}
+						
 							
 // 							echo "Removing $iso\n";
 							if(is_writable($iso))
