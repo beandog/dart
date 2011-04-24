@@ -25,7 +25,7 @@
 	require_once 'dart.parser.php';
 	
 	/** Start everything **/
-	$all_devices = array('/dev/dvd', '/dev/dvd1');
+	$all_devices = array('/dev/dvd', '/dev/dvd1', '/dev/dvd2');
 
 	if($eject_trays)
 		foreach($all_devices as $str) {
@@ -108,7 +108,7 @@
 			// Decrypt the CSS to avoid disc access errors
 			if($verbose)
 				shell::msg("* Decrypting CSS");
-			$dvd->load_css(true);
+			$dvd->load_css();
 			
 			// Get the uniq ID for the disc
 			if($verbose)
@@ -173,6 +173,7 @@
 		require 'dart.queue.php';
 		require 'dart.rip.php';	
 		require 'dart.encode.php';
+		require 'dart.ftp.php';
 		
 		if($eject)
 			$dvd->eject();
