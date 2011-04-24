@@ -2,8 +2,23 @@
 
 	if($ftp) {
 	
-		chdir("/home/steve/dvds");
-		$exec = "find . -mindepth 1 -type f -name '*.mkv' -print0 | xargs -0 -I {} ncftpput -m -z -R -DD zotac /var/media/updates/ {}";
-		passthru($exec);
+		require_once 'File/Find.php';
+	
+		$src = "/home/steve/dvds/";
+		$target = "/var/media/updates/";
+
+		// Continually look for files to send
+		while(count($arr = &File_Find::search('mkv$', $src))) {
+		
+			$src_filename = current($arr);
+		
+			$dest_filename = str_replace($src, "", $src_filename);
+			$dest_dir = $target.dirname($dest_filename);
+			
+			$exec = "ncftpput -m -z -DD zotac $dest_dir $src_filename";
+			
+			passthru($exec);
+			
+		}
 	
 	}
