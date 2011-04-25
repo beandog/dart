@@ -25,7 +25,7 @@
 	require_once 'dart.parser.php';
 	
 	/** Start everything **/
-	$all_devices = array('/dev/dvd', '/dev/dvd1', '/dev/dvd2');
+	$all_devices = array('/dev/dvd', '/dev/dvd1', '/dev/dvd2', '/dev/dvd3');
 
 	if($eject_trays)
 		foreach($all_devices as $str) {
@@ -33,12 +33,9 @@
 			$dvd->eject();
 		}
 	
-	$devices = array();
-	
-	if(is_null($device))
+	if(!count($devices))
 		$devices = array("/dev/dvd");
-	else
-		$devices = array($device);
+	
 	if($alt_device)
 		$devices = array("/dev/dvd1");
 	
@@ -49,6 +46,9 @@
 	$queue_model = new Queue_Model;
 	if($reset_queue)
 		$queue_model->reset();
+		
+	if(count($devices) > 1)
+		$poll = false;
 	
 	foreach($devices as $device) {
 
