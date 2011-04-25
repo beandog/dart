@@ -4,7 +4,7 @@
 
 	$parser = new Console_CommandLine();
 	$parser->description = "DVD Archiving Tool";
-	$parser->addArgument('device', array('optional' => true));
+	$parser->addArgument('devices', array('optional' => true, 'multiple' => true));
 	$parser->addOption('verbose', array(
 		'short_name' => '-v',
 		'long_name' => '--verbose',
