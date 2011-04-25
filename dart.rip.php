@@ -53,11 +53,6 @@
 				$series_model = new Series_Model($series_id);
 				$series_title = $series_model->title;
 				
-				// Get and create our export directory
-				$series_dir = $export_dir.formatTitle($series_title)."/";
- 				if(!is_dir($series_dir))
- 					mkdir($series_dir, 0755) or die("Can't create export directory $series_dir");
- 				
 				$mkv = "$episode_filename.mkv";
 				
 				// Check to see if file exists, if not, rip it 				
