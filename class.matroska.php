@@ -254,10 +254,14 @@ XML;
 		
 		public function mkvpropedit($xml, $mkv) {
 		
-			$str = "mkvpropedit -s title=".escapeshellarg($this->title)." $mkv";
+			$title = shell::escape_string($this->title);
+			$mkv = shell::escape_string($mkv);
+			$xml = shell::escape_string($xml);
+			
+			$str = "mkvpropedit -s title=$title $mkv";
 			
 			shell::cmd($str, !$this->verbose, false, $this->debug, array(0,1));
-		
+			
 			$str = "mkvpropedit -t global:$xml $mkv";
 			
 			shell::cmd($str, !$this->verbose, false, $this->debug, array(0,1));

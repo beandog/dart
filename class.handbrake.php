@@ -268,9 +268,6 @@
 			if(count($this->x264))
 				$args['--x264opts'] = $this->get_x264opts();
 
-			$args['--input'] = $this->input;
-			$args['--output'] = $this->output;
-			
 			return $args;
 			
 		}
@@ -288,8 +285,11 @@
 			
 			foreach($args as $key => $value)
 				$exec[] = "$key ".escapeshellarg($value);
-				
+			
 			$str = $this->binary." ".implode(" ", $exec);
+			
+			$str .= " --input ".shell::escape_string($this->input);
+			$str .= " --output ".shell::escape_string($this->output);
 		
 			return $str;
 		
@@ -340,7 +340,11 @@
 			if($this->track)
 				$options = "--title ".$this->track;
 		
-			$exec = $this->binary." --scan --verbose $options --input ".escapeshellarg($this->input)." 2>&1";
+			$exec = $this->binary." --scan --verbose $options --input ".shell::escape_string($this->input)." 2>&1";
+			
+			if($this->debug)
+				shell::msg("Executing: $exec");
+			
 			exec($exec, $arr, $return);
 			
 			$audio = preg_grep("/.*(scan: id=8).*/", $arr);
