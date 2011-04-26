@@ -44,6 +44,8 @@
 		private $num_bitmaps;
 		private $x264;
 		
+		private $dvdnav = true;
+		
 		function __construct($filename = null) {
 		
 			if(!is_null($filename))
@@ -145,6 +147,12 @@
 		
 		}
 		
+		public function dvdnav($bool = true) {
+		
+			$this->dvdnav = (boolean)$bool;
+		
+		}
+		
 		public function grayscale($bool = true) {
 		
 			$this->grayscale = (boolean)$bool;
@@ -178,6 +186,10 @@
 			// Check for grayscale
 			if($this->grayscale)
 				$options[] = "--grayscale";
+			
+			// Check for no-dvdnav
+			if(!$this->dvdnav)
+				$options[] = "--no-dvdnav";
 				
 			return $options;
 			
