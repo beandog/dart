@@ -93,7 +93,6 @@
 						$first_english_streamid = $tracks_model->get_first_english_streamid();
 						
 						$audio_preference = $dvds_model->get_audio_preference();
-						$no_dvdnav = $dvds_model->get_no_dvdnav();
 						
 						if($audio_preference === "0")
 							$default_audio_streamid = $best_quality_audio_streamid;
@@ -147,8 +146,6 @@
 						$handbrake->autocrop();
 						if($series_model->grayscale == 't')
 							$handbrake->grayscale();
-						if($no_dvdnav == 't')
-							$handbrake->dvdnav(false);
 						$handbrake->set_preset($handbrake_base_preset);
 						$handbrake->set_x264opts($x264opts);
 						$handbrake->set_video_quality($crf);
