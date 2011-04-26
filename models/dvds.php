@@ -48,5 +48,14 @@
 		
 		}
 		
+		public function get_no_dvdnav() {
+		
+			$sql = "SELECT no_dvdnav FROM series_dvds WHERE dvd_id = ".$this->db->quote($this->id).";";
+			$var = $this->db->getOne($sql);
+			
+			return $var;
+		
+		}
+		
 	}
 ?>
