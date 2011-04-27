@@ -146,6 +146,8 @@
 						$handbrake->autocrop();
 						if($series_model->grayscale == 't')
 							$handbrake->grayscale();
+						if($dvds_model->get_no_dvdnav() == 't')
+							$handbrake->dvdnav(false);
 						$handbrake->set_preset($handbrake_base_preset);
 						$handbrake->set_x264opts($x264opts);
 						$handbrake->set_video_quality($crf);
