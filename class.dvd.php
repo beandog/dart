@@ -133,11 +133,11 @@
 		
 		public function dump_iso($dest) {
 		
-			$dest = escapeshellarg($dest);
+			$dest = shell::escape_string($dest);
 		
 			$exec = "pv -pter -w 80 ".$this->getDevice()."  | dd of=$dest";
 			
- 			shell::cmd($exec);
+ 			shell::cmd($exec, true, false, false, array(0));
 		
 		}
 		
