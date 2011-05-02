@@ -238,7 +238,7 @@
 		$series_title = $series_model->title;
 		$series_dir = $export_dir.formatTitle($series_title)."/";
 		
-		if($episode_part > 1)
+		if($episode_part)
 			$episode_suffix = ", Part $episode_part";
 		
 		/** Filenames **/
