@@ -42,7 +42,7 @@
 		private $cc_ix;
 		
 		private $num_bitmaps;
-		private $x264;
+		private $x264 = array();
 		
 		private $dvdnav = true;
 		
