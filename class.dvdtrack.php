@@ -371,7 +371,13 @@
 		/**
 		 * Select the first audio stream with the preset langcode
 		 */
-		function setAudioIndex() {
+		function setAudioIndex($ix = null) {
+		
+			if(!is_null($ix)) {
+				$this->audio_index = $ix;
+				return true;
+			}
+		
 			if(!$this->sxe)
 				$this->lsdvd();
 				
@@ -504,8 +510,19 @@
 		function getAudioAID() {
 			if(!$this->audio_index)
 				$this->setAudioIndex();
-				
+			
 			return $this->audio[$this->getAudioIndex()]['aid'];
+		}
+		
+		/**
+		 * Set the audio track by passing the stream_id
+		 */
+		function setAudioStreamID($str) {
+		
+			foreach($this->audio as $key => $arr)
+				if($arr['stream_id'] == $str)
+					$this->audio_index = $key;
+			
 		}
 		
 		/** Subtitles **/
