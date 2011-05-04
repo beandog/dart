@@ -111,6 +111,11 @@
 		'description' => 'Rip disc directly from HandBrake',
 		'action' => 'StoreTrue',
 	));
+	$parser->addOption('dumpvob', array(
+		'long_name' => '--vob',
+		'description' => 'Dump stream to .vob file',
+		'action' => 'StoreTrue',
+	));
 	
 	$result = $parser->parse();
 	
