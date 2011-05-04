@@ -160,8 +160,10 @@
 							
 							// If one hasn't been added by now, just use
 							// the default one.
-							if(!$added_audio)
+							if(!$added_audio && !$dumpvob)
 								$handbrake->add_audio_stream("0x80");
+							elseif(!$added_audio && $dumpvob)
+								$handbrake->add_audio_track(1);
 							
 						}
 
