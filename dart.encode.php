@@ -43,13 +43,18 @@
 				$series_title = $series_model->title;
 				$series_dir = $export_dir.formatTitle($series_title)."/";
 				
+				if($dvds_model->get_no_dvdnav() == 't')
+					$dvdnav = false;
+				else
+					$dvdnav = true;
+				
 				if(!is_dir($series_dir))
 					mkdir($series_dir);
 				
 				// Clean up any old tmp files
 				$scandir = scandir($series_dir);
 				
-				if(count($arr = preg_grep('/(^x264|xml$)/', $scandir)))
+				if(count($arr = preg_grep('/(^(x264|vob)|xml$)/', $scandir)))
 					foreach($arr as $filename) {
 						$filename = $series_dir.$filename;
 						if(is_writable($filename))
@@ -79,15 +84,6 @@
 				
 					if(!file_exists($x264)) {
 					
-						$tmpfname = tempnam($export_dir.dirname($episode_filename), "x264.$episode_id.");
-						
-						$handbrake->input_filename($iso, $track_number);
-						$handbrake->output_filename($tmpfname);
-						
-						$handbrake_base_preset = $series_model->get_handbrake_base_preset();
-						$x264opts = $series_model->get_x264opts();
-						$crf = $series_model->get_crf();
-						
 						// Find the audio track to use
 						$best_quality_audio_streamid = $tracks_model->get_best_quality_audio_streamid();
 						$first_english_streamid = $tracks_model->get_first_english_streamid();
@@ -100,7 +96,46 @@
 							$default_audio_streamid = $first_english_streamid;
 						elseif($audio_preference === "2")
 							$default_audio_streamid = $best_quality_audio_streamid;
+						
+						if($dumpvob) {
+						
+							$vob = $export_dir."$episode_filename.vob";
 							
+							if(!file_exists($vob)) {
+						
+								$tmpfname = tempnam($export_dir.dirname($episode_filename), "vob.$episode_id.");
+								$dvdtrack = new DvdTrack($track_number, $iso, $dvdnav);
+								$dvdtrack->getNumAudioTracks();
+								$dvdtrack->setVerbose($verbose);
+								$dvdtrack->setDebug($debug);
+								$dvdtrack->setBasename($tmpfname);
+								$dvdtrack->setStartingChapter($episode_starting_chapter);
+								$dvdtrack->setEndingChapter($episode_ending_chapter);
+								$dvdtrack->setAudioStreamID($default_audio_streamid);
+								unlink($tmpfname);
+								$dvdtrack->dumpStream();
+								
+								rename("$tmpfname.vob", $vob);
+								
+							}
+							
+							$src = $vob;
+							
+						} else {
+							$src = $iso;
+						}
+						
+						$dest = tempnam($export_dir.dirname($episode_filename), "x264.$episode_id.");
+						
+						$handbrake->input_filename($src);
+						if(!$dumpvob)
+							$handbrake->input_track($track_number);
+						$handbrake->output_filename($dest);
+						
+						$handbrake_base_preset = $series_model->get_handbrake_base_preset();
+						$x264opts = $series_model->get_x264opts();
+						$crf = $series_model->get_crf();
+						
 						// Some DVDs may report more audio streams than
 						// Handbrake does.  If that's the case, check
 						// each one that lsdvd reports, to see if Handbrake
@@ -141,13 +176,13 @@
 							$handbrake->add_subtitle_track($handbrake->get_cc_ix());
 								
 						// Set Chapters
-						$handbrake->set_chapters($episode_starting_chapter, $episode_ending_chapter);
+						if(!$dumpvob)
+							$handbrake->set_chapters($episode_starting_chapter, $episode_ending_chapter);
 						
 						$handbrake->autocrop();
 						if($series_model->grayscale == 't')
 							$handbrake->grayscale();
-						if($dvds_model->get_no_dvdnav() == 't')
-							$handbrake->dvdnav(false);
+						$handbrake->dvdnav($dvdnav);
 						$handbrake->set_preset($handbrake_base_preset);
 						$handbrake->set_x264opts($x264opts);
 						$handbrake->set_video_quality($crf);
@@ -160,9 +195,13 @@
 						
 						// Handbrake can exit successfully and not actually encode anything,
 						// by leaving an empty file.
-						if(sprintf("%u", filesize($tmpfname)))
-							rename($tmpfname, $x264);
-						else
+						if(sprintf("%u", filesize($dest))) {
+							rename($dest, $x264);
+							
+							if(!$debug && $dumpvob && file_exists($vob))
+								unlink($vob);
+							
+						} else
 							shell::msg("$episode_filename didn't encode properly: zero filesize");
 						
 					}
