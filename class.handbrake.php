@@ -227,7 +227,7 @@
 				// scan.
 				$args['--audio'] = 1;
 			} else {
-				$args['--audio'] = 1;
+				$args['--audio'] = 'none';
 			}
 			
 			// Add subtitle tracks
