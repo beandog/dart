@@ -62,9 +62,10 @@
 		}
 		
 		/** Filename **/
-		public function input_filename($src, $track = 1) {
+		public function input_filename($src, $track = null) {
 			$this->input = $src;
-			$this->track = $track;
+			if($track)
+				$this->input_track($track);
 			$this->scan();
 		}
 		
@@ -226,7 +227,7 @@
 				// scan.
 				$args['--audio'] = 1;
 			} else {
-				$args['--audio'] = 'none';
+				$args['--audio'] = 1;
 			}
 			
 			// Add subtitle tracks
