@@ -135,10 +135,17 @@
 		
 			$dest = shell::escape_string($dest);
 		
-			$exec = "pv -pter -w 80 ".$this->getDevice()."  | dd of=$dest";
+			$exec = "pv -pter -w 80 ".$this->getDevice()." | dd of=$dest 2> /dev/null";
+			$exec .= '; echo ${PIPESTATUS[*]}';
 			
- 			shell::cmd($exec, true, false, false, array(0));
-		
+			exec($exec, $arr);
+			
+			foreach($arr as $exit_code)
+				if(intval($exit_code))
+					return false;
+			
+			return true;
+			
 		}
 		
 		private function setTitle($str) {

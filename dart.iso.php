@@ -23,12 +23,16 @@
 		
 			if($verbose)
 				shell::msg("* Dumping contents");
-			$dvd->dump_iso($tmpfname);
-			rename($tmpfname, $iso);
-			unset($tmpfname);
+			$success = $dvd->dump_iso($tmpfname);
 			
-			$dvd->eject();
-			$ejected = true;
+			if($success) {
+				rename($tmpfname, $iso);
+				unset($tmpfname);
+				$dvd->eject();
+				$ejected = true;
+			} else {
+				shell::msg("DVD extraction failed");
+			}
 		
 		}
 		
