@@ -269,13 +269,16 @@
 							file_put_contents($xml, $str);
 						
 					}
+
+					if(file_exists($x264))
+						$matroska->addFile($x264);
 					
 					if(file_exists($xml))
 						$matroska->addGlobalTags($xml);
 					
-					$matroska->mkvpropedit($xml, $x264);
-					
-					rename($x264, $mkv);
+					$tmpfname = tempnam($export_dir.dirname($episode_filename), "mkv.$episode_id.");
+					$matroska->setFilename($tmpfname);
+					rename($tmpfname, $mkv);
 					
 					$num_encoded++;
 					
