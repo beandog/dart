@@ -62,9 +62,11 @@
 					}
 				
 				$iso = $export_dir.$episodes_model->get_iso();
-				$xml = $export_dir."$episode_filename.xml";
 				$mkv = $export_dir."$episode_filename.mkv";
 				$x264 = $export_dir."$episode_filename.x264";
+
+				// Store XML metadata in temporary file
+				$xml = tempnam(sys_get_temp_dir(), "xml");
 				
 				// Check to see if file exists, if not, encode it
 				if(file_exists($iso) && !file_exists($mkv)) {
