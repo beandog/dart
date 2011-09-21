@@ -60,6 +60,10 @@
 		function verbose($bool = true) {
 			$this->verbose = (boolean)$bool;
 		}
+
+		public function set_binary($str = "handbrake") {
+			$this->binary = $str;
+		}
 		
 		/** Filename **/
 		public function input_filename($src, $track = null) {
