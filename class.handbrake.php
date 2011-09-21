@@ -227,7 +227,10 @@
 				// scan.
 				$args['--audio'] = 1;
 			} else {
-				$args['--audio'] = 'none';
+				// FIXME?
+				// Why would I ever willingly disable audio?
+				//$args['--audio'] = 'none';
+				$args['--audio'] = 1;
 			}
 			
 			// Add subtitle tracks
@@ -267,7 +270,7 @@
 			
 			// Set x264 encoding options
 			if(count($this->x264))
-				$args['--x264opts'] = $this->get_x264opts();
+				$args['--encopts'] = $this->get_x264opts();
 
 			return $args;
 			
