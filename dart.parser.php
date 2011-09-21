@@ -116,6 +116,11 @@
 		'description' => 'Dump stream to .vob file',
 		'action' => 'StoreTrue',
 	));
+	$parser->addOption('svn', array(
+		'long_name' => '--svn',
+		'description' => 'Use svn binaries where possible',
+		'action' => 'StoreTrue',
+	));
 	
 	$result = $parser->parse();
 	
