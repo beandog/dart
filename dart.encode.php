@@ -211,7 +211,7 @@
 					}
 					
 					/** Matroska Metadata */
-					if(!file_exists($xml) && !file_exists($mkv)) {
+					if(!file_exists($mkv)) {
 					
 						$production_studio = $series_model->production_studio;
 						$production_year = $series_model->production_year;
@@ -275,11 +275,12 @@
 					if(file_exists($x264))
 						$matroska->addFile($x264);
 					
-					if(file_exists($xml))
+					if(file_exists($xml) && filesize($xml))
 						$matroska->addGlobalTags($xml);
 					
 					$tmpfname = tempnam($export_dir.dirname($episode_filename), "mkv.$episode_id.");
 					$matroska->setFilename($tmpfname);
+					$matroska->mux();
 					rename($tmpfname, $mkv);
 					
 					$num_encoded++;
