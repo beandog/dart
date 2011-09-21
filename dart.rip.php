@@ -60,7 +60,7 @@
 					$queue_model->add_episode($episode_id, php_uname('n'));
 				
 				// Bump up the queue if we are accessing the drive directly
-				if($handbrake)
+				if($symlink)
 					$queue_model->prioritize();
 				
 				$i++;

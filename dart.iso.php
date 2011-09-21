@@ -17,7 +17,7 @@
 			shell::msg("* Filename: $iso");
 		
 		// Dump the DVD contents to an ISO on the filesystem
-		if($rip && !file_exists($iso) && !$device_is_iso && !$handbrake) {
+		if($rip && !file_exists($iso) && !$device_is_iso && !$symlink) {
 		
 			$tmpfname = tempnam($export_dir, "tmp");
 		
@@ -38,6 +38,6 @@
 		
 		// Check if the device is an ISO, and we need
 		// a symlink to the standardized ISO filename
-		if(($device_is_iso || $handbrake) && !file_exists($iso))
+		if(($device_is_iso || $symlink) && !file_exists($iso))
 			symlink($device, $iso);
 	}
