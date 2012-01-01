@@ -4,6 +4,7 @@
 	
 		require_once 'File/Find.php';
 	
+		// FIXME use getenv('HOME')
 		$src = "/home/steve/dvds/";
 		$target = "/var/media/updates/";
 
