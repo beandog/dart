@@ -1,0 +1,9 @@
+#!/bin/sh
+CHAPTERS=""
+if [[ ! -z $2 ]]; then
+	CHAPTERS="-chapter ${2}"
+	if [[ ! -z $3 ]]; then
+		CHAPTERS="-chapter ${2}-${3}"
+	fi
+fi
+echo mencoder dvd://${1} -ovc copy -nosound -vobsubout movie -o /dev/null -slang en -quiet ${CHAPTERS}

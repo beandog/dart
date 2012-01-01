@@ -1,0 +1,2 @@
+#!/bin/sh
+mplayer dvd://${1} -dumpstream -dumpfile movie.vob
