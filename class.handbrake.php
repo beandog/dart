@@ -15,7 +15,7 @@
 		private $args = array();
 		
 		private $audio_tracks = array();
-		private $audio_encoders = array('copy');
+		private $audio_encoders = array();
 		private $audio_streams = array();
 		
 		private $preset = 'Normal';
@@ -120,6 +120,13 @@
 			if(!is_null($audio_track))
 				$this->add_audio_track($this->audio_streams[$stream_id]);
 		
+		}
+
+		public function add_audio_encoder($str) {
+
+			if(!is_null($str))
+				$this->audio_encoders[] = $str;
+
 		}
 		
 		public function autocrop($bool = true) {
