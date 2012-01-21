@@ -2,10 +2,10 @@
 
 	if($ftp) {
 	
-		#require_once 'File/Find.php';
-	
+		$src = getenv('HOME')."/dvds/";
+		$target = "/var/media/updates/";
+
 		// Continually look for files to send
-		#while(count($arr =& File_Find::search('mkv$', $src))) {
 		while(count($arr =& glob($src."*/*.mkv"))) {
 
 			$src_filename = current($arr);
