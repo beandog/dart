@@ -2,15 +2,12 @@
 
 	if($ftp) {
 	
-		require_once 'File/Find.php';
+		#require_once 'File/Find.php';
 	
-		// FIXME use getenv('HOME')
-		$src = "/home/steve/dvds/";
-		$target = "/var/media/updates/";
-
 		// Continually look for files to send
-		while(count($arr = &File_Find::search('mkv$', $src))) {
-		
+		#while(count($arr =& File_Find::search('mkv$', $src))) {
+		while(count($arr =& glob($src."*/*.mkv"))) {
+
 			$src_filename = current($arr);
 		
 			$dest_filename = str_replace($src, "", $src_filename);
