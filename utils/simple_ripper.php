@@ -10,6 +10,7 @@
 	$audio_bitrate = 196;
 	$audio_encoder = 'faac';
 	$handbrake_preset = 'Universal';
+	$dump_iso = true;
 	
 	require_once '/home/steve/git/bend/class.dvd.php';
 	require_once '/home/steve/git/bend/class.handbrake.php';
@@ -22,9 +23,16 @@
 
 	$title = $dvd->getTitle();
 	$track = $dvd->getLongestTrack();
+	$iso = "$title.iso";
 	$filename = "$title.$extension";
 
-	$handbrake = new Handbrake($device);
+	if($dump_iso) {
+		$dvd->dump_iso($iso);
+		$handbrake = new Handbrake($iso);
+	} else {
+		$handbrake = new Handbrake($device);
+	}
+
 	$handbrake->verbose(true);
 	$handbrake->output_filename($filename);
 	$handbrake->input_track($track);
