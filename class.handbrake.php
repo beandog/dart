@@ -225,7 +225,7 @@
 			} elseif(count($this->audio_streams)) {
 			
 				// FIXME temporary?
-				// Hit a but on a DVD where lsdvd reported
+				// Hit a bug on a DVD where lsdvd reported
 				// 8 English audio tracks, but Handbrake
 				// correctly said there is only one.
 				// So, in this case, there are audio streams
