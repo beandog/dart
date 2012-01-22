@@ -16,7 +16,10 @@
 	require_once '/home/steve/git/bend/class.handbrake.php';
 
 	$device = '/dev/dvd';
-
+	
+	if($argc == 2)
+		$device = $argv[1];
+	
 	$dvd = new DVD($device);
 	$dvd->close_tray();
 	$dvd->load_css();
@@ -44,4 +47,6 @@
 	$handbrake->decomb();
 	$handbrake->set_preset($handbrake_preset);
 
-	echo $handbrake->get_executable_string();
+	$str = $handbrake->get_executable_string();
+
+	passthru($str);
