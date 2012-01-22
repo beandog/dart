@@ -172,6 +172,11 @@
 							
 						}
 
+						// Add the audio encoders to use
+						// Add two tracks: copy the AC3/DTS, and also a secondary AAC channel
+						$handbrake->add_audio_encoder('copy');
+						$handbrake->add_audio_encoder('aac');
+
 						// Check for a subtitle track
 						$subp_ix = $tracks_model->get_first_english_subp();
 								
