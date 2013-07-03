@@ -209,21 +209,21 @@
 		
 		}
 		
-		public function getSize() {
+		public function getSize($format = 'MB') {
 		
 			$device = $this->getDevice();
-			
-			if(substr($device, 0, 4) == "/dev") {
-			
-				$exec = "/bin/df $device | tail -n 1 | tr -s '[:blank:]' '\\t' | cut -f 2";
-				
+
+			if($this->is_iso()) {
+				$mb = sprintf("%u", filesize($device)) / 1024;
+			} else {
+				$exec = "blockdev --getsize64 $device";
+
 				$var = current(shell::cmd($exec));
-				
-				return $var;
-			
+
+				$mb = ($var / 1024);
 			}
 			
-			return null;
+			return $mb;
 		
 		}
 		

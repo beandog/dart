@@ -65,7 +65,7 @@
 		$dvd_episodes = array();
 		$num_empty_polls = 0;
 		$export_dir = getenv('HOME').'/dvds/';
-		
+
 		// If disc has an entry in the database
 		$disc_indexed = false;
 		
@@ -103,9 +103,14 @@
 			$eject = false;
 		
 		if($access_device) {
+
+			$filesize = number_format($dvd->getSize('MB'));
 			
-			if($verbose)
+			if($verbose) {
 				shell::msg("[Access Device]");
+				shell::msg("* Opening $device");
+				shell::msg("* $filesize MB");
+			}
 			
 			// Decrypt the CSS to avoid disc access errors
 			if($verbose)
