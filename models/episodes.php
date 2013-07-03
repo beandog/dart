@@ -1,7 +1,5 @@
 <?
 
-	require_once 'mdb2/charlie.dvds.php';
-
 	class Episodes_Model extends DBTable {
 	
 		function __construct($id = null) {

@@ -1,7 +1,5 @@
 <?
 
-	require_once 'mdb2/charlie.dvds.php';
-
 	class Test_Model extends DBTable {
 	
 		public function __construct($id = null) {
