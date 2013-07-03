@@ -15,9 +15,20 @@
 		
 		if($verbose) {
 			$display_iso = basename($iso);
-			shell::msg("* Filename: $display_iso");
+			shell::msg("* Target filename: $display_iso");
+
+			if(file_exists($iso))
+				if($symlink)
+					shell::msg("* Symlink exists");
+				else	
+					shell::msg("* File exists");
+			else {
+				shell::msg("* File doesn't exist");
+				if(!$rip)
+					shell::msg("* Not ripping ISO");
+			}
 		}
-		
+
 		// Dump the DVD contents to an ISO on the filesystem
 		if($rip && !file_exists($iso) && !$device_is_iso && !$symlink) {
 		
