@@ -1,7 +1,5 @@
 <?
 
-	require_once 'class.shell.php';
-
 	class Handbrake {
 	
 		private $binary = "handbrake";
