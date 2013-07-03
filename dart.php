@@ -1,6 +1,8 @@
 #!/usr/bin/php
 <?
 
+	ini_set('include_path', ini_get('include_path').":/home/steve/git/dart");
+
 	require_once 'Console/ProgressBar.php';
 
 	require_once 'includes/class.shell.php';
