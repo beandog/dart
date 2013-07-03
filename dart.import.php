@@ -9,7 +9,7 @@
 	
 		$d = dvds::find_by_uniq_id($uniq_id);
 		
-		echo "Importing: ".$dvd->getTitle()."\n";
+		echo "* Title: ".$dvd->getTitle()."\n";
 
 		if(is_null($d->id)) {
 		
@@ -38,8 +38,14 @@
 		/** Tracks **/
 		
 		$num_tracks = $dvd->getNumTracks();
+
+		if($verbose)
+			shell::stdout("* Importing $num_tracks tracks: ", false);
 		
 		for($track_number = 1; $track_number <= $num_tracks; $track_number++) {
+
+			if($verbose)
+				shell::stdout("$track_number ", false);
 		
 			$dvd_track = new DVDTrack($track_number, $device);
 			
@@ -210,6 +216,10 @@
 		$dvds_model->load($dvds_model_id);
 		
 	}
+
+	// Close off the newline that the track count was displaying
+	if($verbose)
+		shell::stdout('', true);
 	
 	// Eject the disc if we are polling, and nothing else
 	if($import && $poll && !$rip) {

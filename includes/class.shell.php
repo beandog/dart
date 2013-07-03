@@ -74,7 +74,7 @@
 		function stdout($str = '', $newline = true) {
 			if($newline)
 				$str .= "\n";
-			fwrite(STDOUT, "$str\n");
+			echo $str;
 		}
 		
 		/**
