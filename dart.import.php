@@ -215,12 +215,13 @@
 		// Load up data used later
 		$dvds_model_id = $dvds_model->find_id('uniq_id', $uniq_id);
 		$dvds_model->load($dvds_model_id);
+
+		// Close off the newline that the track count was displaying
+		if($verbose)
+			shell::stdout('', true);
 		
 	}
 
-	// Close off the newline that the track count was displaying
-	if($verbose)
-		shell::stdout('', true);
 	
 	// Eject the disc if we are polling, and nothing else
 	if($import && $poll && !$rip) {
