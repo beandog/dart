@@ -7,13 +7,11 @@
 		private $id;
 		private $vmg_id;
 		private $provider_id;
+		private $is_iso;
 	
 		function __construct($device = "/dev/dvd") {
 		
-			if(!is_null($device))
-				$this->setDevice($device);
-			else
-				$this->setDevice = "";
+			$this->setDevice($device);
 			
 		}
 		
@@ -22,6 +20,13 @@
 			$str = trim($str);
 			if(is_string($str))
 				$this->device = $str;
+
+			$pathinfo = pathinfo($device);
+			if($pathinfo['extension'] == "iso")
+				$this->is_iso = true;
+			else
+				$this->is_iso = false;
+
 		}
 		
 		function getDevice($escape = false) {
@@ -67,6 +72,10 @@
 		
 		function unmount() {
 			shell::cmd("umount ".$this->getDevice());
+		}
+
+		function is_iso() {
+			return $this->is_iso;
 		}
 		
 		/** Metadata **/
