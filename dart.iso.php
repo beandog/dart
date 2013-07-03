@@ -34,9 +34,11 @@
 		
 			$tmpfname = tempnam($export_dir, "tmp");
 		
-			if($verbose)
-				shell::stdout("* Dumping contents ... ");
-			$success = $dvd->dump_iso($tmpfname);
+			if($verbose) {
+				shell::stdout("* Reading DVD, hit 'q' to quit", true);
+				shell::stdout("* Dumping to ISO ... ", false);
+			}
+			$success = $dvd->dump_iso($tmpfname, 'readdvd');
 			
 			if($success) {
 				shell::stdout(" done!", true);
