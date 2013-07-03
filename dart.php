@@ -4,8 +4,7 @@
 	require_once 'Console/ProgressBar.php';
 
 	require_once 'includes/class.shell.php';
-
-	require_once 'ar/pg.dvds.php';
+	require_once 'includes/pgconn.php';
 	
 	require_once 'class.dvd.php';
 	require_once 'class.dvdvob.php';
