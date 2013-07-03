@@ -3,7 +3,7 @@
 
 	require_once 'Console/ProgressBar.php';
 
-	require_once 'class.shell.php';
+	require_once 'includes/class.shell.php';
 
 	require_once 'ar/pg.dvds.php';
 	
