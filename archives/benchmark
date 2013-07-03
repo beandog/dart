@@ -1,7 +1,0 @@
-#!/bin/sh
-
-# Quickly see if the video file is variable framerate or not
-if [[ -f $1 ]]; then
-	mplayer -benchmark -nosound -vo null $1
-fi
-

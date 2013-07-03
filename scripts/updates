@@ -1,8 +1,0 @@
-#!/bin/bash
-cd /home/steve/dvds
-for x in `find . -mindepth 1 -type d`; do
-	mkdir /var/media/updates/${x} &> /dev/null
-	REALPATH=`realpath /var/media/updates/${x}`/
-	ncftpput -z -R -DD zotac ${REALPATH} ${x}/*.mkv
-	ncftpput -z -R -DD zotac ${REALPATH} ${x}/*.flv
-done
