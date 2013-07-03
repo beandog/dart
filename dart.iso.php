@@ -13,8 +13,10 @@
 		// Get the target filename
 		$iso = $export_dir.$dvds_model->id.".".$dvds_model->title.".iso";
 		
-		if($verbose)
-			shell::msg("* Filename: $iso");
+		if($verbose) {
+			$display_iso = basename($iso);
+			shell::msg("* Filename: $display_iso");
+		}
 		
 		// Dump the DVD contents to an ISO on the filesystem
 		if($rip && !file_exists($iso) && !$device_is_iso && !$symlink) {

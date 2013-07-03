@@ -107,8 +107,11 @@
 			$filesize = number_format($dvd->getSize('MB'));
 			
 			if($verbose) {
+				$display_device = $device;
+				if($device_is_iso)
+					$display_device = basename($device);
 				shell::msg("[Access Device]");
-				shell::msg("* Opening $device");
+				shell::msg("* Opening $display_device");
 				shell::msg("* $filesize MB");
 			}
 			
