@@ -89,7 +89,7 @@
 		}
 			
 		// Determine whether we are reading the device
-		if($rip || $info || $import)
+		if($rip || $info || $import || $dump_iso)
 			$access_device = true;
 			
 		// Determine whether we need physical access to a disc.
