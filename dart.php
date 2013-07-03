@@ -25,6 +25,7 @@
 	require_once 'models/queue.php';
 	
 	require_once 'dart.parser.php';
+	require_once 'includes/prefs.php';
 	
 	/** Start everything **/
 	$all_devices = array('/dev/dvd', '/dev/dvd1');
