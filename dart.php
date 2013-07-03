@@ -25,7 +25,7 @@
 	require_once 'dart.parser.php';
 	
 	/** Start everything **/
-	$all_devices = array('/dev/dvd', '/dev/dvd1', '/dev/dvd2', '/dev/dvd3');
+	$all_devices = array('/dev/dvd', '/dev/dvd1');
 
 	if($eject_trays)
 		foreach($all_devices as $str) {
@@ -83,7 +83,6 @@
 		
 		if($pathinfo['extension'] == "iso") {
 			$device_is_iso = true;
-			$device = getcwd()."/".$device;
 		}
 			
 		// Determine whether we are reading the device
