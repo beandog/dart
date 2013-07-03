@@ -26,6 +26,7 @@
 			'vmg_id' => $dvd->getVMGID(),
 			'provider_id' => $dvd->getProviderID(),
 			'longest_track' => $dvd->getLongestTrack(),
+			'filesize' => $dvd->getSize(),
 		);
 		
 		$d->update_attributes($arr);
