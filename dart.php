@@ -126,14 +126,19 @@
 			
 			// Get the uniq ID for the disc
 			if($verbose)
-				shell::msg("* Getting disc ID");
+				shell::stdout("* Getting disc ID ... ", false);
 			$uniq_id = $dvd->getID();
+			if($verbose)
+				shell::stdout($uniq_id, true);
 			
 			if($verbose)
-				shell::msg("* Searching for database record");
+				shell::stdout("* Searching for database record ... ", false);
 			$dvds_model_id = $dvds_model->find_id('uniq_id', $uniq_id);
 			
 			if($dvds_model_id) {
+
+				if($verbose)
+					shell::stdout("found $dvds_model_id", true);
 				
 				$disc_indexed = true;
 				
@@ -162,6 +167,8 @@
 				}
 			
 			} else {
+				if($verbose)
+					shell::stdout("none found", true);
 				$import = true;
 			}
 			
