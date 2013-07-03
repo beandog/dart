@@ -21,7 +21,7 @@
 			if(is_string($str))
 				$this->device = $str;
 
-			$pathinfo = pathinfo($device);
+			$pathinfo = pathinfo($str);
 			if($pathinfo['extension'] == "iso")
 				$this->is_iso = true;
 			else
