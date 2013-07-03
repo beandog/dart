@@ -214,16 +214,17 @@
 			$device = $this->getDevice();
 
 			if($this->is_iso()) {
-				$mb = sprintf("%u", filesize($device)) / 1024;
+				$exec = "stat -c %s $device";
 			} else {
 				$exec = "blockdev --getsize64 $device";
-
-				$var = current(shell::cmd($exec));
-
-				$mb = ($var / 1024);
 			}
 			
-			return $mb;
+			$size = current(shell::cmd($exec));
+
+			if($format = 'MB')
+				$size = $bytes / 1024;
+			
+			return $size;
 		
 		}
 		
