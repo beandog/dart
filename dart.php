@@ -105,6 +105,10 @@
 		if($access_device) {
 
 			$filesize = number_format($dvd->getSize('MB'));
+			if(!$filesize) {
+				shell::msg("* DVD size reported as zero! Aborting");
+				exit(1);
+			}
 			
 			if($verbose) {
 				$display_device = $device;
