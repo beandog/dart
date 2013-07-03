@@ -24,18 +24,18 @@
 					shell::msg("* File exists");
 			else {
 				shell::msg("* File doesn't exist");
-				if(!$rip)
+				if(!$dump_iso)
 					shell::msg("* Not ripping ISO");
 			}
 		}
 
 		// Dump the DVD contents to an ISO on the filesystem
-		if($rip && !file_exists($iso) && !$device_is_iso && !$symlink) {
+		if(($rip || $dump_iso) && !file_exists($iso) && !$device_is_iso && !$symlink) {
 		
 			$tmpfname = tempnam($export_dir, "tmp");
 		
 			if($verbose)
-				shell::stdout("* Dumping contents ... ", false);
+				shell::stdout("* Dumping contents ... ");
 			$success = $dvd->dump_iso($tmpfname);
 			
 			if($success) {
