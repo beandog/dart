@@ -140,20 +140,33 @@
 		
 		}
 		
-		public function dump_iso($dest) {
+		public function dump_iso($dest, $method = 'readdvd') {
 		
 			$dest = shell::escape_string($dest);
+			$device = $this->getDevice();
 		
-			$exec = "pv -pter -w 80 ".$this->getDevice()." | dd of=$dest 2> /dev/null";
-			$exec .= '; echo ${PIPESTATUS[*]}';
-			
-			exec($exec, $arr);
-			
-			foreach($arr as $exit_code)
-				if(intval($exit_code))
+			if($method == 'readdvd') {
+
+				$exec = "readdvd -d $device -o $dest";
+				exec($exec, $arr, $return);
+
+				if($return === 0)
+					return true;
+				else
 					return false;
-			
-			return true;
+
+			} elseif($method == 'pv') {
+				$exec = "pv -pter -w 80 ".$this->getDevice()." | dd of=$dest 2> /dev/null";
+				$exec .= '; echo ${PIPESTATUS[*]}';
+				
+				exec($exec, $arr);
+				
+				foreach($arr as $exit_code)
+					if(intval($exit_code))
+						return false;
+
+				return true;
+			}
 			
 		}
 		
