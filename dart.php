@@ -149,14 +149,12 @@
 				
 				// Update disc size
 				/** Set the filesize of the DVD disc **/
-				if(is_null($dvds_model->filesize) && $device_is_iso && file_exists($device)) {
+				if(is_null($dvds_model->filesize)) {
 				
 					if($verbose)
-						shell::msg("* Recording filesize");
+						shell::msg("* Updating filesize in DB");
 				
-					$filesize = sprintf("%u", filesize($device)) / 1024;
-					$dvds_model->filesize = $filesize;
-					unset($filesize);
+					$dvds_model->filesize = $dvd->getSize('MB') ;
 				}
 			
 			} else {
