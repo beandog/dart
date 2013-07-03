@@ -24,10 +24,11 @@
 			$tmpfname = tempnam($export_dir, "tmp");
 		
 			if($verbose)
-				shell::msg("* Dumping contents");
+				shell::stdout("* Dumping contents ... ", false);
 			$success = $dvd->dump_iso($tmpfname);
 			
 			if($success) {
+				shell::stdout(" done!", true);
 				rename($tmpfname, $iso);
 				unset($tmpfname);
 				$dvd->eject();
