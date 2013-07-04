@@ -207,7 +207,7 @@
 			while(true && $num_empty_polls < ((60 / $sleepy_time) * 30)) {
 	
 				// Check to see if a disc is present or being loaded
-				if($dvd->cddetect(true)) {
+				if($dvd->cddetect()) {
 					goto start;
 				} else {
 					sleep($sleepy_time);
