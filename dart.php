@@ -147,8 +147,10 @@
 			$dvd->load_css();
 			
 			// Get the uniq ID for the disc
-			if($verbose)
+			if($verbose) {
+				shell::msg("* Title: ".$dvd->getTitle());
 				shell::stdout("* Disc ID: ", false);
+			}
 			$uniq_id = $dvd->getID();
 			if($verbose)
 				shell::stdout($uniq_id, true);
