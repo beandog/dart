@@ -120,10 +120,7 @@
 
 			// Take a nap to allow time for devices to load
 			if($wait && $drive->has_media()) {
-				if($device == "/dev/dvd")
-					sleep(10);
-				else
-					sleep(5);
+				sleep(10);
 			}
 
 			// Expecting media, so open the tray if
