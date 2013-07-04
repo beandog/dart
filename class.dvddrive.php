@@ -99,6 +99,14 @@
 			return false;
 		}
 		
+		/**
+		 * Close the tray
+		 *
+		 * README: Because of how a DVD tray operates, I've yet to find a way
+		 * to accurately detect if the tray is closed *and* ready to access.
+		 * As such, the easiest approach is also the simplest: just wait a
+		 * few seconds after closing the tray.
+		 */
 		function close() {
 			if($this->is_open()) {
 				$exec = "eject -t ".$this->getDevice();
