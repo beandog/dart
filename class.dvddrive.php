@@ -103,10 +103,9 @@
 			if($this->is_open()) {
 				$exec = "eject -t ".$this->getDevice();
 				exec($exec, $arr, $return);
-				exec('sync');
 
-				// Sleep two seconds to allow the device to sync
-				sleep(2);
+				// Sleep to allow the device to sync
+				sleep(4);
 
 				if($return == 0)
 					return true;
