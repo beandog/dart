@@ -120,7 +120,7 @@
 
 			// Take a nap to allow time for devices to load
 			if($wait && $drive->has_media()) {
-				sleep(10);
+				sleep(5);
 			}
 
 			// Expecting media, so open the tray if

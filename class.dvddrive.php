@@ -40,6 +40,7 @@
 			$device = $this->getDevice();
 			$exec = "udisks --show-info $device | grep \"has media\" | awk '{print $3}'";
 			exec($exec, $arr, $return);
+			sleep(1);
 			$str = current($arr);
 			$bool = (bool) $str;
 
@@ -59,8 +60,10 @@
 			if($this->has_media())
 				return false;
 			else {
+				shell::stdout("executing cddetect");
 				$exec = "cddetect -d".$this->getDevice();
 				exec($exec, $arr, $return);
+				sleep(1);
 				$str = current($arr);
 				if($str == 'tray open!')
 					return true;
@@ -89,9 +92,12 @@
 				// For good measure, unlock the eject button
 				$exec = "eject -i off ".$this->getDevice();
 				exec($exec, $arr, $return);
+				sleep(1);
+
 				$exec = "eject ".$this->getDevice();
 				exec($exec, $arr, $return);
-				exec('sync');
+				sleep(1);
+
 				if($return == 0)
 					return true;
 			}
@@ -110,12 +116,15 @@
 			if($this->is_open()) {
 				$exec = "eject -t ".$this->getDevice();
 				exec($exec, $arr, $return);
-				exec("sync");
+				sleep(1);
+
 				exec("blockdev --getsize64 ".$this->getDevice());
+				sleep(1);
+
 				$this->load_css(60);
 
 				// Sleep to allow the device to sync
-				sleep(5);
+				sleep(2);
 
 				if($return == 0)
 					return true;
@@ -130,6 +139,8 @@
 			if($this->is_open())
 				$this->close_tray();
 			shell::cmd("eject -t ".$this->getDevice());
+			sleep(1);
+
 			if($this->has_media()) {
 				shell::cmd("mount ".$this->getDevice(), true, true, false, array(0, 32, 64));
 				return true;
@@ -145,7 +156,9 @@
 		
 			$frames = abs(intval($frames));
 			$exec = "mplayer dvd:// -dvd-device ".$this->getDevice()." -frames $frames -nosound -vo null -noconfig all &> /dev/null";
-			exec($exec);
+			exec($exec, $arr, $return);
+			sleep(1);
+			return $return;
 		
 		}
 		
