@@ -16,6 +16,7 @@
 		}
 		
 		/** Hardware **/
+
 		function setDevice($str) {
 			$str = trim($str);
 			if(is_string($str))
@@ -37,40 +38,6 @@
 				$str = escapeshellarg($str);
 		
 			return $str;
-		}
-
-		/**
-		 * Poll the drive for a ready status and loaded
-		 *
-		 */
-		function cddetect() {
-
-			$device = $this->getDevice();
-			$exec = "udisks --show-info $device | grep \"has media\" | awk '{print $3}'";
-			exec($exec, $arr, $return);
-			$bool = current($arr);
-
-			return $bool;
-
-		}
-		
-		function close_tray() {
-			// Ignore exit code if it dies
-			shell::cmd("eject -t ".$this->getDevice(), false, true);
-		}
-		
-		function eject() {
-			// Ignore exit code if it dies
-			shell::cmd("eject ".$this->getDevice(), false, true);
-		}
-		
-		function mount() {
-			shell::cmd("eject -t ".$this->getDevice());
-			shell::cmd("mount ".$this->getDevice(), true, true, false, array(0, 32, 64));
-		}
-		
-		function unmount() {
-			shell::cmd("umount ".$this->getDevice());
 		}
 
 		function is_iso() {
