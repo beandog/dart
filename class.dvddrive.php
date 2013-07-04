@@ -89,8 +89,8 @@
 		
 		function close() {
 			if($this->is_open()) {
-				// Ignore exit code if it dies
-				shell::cmd("eject -t ".$this->getDevice(), false, true);
+				$exec = "eject -t ".$this->getDevice();
+				exec($exec, $arr, $return);
 			}
 		}
 		
