@@ -68,11 +68,6 @@
 		
 		clearstatcache();
 
-		if($verbose) {
-			shell::stdout("[DVD]");
-			shell::stdout("* Opening $device");
-		}
-		
 		$dvd = new DVD($device);
 		$dvds_model = new Dvds_Model;
 		$queue_model = new Queue_Model;
@@ -149,7 +144,7 @@
 				if($device_is_iso)
 					$display_device = basename($device);
 				shell::msg("[Access Device]");
-				shell::msg("* Opening $display_device");
+				shell::msg("* Reading $display_device");
 				shell::msg("* $filesize MB");
 			}
 			
