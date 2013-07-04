@@ -111,8 +111,10 @@
 		if($access_drive) {
 			if($drive->is_open()) {
 				if($verbose)
-					shell::stdout("* Closing tray");
+					shell::stdout("* Closing tray ... ", false);
 				$drive->close();
+				if($verbose)
+					shell::stdout("nom nom nom");
 			}
 
 			if($verbose) {
