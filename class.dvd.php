@@ -190,8 +190,7 @@
 		
 		/**
 		 * Get the disc file size using blockdev
-		 * The command returns the size in KB, so it is divided
-		 * by 1024 so the function returns size in MB
+		 * The command returns the size in MB
 		 */
 		public function getSize($format = 'MB') {
 		
@@ -203,14 +202,20 @@
 				$exec = "blockdev --getsize64 $device";
 			}
 			
-			$size = (int) current(shell::cmd($exec));
-			$size = $size / 1024;
+			$b_size = current(shell::cmd($exec));
 
-			if($format = 'GB')
-				$size = $size / 1024;
-			
-			return $size;
-		
+			$kb_size = $b_size / 1024;
+			$mb_size = intval($kb_size / 1024);
+			$gb_size = intval($mb_size / 1024);
+
+			var_dump($mb_size);
+
+			if($format == 'MB')
+				return $mb_size;
+
+			if($format == 'GB')
+				return $gb_size;
+
 		}
 		
 	}
