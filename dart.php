@@ -10,6 +10,7 @@
 	require_once 'includes/mdb2.php';
 	
 	require_once 'class.dvd.php';
+	require_once 'class.dvddrive.php';
 	require_once 'class.dvdvob.php';
 	require_once 'class.dvdtrack.php';
 	require_once 'class.dvdaudio.php';
@@ -93,13 +94,15 @@
 			$access_device = true;
 			
 		// Determine whether we need physical access to a disc.
-		if(!$device_is_iso && $access_device)
+		if(!$device_is_iso && $access_device) {
 			$access_drive = true;
+			$drive = new DVDDrive($device);
+		}
 		
 		// Override any eject preference if we can't
 		// access the drive.
 		if($access_drive)
-			$dvd->close_tray();
+			$drive->close();
 		else
 			$eject = false;
 		
@@ -196,7 +199,7 @@
 		require 'dart.ftp.php';
 		
 		if($eject)
-			$dvd->eject();
+			$drive->eject();
 		
 		// If polling for a new disc, check to see if one is in the
 		// drive.  If there is, start over.
@@ -207,7 +210,7 @@
 			while(true && $num_empty_polls < ((60 / $sleepy_time) * 30)) {
 	
 				// Check to see if a disc is present or being loaded
-				if($dvd->cddetect()) {
+				if($drive->has_media()) {
 					goto start;
 				} else {
 					sleep($sleepy_time);

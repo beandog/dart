@@ -226,7 +226,7 @@
 	// Eject the disc if we are polling, and nothing else
 	if($import && $poll && !$rip) {
 		$dvd->eject();
-		// Give it a few seconds so that cddetect won't catch
+		// Give it a few seconds so that udisks won't catch
 		// it while tray is busy.
 		sleep(4);
 	}
