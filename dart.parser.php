@@ -52,10 +52,10 @@
 		'description' => 'Max # of episodes to rip or encode',
 		'action' => 'StoreInt',
 	));
-	$parser->addOption('poll', array(
-		'short_name' => '-p',
-		'long_name' => '--poll',
-		'description' => 'Continue to monitor the drive after ripping, and the queue after encoding',
+	$parser->addOption('wait', array(
+		'short_name' => '-w',
+		'long_name' => '--wait',
+		'description' => 'Wait for media to be in the tray before proceeding',
 		'action' => 'StoreTrue',
 	));
 	$parser->addOption('queue', array(

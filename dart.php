@@ -57,9 +57,6 @@
 		$queue_model->reset();
 	}
 		
-	if(count($devices) > 1)
-		$poll = false;
-	
 	next_device:
 	
 	foreach($devices as $device) {
@@ -72,7 +69,6 @@
 		$dvds_model = new Dvds_Model;
 		$queue_model = new Queue_Model;
 		$dvd_episodes = array();
-		$num_empty_polls = 0;
 		$export_dir = getenv('HOME').'/dvds/';
 
 		// If disc has an entry in the database
@@ -109,13 +105,24 @@
 		// Override any eject preference if we can't
 		// access the drive.
 		if($access_drive) {
-			if($drive->is_open()) {
+
+			// Only close the tray if not already told to wait
+			if($drive->is_open() && !$wait) {
 				$drive->close();
+			}
+
+			// If set to wait and there is no media in the device,
+			// then go to the next device and start over.
+			if($wait && !$drive->has_media()) {
+				sleep(1);
+				$device = toggle_device($device);
+				goto start;
 			}
 
 			// Expecting media, so open the tray if
 			// there is none, and move to the next device
-			if(!$drive->has_media()) {
+			// Only perform if not told to wait
+			if(!$drive->has_media() && !$wait) {
 				$drive->open();
 				array_shift($devices);
 				goto next_device;
@@ -218,21 +225,11 @@
 		
 		// If polling for a new disc, check to see if one is in the
 		// drive.  If there is, start over.
-		if($poll && ($rip || $import)) {
-	
-			// If nothing given for 30 minutes, then bail.
-			$sleepy_time = 12;
-			while(true && $num_empty_polls < ((60 / $sleepy_time) * 30)) {
-	
-				// Check to see if a disc is present or being loaded
-				if($drive->has_media()) {
-					goto start;
-				} else {
-					sleep($sleepy_time);
-					$num_empty_polls++;
-				}
-			}
+		if($wait && ($rip || $import)) {
+			$device = toggle_device($device);
+			goto start;
 		}
+	
 	}
 	
 	/**
@@ -281,6 +278,13 @@
 		
 		return $episode_filename;
 	
+	}
+
+	function toggle_device($device) {
+		if($device == '/dev/dvd')
+			return 'dev/dvd1';
+		if($device == '/dev/dvd1')
+			return '/dev/dvd';
 	}
 	
 ?>
