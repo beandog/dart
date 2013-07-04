@@ -61,13 +61,14 @@
 				return false;
 			else {
 				shell::stdout("executing cddetect");
-				$exec = "cddetect -d".$this->getDevice();
+				$exec = "cddetect -d".$this->getDevice()." 2> /dev/null";
 				exec($exec, $arr, $return);
 				sleep(1);
+
 				$str = current($arr);
 				if($str == 'tray open!')
 					return true;
-				elseif($str == 'no disc!')
+				else
 					return false;
 			}
 
