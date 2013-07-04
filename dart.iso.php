@@ -20,8 +20,16 @@
 			if(file_exists($iso))
 				if($symlink)
 					shell::msg("* Symlink exists");
-				else	
+				else {
 					shell::msg("* File exists");
+					if(!$device_is_iso) {
+						if($verbose)
+							shell::stdout("* Opening tray ... ", false);
+						$drive->open();
+						if($verbose)
+							shell::stdout("next DVD, please! :)");
+					}
+				}
 			else {
 				shell::msg("* File doesn't exist");
 				if(!$dump_iso)
