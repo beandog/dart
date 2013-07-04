@@ -34,7 +34,7 @@
 	if($eject_trays)
 		foreach($all_devices as $str) {
 			$drive = new DVDDrive($str);
-			$drive->eject();
+			$drive->open();
 		}
 	
 	if(!count($devices))
