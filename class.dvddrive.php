@@ -40,7 +40,8 @@
 			$device = $this->getDevice();
 			$exec = "udisks --show-info $device | grep \"has media\" | awk '{print $3}'";
 			exec($exec, $arr, $return);
-			$bool = current($arr);
+			$str = current($arr);
+			$bool = (bool) $str;
 
 			return $bool;
 
