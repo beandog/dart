@@ -38,7 +38,7 @@
 		}
 	
 	if(!count($devices))
-		$devices = array("/dev/dvd");
+		$devices = $all_devices;
 	
 	if($alt_device)
 		$devices = array("/dev/dvd1");
@@ -55,11 +55,18 @@
 	if(count($devices) > 1)
 		$poll = false;
 	
+	next_device:
+	
 	foreach($devices as $device) {
 
 		start:
 		
 		clearstatcache();
+
+		if($verbose) {
+			shell::stdout("[DVD]");
+			shell::stdout("* Opening $device");
+		}
 		
 		$dvd = new DVD($device);
 		$dvds_model = new Dvds_Model;
@@ -101,8 +108,24 @@
 		
 		// Override any eject preference if we can't
 		// access the drive.
-		if($access_drive)
-			$drive->close();
+		if($access_drive) {
+			if($drive->is_open()) {
+				if($verbose)
+					shell::stdout("* Closing tray");
+				$drive->close();
+			}
+
+			if($verbose) {
+				shell::stdout("* Checking for media ... ", false);
+				if($drive->has_media())
+					shell::stdout("ok");
+				else {
+					shell::stdout("none found, exiting");
+					array_shift($devices);
+					goto next_device;
+				}
+			}
+		}
 		else
 			$eject = false;
 		
