@@ -43,15 +43,14 @@
 		 * Poll the drive for a ready status and loaded
 		 *
 		 */
-		function cddetect($accept_drive_not_ready = false) {
+		function cddetect() {
 
-			$exec = "cddetect -d".$this->getDevice()." 2>/dev/null";
+			$device = $this->getDevice();
+			$exec = "udisks --show-info $device | grep \"has media\" | awk '{print $3}'";
 			exec($exec, $arr, $return);
-			
-			if($return === 0 || ($accept_drive_not_ready && current($arr) == "drive not ready!"))
-				return true;
-			else
-				return false;
+			$bool = current($arr);
+
+			return $bool;
 
 		}
 		
