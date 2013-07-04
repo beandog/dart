@@ -234,11 +234,8 @@
 					sleep($sleepy_time);
 					$num_empty_polls++;
 				}
-	
 			}
-	
 		}
-		
 	}
 	
 	/**
