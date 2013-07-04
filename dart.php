@@ -78,6 +78,9 @@
 		// If disc has an entry in the database
 		$disc_indexed = false;
 		
+		// If all the disc metadata is in the database
+		$disc_archived = false;
+	
 		// Is the device an ISO file
 		$device_is_iso = false;
 		
@@ -181,6 +184,8 @@
 						shell::msg("* Updating filesize in DB");
 					$dvds_model->filesize = $dvd->getSize('MB') ;
 				}
+
+				$disc_archived = true;
 			
 			} else {
 				$import = true;
@@ -189,6 +194,11 @@
 			if($verbose) {
 				if($disc_indexed) {
 					shell::msg("* Indexed");
+					if($disc_archived)
+						shell::msg("* Archived");
+					else
+						shell::msg("* Unarchived");
+						
 				} else
 					shell::msg("* Unindexed");
 			}

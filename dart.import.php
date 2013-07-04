@@ -1,6 +1,6 @@
 <?
 	
-	if($import) {
+	if($import && !$disc_indexed) {
 	
 		if($verbose)
 			shell::msg("[Import]");
