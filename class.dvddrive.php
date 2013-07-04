@@ -80,19 +80,41 @@
 				return true;
 		}
 
+		/**
+		 * Open the DVD tray
+		 * If it is already opened, return false
+		 */
 		function open() {
-			if(!$this->is_open()) {
-				// Ignore exit code if it dies
-				shell::cmd("eject -i off ".$this->getDevice(), false, true);
-				shell::cmd("eject ".$this->getDevice(), false, true);
+			if($this->is_closed()) {
+				// For good measure, unlock the eject button
+				$exec = "eject -i off ".$this->getDevice();
+				exec($exec, $arr, $return);
+				$exec = "eject ".$this->getDevice();
+				exec($exec, $arr, $return);
+				exec('sync');
+				// sleep(1);
+				if($return == 0)
+					return true;
 			}
+			return false;
 		}
 		
 		function close() {
 			if($this->is_open()) {
 				$exec = "eject -t ".$this->getDevice();
 				exec($exec, $arr, $return);
-			}
+				exec('sync');
+
+				// Sleep two seconds to allow the device to sync
+				sleep(2);
+
+				if($return == 0)
+					return true;
+				else
+					return false;
+			} else
+				return true;
+
 		}
 		
 		function mount() {
@@ -108,6 +130,14 @@
 		
 		function unmount() {
 			shell::cmd("umount ".$this->getDevice());
+		}
+
+		function load_css($frames = 30) {
+		
+			$frames = abs(intval($frames));
+			$exec = "mplayer dvd:// -dvd-device ".$this->getDevice()." -frames $frames -nosound -vo null -noconfig all";
+			exec($exec);
+		
 		}
 		
 	}
