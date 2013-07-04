@@ -173,7 +173,6 @@
 
 				if($verbose) {
 					shell::stdout("* DVD ID: $dvds_model_id");
-					// shell::stdout("* Admin: ${baseurl}index.php/dvds/new_dvd/$dvds_model_id");
 				}
 				
 				$disc_indexed = true;

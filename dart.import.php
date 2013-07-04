@@ -222,7 +222,6 @@
 
 		if($verbose) {
 			shell::stdout("* New DVD imported! Yay! :D");
-			shell::stdout("* Admin: ${baseurl}index.php/dvds/new_dvd/$dvds_model_id");
 		}
 		
 	}
