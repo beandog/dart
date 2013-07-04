@@ -160,7 +160,7 @@
 			
 			// Get the uniq ID for the disc
 			if($verbose)
-				shell::stdout("* Getting disc ID ... ", false);
+				shell::stdout("* Disc ID: ", false);
 			$uniq_id = $dvd->getID();
 			if($verbose)
 				shell::stdout($uniq_id, true);
