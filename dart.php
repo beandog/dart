@@ -31,6 +31,11 @@
 	/** Start everything **/
 	$all_devices = array('/dev/dvd', '/dev/dvd1');
 
+	// Base URL to access DVD admin frontend
+	// Override in preferences
+	if(empty($baseurl))
+		$baseurl = '';
+
 	if($eject_trays)
 		foreach($all_devices as $str) {
 			$drive = new DVDDrive($str);
