@@ -171,8 +171,10 @@
 			
 			if($dvds_model_id) {
 
-				if($verbose)
+				if($verbose) {
 					shell::stdout("found $dvds_model_id", true);
+					shell::stdout("* Admin: ${baseurl}index.php/dvds/new_dvd/$dvds_model_id");
+				}
 				
 				$disc_indexed = true;
 				
