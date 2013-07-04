@@ -208,8 +208,6 @@
 			$mb_size = intval($kb_size / 1024);
 			$gb_size = intval($mb_size / 1024);
 
-			var_dump($mb_size);
-
 			if($format == 'MB')
 				return $mb_size;
 
