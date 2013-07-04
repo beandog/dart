@@ -335,7 +335,7 @@
 								$readlink = readlink($iso);
 							
 								if(substr($readlink, 0, 4) == "/dev") {
-									$dvd->eject();
+									$drive->open();
 								}
 							
 							}

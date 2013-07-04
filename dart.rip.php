@@ -75,7 +75,7 @@
 		}
 		
 		if($eject) {
-			$dvd->eject();
+			$drive->eject();
 			$ejected = true;
 		}
 		

@@ -33,8 +33,8 @@
 
 	if($eject_trays)
 		foreach($all_devices as $str) {
-			$dvd = new DVD($str);
-			$dvd->eject();
+			$drive = new DVDDrive($str);
+			$drive->eject();
 		}
 	
 	if(!count($devices))

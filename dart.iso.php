@@ -44,7 +44,7 @@
 				shell::stdout(" done!", true);
 				rename($tmpfname, $iso);
 				unset($tmpfname);
-				$dvd->eject();
+				$drive->open();
 				$ejected = true;
 			} else {
 				shell::msg("DVD extraction failed");
