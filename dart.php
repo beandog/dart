@@ -110,22 +110,15 @@
 		// access the drive.
 		if($access_drive) {
 			if($drive->is_open()) {
-				if($verbose)
-					shell::stdout("* Closing tray ... ", false);
 				$drive->close();
-				if($verbose)
-					shell::stdout("nom nom nom");
 			}
 
-			if($verbose) {
-				shell::stdout("* Checking for media ... ", false);
-				if($drive->has_media())
-					shell::stdout("ok");
-				else {
-					shell::stdout("none found, exiting");
-					array_shift($devices);
-					goto next_device;
-				}
+			// Expecting media, so open the tray if
+			// there is none, and move to the next device
+			if(!$drive->has_media()) {
+				$drive->open();
+				array_shift($devices);
+				goto next_device;
 			}
 		}
 		else
@@ -160,15 +153,13 @@
 			if($verbose)
 				shell::stdout($uniq_id, true);
 			
-			if($verbose)
-				shell::stdout("* Searching for database record ... ", false);
 			$dvds_model_id = $dvds_model->find_id('uniq_id', $uniq_id);
 			
 			if($dvds_model_id) {
 
 				if($verbose) {
-					shell::stdout("found $dvds_model_id", true);
-					shell::stdout("* Admin: ${baseurl}index.php/dvds/new_dvd/$dvds_model_id");
+					shell::stdout("* DVD ID: $dvds_model_id");
+					// shell::stdout("* Admin: ${baseurl}index.php/dvds/new_dvd/$dvds_model_id");
 				}
 				
 				$disc_indexed = true;
@@ -198,8 +189,6 @@
 				}
 			
 			} else {
-				if($verbose)
-					shell::stdout("none found", true);
 				$import = true;
 			}
 			

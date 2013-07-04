@@ -23,11 +23,9 @@
 				else {
 					shell::msg("* File exists");
 					if(!$device_is_iso) {
-						if($verbose)
-							shell::stdout("* Opening tray ... ", false);
 						$drive->open();
 						if($verbose)
-							shell::stdout("next DVD, please! :)");
+							shell::stdout("* Next DVD, please! :)");
 					}
 				}
 			else {
