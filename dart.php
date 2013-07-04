@@ -137,8 +137,9 @@
 		
 		if($access_device) {
 
-			$filesize = number_format($dvd->getSize('MB'));
-			if(!$filesize) {
+			$device_filesize = $dvd->getSize();
+			$display_filesize = number_format($device_filesize);
+			if(!$device_filesize) {
 				shell::msg("* DVD size reported as zero! Aborting");
 				exit(1);
 			}
@@ -149,7 +150,7 @@
 					$display_device = basename($device);
 				shell::msg("[Access Device]");
 				shell::msg("* Reading $display_device");
-				shell::msg("* $filesize MB");
+				shell::msg("* $display_filesize MB");
 			}
 			
 			// Decrypt the CSS to avoid disc access errors
@@ -193,7 +194,7 @@
 				if(is_null($dvds_model->filesize)) {
 					if($verbose)
 						shell::msg("* Updating filesize in DB");
-					$dvds_model->filesize = $dvd->getSize('MB') ;
+					$dvds_model->filesize = $dvd->getSize() ;
 				}
 
 				$disc_archived = true;

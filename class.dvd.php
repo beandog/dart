@@ -188,6 +188,11 @@
 		
 		}
 		
+		/**
+		 * Get the disc file size using blockdev
+		 * The command returns the size in KB, so it is divided
+		 * by 1024 so the function returns size in MB
+		 */
 		public function getSize($format = 'MB') {
 		
 			$device = $this->getDevice();
@@ -198,9 +203,10 @@
 				$exec = "blockdev --getsize64 $device";
 			}
 			
-			$size = current(shell::cmd($exec));
+			$size = (int) current(shell::cmd($exec));
+			$size = $size / 1024;
 
-			if($format = 'MB')
+			if($format = 'GB')
 				$size = $size / 1024;
 			
 			return $size;
