@@ -78,9 +78,6 @@
 		// If disc has an entry in the database
 		$disc_indexed = false;
 		
-		// If all the disc metadata is in the database
-		$disc_archived = false;
-	
 		// Is the device an ISO file
 		$device_is_iso = false;
 		
@@ -168,25 +165,20 @@
 				
 				$dvds_model->load($dvds_model_id);
 				
-				// A disc is archived if it meets the latest schema
-				// In this case, just check to see if the longest track is set.
-				if(!is_null($dvds_model->longest_track)) {
-					$disc_archived = true;
-					// Disable importing if it was turned on
-					$import = false;
-				} else {
-					// Override previous import command: we have access
-					// to the device, go ahead and import it into the database.
-					$import = true;
+				/** Metadata **/
+				/** Fix any missing database values **/
+
+				// Update the longest track
+				if(is_null($dvds_model->longest_track)) {
+					if($verbose)
+						shell::msg("* Updating longest track in DB");
+					$dvds_model->longest_track = $dvd->getLongestTrack();
 				}
-				
+
 				// Update disc size
-				/** Set the filesize of the DVD disc **/
 				if(is_null($dvds_model->filesize)) {
-				
 					if($verbose)
 						shell::msg("* Updating filesize in DB");
-				
 					$dvds_model->filesize = $dvd->getSize('MB') ;
 				}
 			
@@ -197,11 +189,6 @@
 			if($verbose) {
 				if($disc_indexed) {
 					shell::msg("* Indexed");
-					if($disc_archived)
-						shell::msg("* Archived");
-					else
-						shell::msg("* Unarchived");
-						
 				} else
 					shell::msg("* Unindexed");
 			}
