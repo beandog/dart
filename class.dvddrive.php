@@ -30,8 +30,8 @@
 		/**
 		 * Check if the drive has a DVD inside the tray
 		 *
-		 * Note that this will return TRUE in either state:
-		 * - the tray is closed and there is a DVD inside
+		 * Note that this will return FALSE in either state:
+		 * - the tray is closed and there is not a DVD inside
 		 * - the tray is open
 		 *
 		 */
