@@ -233,5 +233,5 @@
 		$drive->open();
 		// Give it a few seconds so that udisks won't catch
 		// it while tray is busy.
-		sleep(4);
+		sleep(5);
 	}
