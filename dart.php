@@ -118,10 +118,13 @@
 				goto start;
 			}
 
-			// If set to wait and there is media, sleep for 5 seconds
-			// to make sure it is ready to access
-			if($wait && $drive->has_media())
-				sleep(5);
+			// Take a nap to allow time for devices to load
+			if($wait && $drive->has_media()) {
+				if($device == "/dev/dvd")
+					sleep(10);
+				else
+					sleep(5);
+			}
 
 			// Expecting media, so open the tray if
 			// there is none, and move to the next device
@@ -286,10 +289,6 @@
 
 	// Switch to the next device
 	function toggle_device($device) {
-
-		// Take a nap to allow time for devices to load
-		sleep(5);
-
 		if($device == '/dev/dvd')
 			return '/dev/dvd1';
 		if($device == '/dev/dvd1')
