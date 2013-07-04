@@ -214,7 +214,7 @@
 		require 'dart.ftp.php';
 		
 		if($eject)
-			$drive->eject();
+			$drive->open();
 		
 		// If polling for a new disc, check to see if one is in the
 		// drive.  If there is, start over.
