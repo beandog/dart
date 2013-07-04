@@ -114,8 +114,8 @@
 			// If set to wait and there is no media in the device,
 			// then go to the next device and start over.
 			if($wait && !$drive->has_media()) {
-				sleep(1);
 				$device = toggle_device($device);
+				sleep(5);
 				goto start;
 			}
 
@@ -227,6 +227,7 @@
 		// drive.  If there is, start over.
 		if($wait && ($rip || $import)) {
 			$device = toggle_device($device);
+			sleep(5);
 			goto start;
 		}
 	
@@ -280,6 +281,7 @@
 	
 	}
 
+	// Switch to the next device
 	function toggle_device($device) {
 		if($device == '/dev/dvd')
 			return '/dev/dvd1';
