@@ -92,14 +92,11 @@
 				// For good measure, unlock the eject button
 				$exec = "eject -i off ".$this->getDevice();
 				exec($exec, $arr, $return);
-				sleep(1);
 
-				$exec = "eject ".$this->getDevice();
-				exec($exec, $arr, $return);
-				sleep(1);
+				$exec = "eject ".$this->getDevice()." &";
+				exec($exec);
 
-				if($return == 0)
-					return true;
+				return true;
 			}
 			return false;
 		}
