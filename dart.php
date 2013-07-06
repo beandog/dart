@@ -227,7 +227,7 @@
 		
 		// If polling for a new disc, check to see if one is in the
 		// drive.  If there is, start over.
-		if($wait && ($rip || $import)) {
+		if($wait && ($rip || $import || $iso)) {
 			$device = toggle_device($device);
 			goto start;
 		}
