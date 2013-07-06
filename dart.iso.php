@@ -44,9 +44,9 @@
 				shell::stdout("* Reading DVD, hit 'q' to quit", true);
 				shell::stdout("* Dumping to ISO ... ", false);
 			}
-			$success = $dvd->dump_iso($tmpfname, 'readdvd');
+			$success = $dvd->dump_iso($tmpfname, 'readdvd', true);
 			
-			if($success) {
+			if($success && filesize($tmpfname)) {
 				shell::stdout(" done!", true);
 				rename($tmpfname, $iso);
 				unset($tmpfname);

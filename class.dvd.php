@@ -106,20 +106,21 @@
 		
 		}
 		
-		public function dump_iso($dest, $method = 'readdvd') {
+		public function dump_iso($dest, $method = 'readdvd', $display_output = false) {
 		
 			$dest = shell::escape_string($dest);
 			$device = $this->getDevice();
 		
 			if($method == 'readdvd') {
 
-				$exec = "readdvd -d $device -o $dest";
+				$tmpfile = tempnam(sys_get_temp_dir(), "readdvd");
+				$exec = "nohup readdvd -d $device -s -1 -o $dest &> $tmpfile";
+				shell::stdout("* Redirecting output to $tmpfile");
 				exec($exec, $arr, $return);
-
-				if($return === 0)
-					return true;
-				else
+				if(intval($return))
 					return false;
+				else
+					return true;
 
 			} elseif($method == 'pv') {
 				$exec = "pv -pter -w 80 ".$this->getDevice()." | dd of=$dest 2> /dev/null";
