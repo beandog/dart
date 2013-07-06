@@ -57,8 +57,6 @@
 		$queue_model->reset();
 	}
 		
-	next_device:
-	
 	foreach($devices as $device) {
 
 		start:
@@ -95,7 +93,7 @@
 		// Determine whether we are reading the device
 		if($rip || $info || $import || $dump_iso)
 			$access_device = true;
-			
+
 		// Determine whether we need physical access to a disc.
 		if(!$device_is_iso && $access_device) {
 			$access_drive = true;
@@ -128,8 +126,8 @@
 			// Only perform if not told to wait
 			if(!$drive->has_media() && !$wait) {
 				$drive->open();
-				array_shift($devices);
-				goto next_device;
+				$device = toggle_device($device);
+				goto start;
 			}
 		}
 		else
