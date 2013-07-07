@@ -36,11 +36,19 @@
 	if(empty($baseurl))
 		$baseurl = '';
 
-	if($eject_trays)
+	if($eject_trays) {
 		foreach($all_devices as $str) {
 			$drive = new DVDDrive($str);
 			$drive->open();
 		}
+	}
+	
+	if($close) {
+		foreach($all_devices as $str) {
+			$drive = new DVDDrive($str);
+			$drive->close();
+		}
+	}
 	
 	if(!count($devices))
 		$devices = $all_devices;

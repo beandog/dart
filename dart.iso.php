@@ -5,7 +5,7 @@
 	 * Copy a disc's content to the harddrive
 	 */
 	
-	if($access_device) {
+	if($access_device && $dvds_model_id) {
 	
 		if($verbose)
 			shell::msg("[ISO]");
