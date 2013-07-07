@@ -197,7 +197,8 @@
 				$disc_archived = true;
 			
 			} else {
-				$import = true;
+				if(!$info)
+					$import = true;
 			}
 			
 			if($verbose) {
