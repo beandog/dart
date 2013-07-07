@@ -5,6 +5,7 @@
 		private $device;
 		private $lsdvd;
 		private $id;
+		private $serial_id;
 		private $vmg_id;
 		private $provider_id;
 		private $is_iso;
@@ -46,17 +47,36 @@
 		
 		/** Metadata **/
 		
+		// Use disc_id binary from libdvdread
 		private function disc_id() {
 			$arr = shell::cmd("dvd_id ".$this->getDevice(true));
 			$var = current($arr);
 			if(strlen($var) == 32)
 				$this->id = $var;
 		}
+
+		// Use serial number from HandBrake 0.9.9
+		private function serial_id() {
+		
+			$exec = "handbrake --scan -i ".$this->getDevice(true)." 2>&1";
+			exec($exec, $arr, $return);
+			$match = preg_grep("/.*Serial.*/", $arr);
+			$explode = explode(' ', current($match));
+			$str = end($explode);
+
+			return $str;
+		}
 		
 		public function getID() {
 			if(!$this->id)
 				$this->disc_id();
 			return $this->id;
+		}
+
+		public function getSerialID() {
+			if(!$this->serial_id)
+				$this->serial_id();
+			return $this->serial_id;
 		}
 		
 		private function lsdvd($force = false) {
@@ -101,8 +121,8 @@
 			if($use_lsdvd)
 				$this->lsdvd(true);
 			else {
-				$exec = "mplayer dvd:// -dvd-device ".escapeshellarg($this->getDevice())." -frames 60 -nosound -vo null -noconfig all";
-				shell::cmd($exec, $arr, $return);
+				$exec = "mplayer dvd:// -dvd-device ".escapeshellarg($this->getDevice())." -frames 60 -nosound -vo null -noconfig all 2>&1 > /dev/null";
+				exec($exec, $arr, $return);
 			}
 
 			return $return;
@@ -117,9 +137,9 @@
 			if($method == 'readdvd') {
 
 				$tmpfile = tempnam(sys_get_temp_dir(), "readdvd");
-				$exec = "nohup readdvd -d $device -s -1 -o $dest &> $tmpfile";
-				shell::stdout("* Redirecting output to $tmpfile");
-				exec($exec, $arr, $return);
+				$exec = "readdvd -d $device -s -1 -o $dest 2>&1 > $tmpfile";
+				echo $exec;
+				die;
 				if(intval($return))
 					return false;
 				else
