@@ -84,9 +84,9 @@
 		// If it's DVD drive, can it be accessed
 		$access_drive = false;
 		
-		$pathinfo = pathinfo($device);
+		$dirname = dirname($device);
 		
-		if($pathinfo['extension'] == "iso") {
+		if($dirname != "/dev") {
 			$device_is_iso = true;
 		}
 			

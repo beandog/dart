@@ -22,8 +22,8 @@
 			if(is_string($str))
 				$this->device = $str;
 
-			$pathinfo = pathinfo($str);
-			if($pathinfo['extension'] == "iso")
+			$dirname = dirname($str);
+			if($dirname != "/dev")
 				$this->is_iso = true;
 			else
 				$this->is_iso = false;
