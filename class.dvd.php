@@ -100,9 +100,12 @@
 		
 			if($use_lsdvd)
 				$this->lsdvd(true);
-			else
+			else {
 				$exec = "mplayer dvd:// -dvd-device ".escapeshellarg($this->getDevice())." -frames 60 -nosound -vo null -noconfig all";
-			shell::cmd($exec);
+				shell::cmd($exec, $arr, $return);
+			}
+
+			return $return;
 		
 		}
 		
