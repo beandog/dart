@@ -30,8 +30,6 @@
 				}
 			else {
 				shell::msg("* File doesn't exist");
-				if(!$dump_iso)
-					shell::msg("* Not ripping ISO");
 			}
 		}
 
