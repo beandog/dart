@@ -170,13 +170,43 @@
 				shell::stdout("* Disc ID: ", false);
 			}
 			$uniq_id = $dvd->getID();
-			$serial_id = $dvd->getSerialID();
 
 			if($verbose)
 				shell::stdout($uniq_id, true);
 			
-			$dvds_model_id = $dvds_model->find_id('uniq_id', $uniq_id);
+			// Get the serial ID for the disc
+			if($verbose)
+				shell::stdout("* Serial ID: ", false);
+			$serial_id = $dvd->getSerialID();
+			if($verbose)
+				shell::stdout($serial_id, true);
 			
+			// Lookup the database dvds.id
+			$dvds_model_id = $dvds_model->find_id('uniq_id', $uniq_id);
+
+			// If there is no record with disc_id, and the file is an ISO,
+			// look it up with the serial ID, since after running readdvd, the
+			// disc ID may be different.  Also worth nothing that the disc_id
+			// of the finished dump from readdvd is not recorded in the database,
+			// because the ISO dump may have not completed.
+			if($device_is_iso && !$dvds_model_id) {
+				shell::stdout("* Lookup on serial ID and disc title: ", false);
+				
+				$tmp_dvds_model = new Dvds_Model;
+				$find_serial_id = $tmp_dvds_model->find_id('serial_id', $serial_id);
+
+				if(!$find_serial_id)
+					shell::stdout("none found; marking as new disc");
+				else {
+					$dvds_model->load($find_serial_id);
+					if($dvd->getTitle() == $tmp_dvds_model->title) {
+						shell::stdout("match found");
+						$dvds_model_id = $find_serial_id;
+						unset($tmp_dvds_model);
+					}
+				}
+			}
+
 			if($dvds_model_id) {
 
 				if($verbose) {
