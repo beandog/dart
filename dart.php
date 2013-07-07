@@ -170,6 +170,8 @@
 				shell::stdout("* Disc ID: ", false);
 			}
 			$uniq_id = $dvd->getID();
+			$serial_id = $dvd->getSerialID();
+
 			if($verbose)
 				shell::stdout($uniq_id, true);
 			
@@ -200,6 +202,16 @@
 					if($verbose)
 						shell::msg("* Updating filesize in DB");
 					$dvds_model->filesize = $dvd->getSize() ;
+				}
+
+				// Update serial ID
+				if(!$dvds_model->serial_id) {
+					$serial_id = trim($dvd->getSerialID());
+					if($verbose) {
+						shell::msg("* Serial ID: $serial_id");
+						shell::msg("* Updating serial id in DB");
+					}
+					$dvds_model->serial_id = $serial_id;
 				}
 
 				$disc_archived = true;

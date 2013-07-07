@@ -64,6 +64,8 @@
 			$explode = explode(' ', current($match));
 			$str = end($explode);
 
+			$this->serial_id = $str;
+
 			return $str;
 		}
 		
