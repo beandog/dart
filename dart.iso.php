@@ -22,7 +22,7 @@
 					shell::msg("* Symlink exists");
 				else {
 					shell::msg("* File exists");
-					if(!$device_is_iso) {
+					if(!($device_is_iso || $info)) {
 						$drive->open();
 						if($verbose)
 							shell::stdout("* Next DVD, please! :)");
