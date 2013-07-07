@@ -152,7 +152,7 @@
 		function load_css($frames = 30) {
 		
 			$frames = abs(intval($frames));
-			$exec = "mplayer dvd:// -dvd-device ".$this->getDevice()." -frames $frames -nosound -vo null -noconfig all &> /dev/null";
+			$exec = "mplayer dvd:// -dvd-device ".$this->getDevice()." -frames $frames -nosound -vo null -noconfig all 2>&1 > /dev/null";
 			exec($exec, $arr, $return);
 			sleep(1);
 			return $return;
