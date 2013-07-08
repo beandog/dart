@@ -139,9 +139,8 @@
 			if($method == 'readdvd') {
 
 				$tmpfile = tempnam(sys_get_temp_dir(), "readdvd");
-				$exec = "readdvd -d $device -s -1 -o $dest 2>&1 > $tmpfile";
-				echo $exec;
-				die;
+				$cmd = "readdvd -d $device -o $dest 2>&1 > /dev/null";
+				system($cmd, $return);
 				if(intval($return))
 					return false;
 				else
