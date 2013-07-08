@@ -46,6 +46,9 @@
 			
 			if($success && filesize($tmpfname)) {
 				shell::stdout(" done!", true);
+				$smap = $tmpfname.".smap";
+				if(file_exists($smap))
+					unlink($smap);
 				rename($tmpfname, $iso);
 				unset($tmpfname);
 				$drive->open();
