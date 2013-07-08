@@ -139,7 +139,7 @@
 			if($method == 'readdvd') {
 
 				$tmpfile = tempnam(sys_get_temp_dir(), "readdvd");
-				$cmd = "readdvd -d $device -o $dest 2>&1 > /dev/null";
+				$cmd = "nohup readdvd -d $device -o $dest 2>&1 > /dev/null";
 				system($cmd, $return);
 				if(intval($return))
 					return false;
