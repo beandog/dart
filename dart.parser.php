@@ -105,12 +105,6 @@
 		'description' => 'FTP finished files',
 		'action' => 'StoreTrue',
 	));
-	$parser->addOption('symlink', array(
-		'short_name' => '-b',
-		'long_name' => '--handbrake',
-		'description' => 'Rip disc directly from HandBrake',
-		'action' => 'StoreTrue',
-	));
 	$parser->addOption('dumpvob', array(
 		'long_name' => '--vob',
 		'description' => 'Dump stream to .vob file',

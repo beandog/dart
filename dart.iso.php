@@ -13,24 +13,33 @@
 		// Get the target filename
 		$iso = $export_dir.$dvds_model->id.".".$dvds_model->title.".iso";
 		
-		if($verbose) {
-			$display_iso = basename($iso);
+		$display_iso = basename($iso);
+		if($verbose)
 			shell::msg("* Target filename: $display_iso");
 
-			if(file_exists($iso))
-				if($symlink)
-					shell::msg("* Symlink exists");
-				else {
-					shell::msg("* File exists");
-					if(!($device_is_iso || $info)) {
-						$drive->open();
-						if($verbose)
-							shell::stdout("* Next DVD, please! :)");
-					}
+		if(file_exists($iso)) {
+
+			// Move the symlink to the target filename
+			if($is_symlink && $device_is_iso) {
+				$readlink = readlink($iso);
+				if($verbose)
+					shell::stdout("* Moving to target ISO");
+				$bool = rename($readlink, $iso);
+				if(!$bool) {
+					shell::stdout("Moving $device to $iso failed");
+					exit 1;
 				}
-			else {
-				shell::msg("* File doesn't exist");
 			}
+
+			if($verbose && !$readlink)
+				shell::msg("* File exists");
+			if(!($device_is_iso || $info)) {
+				$drive->open();
+				if($verbose)
+					shell::stdout("* Next DVD, please! :)");
+			}
+		} else {
+			shell::msg("* File doesn't exist");
 		}
 
 		// Dump the DVD contents to an ISO on the filesystem

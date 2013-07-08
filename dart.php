@@ -85,6 +85,9 @@
 	
 		// Is the device an ISO file
 		$device_is_iso = false;
+
+		// Is the device a symlink
+		$is_symlink = false;
 		
 		// Can we poll the file or device
 		$access_device = false;
@@ -94,8 +97,11 @@
 		
 		$dirname = dirname($device);
 		
+		// File is an ISO (or a non-block device) if
+		// it is not found in /dev
 		if($dirname != "/dev") {
 			$device_is_iso = true;
+			$is_symlink = is_link($device);
 		}
 			
 		// Determine whether we are reading the device
