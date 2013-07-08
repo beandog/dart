@@ -43,7 +43,7 @@
 		}
 
 		// Dump the DVD contents to an ISO on the filesystem
-		if(($rip || $dump_iso) && !file_exists($iso) && !$device_is_iso && !$symlink) {
+		if(($rip || $dump_iso) && !file_exists($iso) && !$device_is_iso && !$is_symlink) {
 		
 			$tmpfname = tempnam($export_dir, "tmp");
 		
