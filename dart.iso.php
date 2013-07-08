@@ -41,7 +41,7 @@
 		// If they're both symlinks, then just keep going ...
 		// Also, we are only interested if we are moving the 
 		// source device to a filename that was a readlink.
-		if($device_is_iso && !($device_is_symlink && $iso_is_symlink) && !$device_is_symlink && !$iso_exists) {
+		if($device_is_iso && !($device_is_symlink && $iso_is_symlink) && !$device_is_symlink && !$iso_exists && !$info) {
 
 			if($iso_is_symlink) {
 				if($verbose)
@@ -57,7 +57,7 @@
 		}
 
 		// Notify that the original device is not being modified
-		if($device_is_iso && $iso_exists && $verbose) {
+		if($device_is_iso && $iso_exists && !$info && $verbose) {
 			shell::stdout("* Ignoring source file $device");
 		}
 
