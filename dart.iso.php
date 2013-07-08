@@ -1,6 +1,6 @@
 <?
 	/**
-	 * --iso
+	 * --dump-iso
 	 *
 	 * Copy a disc's content to the harddrive
 	 */
@@ -21,7 +21,7 @@
 		// See if the target filename exists
 		$iso_exists = file_exists($target_iso);
 		if($verbose && $iso_exists)
-			shell::stdout("* $display_iso already exists");
+			shell::stdout("* Target filename exists");
 
 		// Check if the device and ISO are symlinks
 		$device_is_symlink = is_link($device);
@@ -56,6 +56,10 @@
 
 		}
 
+		// Notify that the original device is not being modified
+		if($device_is_iso && $iso_exists && $verbose) {
+			shell::stdout("* Ignoring source file $device");
+		}
 
 		// Dump the DVD contents to an ISO on the filesystem
 		if(($rip || $dump_iso) && !$iso_exists && !$device_is_iso && !$is_symlink) {
@@ -86,9 +90,4 @@
 		
 		}
 		
-		// If reading from a file that is an ISO, rename it
-		// to the full target name
-		// if($device_is_iso && !file_exists($iso)) {
-		// 	rename($device, $iso);
-		// }
 	}
