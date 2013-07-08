@@ -43,9 +43,12 @@
 				shell::stdout("* Dumping to ISO ... ", false);
 			}
 			$success = $dvd->dump_iso($tmpfname, 'readdvd', true);
+			shell::stdout(" done!", true);
+
+			shell::stdout("dump_iso() return value");
+			var_dump($success);
 			
-			if($success && filesize($tmpfname)) {
-				shell::stdout(" done!", true);
+			if(filesize($tmpfname)) {
 				$smap = $tmpfname.".smap";
 				if(file_exists($smap))
 					unlink($smap);
@@ -59,8 +62,9 @@
 		
 		}
 		
-		// Check if the device is an ISO, and we need
-		// a symlink to the standardized ISO filename
-		if(($device_is_iso || $symlink) && !file_exists($iso))
-			symlink($device, $iso);
+		// If reading from a file that is an ISO, rename it
+		// to the full target name
+		if($device_is_iso && !file_exists($iso)) {
+			rename($device, $iso);
+		}
 	}
