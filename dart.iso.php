@@ -27,7 +27,7 @@
 				$bool = rename($readlink, $iso);
 				if(!$bool) {
 					shell::stdout("Moving $device to $iso failed");
-					exit 1;
+					exit(1);
 				}
 			}
 
