@@ -62,8 +62,8 @@
 		}
 
 		// Dump the DVD contents to an ISO on the filesystem
-		if(($rip || $dump_iso) && !$iso_exists && !$device_is_iso && !$is_symlink) {
-		
+		if(($rip || $dump_iso) && !$iso_exists && !$device_is_iso) {
+
 			$tmpfname = tempnam($export_dir, "tmp");
 		
 			if($verbose) {
@@ -82,6 +82,7 @@
 					unlink($smap);
 				rename($tmpfname, $target_iso);
 				unset($tmpfname);
+				shell::stdout("* DVD copy successful. Ready for another :D");
 				$drive->open();
 				$ejected = true;
 			} else {
