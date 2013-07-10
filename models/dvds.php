@@ -55,6 +55,14 @@
 		
 		}
 
+		public function get_series_id() {
+		
+			$sql = "SELECT series.id FROM dvds JOIN series_dvds ON dvds.id = series_dvds.dvd_id JOIN series ON series.id = series_dvds.series_id WHERE dvds.id = ".$this->db->quote($this->id).";";
+			$var = $this->db->getOne($sql);
+			return $var;
+
+		}
+
 		public function get_series_title() {
 		
 			$sql = "SELECT series.title FROM dvds JOIN series_dvds ON dvds.id = series_dvds.dvd_id JOIN series ON series.id = series_dvds.series_id WHERE dvds.id = ".$this->db->quote($this->id).";";
