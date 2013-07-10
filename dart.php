@@ -190,11 +190,7 @@
 			// Lookup the database dvds.id
 			$dvds_model_id = $dvds_model->find_id('uniq_id', $uniq_id);
 
-			// If there is no record with disc_id, and the file is an ISO,
-			// look it up with the serial ID, since after running readdvd, the
-			// disc ID may be different.  Also worth nothing that the disc_id
-			// of the finished dump from readdvd is not recorded in the database,
-			// because the ISO dump may have not completed.
+			// Use the serial ID as a unique identifer as well
 			if($device_is_iso && !$dvds_model_id) {
 				shell::stdout("* Lookup on serial ID and disc title: ", false);
 				

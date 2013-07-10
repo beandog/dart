@@ -131,12 +131,30 @@
 		
 		}
 		
-		public function dump_iso($dest, $method = 'readdvd') {
+		public function dump_iso($dest, $method = 'ddrescue') {
 		
 			$dest = shell::escape_string($dest);
 			$device = $this->getDevice();
 		
-			if($method == 'readdvd') {
+			// ddrescue README
+			// Since I've used dd in the past, ddrescue seems like a good
+			// alternative that can work around broken sectors, which was
+			// the main feature I liked about readdvd to begin with.
+			// It does come with a lot of options, so I'm testing these out
+			// for now; however, I have seen multiple examples of using these
+			// arguments for DVDs.
+			if($method == 'ddrescue') {
+
+				$logfile = "/tmp/".$this->getID().".log";
+				
+				$cmd = "ddrescue -b 2048 -n $device $dest $logfile";
+				passthru($cmd, $return);
+				if(intval($return))
+					return false;
+				else
+					return true;
+
+			} elseif($method == 'readdvd') {
 
 				// readdvd README
 				// Sadly, three strikes and it's out. :(
