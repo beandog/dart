@@ -18,8 +18,7 @@
 		// Get the series ID
 		$series_id = $dvds_model->get_series_id();
 	
-		// Get the series title
-		$series_title = $dvds_model->get_series_title();
+		// Add the series title
 		$str = strtoupper($series_title);
 		$str = preg_replace("/[^0-9A-Z \-_.]/", '', $str);
 		$str = str_replace(' ', '_', $str);

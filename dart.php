@@ -215,8 +215,11 @@
 
 			if($dvds_model_id) {
 
+				$series_title = $dvds_model->get_series_title();
+
 				if($verbose) {
 					shell::stdout("* DVD ID: $dvds_model_id");
+					shell::stdout("* Series: $series_title");
 				}
 				
 				$disc_indexed = true;
