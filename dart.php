@@ -53,9 +53,6 @@
 	if(!count($devices))
 		$devices = $all_devices;
 	
-	if($all)
-		$devices = $all_devices;
-	
 	// Process request to reset the queue
 	if($reset_queue) {
 		$queue_model = new Queue_Model;

@@ -87,12 +87,6 @@
 		'description' => 'Open all DVD trays',
 		'action' => 'StoreTrue',
 	));
-	$parser->addOption('all', array(
-		'short_name' => '-a',
-		'long_name' => '--all',
-		'description' => 'Run commands on all devices',
-		'action' => 'StoreTrue',
-	));
 	$parser->addOption('ftp', array(
 		'short_name' => '-f',
 		'long_name' => '--ftp',
