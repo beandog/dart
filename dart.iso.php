@@ -9,6 +9,11 @@
 	
 		if($verbose)
 			shell::msg("[ISO]");
+
+		// Get the collection ID to prefix the filename
+		// of the ISO, for easy indexing by cartoons, movies, etc.
+		$collection_id = $dvds_model->get_collection_id();
+		$collection_id = intval($collection_id);
 	
 		// Get the series title
 		$series_title = $dvds_model->get_series_title();
@@ -18,7 +23,8 @@
 
 		// Get the target filename
 		$target_iso = $export_dir;
-		$target_iso .= str_pad($dvds_model->id, 4, '0', STR_PAD_LEFT);
+		$target_iso .= str_pad($collection_id, 1, '0');
+		$target_iso .= ".".str_pad($dvds_model->id, 4, '0', STR_PAD_LEFT);
 		if(strlen($series_title))
 			$target_iso .= ".$str.iso";
 		else
