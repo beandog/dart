@@ -41,7 +41,6 @@
 		'action' => 'StoreTrue',
 	));
 	$parser->addOption('dump_iso', array(
-		'short_name' => '-o',
 		'long_name' => '--iso',
 		'description' => 'Copy the DVD filesystem to an ISO',
 		'action' => 'StoreTrue',
