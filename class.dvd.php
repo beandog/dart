@@ -63,6 +63,7 @@
 			$match = preg_grep("/.*Serial.*/", $arr);
 			$explode = explode(' ', current($match));
 			$str = end($explode);
+			$str = strtolower($str);
 
 			$this->serial_id = $str;
 
