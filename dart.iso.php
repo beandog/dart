@@ -11,7 +11,9 @@
 			shell::msg("[ISO]");
 	
 		// Get the target filename
-		$target_iso = $export_dir.$dvds_model->id.".".$dvds_model->title.".iso";
+		$target_iso = $export_dir;
+		$target_iso .= str_pad($dvds_model->id, 4, '0', STR_PAD_LEFT);
+		$target_iso .= ".".$dvds_model->title.".iso";
 		
 		$display_iso = basename($target_iso);
 		if($verbose)
