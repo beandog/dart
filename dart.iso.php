@@ -70,10 +70,6 @@
 				shell::stdout("* Dumping to ISO ... ", false);
 			}
 			$success = $dvd->dump_iso($tmpfname);
-			shell::stdout(" done!", true);
-
-			shell::stdout("dump_iso() return value");
-			var_dump($success);
 			
 			if(filesize($tmpfname)) {
 				$smap = $tmpfname.".smap";
