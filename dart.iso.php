@@ -70,7 +70,7 @@
 				shell::stdout("* Reading DVD, hit 'q' to quit", true);
 				shell::stdout("* Dumping to ISO ... ", false);
 			}
-			$success = $dvd->dump_iso($tmpfname, 'readdvd', true);
+			$success = $dvd->dump_iso($tmpfname, 'readdvd');
 			shell::stdout(" done!", true);
 
 			shell::stdout("dump_iso() return value");

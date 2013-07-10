@@ -131,15 +131,38 @@
 		
 		}
 		
-		public function dump_iso($dest, $method = 'readdvd', $display_output = false) {
+		public function dump_iso($dest, $method = 'readdvd') {
 		
 			$dest = shell::escape_string($dest);
 			$device = $this->getDevice();
 		
 			if($method == 'readdvd') {
 
+				// readdvd README
+				// Sadly, three strikes and it's out. :(
+				// 1. It sometimes hangs while being run in the
+				//    background, but will continue reading the DVD.
+				//    When run in the foreground (in those same cases)
+				//    it sometimes works.  I originally thought that it
+				//    was somehow related to readdvd expecting user input,
+				//    but it behaves good on some DVDs, and poorly on others
+				// 2. When it does hang, it's usually because it can't read a
+				//    title because it has hung on dvdcss.  Other programs
+				//    such as handbrake, etc., can read it just fine.
+				// 3. I tried compiling it myself from source, but it would
+				//    not link against it's own libraries. :(
+				// Altogether, it's a binary I *want* to work, but it's
+				// not really coming together.  I consistently had better luck
+				// with pv.
 				$tmpfile = tempnam(sys_get_temp_dir(), "readdvd");
-				$cmd = "readdvd -d $device -o $dest 2>&1 > /dev/null";
+				// $cmd = "readdvd -d $device -o $dest 2>&1 > /dev/null";
+				$outfile = "$dest.readdvd.out";
+				$pidfile = "$dest.readdvd.pid";
+				// $cmd = "( nohup readdvd -d $device -o $dest > /dev/null 2>&1 > $outfile & echo $! > $pidfile ) > /dev/null 2>&1";
+				$cmd = "nohup readdvd -d $device -o $dest > /dev/null 2>&1 > $outfile & echo $! > $pidfile";
+				exec($cmd, $arr, $return);
+				shell::stdout("* System command: $cmd");
+				die;
 				system($cmd, $return);
 				if(intval($return))
 					return false;
