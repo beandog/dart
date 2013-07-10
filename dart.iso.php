@@ -10,11 +10,20 @@
 		if($verbose)
 			shell::msg("[ISO]");
 	
+		// Get the series title
+		$series_title = $dvds_model->get_series_title();
+		$str = strtoupper($series_title);
+		$str = preg_replace("/[^0-9A-Z \-_.]/", '', $str);
+		$str = str_replace(' ', '_', $str);
+
 		// Get the target filename
 		$target_iso = $export_dir;
 		$target_iso .= str_pad($dvds_model->id, 4, '0', STR_PAD_LEFT);
-		$target_iso .= ".".$dvds_model->title.".iso";
-		
+		if(strlen($series_title))
+			$target_iso .= ".$str.iso";
+		else
+			$target_iso .= ".".$dvds_model->title.".iso";
+
 		$display_iso = basename($target_iso);
 		if($verbose)
 			shell::msg("* Target filename: $display_iso");
