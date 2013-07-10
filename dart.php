@@ -53,9 +53,6 @@
 	if(!count($devices))
 		$devices = $all_devices;
 	
-	if($alt_device)
-		$devices = array("/dev/dvd1");
-	
 	if($all)
 		$devices = $all_devices;
 	

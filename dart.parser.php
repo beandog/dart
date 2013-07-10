@@ -81,12 +81,6 @@
 		'description' => 'Eject the DVD drive when finished accessing it',
 		'action' => 'StoreTrue',
 	));
-	$parser->addOption('alt_device', array(
-		'short_name' => '-d',
-		'long_name' => '--dvd1',
-		'description' => 'Use /dev/dvd1 as block device',
-		'action' => 'StoreTrue',
-	));
 	$parser->addOption('eject_trays', array(
 		'short_name' => '-j',
 		'long_name' => '--eject-trays',
