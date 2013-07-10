@@ -92,6 +92,7 @@
 		// If it's DVD drive, can it be accessed
 		$access_drive = false;
 		
+		// Get the dirname
 		$dirname = dirname($device);
 		
 		// File is an ISO (or a non-block device) if
@@ -99,6 +100,12 @@
 		if($dirname != "/dev") {
 			$device_is_iso = true;
 			$is_symlink = is_link($device);
+		}
+
+		// Verify file exists
+		if(!file_exists($device)) {
+			shell::stdout("* Couldn't find $device");
+			exit(1);
 		}
 			
 		// Determine whether we are reading the device
