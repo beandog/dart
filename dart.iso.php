@@ -98,6 +98,7 @@
 				if(file_exists($smap))
 					unlink($smap);
 				rename($tmpfname, $target_iso);
+				chmod($target_iso, 0644);
 				unset($tmpfname);
 				shell::stdout("* DVD copy successful. Ready for another :D");
 				$drive->open();
