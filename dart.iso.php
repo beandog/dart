@@ -20,6 +20,7 @@
 		$str = strtoupper($series_title);
 		$str = preg_replace("/[^0-9A-Z \-_.]/", '', $str);
 		$str = str_replace(' ', '_', $str);
+		$str = substr($str, 0, 28);
 
 		// Get the target filename
 		$target_iso = $export_dir;
