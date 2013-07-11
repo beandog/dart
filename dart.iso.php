@@ -85,7 +85,7 @@
 		// Dump the DVD contents to an ISO on the filesystem
 		if(($rip || $dump_iso) && !$iso_exists && !$device_is_iso) {
 
-			$tmpfname = tempnam($export_dir, "tmp");
+			$tmpfname = $target_iso."dd";
 		
 			if($verbose) {
 				shell::stdout("* Dumping to ISO ... ", false);
