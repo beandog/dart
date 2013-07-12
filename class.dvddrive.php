@@ -113,6 +113,7 @@
 			if($this->is_open()) {
 				$exec = "eject -t ".$this->getDevice();
 				sleep(30);
+				$this->load_css();
 			}
 
 			return true;
@@ -139,7 +140,7 @@
 		// Use Handbrake to access the device and scan for media
 		// Handbrake seems to be much more patient regarding
 		// polling a tray and waiting to see if it is loaded.
-		function load_css($frames = 30) {
+		function load_css() {
 		
 			// $frames = abs(intval($frames));
 			// $cmd = "mplayer dvd:// -dvd-device ".$this->getDevice()." -frames $frames -nosound -vo null -noconfig all 2>&1 > /dev/null";
