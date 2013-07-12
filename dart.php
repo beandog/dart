@@ -121,31 +121,37 @@
 		// access the drive.
 		if($access_drive) {
 
-			// Only close the tray if not already told to wait
-			if($drive->is_open() && !$wait) {
-				$drive->close();
+			if($wait) {
+
+				// Take a nap to allow time for devices to load
+				if($drive->has_media()) {
+					sleep(5);
+				}
+				// If set to wait and there is no media in the device,
+				// then go to the next device and start over.
+				else {
+					$drive->open();
+					$device = toggle_device($device);
+					goto start;
+				}
 			}
 
-			// If set to wait and there is no media in the device,
-			// then go to the next device and start over.
-			if($wait && !$drive->has_media()) {
-				$device = toggle_device($device);
-				goto start;
-			}
+			else  {
 
-			// Take a nap to allow time for devices to load
-			if($wait && $drive->has_media()) {
-				sleep(5);
-			}
+				// Only close the tray if not already told to wait
+				if($drive->is_open()) {
+					$drive->close();
+				}
 
-			// Expecting media, so open the tray if
-			// there is none.  Remove the current device
-			// from the array, and start over at the
-			// beginning.
-			if(!$drive->has_media() && !$wait) {
-				$drive->open();
-				array_shift($devices);
-				goto next_device;
+				// Expecting media, so open the tray if
+				// there is none.  Remove the current device
+				// from the array, and start over at the
+				// beginning.
+				if(!$drive->has_media()) {
+					$drive->open();
+					array_shift($devices);
+					goto next_device;
+				}
 			}
 		}
 		else
