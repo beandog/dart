@@ -107,29 +107,21 @@
 		 * README: Because of how a DVD tray operates, I've yet to find a way
 		 * to accurately detect if the tray is closed *and* ready to access.
 		 * As such, the easiest approach is also the simplest: just wait a
-		 * few seconds after closing the tray.
+		 * few seconds after closing the tray OR to have HandBrake run a scan
+		 * on it (testing this 2nd one now).
 		 *
 		 * README.devices: Running `ejcct -t` on my Memorex DVD drive sometimes
 		 * throws "Buffer I/O error on device sr0, logical block 512", so just
 		 * ignore it.
 		 */
 		function close() {
+
 			if($this->is_open()) {
 				$exec = "eject -t ".$this->getDevice();
-				exec($exec, $arr, $return);
-				sleep(2);
-
 				$this->load_css();
+			}
 
-				// Sleep to allow the device to sync
-				sleep(3);
-
-				if($return == 0)
-					return true;
-				else
-					return false;
-			} else
-				return true;
+			return true;
 
 		}
 		
