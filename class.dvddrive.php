@@ -57,19 +57,13 @@
 		 */
 		function is_open() {
 
-			if($this->has_media())
-				return false;
-			else {
-				$exec = "cddetect -d".$this->getDevice()." 2> /dev/null";
-				exec($exec, $arr, $return);
-				sleep(1);
+			$cmd = "trayopen ".$this->getDevice();
+			system($cmd, $return);
 
-				$str = current($arr);
-				if($str == 'tray open!')
-					return true;
-				else
-					return false;
-			}
+			if($return)
+				return false;
+			else
+				return true;
 
 		}
 
