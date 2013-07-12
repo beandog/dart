@@ -112,7 +112,7 @@
 
 			if($this->is_open()) {
 				$exec = "eject -t ".$this->getDevice();
-				$this->load_css();
+				sleep(30);
 			}
 
 			return true;
