@@ -266,7 +266,7 @@
 			if($this->is_iso()) {
 				$exec = "stat -c %s $device";
 			} else {
-				$exec = "blockdev --getsize64 $device";
+				$exec = "blockdev --getsize64 $device 2> /dev/null";
 			}
 			
 			$b_size = current(shell::cmd($exec));
