@@ -146,7 +146,7 @@
 			// arguments for DVDs.
 			if($method == 'ddrescue') {
 
-				$logfile = "/tmp/".$this->getID().".log";
+				$logfile = getenv('HOME')."/.ddrescue/".$this->getID().".log";
 				
 				$cmd = "ddrescue -b 2048 -n $device $dest $logfile";
 				passthru($cmd, $return);
