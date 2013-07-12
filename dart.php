@@ -58,6 +58,8 @@
 		$queue_model = new Queue_Model;
 		$queue_model->reset();
 	}
+
+	next_device:
 		
 	foreach($devices as $device) {
 
@@ -137,11 +139,13 @@
 			}
 
 			// Expecting media, so open the tray if
-			// there is none, and exit. Only happens is
-			// not told to wait for media.
+			// there is none.  Remove the current device
+			// from the array, and start over at the
+			// beginning.
 			if(!$drive->has_media() && !$wait) {
 				$drive->open();
-				exit(0);
+				array_shift($devices);
+				goto next_device;
 			}
 		}
 		else
