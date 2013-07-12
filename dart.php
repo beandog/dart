@@ -137,12 +137,11 @@
 			}
 
 			// Expecting media, so open the tray if
-			// there is none, and move to the next device
-			// Only perform if not told to wait
+			// there is none, and exit. Only happens is
+			// not told to wait for media.
 			if(!$drive->has_media() && !$wait) {
 				$drive->open();
-				$device = toggle_device($device);
-				goto start;
+				exit(0);
 			}
 		}
 		else
