@@ -140,6 +140,8 @@
 
 				// Only close the tray if not already told to wait
 				if($drive->is_open()) {
+					if($debug)
+						shell::stdout("Closing $device");
 					$drive->close();
 				}
 
@@ -147,9 +149,22 @@
 				// there is none.  Remove the current device
 				// from the array, and start over at the
 				// beginning.
-				if(!$drive->has_media()) {
+				if($drive->is_closed() && !$drive->has_media()) {
+					if($debug) {
+						shell::stdout("$device does not have media");
+						shell::stdout("Opening $device");
+					}
 					$drive->open();
+					if($debug)
+						shell::stdout("Going to next device");
 					array_shift($devices);
+					if($debug) {
+						$next_device = current($devices);
+						if($next_device)
+							shell::stdout("Next device: ".current($devices));
+						else
+							shell::stdout("That was the last device");
+					}
 					goto next_device;
 				}
 			}
@@ -159,6 +174,14 @@
 		
 		if($access_device) {
 
+			if($verbose) {
+				shell::msg("[Access Device]");
+				$display_device = $device;
+				if($device_is_iso)
+					$display_device = basename($device);
+				shell::msg("* Reading $display_device");
+			}
+
 			$device_filesize = $dvd->getSize();
 			$display_filesize = number_format($device_filesize);
 			if(!$device_filesize) {
@@ -166,14 +189,8 @@
 				exit(1);
 			}
 			
-			if($verbose) {
-				$display_device = $device;
-				if($device_is_iso)
-					$display_device = basename($device);
-				shell::msg("[Access Device]");
-				shell::msg("* Reading $display_device");
+			if($verbose)
 				shell::msg("* $display_filesize MB");
-			}
 			
 			// Decrypt the CSS to avoid disc access errors
 			if($verbose)
