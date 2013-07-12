@@ -113,15 +113,12 @@
 			if($this->is_open()) {
 				$exec = "eject -t ".$this->getDevice();
 				exec($exec, $arr, $return);
-				sleep(1);
-
-				exec("blockdev --getsize64 ".$this->getDevice());
-				sleep(1);
+				sleep(2);
 
 				$this->load_css(60);
 
 				// Sleep to allow the device to sync
-				sleep(2);
+				sleep(3);
 
 				if($return == 0)
 					return true;
