@@ -115,7 +115,7 @@
 				exec($exec, $arr, $return);
 				sleep(2);
 
-				$this->load_css(60);
+				$this->load_css();
 
 				// Sleep to allow the device to sync
 				sleep(3);
