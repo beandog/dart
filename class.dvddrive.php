@@ -108,6 +108,10 @@
 		 * to accurately detect if the tray is closed *and* ready to access.
 		 * As such, the easiest approach is also the simplest: just wait a
 		 * few seconds after closing the tray.
+		 *
+		 * README.devices: Running `ejcct -t` on my Memorex DVD drive sometimes
+		 * throws "Buffer I/O error on device sr0, logical block 512", so just
+		 * ignore it.
 		 */
 		function close() {
 			if($this->is_open()) {
