@@ -259,6 +259,8 @@
 		/**
 		 * Get the disc file size using blockdev
 		 * The command returns the size in MB
+		 *
+		 * TODO: look at using PHP stat() instead of blockdev
 		 */
 		public function getSize($format = 'MB') {
 		
