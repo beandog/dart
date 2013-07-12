@@ -146,11 +146,15 @@
 			shell::cmd("umount ".$this->getDevice());
 		}
 
+		// Use Handbrake to access the device and scan for media
+		// Handbrake seems to be much more patient regarding
+		// polling a tray and waiting to see if it is loaded.
 		function load_css($frames = 30) {
 		
-			$frames = abs(intval($frames));
-			$exec = "mplayer dvd:// -dvd-device ".$this->getDevice()." -frames $frames -nosound -vo null -noconfig all 2>&1 > /dev/null";
-			exec($exec, $arr, $return);
+			// $frames = abs(intval($frames));
+			// $cmd = "mplayer dvd:// -dvd-device ".$this->getDevice()." -frames $frames -nosound -vo null -noconfig all 2>&1 > /dev/null";
+			$cmd = "handbrake --scan -i ".$this->getDevice()." 2>&1 > /dev/null";
+			exec($cmd, $arr, $return);
 			sleep(1);
 			return $return;
 		
