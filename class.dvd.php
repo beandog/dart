@@ -207,6 +207,7 @@
 			$this->title = $str;
 		}
 		
+		// Note that `volname` will also return the same title
 		public function getTitle() {
 			if(!$this->sxe)
 				$this->lsdvd();
