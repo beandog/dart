@@ -125,6 +125,11 @@
 		// Determine whether we are reading the device
 		if($rip || $info || $import || $dump_iso) {
 			$access_device = true;
+
+			$display_device = $device;
+			if($device_is_iso)
+				$display_device = basename($device);
+
 			if($verbose) {
 				shell::msg("[Access Device]");
 				shell::msg("* Reading $display_device");
@@ -197,10 +202,6 @@
 		}
 
 		if($access_device) {
-
-			$display_device = $device;
-			if($device_is_iso)
-				$display_device = basename($device);
 
 			// Decrypt the CSS to avoid disc access errors
 			if($verbose)
