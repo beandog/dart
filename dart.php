@@ -59,9 +59,19 @@
 		$queue_model->reset();
 	}
 
+	// General boolean for various items
+	$first_run = true;
+
 	foreach($devices as $device) {
 
 		start:
+
+		if($verbose) {
+			if(!$first_run)
+				echo "\n";
+			shell::stdout("[Initialization]");
+			shell::stdout("* Device: $device");
+		}
 		
 		clearstatcache();
 
@@ -94,6 +104,9 @@
 
 		// Does the device tray have media
 		$has_media = false;
+
+		// Making a run for it! :)
+		$first_run = false;
 		
 		// File is an ISO (or a non-block device) if
 		// it is not found in /dev
@@ -124,16 +137,23 @@
 			$drive = new DVDDrive($device);
 			$drive->set_debug($debug);
 
-			// This will close the tray if it's open, then
-			// reopen it if there was no media.
-			if($drive->is_open()) {
-				$drive->close();
-			}
+			// **ALWAYS** send a call to the close() function
+			// regardless of whether it's open or not.  This can
+			// catch situations when the device is closing and
+			// polling as well as the expected situation where the
+			// tray is just open.  In short, this will avoid headaches
+			// and race conditions.
+			if($verbose)
+				shell::stdout("* Sleepy time . . .");
+			$drive->close();
+
 			$has_media = $drive->has_media();
 
 			if($has_media) {
 				$access_drive = true;
 			} else {
+				if($verbose)
+					shell::stdout("* No media, so out we go!");
 				$drive->open();
 				$access_device = false;
 			}
