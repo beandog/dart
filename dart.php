@@ -317,8 +317,6 @@
 		require 'dart.import.php';
 		require 'dart.iso.php';
 		require 'dart.rip.php';	
-		require 'dart.encode.php';
-		require 'dart.ftp.php';
 		
 		if($eject)
 			$drive->open();
@@ -334,7 +332,9 @@
 	}
 	
 	require 'dart.queue.php';
-	
+	require 'dart.encode.php';
+	require 'dart.ftp.php';
+
 	/**
 	 * Format a title for saving to filesystem
 	 *
