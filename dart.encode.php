@@ -10,6 +10,8 @@
 
 		$queue_model = new Queue_Model;
 
+		$num_encoded = 0;
+
 		if($verbose)
 			shell::msg("[Encode]");
 
