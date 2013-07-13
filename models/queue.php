@@ -29,6 +29,8 @@
 		}
 		
 		public function get_episodes($hostname, $skip = 0, $max = 0) {
+
+			$sql = '';
 		
 			if($skip > 0)
 				$sql = " OFFSET $skip";
