@@ -66,8 +66,8 @@
 				}
 				
 				$iso = $export_dir.$episodes_model->get_iso();
-				$mkv = $export_dir."$episode_filename.mkv";
-				$x264 = $export_dir."$episode_filename.x264";
+				$mkv = "$episode_filename.mkv";
+				$x264 = "$episode_filename.x264";
 
 				// Store XML metadata in temporary file
 				$xml = tempnam(sys_get_temp_dir(), "xml");
@@ -108,11 +108,11 @@
 						
 						if($dumpvob) {
 						
-							$vob = $export_dir."$episode_filename.vob";
+							$vob = "$episode_filename.vob";
 							
 							if(!file_exists($vob)) {
 						
-								$tmpfname = tempnam($export_dir.dirname($episode_filename), "vob.$episode_id.");
+								$tmpfname = tempnam(dirname($episode_filename), "vob.$episode_id.");
 								$dvdtrack = new DvdTrack($track_number, $iso, $dvdnav);
 								$dvdtrack->getNumAudioTracks();
 								$dvdtrack->setVerbose($verbose);
@@ -134,7 +134,7 @@
 							$src = $iso;
 						}
 						
-						$dest = tempnam($export_dir.dirname($episode_filename), "x264.$episode_id.");
+						$dest = tempnam(dirname($episode_filename), "x264.$episode_id.");
 						
 						$handbrake->input_filename($src);
 						if(!$dumpvob)
@@ -290,7 +290,7 @@
 					if(file_exists($xml) && filesize($xml))
 						$matroska->addGlobalTags($xml);
 					
-					$tmpfname = tempnam($export_dir.dirname($episode_filename), "mkv.$episode_id.");
+					$tmpfname = tempnam(dirname($episode_filename), "mkv.$episode_id.");
 					$matroska->setFilename($tmpfname);
 					$matroska->mux();
 					rename($tmpfname, $mkv);
