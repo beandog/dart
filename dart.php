@@ -36,7 +36,7 @@
 	if(empty($baseurl))
 		$baseurl = '';
 
-	if($eject_trays) {
+	if($open_trays) {
 		foreach($all_devices as $str) {
 			$drive = new DVDDrive($str);
 			$drive->open();

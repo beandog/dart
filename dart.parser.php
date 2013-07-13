@@ -74,15 +74,8 @@
 		'description' => 'Skip the number of episodes to rip or encode',
 		'action' => 'StoreInt',
 	));
-	$parser->addOption('eject', array(
-		'short_name' => '-t',
-		'long_name' => '--eject',
-		'description' => 'Eject the DVD drive when finished accessing it',
-		'action' => 'StoreTrue',
-	));
-	$parser->addOption('eject_trays', array(
-		'short_name' => '-j',
-		'long_name' => '--eject-trays',
+	$parser->addOption('open_trays', array(
+		'long_name' => '--open',
 		'description' => 'Open all DVD trays',
 		'action' => 'StoreTrue',
 	));
