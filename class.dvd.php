@@ -149,6 +149,9 @@
 
 				$logfile = getenv('HOME')."/.ddrescue/".$this->getID().".log";
 
+				if(file_exists($logfile))
+					unlink($logfile);
+
 				$cmd = "ddrescue -b 2048 -n $device $dest $logfile";
 				passthru($cmd, $return);
 	
@@ -157,7 +160,6 @@
 				if($return) {
 					return false;
 				} else {
-					unlink($logfile);
 					return true;
 				}
 
