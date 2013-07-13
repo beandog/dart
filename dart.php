@@ -355,6 +355,7 @@
 		$episode_part = $episodes_model->part;
 		$episode_season = $episodes_model->get_season();
 		$series_model = new Series_Model($episodes_model->get_series_id());
+		$episode_suffix = '';
 		
 		// FIXME Take into account 10+seasons
 		if($series_model->indexed == 't') {
