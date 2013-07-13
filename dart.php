@@ -167,6 +167,11 @@
 				shell::msg("* Reading $display_device");
 			}
 
+			// Decrypt the CSS to avoid disc access errors
+			if($verbose)
+				shell::msg("* Decrypting CSS");
+			$dvd->load_css();
+
 			$device_filesize = $dvd->getSize();
 			$display_filesize = number_format($device_filesize);
 			if(!$device_filesize) {
@@ -177,10 +182,6 @@
 			if($verbose)
 				shell::msg("* $display_filesize MB");
 			
-			// Decrypt the CSS to avoid disc access errors
-			if($verbose)
-				shell::msg("* Decrypting CSS");
-			$dvd->load_css();
 			
 			// Get the uniq ID for the disc
 			if($verbose) {
