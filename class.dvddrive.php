@@ -122,6 +122,10 @@
 		 * README.devices: Running `ejcct -t` on my Memorex DVD drive sometimes
 		 * throws "Buffer I/O error on device sr0, logical block 512", so just
 		 * ignore it.
+		 *
+		 * README.eject I think there *may* be a bug where, after manually closing
+		 * a tray and the device is polling, and then running 'eject -t', the 
+		 * drive opens up and then closes.
 		 */
 		function close() {
 
