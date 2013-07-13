@@ -59,8 +59,6 @@
 		$queue_model->reset();
 	}
 
-	next_device:
-		
 	foreach($devices as $device) {
 
 		start:
