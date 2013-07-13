@@ -134,7 +134,7 @@
 
 			if($this->is_open()) {
 				$cmd = "eject -t ".$this->getDevice()." 2>&1 > /dev/null";
-				system($cmd, $return);
+				system($cmd);
 			}
 
 			$naptime = 30;
