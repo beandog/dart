@@ -127,7 +127,7 @@
 		 * a tray and the device is polling, and then running 'eject -t', the 
 		 * drive opens up and then closes.
 		 */
-		function close() {
+		function close($take_a_nap = true) {
 
 			if($this->debug)
 				shell::stdout("! drive::close(".$this->device.")");
@@ -140,13 +140,14 @@
 			$naptime = 30;
 			if($this->debug)
 				shell::stdout("! Taking a nap for $naptime seconds");
-			sleep($naptime);
+			if($take_a_nap)
+				sleep($naptime);
 
 			// udisks should be able to poll the tray after a nap
 			// and give an accurate response.  Also, try to only
 			// run load_css if there is media in there, to avoid
 			// kernel complaints (but do it manually).
-			if($this->has_media()) {
+			if($this->has_media() && $take_a_nap) {
 				$this->load_css();
 			}
 
