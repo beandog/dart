@@ -70,8 +70,10 @@
 		if($verbose) {
 			if(!$first_run)
 				echo "\n";
-			shell::stdout("[Initialization]");
-			shell::stdout("* Device: $device");
+			if($debug) {
+				shell::stdout("[Initialization]");
+				shell::stdout("* Device: $device");
+			}
 		}
 
 		clearstatcache();
