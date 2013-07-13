@@ -182,7 +182,7 @@
 			$options = array();
 			
 			// Check for muxing chapters
-			if($add_chapters)
+			if($this->add_chapters)
 				$options[] = "--markers";
 			
 			// Check for decombing filter
