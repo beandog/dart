@@ -51,6 +51,9 @@
 			$iso_is_symlink = is_link($target_iso);
 			if($iso_is_symlink)
 				shell::stdout("* $display_iso is a symlink to $device");
+			// Eject the drive
+			if($access_drive)
+				$drive->open();
 		}
 
 		// Two things to check for and modify here:
