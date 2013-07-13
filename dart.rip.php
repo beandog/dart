@@ -24,7 +24,6 @@
 		if(!$num_episodes) {
 			shell::msg("The disc is archived, but there are no episodes to rip.");
 			shell::msg("Check the frontend to see if titles need to be added.");
-			$eject = false;
 		} else {
 		
 			/** Create directory to dump files to */
@@ -74,11 +73,6 @@
 				
 			}
 		
-		}
-		
-		if($eject) {
-			$drive->eject();
-			$ejected = true;
 		}
 		
 		echo "\n";

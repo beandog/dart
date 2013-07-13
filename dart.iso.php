@@ -104,7 +104,6 @@
 				unset($tmpfname);
 				shell::stdout("* DVD copy successful. Ready for another :D");
 				$drive->open();
-				$ejected = true;
 			} else {
 				shell::msg("* DVD extraction failed :(");
 			}
