@@ -112,10 +112,8 @@
 		
 		public function add_audio_stream($stream_id) {
 		
-			$audio_track = $this->audio_streams[$stream_id];
-			
 			// Add the audio track only if the stream ID is available from scan
-			if(!is_null($audio_track))
+			if(array_key_exists($stream_id, $this->audio_streams))
 				$this->add_audio_track($this->audio_streams[$stream_id]);
 		
 		}
