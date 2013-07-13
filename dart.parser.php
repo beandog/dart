@@ -86,6 +86,11 @@
 		'description' => 'Open all DVD trays',
 		'action' => 'StoreTrue',
 	));
+	$parser->addOption('close_trays', array(
+		'long_name' => '--close',
+		'description' => 'Close all DVD trays',
+		'action' => 'StoreTrue',
+	));
 	$parser->addOption('ftp', array(
 		'short_name' => '-f',
 		'long_name' => '--ftp',

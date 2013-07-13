@@ -43,10 +43,10 @@
 		}
 	}
 	
-	if($close) {
+	if($close_trays) {
 		foreach($all_devices as $str) {
 			$drive = new DVDDrive($str);
-			$drive->close();
+			$drive->close(false);
 		}
 	}
 	
