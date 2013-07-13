@@ -1,31 +1,31 @@
 <?
 
 	class DVDDrive {
-	
+
 		private $device;
 		private $debug;
-	
+
 		function __construct($device = "/dev/dvd") {
-		
+
 			$this->setDevice($device);
 			$this->debug = false;
-			
+
 		}
-		
+
 		/** Hardware **/
 		function setDevice($str) {
 			$str = trim($str);
 			if(is_string($str))
 				$this->device = $str;
 		}
-		
+
 		function getDevice($escape = false) {
-		
+
 			$str = $this->device;
-			
+
 			if($escape)
 				$str = escapeshellarg($str);
-		
+
 			return $str;
 		}
 
@@ -109,7 +109,7 @@
 			}
 			return false;
 		}
-		
+
 		/**
 		 * Close the tray
 		 *
@@ -124,7 +124,7 @@
 		 * ignore it.
 		 *
 		 * README.eject I think there *may* be a bug where, after manually closing
-		 * a tray and the device is polling, and then running 'eject -t', the 
+		 * a tray and the device is polling, and then running 'eject -t', the
 		 * drive opens up and then closes.
 		 */
 		function close($take_a_nap = true) {
@@ -154,7 +154,7 @@
 			return true;
 
 		}
-		
+
 		function mount() {
 			if($this->is_open())
 				$this->close_tray();
@@ -167,7 +167,7 @@
 			} else
 				return false;
 		}
-		
+
 		function unmount() {
 			shell::cmd("umount ".$this->getDevice());
 		}
@@ -176,7 +176,7 @@
 		// Handbrake seems to be much more patient regarding
 		// polling a tray and waiting to see if it is loaded.
 		function load_css() {
-		
+
 			if($this->debug)
 				shell::stdout("! drive::load_css(".$this->device.")");
 
@@ -184,8 +184,8 @@
 			exec($cmd, $arr, $return);
 			sleep(1);
 			return $return;
-		
+
 		}
-		
+
 	}
 ?>

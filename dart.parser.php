@@ -1,5 +1,5 @@
 <?
-	
+
 	require_once 'Console/CommandLine.php';
 
 	$parser = new Console_CommandLine();
@@ -100,8 +100,8 @@
 		'description' => 'Use svn binaries where possible',
 		'action' => 'StoreTrue',
 	));
-	
+
 	$result = $parser->parse();
-	
+
 	extract($result->args);
 	extract($result->options);

@@ -1,7 +1,7 @@
 <?
 
 	class DVD {
-	
+
 		private $device;
 		private $lsdvd;
 		private $id;
@@ -9,13 +9,13 @@
 		private $vmg_id;
 		private $provider_id;
 		private $is_iso;
-	
+
 		function __construct($device = "/dev/dvd") {
-		
+
 			$this->setDevice($device);
-			
+
 		}
-		
+
 		/** Hardware **/
 
 		function setDevice($str) {
@@ -30,23 +30,23 @@
 				$this->is_iso = false;
 
 		}
-		
+
 		function getDevice($escape = false) {
-		
+
 			$str = $this->device;
-			
+
 			if($escape)
 				$str = escapeshellarg($str);
-		
+
 			return $str;
 		}
 
 		function is_iso() {
 			return $this->is_iso;
 		}
-		
+
 		/** Metadata **/
-		
+
 		// Use disc_id binary from libdvdread
 		private function disc_id() {
 			$arr = shell::cmd("dvd_id ".$this->getDevice(true));
@@ -57,7 +57,7 @@
 
 		// Use serial number from HandBrake 0.9.9
 		private function serial_id() {
-		
+
 			$exec = "handbrake --scan -i ".$this->getDevice(true)." 2>&1";
 			exec($exec, $arr, $return);
 			$match = preg_grep("/.*Serial.*/", $arr);
@@ -69,7 +69,7 @@
 
 			return $str;
 		}
-		
+
 		public function getID() {
 			if(!$this->id)
 				$this->disc_id();
@@ -81,37 +81,37 @@
 				$this->serial_id();
 			return $this->serial_id;
 		}
-		
+
 		private function lsdvd($force = false) {
-		
+
 			if(empty($this->lsdvd['output']) || $force) {
 				$str = "lsdvd -Ox -v -a -s -c ".$this->getDevice(true);
 				$arr = shell::cmd($str);
 				$str = implode("\n", $arr);
-				
+
 				// Fix broken encoding on langcodes, standardize output
 				$str = str_replace('Pan&Scan', 'Pan&amp;Scan', $str);
 				$str = str_replace('P&S', 'P&amp;S', $str);
 				$str = preg_replace("/\<langcode\>\W+\<\/langcode\>/", "<langcode>und</langcode>", $str);
-				
+
 				$this->xml = $str;
-				
+
 				$this->sxe = simplexml_load_string($str) or die("Couldn't parse lsdvd XML output");
-				
+
 				$this->setTitle((string)$this->sxe->title);
 				$this->setLongestTrack((int)$this->sxe->longest_track);
-				
+
 				$this->vmg_id = (string)$this->sxe->vmg_id;
 				$this->provider_id = (string)$this->sxe->provider_id;
-				
+
 				foreach($this->sxe->track as $track) {
 					$this->num_tracks++;
 				}
-				
+
 			}
-		
+
 		}
-		
+
 		/**
 		 * Play one frame of the DVD device
 		 *
@@ -120,7 +120,7 @@
 		 * it should prevent problems. :)
 		 */
 		public function load_css($use_lsdvd = false) {
-		
+
 			if($use_lsdvd)
 				$this->lsdvd(true);
 			else {
@@ -129,14 +129,14 @@
 			}
 
 			return $return;
-		
+
 		}
-		
+
 		public function dump_iso($dest, $method = 'ddrescue') {
-		
+
 			$dest = shell::escape_string($dest);
 			$device = $this->getDevice();
-		
+
 			// ddrescue README
 			// Since I've used dd in the past, ddrescue seems like a good
 			// alternative that can work around broken sectors, which was
@@ -147,7 +147,7 @@
 			if($method == 'ddrescue') {
 
 				$logfile = getenv('HOME')."/.ddrescue/".$this->getID().".log";
-				
+
 				$cmd = "ddrescue -b 2048 -n $device $dest $logfile";
 				passthru($cmd, $return);
 				if(intval($return))
@@ -191,71 +191,71 @@
 			} elseif($method == 'pv') {
 				$exec = "pv -pter -w 80 ".$this->getDevice()." | dd of=$dest 2> /dev/null";
 				$exec .= '; echo ${PIPESTATUS[*]}';
-				
+
 				exec($exec, $arr);
-				
+
 				foreach($arr as $exit_code)
 					if(intval($exit_code))
 						return false;
 
 				return true;
 			}
-			
+
 		}
-		
+
 		private function setTitle($str) {
 			$this->title = $str;
 		}
-		
+
 		// Note that `volname` will also return the same title
 		public function getTitle() {
 			if(!$this->sxe)
 				$this->lsdvd();
 			return $this->title;
 		}
-		
+
 		public function getXML() {
 			if(!$this->xml)
 				$this->lsdvd();
 			return $this->xml;
 		}
-		
+
 		/** Tracks **/
 		public function getNumTracks() {
 			if(!$this->sxe)
 				$this->lsdvd();
 			return $this->num_tracks;
 		}
-		
+
 		private function setLongestTrack($int) {
 			$this->longest_track = $int;
 		}
-		
+
 		public function getLongestTrack() {
 			if(!$this->sxe)
 				$this->lsdvd();
-			
+
 			return $this->longest_track;
 		}
-		
+
 		public function getVMGID() {
-		
+
 			if(!$this->sxe)
 				$this->lsdvd();
-			
+
 			return $this->vmg_id;
-		
+
 		}
-		
+
 		public function getProviderID() {
-		
+
 			if(!$this->sxe)
 				$this->lsdvd();
-			
+
 			return $this->provider_id;
-		
+
 		}
-		
+
 		/**
 		 * Get the disc file size using blockdev
 		 * The command returns the size in MB
@@ -263,7 +263,7 @@
 		 * TODO: look at using PHP stat() instead of blockdev
 		 */
 		public function getSize($format = 'MB') {
-		
+
 			$device = $this->getDevice();
 
 			if($this->is_iso()) {
@@ -271,7 +271,7 @@
 			} else {
 				$exec = "blockdev --getsize64 $device 2> /dev/null";
 			}
-			
+
 			$b_size = current(shell::cmd($exec));
 
 			$kb_size = $b_size / 1024;
@@ -285,6 +285,6 @@
 				return $gb_size;
 
 		}
-		
+
 	}
 ?>

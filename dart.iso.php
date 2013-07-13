@@ -4,9 +4,9 @@
 	 *
 	 * Copy a disc's content to the harddrive
 	 */
-	
+
 	if($access_device && $dvds_model_id) {
-	
+
 		if($verbose)
 			shell::msg("[ISO]");
 
@@ -14,10 +14,10 @@
 		// of the ISO, for easy indexing by cartoons, movies, etc.
 		$collection_id = $dvds_model->get_collection_id();
 		$collection_id = intval($collection_id);
-		
+
 		// Get the series ID
 		$series_id = $dvds_model->get_series_id();
-	
+
 		// Add the series title
 		$str = strtoupper($series_title);
 		$str = preg_replace("/[^0-9A-Z \-_.]/", '', $str);
@@ -63,7 +63,7 @@
 		//    ISO already, then just move it.
 
 		// If they're both symlinks, then just keep going ...
-		// Also, we are only interested if we are moving the 
+		// Also, we are only interested if we are moving the
 		// source device to a filename that was a readlink.
 		if($device_is_iso && !($device_is_symlink && $iso_is_symlink) && !$device_is_symlink && !$iso_exists && !$info) {
 
@@ -89,12 +89,12 @@
 		if(($rip || $dump_iso) && !$iso_exists && !$device_is_iso) {
 
 			$tmpfname = $target_iso.".dd";
-		
+
 			if($verbose) {
 				shell::stdout("* Dumping to ISO ... ", false);
 			}
 			$success = $dvd->dump_iso($tmpfname);
-			
+
 			if(filesize($tmpfname)) {
 				$smap = $tmpfname.".smap";
 				if(file_exists($smap))
@@ -107,7 +107,7 @@
 			} else {
 				shell::msg("* DVD extraction failed :(");
 			}
-		
+
 		}
-		
+
 	}

@@ -8,7 +8,7 @@
 	require_once 'includes/class.shell.php';
 	require_once 'includes/pgconn.php';
 	require_once 'includes/mdb2.php';
-	
+
 	require_once 'class.dvd.php';
 	require_once 'class.dvddrive.php';
 	require_once 'class.dvdvob.php';
@@ -17,17 +17,17 @@
 	require_once 'class.dvdsubs.php';
 	require_once 'class.matroska.php';
 	require_once 'class.handbrake.php';
-	
+
 	require_once 'models/dvds.php';
 	require_once 'models/episodes.php';
 	require_once 'models/series_dvds.php';
 	require_once 'models/series.php';
 	require_once 'models/tracks.php';
 	require_once 'models/queue.php';
-	
+
 	require_once 'dart.parser.php';
 	require_once 'includes/prefs.php';
-	
+
 	/** Start everything **/
 	$all_devices = array('/dev/dvd', '/dev/dvd1');
 	$export_dir = getenv('HOME').'/dvds/';
@@ -43,17 +43,17 @@
 			$drive->open();
 		}
 	}
-	
+
 	if($close_trays && !$open_trays) {
 		foreach($all_devices as $str) {
 			$drive = new DVDDrive($str);
 			$drive->close(false);
 		}
 	}
-	
+
 	if(!count($devices) && ($rip || $info || $dump_iso || $import))
 		$devices = $all_devices;
-	
+
 	// Process request to reset the queue
 	if($reset_queue) {
 		$queue_model = new Queue_Model;
@@ -73,7 +73,7 @@
 			shell::stdout("[Initialization]");
 			shell::stdout("* Device: $device");
 		}
-		
+
 		clearstatcache();
 
 		$dvd = new DVD($device);
@@ -82,22 +82,22 @@
 
 		// If disc has an entry in the database
 		$disc_indexed = false;
-		
+
 		// If all the disc metadata is in the database
 		$disc_archived = false;
-	
+
 		// Is the device an ISO file
 		$device_is_iso = false;
 
 		// Is the device a symlink
 		$is_symlink = false;
-		
+
 		// Can we poll the file or device
 		$access_device = false;
-		
+
 		// If it's DVD drive, can it be accessed
 		$access_drive = false;
-		
+
 		// Get the dirname
 		$dirname = dirname($device);
 
@@ -106,7 +106,7 @@
 
 		// Making a run for it! :)
 		$first_run = false;
-		
+
 		// File is an ISO (or a non-block device) if
 		// it is not found in /dev
 		if($dirname != "/dev") {
@@ -119,7 +119,7 @@
 			shell::stdout("* Couldn't find $device");
 			exit(1);
 		}
-			
+
 		// Determine whether we are reading the device
 		if($rip || $info || $import || $dump_iso)
 			$access_device = true;
@@ -129,7 +129,7 @@
 		// whether 'wait' is true or not, it's easier to just
 		// create a whole new block
 		if(!$wait && !$device_is_iso && $access_device) {
-			
+
 			if($debug)
 				shell::stdout("! Wait is off, device is not an ISO, and access device is enabled");
 
@@ -170,7 +170,7 @@
 
 			$drive = new DVDDrive($device);
 			$drive->set_debug($debug);
-			
+
 			// If the drive is closed, then check for media
 			// Since the wait command is given, in this case,
 			// do *not* open the tray.  We'll just go to the next
@@ -185,7 +185,7 @@
 				$access_drive = false;
 			}
 		}
-		
+
 		if($access_device) {
 
 			$display_device = $device;
@@ -208,10 +208,10 @@
 				shell::msg("* DVD size reported as zero! Aborting");
 				exit(1);
 			}
-			
+
 			if($verbose)
 				shell::msg("* $display_filesize MB");
-			
+
 			// Get the uniq ID for the disc
 			if($verbose) {
 				shell::msg("* Title: ".$dvd->getTitle());
@@ -221,14 +221,14 @@
 
 			if($verbose)
 				shell::stdout($uniq_id, true);
-			
+
 			// Get the serial ID for the disc
 			if($verbose)
 				shell::stdout("* Serial ID: ", false);
 			$serial_id = $dvd->getSerialID();
 			if($verbose)
 				shell::stdout($serial_id, true);
-			
+
 			// Lookup the database dvds.id
 			$dvds_model_id = $dvds_model->find_id('uniq_id', $uniq_id);
 
@@ -236,7 +236,7 @@
 			if($device_is_iso && !$dvds_model_id) {
 
 				shell::stdout("* Lookup on serial ID and disc title: ", false);
-				
+
 				$tmp_dvds_model = new Dvds_Model;
 				$find_serial_id = $tmp_dvds_model->find_id('serial_id', $serial_id);
 
@@ -260,11 +260,11 @@
 					shell::stdout("* DVD ID: $dvds_model_id");
 					shell::stdout("* Series: $series_title");
 				}
-				
+
 				$disc_indexed = true;
-				
+
 				$dvds_model->load($dvds_model_id);
-				
+
 				/** Metadata **/
 				/** Fix any missing database values **/
 
@@ -293,12 +293,12 @@
 				}
 
 				$disc_archived = true;
-			
+
 			} else {
 				if(!$info)
 					$import = true;
 			}
-			
+
 			if($verbose) {
 				if($disc_indexed) {
 					shell::msg("* Indexed");
@@ -306,18 +306,18 @@
 						shell::msg("* Archived");
 					else
 						shell::msg("* Unarchived");
-						
+
 				} else
 					shell::msg("* Unindexed");
 			}
-			
+
 		}
-		
+
 		require 'dart.info.php';
 		require 'dart.import.php';
 		require 'dart.iso.php';
-		require 'dart.rip.php';	
-		
+		require 'dart.rip.php';
+
 		// If polling for a new disc, check to see if one is in the
 		// drive.  If there is, start over.
 		if($wait && ($rip || $import || $dump_iso)) {
@@ -325,9 +325,9 @@
 			sleep(1);
 			goto start;
 		}
-	
+
 	}
-	
+
 	require 'dart.queue.php';
 	require 'dart.encode.php';
 	require 'dart.ftp.php';
@@ -343,9 +343,9 @@
 		$underlines && $str = str_replace(' ', '_', $str);
 		return $str;
 	}
-	
+
 	function get_episode_filename($episode_id) {
-		
+
 		// Class instatiation
 		$episodes_model = new Episodes_Model($episode_id);
 		$episode_title = $episodes_model->title;
@@ -356,29 +356,29 @@
 		$episode_season = $episodes_model->get_season();
 		$series_model = new Series_Model($episodes_model->get_series_id());
 		$episode_suffix = '';
-		
+
 		// FIXME Take into account 10+seasons
 		if($series_model->indexed == 't') {
 			if(!$episode_season)
 				$display_season = 1;
 			else
 				$display_season = $episode_season;
-			
+
 			$episode_prefix = "${display_season}x${display_episode_number}._";
 		}
-		
+
 		$series_model = new Series_Model($episodes_model->get_series_id());
 		$series_title = $series_model->title;
 		$series_dir = formatTitle($series_title)."/";
-		
+
 		if($episode_part)
 			$episode_suffix = ", Part $episode_part";
-		
+
 		/** Filenames **/
 		$episode_filename = $series_dir.formatTitle($episode_prefix.$episode_title.$episode_suffix);
-		
+
 		return $episode_filename;
-	
+
 	}
 
 	// Switch to the next device
@@ -388,5 +388,5 @@
 		if($device == '/dev/dvd1')
 			return '/dev/dvd';
 	}
-	
+
 ?>
