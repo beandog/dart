@@ -340,11 +340,6 @@
 								}
 							
 							}
-						
-							
-// 							echo "Removing $iso\n";
-							if(is_writable($iso))
- 								unlink($iso);
 						}
 					}
 				}
