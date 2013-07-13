@@ -176,6 +176,9 @@ XML;
 			// multiple options to one file.
 			foreach($this->streams as $arr) {
 
+				if(!array_key_exists('type', $arr))
+					$arr['type'] = null;
+
 				switch($arr['type']) {
 
 					case 'video':
