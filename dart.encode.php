@@ -161,8 +161,8 @@
 							$audio_streams = $tracks_model->get_audio_streams();
 							
 							foreach($audio_streams as $arr) {
-								if($handbrake->get_audio_index($arr['stream_id']) && !$added_audio) {
-									$handbrake->add_audio_stream($arr['stream_id']);
+								if($handbrake->get_audio_index($arr['streamid']) && !$added_audio) {
+									$handbrake->add_audio_stream($arr['streamid']);
 									$added_audio = true;
 								}
 							}
