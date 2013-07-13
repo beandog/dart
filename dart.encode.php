@@ -319,6 +319,7 @@
 						// Get the dvd_ids from episodes that are in the entire queue
 						$queue_dvds = $queue_model->get_dvds(php_uname('n'));
 	
+						/**
 						// For each of those DVDs, build an array of ISO filenames
 						foreach($queue_dvds as $queue_dvd_id) {
 							
@@ -346,6 +347,7 @@
 							
 							}
 						}
+						**/
 					}
 				}
 				
