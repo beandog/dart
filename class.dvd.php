@@ -9,6 +9,7 @@
 		private $vmg_id;
 		private $provider_id;
 		private $is_iso;
+		private $sxe;
 
 		function __construct($device = "/dev/dvd") {
 
