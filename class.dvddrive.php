@@ -131,18 +131,19 @@
 			if($this->is_open()) {
 				$cmd = "eject -t ".$this->getDevice()." 2>&1 > /dev/null";
 				system($cmd, $return);
-				$naptime = 30;
-				if($this->debug)
-					shell::stdout("! Taking a nap for $naptime seconds");
-				sleep($naptime);
+			}
 
-				// udisks should be able to poll the tray after a nap
-				// and give an accurate response.  Also, try to only
-				// run load_css if there is media in there, to avoid
-				// kernel complaints (but do it manually).
-				if($this->has_media()) {
-					$this->load_css();
-				}
+			$naptime = 30;
+			if($this->debug)
+				shell::stdout("! Taking a nap for $naptime seconds");
+			sleep($naptime);
+
+			// udisks should be able to poll the tray after a nap
+			// and give an accurate response.  Also, try to only
+			// run load_css if there is media in there, to avoid
+			// kernel complaints (but do it manually).
+			if($this->has_media()) {
+				$this->load_css();
 			}
 
 			return true;
