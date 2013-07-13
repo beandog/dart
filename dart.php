@@ -318,9 +318,6 @@
 		require 'dart.iso.php';
 		require 'dart.rip.php';	
 		
-		if($eject)
-			$drive->open();
-		
 		// If polling for a new disc, check to see if one is in the
 		// drive.  If there is, start over.
 		if($wait && ($rip || $import || $dump_iso)) {
