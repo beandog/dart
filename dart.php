@@ -321,7 +321,13 @@
 		// If polling for a new disc, check to see if one is in the
 		// drive.  If there is, start over.
 		if($wait && ($rip || $import || $dump_iso)) {
-			$device = toggle_device($device);
+			// Only toggle devices if passed more than one
+			// Otherwise, just re-poll the original.
+			// This is useful in cases where --wait is called
+			// on two separate devices, so two drives can
+			// be accessed at the same time
+			if(count($arr_devices) > 1)
+				$device = toggle_device($device);
 			sleep(1);
 			goto start;
 		}
