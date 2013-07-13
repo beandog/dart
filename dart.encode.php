@@ -324,6 +324,7 @@
 							
 							$dvds_model = new Dvds_Model($queue_dvd_id);
 							
+							// FIXME isn't going to match new format for ISO filename
 							$queue_isos[] = $export_dir.$dvds_model->id.".".$dvds_model->title.".iso";
 							
 						}
@@ -338,6 +339,7 @@
 							
 								$readlink = readlink($iso);
 							
+								// FIXME this probably won't work with new dvddrive class
 								if(substr($readlink, 0, 4) == "/dev") {
 									$drive->open();
 								}
