@@ -151,10 +151,15 @@
 
 				$cmd = "ddrescue -b 2048 -n $device $dest $logfile";
 				passthru($cmd, $return);
-				if(intval($return))
+	
+				$return = intval($return);
+
+				if($return) {
 					return false;
-				else
+				} else {
+					unlink($logfile);
 					return true;
+				}
 
 			} elseif($method == 'readdvd') {
 
