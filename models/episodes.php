@@ -12,13 +12,26 @@
 		
 		public function get_iso() {
 		
-			$sql = "SELECT d.id, d.title FROM series s INNER JOIN series_dvds sd ON sd.series_id = s.id INNER JOIN dvds d ON d.id = sd.dvd_id INNER JOIN tracks t ON t.dvd_id = d.id INNER JOIN episodes e ON e.track_id = t.id WHERE e.id = ".$this->db->quote($this->id)." LIMIT 1;";
+			// $sql = "SELECT d.id, d.title FROM series s INNER JOIN series_dvds sd ON sd.series_id = s.id INNER JOIN dvds d ON d.id = sd.dvd_id INNER JOIN tracks t ON t.dvd_id = d.id INNER JOIN episodes e ON e.track_id = t.id WHERE e.id = ".$this->db->quote($this->id)." LIMIT 1;";
+			$sql = "SELECT s.collection_id, sd.series_id, t.dvd_id, e.track_id, s.title FROM episodes e JOIN tracks t ON e.track_id = t.id JOIN dvds d ON t.dvd_id = d.id JOIN series_dvds sd ON d.id = sd.dvd_id JOIN series s ON sd.series_id = s.id  WHERE e.id = ".$this->db->quote($this->id)." LIMIT 1;";
 			
 			$arr = $this->db->getRow($sql);
 			
-			$var = implode(".", $arr).".iso";
+			extract($arr);
+
+			// Get the series title
+			$title = strtoupper($title);
+			$title = preg_replace("/[^0-9A-Z \-_.]/", '', $title);
+			$title = str_replace(' ', '_', $title);
+			$title = substr($title, 0, 28);
+
+			// Get the target filename
+			$str = str_pad($collection_id, 1, '0');
+			$str .= ".".str_pad($series_id, 3, '0', STR_PAD_LEFT);
+			$str .= ".".str_pad($dvd_id, 4, '0', STR_PAD_LEFT);
+			$str .= ".$title.iso";
 			
-			return $var;
+			return $str;
 		
 		}
 		
