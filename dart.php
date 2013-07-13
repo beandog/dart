@@ -93,6 +93,9 @@
 		
 		// Get the dirname
 		$dirname = dirname($device);
+
+		// Does the device tray have media
+		$has_media = false;
 		
 		// File is an ISO (or a non-block device) if
 		// it is not found in /dev
@@ -112,73 +115,55 @@
 			$access_device = true;
 
 		// Determine whether we need physical access to a disc.
-		if(!$device_is_iso && $access_device) {
-			$access_drive = true;
+		// Note that since the next steps are so dependent upon
+		// whether 'wait' is true or not, it's easier to just
+		// create a whole new block
+		if(!$wait && !$device_is_iso && $access_device) {
+
 			$drive = new DVDDrive($device);
-		}
-		
-		// Override any eject preference if we can't
-		// access the drive.
-		if($access_drive) {
 
-			if($wait) {
+			// This will close the tray if it's open, then
+			// reopen it if there was no media.
+			if($drive->is_open())
+				$drive->close();
+			$has_media = $drive->has_media();
 
-				// Take a nap to allow time for devices to load
-				if($drive->has_media()) {
-					sleep(5);
-				}
-				// If set to wait and there is no media in the device,
-				// then go to the next device and start over.
-				else {
-					$drive->open();
-					$device = toggle_device($device);
-					goto start;
-				}
+			if($has_media) {
+				$access_drive = true;
+			} else {
+				$drive->open();
+				$access_device = false;
 			}
 
-			else  {
+		}
 
-				// Only close the tray if not already told to wait
-				if($drive->is_open()) {
-					if($debug)
-						shell::stdout("Closing $device");
-					$drive->close();
-				}
+		// Adding a block if wait is enabled is better for
+		// readability and structure.
+		if($wait && !$device_is_iso && $access_device) {
 
-				// Expecting media, so open the tray if
-				// there is none.  Remove the current device
-				// from the array, and start over at the
-				// beginning.
-				if($drive->is_closed() && !$drive->has_media()) {
-					if($debug) {
-						shell::stdout("$device does not have media");
-						shell::stdout("Opening $device");
-					}
-					$drive->open();
-					if($debug)
-						shell::stdout("Going to next device");
-					array_shift($devices);
-					if($debug) {
-						$next_device = current($devices);
-						if($next_device)
-							shell::stdout("Next device: ".current($devices));
-						else
-							shell::stdout("That was the last device");
-					}
-					goto next_device;
-				}
+			$drive = new DVDDrive($device);
+			
+			// If the drive is closed, then check for media
+			// Since the wait command is given, in this case,
+			// do *not* open the tray.  We'll just go to the next
+			// device (later in the code) and start all over,
+			// leaving the job of adding media to the user.
+			if($drive->is_closed()) {
+				$has_media = $device->has_media();
+			} else {
+				$access_device = false;
+				$access_drive = false;
 			}
 		}
-		else
-			$eject = false;
 		
 		if($access_device) {
 
+			$display_device = $device;
+			if($device_is_iso)
+				$display_device = basename($device);
+
 			if($verbose) {
 				shell::msg("[Access Device]");
-				$display_device = $device;
-				if($device_is_iso)
-					$display_device = basename($device);
 				shell::msg("* Reading $display_device");
 			}
 
