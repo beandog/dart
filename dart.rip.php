@@ -28,7 +28,7 @@
 		
 			/** Create directory to dump files to */
  			if(!is_dir($export_dir))
- 				@mkdir($export_dir, 0755);
+ 				mkdir($export_dir, 0755);
 		
 			$bar = new Console_ProgressBar('[%bar%] %percent%'." ($num_episodes episodes)", ':', ' :D ', 80, $num_episodes);
 			$i = 0;
