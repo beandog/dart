@@ -329,6 +329,7 @@
 		// drive.  If there is, start over.
 		if($wait && ($rip || $import || $dump_iso)) {
 			$device = toggle_device($device);
+			sleep(1);
 			goto start;
 		}
 	
