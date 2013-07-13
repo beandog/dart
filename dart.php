@@ -29,7 +29,7 @@
 	require_once 'includes/prefs.php';
 
 	/** Start everything **/
-	$all_devices = array('/dev/dvd', '/dev/dvd1');
+	$all_devices = array('/dev/dvd', '/dev/dvd1', '/dev/dvd2');
 	$export_dir = getenv('HOME').'/dvds/';
 
 	// Base URL to access DVD admin frontend
@@ -397,6 +397,8 @@
 		if($device == '/dev/dvd')
 			return '/dev/dvd1';
 		if($device == '/dev/dvd1')
+			return '/dev/dvd2';
+		if($device == '/dev/dvd2')
 			return '/dev/dvd';
 	}
 
