@@ -12,6 +12,9 @@
 
 		$num_encoded = 0;
 
+		// FIXME This variable is never set
+		$movie = false;
+
 		if($verbose)
 			shell::msg("[Encode]");
 
