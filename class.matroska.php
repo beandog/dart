@@ -9,6 +9,7 @@
 		private $args = array();
 		private $streams = array();
 		private $dtd;
+		private $exec;
 		private $debug;
 		private $verbose;
 
