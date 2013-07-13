@@ -326,7 +326,7 @@
 			// This is useful in cases where --wait is called
 			// on two separate devices, so two drives can
 			// be accessed at the same time
-			if(count($arr_devices) > 1)
+			if(count($devices) > 1)
 				$device = toggle_device($device);
 			sleep(1);
 			goto start;
