@@ -50,7 +50,7 @@
 		}
 	}
 	
-	if(!count($devices))
+	if(!count($devices) && ($rip || $info || $dump_iso || $import))
 		$devices = $all_devices;
 	
 	// Process request to reset the queue
@@ -316,7 +316,6 @@
 		require 'dart.info.php';
 		require 'dart.import.php';
 		require 'dart.iso.php';
-		require 'dart.queue.php';
 		require 'dart.rip.php';	
 		require 'dart.encode.php';
 		require 'dart.ftp.php';
@@ -333,6 +332,8 @@
 		}
 	
 	}
+	
+	require 'dart.queue.php';
 	
 	/**
 	 * Format a title for saving to filesystem
