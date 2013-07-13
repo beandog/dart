@@ -107,12 +107,6 @@
 		'description' => 'Use svn binaries where possible',
 		'action' => 'StoreTrue',
 	));
-	$parser->addOption('close', array(
-		'long_name' => '--close',
-		'description' => 'Close DVD tray',
-		'action' => 'StoreTrue',
-	));
-
 	
 	$result = $parser->parse();
 	
