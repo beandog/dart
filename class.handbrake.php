@@ -349,6 +349,8 @@
 		}
 		
 		public function scan() {
+
+			$options = '';
 		
 			if($this->track)
 				$options = "--title ".$this->track;
