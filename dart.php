@@ -178,7 +178,7 @@
 			// device (later in the code) and start all over,
 			// leaving the job of adding media to the user.
 			if($drive->is_closed()) {
-				$has_media = $device->has_media();
+				$has_media = $drive->has_media();
 			} else {
 				$access_device = false;
 				$access_drive = false;
