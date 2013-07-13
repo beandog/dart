@@ -3,10 +3,12 @@
 	class DVDDrive {
 	
 		private $device;
+		private $debug;
 	
 		function __construct($device = "/dev/dvd") {
 		
 			$this->setDevice($device);
+			$this->debug = false;
 			
 		}
 		
@@ -27,6 +29,10 @@
 			return $str;
 		}
 
+		function set_debug($bool = true) {
+			$this->debug = $bool;
+		}
+
 		/**
 		 * Check if the drive has a DVD inside the tray
 		 *
@@ -36,6 +42,9 @@
 		 *
 		 */
 		function has_media() {
+
+			if($this->debug)
+				shell::stdout("! drive::has_media(".$this->device.")");
 
 			if($this->is_open())
 				return false;
@@ -59,6 +68,9 @@
 		 * something in the drive and the tray is closed.
 		 */
 		function is_open() {
+
+			if($this->debug)
+				shell::stdout("! drive::is_open(".$this->device.")");
 
 			$cmd = "trayopen ".$this->getDevice();
 			system($cmd, $return);
@@ -113,9 +125,16 @@
 		 */
 		function close() {
 
+			if($this->debug)
+				shell::stdout("! drive::close(".$this->device.")");
+
 			if($this->is_open()) {
-				$exec = "eject -t ".$this->getDevice();
-				sleep(30);
+				$cmd = "eject -t ".$this->getDevice()." 2>&1 > /dev/null";
+				system($cmd, $return);
+				$naptime = 30;
+				if($this->debug)
+					shell::stdout("! Taking a nap for $naptime seconds");
+				sleep($naptime);
 				$this->load_css();
 			}
 
@@ -145,8 +164,9 @@
 		// polling a tray and waiting to see if it is loaded.
 		function load_css() {
 		
-			// $frames = abs(intval($frames));
-			// $cmd = "mplayer dvd:// -dvd-device ".$this->getDevice()." -frames $frames -nosound -vo null -noconfig all 2>&1 > /dev/null";
+			if($this->debug)
+				shell::stdout("! drive::load_css(".$this->device.")");
+
 			$cmd = "handbrake --scan -i ".$this->getDevice()." 2>&1 > /dev/null";
 			exec($cmd, $arr, $return);
 			sleep(1);

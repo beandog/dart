@@ -117,13 +117,18 @@
 		// whether 'wait' is true or not, it's easier to just
 		// create a whole new block
 		if(!$wait && !$device_is_iso && $access_device) {
+			
+			if($debug)
+				shell::stdout("! Wait is off, device is not an ISO, and access device is enabled");
 
 			$drive = new DVDDrive($device);
+			$drive->set_debug($debug);
 
 			// This will close the tray if it's open, then
 			// reopen it if there was no media.
-			if($drive->is_open())
+			if($drive->is_open()) {
 				$drive->close();
+			}
 			$has_media = $drive->has_media();
 
 			if($has_media) {
@@ -139,7 +144,11 @@
 		// readability and structure.
 		if($wait && !$device_is_iso && $access_device) {
 
+			if($debug)
+				shell::stdout("! Wait is on, device is not an ISO, and access device is enabled");
+
 			$drive = new DVDDrive($device);
+			$drive->set_debug($debug);
 			
 			// If the drive is closed, then check for media
 			// Since the wait command is given, in this case,
