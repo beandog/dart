@@ -135,7 +135,14 @@
 				if($this->debug)
 					shell::stdout("! Taking a nap for $naptime seconds");
 				sleep($naptime);
-				$this->load_css();
+
+				// udisks should be able to poll the tray after a nap
+				// and give an accurate response.  Also, try to only
+				// run load_css if there is media in there, to avoid
+				// kernel complaints (but do it manually).
+				if($this->has_media()) {
+					$this->load_css();
+				}
 			}
 
 			return true;
