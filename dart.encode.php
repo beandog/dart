@@ -7,6 +7,8 @@
 	 *
 	 */
 	if($encode) {
+
+		$queue_model = new Queue_Model;
 	
 		if($verbose)
 			shell::msg("[Encode]");
