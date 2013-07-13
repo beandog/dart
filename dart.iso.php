@@ -42,7 +42,7 @@
 		// See if the target filename exists
 		$iso_exists = file_exists($target_iso);
 		if($verbose && $iso_exists)
-			shell::stdout("* Target filename exists");
+			shell::stdout("* Target filename exists, ready for next!");
 
 		// Check if the device and ISO are symlinks
 		$device_is_symlink = is_link($device);
