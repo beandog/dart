@@ -151,6 +151,8 @@
 
 			if($has_media) {
 				$access_drive = true;
+				if($verbose)
+					shell::stdout("* Found a DVD, ready to nom!");
 			} else {
 				if($verbose)
 					shell::stdout("* No media, so out we go!");
