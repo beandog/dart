@@ -38,6 +38,8 @@
 		function has_media() {
 
 			$device = $this->getDevice();
+			if($this->is_open())
+				$this->close();
 			$exec = "udisks --show-info $device | grep \"has media\" | awk '{print $3}'";
 			exec($exec, $arr, $return);
 			sleep(1);
