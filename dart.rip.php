@@ -9,6 +9,8 @@
 	 
 	if($rip && $disc_archived) {
 	
+		$queue_model = new Queue_Model;
+	
 		if($verbose)
 			shell::msg("[Rip]");
 	
