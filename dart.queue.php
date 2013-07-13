@@ -6,6 +6,8 @@
 	 *
 	 */
 	
+	$queue_model = new Queue_Model;
+
 	$queue_episodes = $queue_model->get_episodes(php_uname('n'), $skip, $max);
 	
 	if($queue) {

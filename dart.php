@@ -77,7 +77,6 @@
 
 		$dvd = new DVD($device);
 		$dvds_model = new Dvds_Model;
-		$queue_model = new Queue_Model;
 		$dvd_episodes = array();
 		$export_dir = getenv('HOME').'/dvds/';
 
