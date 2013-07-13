@@ -171,12 +171,15 @@
 			$drive = new DVDDrive($device);
 			$drive->set_debug($debug);
 
-			// If the drive is closed, then check for media
-			// Since the wait command is given, in this case,
-			// do *not* open the tray.  We'll just go to the next
-			// device (later in the code) and start all over,
-			// leaving the job of adding media to the user.
+			// If the drive reports as closed, execute the close
+			// command anyway because in a wait scenario, the
+			// drive is manually closed.
+			//
+			// Otherwise, if the tray is open, just skip over
+			// this device and go to the next one (or wait for
+			// some media to appear).
 			if($drive->is_closed()) {
+				$drive->close();
 				$has_media = $drive->has_media();
 				if($has_media)
 					$access_drive = true;
