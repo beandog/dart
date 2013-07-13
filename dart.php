@@ -30,6 +30,7 @@
 	
 	/** Start everything **/
 	$all_devices = array('/dev/dvd', '/dev/dvd1');
+	$export_dir = getenv('HOME').'/dvds/';
 
 	// Base URL to access DVD admin frontend
 	// Override in preferences
@@ -78,7 +79,6 @@
 		$dvd = new DVD($device);
 		$dvds_model = new Dvds_Model;
 		$dvd_episodes = array();
-		$export_dir = getenv('HOME').'/dvds/';
 
 		// If disc has an entry in the database
 		$disc_indexed = false;
