@@ -54,12 +54,13 @@
 				// Clean up any old tmp files
 				$scandir = scandir($series_dir);
 				
-				if(count($arr = preg_grep('/(^(x264|vob)|xml$)/', $scandir)))
+				if(count($arr = preg_grep('/(^(x264|vob)|xml$)/', $scandir))) {
 					foreach($arr as $filename) {
 						$filename = $series_dir.$filename;
 						if(is_writable($filename))
 							unlink($filename);
 					}
+				}
 				
 				$iso = $export_dir.$episodes_model->get_iso();
 				$mkv = $export_dir."$episode_filename.mkv";
