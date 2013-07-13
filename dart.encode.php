@@ -21,9 +21,6 @@
 
 				clearstatcache();
 
-				// Legacy
-				$reencode = true;
-
 				$episodes_model = new Episodes_Model($episode_id);
 				$episode_title = $episodes_model->title;
 				$track_id = $episodes_model->track_id;
@@ -232,8 +229,6 @@
 
 						if($episode_title)
 							$matroska->setTitle($episode_title);
-						if(!$reencode)
-							$matroska->setAspectRatio($tracks_model->aspect);
 
 						$matroska->addTag();
 						$matroska->addTarget(70, "COLLECTION");
