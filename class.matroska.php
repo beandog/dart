@@ -3,6 +3,7 @@
 	class Matroska {
 
 		private $filename;
+		private $sxe;
 		private $aspect_ratio;
 		private $flags = array();
 		private $args = array();
