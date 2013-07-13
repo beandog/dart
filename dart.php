@@ -182,7 +182,6 @@
 			if($verbose)
 				shell::msg("* $display_filesize MB");
 			
-			
 			// Get the uniq ID for the disc
 			if($verbose) {
 				shell::msg("* Title: ".$dvd->getTitle());
@@ -205,6 +204,7 @@
 
 			// Use the serial ID as a unique identifer as well
 			if($device_is_iso && !$dvds_model_id) {
+
 				shell::stdout("* Lookup on serial ID and disc title: ", false);
 				
 				$tmp_dvds_model = new Dvds_Model;
