@@ -20,8 +20,10 @@
 			$episodes_model = new Episodes_Model($episode_id);
 			$str = $episodes_model->get_display_name();
 			
-			if($verbose)
+			if($verbose) {
 				$str = get_episode_filename($episode_id);
+				$str = $export_dir.$str;
+			}
 			
 			if($verbose)
 				$str .= " (".$episodes_model->get_iso().")";

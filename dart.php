@@ -369,7 +369,7 @@
 		
 		$series_model = new Series_Model($episodes_model->get_series_id());
 		$series_title = $series_model->title;
-		$series_dir = $export_dir.formatTitle($series_title)."/";
+		$series_dir = formatTitle($series_title)."/";
 		
 		if($episode_part)
 			$episode_suffix = ", Part $episode_part";

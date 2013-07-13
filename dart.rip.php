@@ -43,6 +43,7 @@
 				$episode_title = $episodes_model->title;
 				$episode_part = $episodes_model->part;
 				$episode_filename = get_episode_filename($episode_id);
+				$episode_filename = $export_dir.$episode_filename;
 				
 				$tracks_model = new Tracks_Model($episodes_model->track_id);
  				$track_number = $tracks_model->ix;
