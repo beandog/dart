@@ -21,10 +21,12 @@
 
 		function setDevice($str) {
 			$str = trim($str);
-			if(is_string($str))
+			if(is_string($str)) {
+				$str = realpath($str);
 				$this->device = $str;
+			}
 
-			$dirname = dirname($str);
+			$dirname = dirname(realpath($str));
 			if($dirname != "/dev")
 				$this->is_iso = true;
 			else
