@@ -14,6 +14,8 @@
 	// rip, info and dump_iso that they all need to be separated
 	// properly.
 
+	// Continue if we can access the device (source file)
+	// and it has a database reord.
 	if($access_device && $dvds_model_id) {
 
 		if($verbose)
@@ -50,7 +52,7 @@
 		// Cleanup symlinks and rename files as needed.
 		// See if the target filename exists
 		$iso_exists = file_exists($target_iso);
-		if($verbose && $iso_exists)
+		if($verbose && $iso_exists && $dump_iso)
 			shell::stdout("* Target filename exists, ready for next!");
 
 		// Check if the device and ISO are symlinks
