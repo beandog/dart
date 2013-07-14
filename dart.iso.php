@@ -4,6 +4,15 @@
 	 *
 	 * Copy a disc's content to the harddrive
 	 */
+	
+
+	// FIXME
+	// Rewrite this whole thing, because "iso" variables are
+	// ambiguous.  Do they mean the target iso, the source device
+	// or what?
+	// Also, each option does completely different things like
+	// rip, info and dump_iso that they all need to be separated
+	// properly.
 
 	if($access_device && $dvds_model_id) {
 
@@ -73,10 +82,16 @@
 				unlink($target_iso);
 			}
 
-			if($verbose)
-				shell::stdout("* Moving $device to $display_iso");
-			rename($device, $target_iso);
-			$iso_exists = true;
+			if($rip) {
+				if($verbose)
+					shell::stdout("* Creating a symlink from $display_device to $target_iso");
+				symlink($device, $target_iso);
+			} else {
+				if($verbose)
+					shell::stdout("* Moving $device to $display_iso");
+				rename($device, $target_iso);
+				$iso_exists = true;
+			}
 
 		}
 
