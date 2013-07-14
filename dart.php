@@ -112,6 +112,7 @@
 		// File is an ISO (or a non-block device) if
 		// it is not found in /dev
 		$device_dirname = dirname($device);
+		$display_device = basename($device);
 		if($device_dirname != "/dev") {
 			$device_is_iso = true;
 			$device_is_symlink = is_link($device);
@@ -127,7 +128,6 @@
 		if($rip || $info || $import || $dump_iso) {
 			$access_device = true;
 
-			$display_device = $device;
 			if($device_is_iso)
 				$display_device = basename($device);
 
