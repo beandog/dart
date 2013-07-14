@@ -102,7 +102,6 @@
 
 		// Change the device name to include the full path
 		$device = realpath($device);
-		var_dump($device);
 
 		// Does the device tray have media
 		$has_media = false;
