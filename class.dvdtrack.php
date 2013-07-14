@@ -22,6 +22,8 @@
 		private $device;
 		private $lsdvd;
 		private $id;
+		private $xml;
+		private $sxe;
 
 		private $ix;		// integer
 		private $vts_id; 	// string
