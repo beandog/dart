@@ -92,7 +92,7 @@
 		$device_is_iso = false;
 
 		// Is the device a symlink
-		$is_symlink = false;
+		$device_is_symlink = false;
 
 		// Can we poll the file or device
 		$access_device = false;
