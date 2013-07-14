@@ -100,8 +100,9 @@
 		// If it's DVD drive, can it be accessed
 		$access_drive = false;
 
-		// Get the dirname
-		$dirname = dirname($device);
+		// Change the device name to include the full path
+		$device = realpath($device);
+		var_dump($device);
 
 		// Does the device tray have media
 		$has_media = false;
@@ -111,9 +112,10 @@
 
 		// File is an ISO (or a non-block device) if
 		// it is not found in /dev
-		if($dirname != "/dev") {
+		$device_dirname = dirname($device);
+		if($device_dirname != "/dev") {
 			$device_is_iso = true;
-			$is_symlink = is_link($device);
+			$device_is_symlink = is_link($device);
 		}
 
 		// Verify file exists
