@@ -82,16 +82,10 @@
 				unlink($target_iso);
 			}
 
-			if($rip) {
-				if($verbose)
-					shell::stdout("* Creating a symlink from $display_device to $target_iso");
-				symlink($device, $target_iso);
-			} else {
-				if($verbose)
-					shell::stdout("* Moving $device to $display_iso");
-				rename($device, $target_iso);
-				$iso_exists = true;
-			}
+			if($verbose)
+				shell::stdout("* Moving $device to $display_iso");
+			rename($device, $target_iso);
+			$iso_exists = true;
 
 		}
 
