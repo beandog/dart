@@ -112,7 +112,6 @@
 		// File is an ISO (or a non-block device) if
 		// it is not found in /dev
 		$device_dirname = dirname($device);
-		$display_device = basename($device);
 		if($device_dirname != "/dev") {
 			$device_is_iso = true;
 			$device_is_symlink = is_link($device);
@@ -124,12 +123,13 @@
 			exit(1);
 		}
 
+		// Device name to display to stdout
+		if($device_is_iso)
+			$display_device = basename($device);
+
 		// Determine whether we are reading the device
 		if($rip || $info || $import || $dump_iso) {
 			$access_device = true;
-
-			if($device_is_iso)
-				$display_device = basename($device);
 
 			if($verbose) {
 				shell::msg("[Access Device]");
