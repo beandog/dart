@@ -207,7 +207,8 @@
 			// Decrypt the CSS to avoid disc access errors
 			if($verbose)
 				shell::msg("* Decrypting CSS");
-			$dvd->load_css();
+			if(!$device_is_iso)
+				$dvd->load_css();
 
 			$device_filesize = $dvd->getSize();
 			$display_filesize = number_format($device_filesize);
