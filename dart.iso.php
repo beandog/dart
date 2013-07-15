@@ -77,7 +77,7 @@
 
 			// Otherwise, the file needs to be renamed to its
 			// new syntax.
-			if($device != $target_iso) && !$device_is_symlink && !$target_iso_exists) {
+			if(($device != $target_iso) && !$device_is_symlink && !$target_iso_exists) {
 
 				// Only rename the file since it exists, don't
 				// move it to the target directory.
