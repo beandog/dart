@@ -4,20 +4,12 @@
 	 *
 	 * Copy a disc's content to the harddrive
 	 */
-	
-
-	// FIXME
-	// Rewrite this whole thing, because "iso" variables are
-	// ambiguous.  Do they mean the target iso, the source device
-	// or what?
-	// Also, each option does completely different things like
-	// rip, info and dump_iso that they all need to be separated
-	// properly.
 
 	// Continue if we can access the device (source file)
 	// and it has a database reord.
 	if($access_device && $dvds_model_id) {
 
+		/** ISO Information **/
 		if($verbose)
 			shell::msg("[ISO]");
 
@@ -29,7 +21,7 @@
 		// Get the series ID
 		$series_id = $dvds_model->get_series_id();
 
-		// Add the series title
+		// Get the series title
 		$str = strtoupper($series_title);
 		$str = preg_replace("/[^0-9A-Z \-_.]/", '', $str);
 		$str = str_replace(' ', '_', $str);
@@ -49,76 +41,111 @@
 		if($verbose)
 			shell::msg("* Target filename: $display_iso");
 
-		// Cleanup symlinks and rename files as needed.
-		// See if the target filename exists
-		$iso_exists = file_exists($target_iso);
-		if($verbose && $iso_exists && $dump_iso)
-			shell::stdout("* Target filename exists, ready for next!");
+		/** Filename and filesystem operations **/
 
-		// Check if the device and ISO are symlinks
-		$device_is_symlink = is_link($device);
-		$iso_is_symlink = false;
-		if($iso_exists) {
-			$iso_is_symlink = is_link($target_iso);
-			if($iso_is_symlink)
-				shell::stdout("* $display_iso is a symlink to $device");
-			// Eject the drive
-			if($access_drive)
-				$drive->open();
+		// Check to see if the target filename exists
+		$target_iso_exists = file_exists($target_iso);
+
+		// See if the target filename exists.  This
+		// is for the source regardless of whether it is
+		// a block device or an ISO.
+		$target_iso_exists = file_exists($target_iso);
+		if($verbose && $target_iso_exists)
+			shell::stdout("* target file exists");
+		else
+			shell::stdout("* target file does not exist");
+
+		// If the target ISO is a symlink, also mention, and
+		// set a variable so we can ignore later.
+		$target_iso_is_symlink = false;
+		if($target_iso_exists) {
+			$target_iso_is_symlink = is_symlink($target_iso);
+			if($target_iso_is_symlink && $verbose)
+				shell::stdout("* target file is a symlink");
 		}
 
-		// Two things to check for and modify here:
-		// 1) If the target ISO is a symlink, remove the
-		//    symlink and move the source device to that filename
-		// 2) If the target ISO doesn't exist, and this file is an
-		//    ISO already, then just move it.
+		// Operations on filename
+		if($device_is_iso) {
+		
+			// At this point, we already know if the file
+			// exists or not, so check if it's a symlink.
+			$device_is_symlink = is_link($device);
 
-		// If they're both symlinks, then just keep going ...
-		// Also, we are only interested if we are moving the
-		// source device to a filename that was a readlink.
-		if($device_is_iso && !($device_is_symlink && $iso_is_symlink) && !$device_is_symlink && !$iso_exists && !$info) {
-
-			if($iso_is_symlink) {
+			// The source is an ISO file, so check to see
+			// if the source and the target are the same.
+			if(($device == $target_iso) && !$device_is_symlink && $target_iso_exists) {
 				if($verbose)
-					shell::stdout("* Removing old symlink before renaming $device");
-				unlink($target_iso);
+					shell::stdout("* Source file and target ISO are the same");
 			}
 
-			if($verbose)
-				shell::stdout("* Moving $device to $display_iso");
-			rename($device, $target_iso);
-			$iso_exists = true;
+			// Otherwise, the file needs to be renamed to its
+			// new syntax.
+			if($device != $target_iso) && !$device_is_symlink && !$target_iso_exists) {
+
+				// Only rename the file since it exists, don't
+				// move it to the target directory.
+				$new_dirname = dirname($device);
+				$new_basename = basename($target_iso);
+				$new_filename = "$new_dirname/$new_basename";
+
+				// Rename the file
+				if($verbose)
+					shell::stdout("* Moving $display_device to $new_basename");
+				rename($device, $new_filename);
+
+				// Now update the filenames after they have moved
+				$device = $new_filename;
+				$target_iso_exists = true;
+			}
+
+			// If the source is a symlink, don't touch it.
+			if($device_is_symlink) {
+
+				$device_readlink = readlink($device);
+
+				if($verbose) {
+					shell::sdout("* Source file is a symlink, ignoring file");
+				}
+			}
+
 
 		}
 
-		// Notify that the original device is not being modified
-		if($device_is_iso && $iso_exists && !$info && $verbose) {
-			shell::stdout("* Ignoring source file $device");
-		}
 
-		// Dump the DVD contents to an ISO on the filesystem
-		if(($rip || $dump_iso) && !$iso_exists && !$device_is_iso) {
+		// Operations on a block device
+		if(!$device_is_iso) {
 
-			$tmpfname = $target_iso.".dd";
-
-			if($verbose) {
-				shell::stdout("* Dumping to ISO ... ", false);
-			}
-			$success = $dvd->dump_iso($tmpfname);
-
-			if(filesize($tmpfname)) {
-				$smap = $tmpfname.".smap";
-				if(file_exists($smap))
-					unlink($smap);
-				rename($tmpfname, $target_iso);
-				chmod($target_iso, 0644);
-				unset($tmpfname);
-				shell::stdout("* DVD copy successful. Ready for another :D");
+			// If we have access to the device, and we
+			// are trying to dump it, and the output filename
+			// already exists, just eject the drive.
+			if($target_iso_exists && $dump_iso && $access_drive) {
+				if($verbose)
+					shell::stdout("* ISO dump exists, ejecting drive");
 				$drive->open();
-			} else {
-				shell::msg("* DVD extraction failed :(");
 			}
 
-		}
+			// Dump the DVD contents to an ISO on the filesystem
+			if(!$target_iso_exists && $dump_iso && $access_device) {
 
+				$tmpfname = $target_iso.".dd";
+
+				if($verbose) {
+					shell::stdout("* Dumping to ISO ... ", false);
+				}
+				$success = $dvd->dump_iso($tmpfname);
+
+				if(filesize($tmpfname)) {
+					$smap = $tmpfname.".smap";
+					if(file_exists($smap))
+						unlink($smap);
+					rename($tmpfname, $target_iso);
+					chmod($target_iso, 0644);
+					unset($tmpfname);
+					shell::stdout("* DVD copy successful. Ready for another :D");
+					$drive->open();
+				} else {
+					shell::msg("* DVD extraction failed :(");
+				}
+			}
+		}
 	}
