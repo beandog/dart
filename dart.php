@@ -101,7 +101,9 @@
 		$access_drive = false;
 
 		// Change the device name to include the full path
-		$device = realpath($device);
+		// if it's a filename and not a block device
+		if($device_is_iso)
+			$device = realpath($device);
 
 		// Does the device tray have media
 		$has_media = false;
