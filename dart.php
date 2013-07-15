@@ -124,6 +124,7 @@
 		}
 
 		// Device name to display to stdout
+		$display_device = $device;
 		if($device_is_iso)
 			$display_device = basename($device);
 
