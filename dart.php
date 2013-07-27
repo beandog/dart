@@ -297,7 +297,6 @@
 				if(!$dvds_model->serial_id) {
 					$serial_id = trim($dvd->getSerialID());
 					if($verbose) {
-						shell::msg("* Serial ID: $serial_id");
 						shell::msg("* Updating serial id in DB");
 					}
 					$dvds_model->serial_id = $serial_id;
