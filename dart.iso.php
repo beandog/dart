@@ -56,7 +56,7 @@
 		// set a variable so we can ignore later.
 		$target_iso_is_symlink = false;
 		if($target_iso_exists) {
-			$target_iso_is_symlink = is_symlink($target_iso);
+			$target_iso_is_symlink = is_link($target_iso);
 			if($target_iso_is_symlink && $verbose)
 				shell::stdout("* target file is a symlink");
 		}
