@@ -1,6 +1,7 @@
 <?
 
-	if($import && !$disc_indexed) {
+	// if($import && !$disc_indexed) {
+	if($import) {
 
 		if($verbose)
 			shell::msg("[Import]");
@@ -11,7 +12,7 @@
 
 		echo "* Title: ".$dvd->getTitle()."\n";
 
-		if(is_null($d->id)) {
+		if(is_null($d)) {
 
 			$arr = array(
 				'uniq_id' => $uniq_id,
@@ -53,7 +54,7 @@
 
 			$track = tracks::first(array('conditions' => array('dvd_id' => $d->id, 'ix' => $track_number)));
 
-			if(is_null($track->id)) {
+			if(is_null($track)) {
 
 				$arr = array(
 					'dvd_id' => $d->id,
@@ -117,7 +118,7 @@
 
 				$audio = audio::first(array('conditions' => $arr));
 
-				if(is_null($audio->id))
+				if(is_null($audio))
 					$audio = audio::create($arr);
 
 				$arr = array(
@@ -153,7 +154,7 @@
 
 				$subp = subp::first(array('conditions' => $arr));
 
-				if(is_null($subp->id))
+				if(is_null($subp))
 					$subp = subp::create($arr);
 
 				$arr = array(
@@ -181,7 +182,7 @@
 
 				$chapters = chapters::first(array('conditions' => $arr));
 
- 				if(is_null($chapters->id))
+ 				if(is_null($chapters))
  					$chapters = chapters::create($arr);
 
  				$chapters->set_attributes($chapter_data);
@@ -203,7 +204,7 @@
 
 				$cells = cells::first(array('conditions' => $arr));
 
- 				if(is_null($cells->id))
+ 				if(is_null($cells))
  					cells::create($arr);
 
 			}
