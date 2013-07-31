@@ -314,7 +314,7 @@
 
 				foreach($tracks as $track_id) {
 					$tracks_model = new Tracks_Model($track_id);
-					$num_audio_streams = $tracks_model->get_audio_streams();
+					$num_audio_streams = count($tracks_model->get_audio_streams());
 					if(!$num_audio_streams || is_null($tracks_model->angles))
 						$disc_archived = false;
 				}
