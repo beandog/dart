@@ -306,6 +306,19 @@
 					$dvds_model->serial_id = $serial_id;
 				}
 
+				// Check all tracks to see if they have all
+				// the metadata recorded.  Two ways to look:
+				// if the angles value is set in the database
+				// or if there are no audio tracks registered.
+				$num_tracks = $dvd->getNumTracks();
+
+				for($track_number = 1; $track_number <= $num_tracks; $track_number++) {
+					$track = tracks::first(array('conditions' => array('dvd_id' => $dvds_model_id, 'ix' => $track_number)));
+					$num_audio_streams = $track->get_audio_streams();
+					if(!$num_audio_streams || is_null($track->angles))
+						$disc_archived = false;
+				}
+
 			} else {
 				if(!$info)
 					$import = true;
