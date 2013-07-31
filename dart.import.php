@@ -1,10 +1,12 @@
 <?
 
 	// if($import && !$disc_indexed) {
-	if($import) {
+	if($import || ($access_device && !$disc_archived)) {
 
 		if($verbose)
 			shell::msg("[Import]");
+		if(!$disc_archived && $verbose)
+			shell::msg("* Updating metadata");
 
 		$uniq_id = $dvd->getID();
 
