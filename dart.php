@@ -274,6 +274,10 @@
 
 				$disc_indexed = true;
 
+				// Assume the disc is archived, but flag it later
+				// as false if untrue
+				$disc_archived = true;
+
 				$dvds_model->load($dvds_model_id);
 
 				/** Metadata **/
@@ -301,8 +305,6 @@
 					}
 					$dvds_model->serial_id = $serial_id;
 				}
-
-				$disc_archived = true;
 
 			} else {
 				if(!$info)
