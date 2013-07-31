@@ -310,12 +310,12 @@
 				// the metadata recorded.  Two ways to look:
 				// if the angles value is set in the database
 				// or if there are no audio tracks registered.
-				$num_tracks = $dvd->getNumTracks();
+				$tracks = $dvds_model->get_tracks();
 
-				for($track_number = 1; $track_number <= $num_tracks; $track_number++) {
-					$track = tracks::first(array('conditions' => array('dvd_id' => $dvds_model_id, 'ix' => $track_number)));
-					$num_audio_streams = $track->get_audio_streams();
-					if(!$num_audio_streams || is_null($track->angles))
+				foreach($tracks as $track_id) {
+					$tracks_model = new Tracks_Model($track_id);
+					$num_audio_streams = $tracks_model->get_audio_streams();
+					if(!$num_audio_streams || is_null($tracks_model->angles))
 						$disc_archived = false;
 				}
 
