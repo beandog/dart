@@ -347,6 +347,8 @@
 			// If there is only one device, then wait until the tray is
 			// closed.
 			else {
+				if($debug)
+					shell::stdout("! Waiting for the tray to be closed");
 				while($drive->is_open()) {
 					sleep(1);
 				}
