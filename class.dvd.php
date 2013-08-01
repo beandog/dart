@@ -10,11 +10,16 @@
 		private $provider_id;
 		private $is_iso;
 		private $sxe;
+		private $debug;
 
 		function __construct($device = "/dev/dvd") {
 
 			$this->setDevice($device);
 
+		}
+
+		function setDebug($bool = false) {
+			$this->debug = (bool)$bool;
 		}
 
 		/** Hardware **/
@@ -52,6 +57,10 @@
 
 		// Use disc_id binary from libdvdread
 		private function disc_id() {
+
+			if($this->debug)
+				echo "! dvd->disc_id()\n";
+
 			$arr = shell::cmd("dvd_id ".$this->getDevice(true));
 			$var = current($arr);
 			if(strlen($var) == 32)
@@ -60,6 +69,9 @@
 
 		// Use serial number from HandBrake 0.9.9
 		private function serial_id() {
+
+			if($this->debug)
+				echo "! dvd->serial_id()\n";
 
 			$exec = "handbrake --scan -i ".$this->getDevice(true)." 2>&1";
 			exec($exec, $arr, $return);
@@ -86,6 +98,9 @@
 		}
 
 		private function lsdvd($force = false) {
+
+			if($this->debug)
+				echo "! dvd->lsdvd()\n";
 
 			if(empty($this->lsdvd['output']) || $force) {
 				$str = "lsdvd -Ox -v -a -s -c ".$this->getDevice(true);
@@ -124,6 +139,9 @@
 		 */
 		public function load_css($use_lsdvd = false) {
 
+			if($this->debug)
+				echo "! dvd->load_css()\n";
+
 			if($use_lsdvd)
 				$this->lsdvd(true);
 			else {
@@ -136,6 +154,9 @@
 		}
 
 		public function dump_iso($dest, $method = 'ddrescue') {
+
+			if($this->debug)
+				echo "! dvd->dump_iso($dest, $method)\n";
 
 			$dest = shell::escape_string($dest);
 			$device = $this->getDevice();
@@ -273,6 +294,9 @@
 		 * TODO: look at using PHP stat() instead of blockdev
 		 */
 		public function getSize($format = 'MB') {
+
+			if($this->debug)
+				echo "! dvd->getSize($format)\n";
 
 			$device = $this->getDevice();
 
