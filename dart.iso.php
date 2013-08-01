@@ -49,8 +49,6 @@
 		$target_iso_exists = file_exists($target_iso);
 		if($verbose && $target_iso_exists)
 			shell::stdout("* target file exists");
-		elseif($verbose)
-			shell::stdout("* target file does not exist");
 
 		// If the target ISO is a symlink, also mention, and
 		// set a variable so we can ignore later.
