@@ -145,56 +145,43 @@
 		// Note that since the next steps are so dependent upon
 		// whether 'wait' is true or not, it's easier to just
 		// create a whole new block
-		if(!$wait && !$device_is_iso && $access_device) {
-
-			if($debug)
-				shell::stdout("! Wait is off, device is not an ISO, and access device is enabled");
+		// if(!$wait && !$device_is_iso && $access_device) {
+		if(!$device_is_iso && $access_device) {
 
 			$drive = new DVDDrive($device);
 			$drive->set_debug($debug);
 
-			// **ALWAYS** send a call to the close() function
-			// regardless of whether it's open or not.  This can
-			// catch situations when the device is closing and
-			// polling as well as the expected situation where the
-			// tray is just open.  In short, this will avoid headaches
-			// and race conditions.
-			if($verbose)
-				shell::stdout("* Sleepy time . . .");
-			$drive->close();
+			// Close the tray in one of these conditions:
+			// 1. Not waiting (i.e., --import, --info, etc. is passed)
+			// 2. Waiting is set, but the tray has been manually closed
+			if(!$wait || ($wait && $drive->is_closed())) {
 
-			$has_media = $drive->has_media();
-
-			if($has_media) {
-				$access_drive = true;
+				// **ALWAYS** send a call to the close() function
+				// regardless of whether it's open or not.  This can
+				// catch situations when the device is closing and
+				// polling as well as the expected situation where the
+				// tray is just open.  In short, this will avoid headaches
+				// and race conditions.
 				if($verbose)
-					shell::stdout("* Found a DVD, ready to nom!");
+					shell::stdout("* Sleepy time . . .");
+				$drive->close();
+
+				$has_media = $drive->has_media();
+
+				if($has_media) {
+					$access_drive = true;
+					if($verbose)
+						shell::stdout("* Found a DVD, ready to nom!");
+				} else {
+					if($verbose)
+						shell::stdout("* No media, so out we go!");
+					$drive->open();
+					$access_device = false;
+				}
 			} else {
-				if($verbose)
-					shell::stdout("* No media, so out we go!");
-				$drive->open();
+				// Disable access to the device since the
+				// above conditions are not met.
 				$access_device = false;
-			}
-
-		}
-
-		// If given a wait command, do not close the tray.
-		// This will allow the code sequence to skip over all
-		// the access to a device, and the toggle initiative
-		// will take over, selecting the next device to
-		// wait and check media for.
-		if($wait && !$device_is_iso && $access_device) {
-
-			if($debug) {
-				shell::stdout("! Wait is on, device is not an ISO, and access device is enabled");
-			}
-
-			$drive = new DVDDrive($device);
-			$drive->set_debug($debug);
-
-			if($drive->is_open()) {
-				$access_device = false;
-				$access_drive = false;
 			}
 		}
 
