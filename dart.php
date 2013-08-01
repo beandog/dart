@@ -360,9 +360,18 @@
 			// This is useful in cases where --wait is called
 			// on two separate devices, so two drives can
 			// be accessed at the same time
-			if(count($devices) > 1)
+			if(count($devices) > 1) {
 				$device = toggle_device($device);
-			sleep(1);
+				sleep(1);
+			}
+			// If there is only one device, then wait until the tray is
+			// closed.
+			else {
+				while($drive->is_open()) {
+					sleep(1);
+				}
+				$drive->close(false);
+			}
 
 			// Reset the original argument
 			$no_naptime = false;
