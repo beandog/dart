@@ -1,7 +1,6 @@
 <?
 
-	// if($import && !$disc_indexed) {
-	if($import || ($access_device && !$disc_archived)) {
+	if(($import && !$disc_indexed) || ($access_device && !$disc_archived)) {
 
 		if($verbose)
 			shell::msg("[Import]");
