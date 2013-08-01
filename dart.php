@@ -178,29 +178,21 @@
 
 		}
 
-		// Adding a block if wait is enabled is better for
-		// readability and structure.
+		// If given a wait command, do not close the tray.
+		// This will allow the code sequence to skip over all
+		// the access to a device, and the toggle initiative
+		// will take over, selecting the next device to
+		// wait and check media for.
 		if($wait && !$device_is_iso && $access_device) {
 
-			if($debug)
+			if($debug) {
 				shell::stdout("! Wait is on, device is not an ISO, and access device is enabled");
+			}
 
 			$drive = new DVDDrive($device);
 			$drive->set_debug($debug);
 
-			// If the drive reports as closed, execute the close
-			// command anyway because in a wait scenario, the
-			// drive is manually closed.
-			//
-			// Otherwise, if the tray is open, just skip over
-			// this device and go to the next one (or wait for
-			// some media to appear).
-			if($drive->is_closed()) {
-				$drive->close();
-				$has_media = $drive->has_media();
-				if($has_media)
-					$access_drive = true;
-			} else {
+			if($drive->is_open()) {
 				$access_device = false;
 				$access_drive = false;
 			}
