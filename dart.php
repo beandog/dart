@@ -199,7 +199,10 @@
 			// this device and go to the next one (or wait for
 			// some media to appear).
 			if($drive->is_closed()) {
-				$drive->close();
+				if($no_naptime)
+					$drive->close(false);
+				else
+					$drive->close();
 				$has_media = $drive->has_media();
 				if($has_media)
 					$access_drive = true;
