@@ -360,6 +360,10 @@
 			if(count($devices) > 1)
 				$device = toggle_device($device);
 			sleep(1);
+
+			// Reset the original argument
+			$no_naptime = false;
+
 			goto start;
 		}
 
