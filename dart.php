@@ -323,8 +323,10 @@
 				}
 
 			} else {
-				if(!$info)
+				if(!$info) {
 					$import = true;
+					$disc_archived = false;
+				}
 			}
 
 			if($verbose) {
