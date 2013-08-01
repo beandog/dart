@@ -364,6 +364,9 @@
 			// Reset the original argument
 			$no_naptime = false;
 
+			if($debug)
+				shell::stdout("! Going to start position");
+
 			goto start;
 		}
 
