@@ -352,6 +352,8 @@
 				while($drive->is_open()) {
 					sleep(1);
 				}
+				if($debug)
+					shell::stdout("! Wait sequence is closing the tray");
 				$drive->close(false);
 			}
 
