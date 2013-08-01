@@ -2,10 +2,11 @@
 
 	// Import the DVD
 
-	// A DVD's data is imported into the database
-	// only if it is allowed access, if an argument is passed
-	// to import it, or if it is missing metadata.
-	if($access_device && $disc_indexed && (($import && !$disc_archived) || !$disc_archived)) {
+	// Conditions where a disc is imported into the database
+	// Access to the device is given AND one of:
+	// a. The disc is indexed, but it is missing some metadata
+	// b. The disc is not indexed and an import command is given
+	if($access_device && (($disc_indexed && !$disc_archived) || ($import && !$disc_indexed))) {
 
 		if($verbose)
 			shell::msg("[Import]");
