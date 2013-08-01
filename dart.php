@@ -324,8 +324,9 @@
 
 			} else {
 				if(!$info) {
+					
+					// If there is no metadata at all, import the track
 					$import = true;
-					$disc_archived = false;
 				}
 			}
 
