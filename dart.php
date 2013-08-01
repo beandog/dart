@@ -158,9 +158,13 @@
 			// polling as well as the expected situation where the
 			// tray is just open.  In short, this will avoid headaches
 			// and race conditions.
-			if($verbose)
-				shell::stdout("* Sleepy time . . .");
-			$drive->close();
+			if($no_naptime)
+				$drive->close(false);
+			else {
+				if($verbose)
+					shell::stdout("* Sleepy time . . .");
+				$drive->close();
+			}
 
 			$has_media = $drive->has_media();
 
