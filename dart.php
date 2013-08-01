@@ -162,7 +162,7 @@
 			// polling as well as the expected situation where the
 			// tray is just open.  In short, this will avoid headaches
 			// and race conditions.
-			if($no_naptime)
+			if($no_naptime && $drive->is_closed())
 				$drive->close(false);
 			else {
 				if($verbose)
