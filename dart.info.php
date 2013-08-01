@@ -16,5 +16,5 @@
 		}
 
 	} elseif($info && !$disc_archived){
-		shell::msg("Disc is not archived");
+		shell::msg("* Unarchived");
 	}
