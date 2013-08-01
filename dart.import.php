@@ -1,6 +1,11 @@
 <?
 
-	if(($import && !$disc_indexed) || ($access_device && $disc_indexed && !$disc_archived)) {
+	// Import the DVD
+
+	// A DVD's data is imported into the database
+	// only if it is allowed access, if an argument is passed
+	// to import it, or if it is missing metadata.
+	if($access_device && $disc_indexed && ($import || !$disc_archived)) {
 
 		if($verbose)
 			shell::msg("[Import]");
