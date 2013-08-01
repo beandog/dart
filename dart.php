@@ -60,10 +60,6 @@
 		$queue_model->reset();
 	}
 
-	// Skipping naps is only allowed when debugging
-	if(!$debug)
-		$no_naptime = false;
-
 	// General boolean for various items
 	$first_run = true;
 
@@ -162,13 +158,9 @@
 			// polling as well as the expected situation where the
 			// tray is just open.  In short, this will avoid headaches
 			// and race conditions.
-			if($no_naptime && $drive->is_closed())
-				$drive->close(false);
-			else {
-				if($verbose)
-					shell::stdout("* Sleepy time . . .");
-				$drive->close();
-			}
+			if($verbose)
+				shell::stdout("* Sleepy time . . .");
+			$drive->close();
 
 			$has_media = $drive->has_media();
 
@@ -203,10 +195,7 @@
 			// this device and go to the next one (or wait for
 			// some media to appear).
 			if($drive->is_closed()) {
-				if($no_naptime)
-					$drive->close(false);
-				else
-					$drive->close();
+				$drive->close();
 				$has_media = $drive->has_media();
 				if($has_media)
 					$access_drive = true;
@@ -376,9 +365,6 @@
 				}
 				$drive->close(false);
 			}
-
-			// Reset the original argument
-			$no_naptime = false;
 
 			if($debug)
 				shell::stdout("! Going to start position");
