@@ -127,7 +127,7 @@
 		 * a tray and the device is polling, and then running 'eject -t', the
 		 * drive opens up and then closes.
 		 */
-		function close($take_a_nap = true) {
+		function close($naptime = 30) {
 
 			if($this->debug)
 				shell::stdout("! drive::close(".$this->device.")");
@@ -137,10 +137,10 @@
 				system($cmd);
 			}
 
-			$naptime = 30;
+			$naptime = abs(intval($naptime));
 			if($this->debug)
 				shell::stdout("! Taking a nap for $naptime seconds");
-			if($take_a_nap)
+			if($naptime)
 				sleep($naptime);
 
 			// udisks should be able to poll the tray after a nap
