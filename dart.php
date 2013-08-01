@@ -60,6 +60,10 @@
 		$queue_model->reset();
 	}
 
+	// Skipping naps is only allowed when debugging
+	if(!$debug)
+		$no_naptime = false;
+
 	// General boolean for various items
 	$first_run = true;
 
