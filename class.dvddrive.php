@@ -138,6 +138,11 @@
 			}
 
 			$naptime = abs(intval($naptime));
+
+			// ALWAYS take a short nap, regardless of other arguments
+			if(!$naptime)
+				$naptime = 2;
+
 			if($this->debug)
 				shell::stdout("! Taking a nap for $naptime seconds");
 			if($naptime)
