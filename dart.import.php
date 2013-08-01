@@ -4,7 +4,7 @@
 
 		if($verbose)
 			shell::msg("[Import]");
-		if(!$disc_archived && $verbose)
+		if(!$disc_archived && $disc_indexed && $verbose)
 			shell::msg("* Updating metadata");
 
 		$uniq_id = $dvd->getID();
