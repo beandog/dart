@@ -311,12 +311,6 @@
 						$disc_archived = false;
 				}
 
-			} else {
-				if(!$info) {
-					
-					// If there is no metadata at all, import the track
-					$import = true;
-				}
 			}
 
 			if($verbose) {
