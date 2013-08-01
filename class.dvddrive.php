@@ -147,7 +147,7 @@
 			// and give an accurate response.  Also, try to only
 			// run load_css if there is media in there, to avoid
 			// kernel complaints (but do it manually).
-			if($this->has_media() && $take_a_nap) {
+			if($this->has_media() && $naptime) {
 				$this->load_css();
 			}
 
