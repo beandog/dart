@@ -318,7 +318,7 @@
 
 				foreach($tracks as $track_id) {
 					$tracks_model = new Tracks_Model($track_id);
-					if($tracks_model->angles)
+					if(is_null($tracks_model->angles))
 						$disc_archived = false;
 				}
 
