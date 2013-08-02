@@ -225,18 +225,29 @@
 
 			foreach($dvd_chapters as $chapter_number => $chapter_data) {
 
-				$arr = array(
-					'track_id' => $track->id,
-					'ix' => $chapter_data['ix'],
-				);
+				// Lookup the database chapters.id
+				$chapters_model = new Chapters_Model;
+				$chapters_ix = $chapter_data['ix'];
+				$chapters_model_id = $chapters_model->find_chapters_id($tracks_model_id, $chapters_ix);
 
-				$chapters = chapters::first(array('conditions' => $arr));
+				// Create a new record
+				if(!$chapters_model_id) {
 
- 				if(is_null($chapters))
- 					$chapters = chapters::create($arr);
+					$chapters_model_id = $chapters_model->create_new();
 
- 				$chapters->set_attributes($chapter_data);
- 				$chapters->save();
+					if($debug)
+						shell::stdout("! Created new chapters id: $chapters_model_id");
+
+					$chapters_model->track_id = $tracks_model_id;
+					$chapters_model->ix = $chapters_ix;
+					$chapters_model->length = $chapters_data['length'];
+					$chapters_model->startcell = $chapters_data['startcell'];
+
+				}
+
+				unset($chapters_model);
+				unset($chapters_ix);
+				unset($chapters_model_id);
 
 			}
 
