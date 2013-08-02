@@ -19,7 +19,7 @@
 
 		// Create a new database record for the DVD
 		if(!$disc_indexed) {
-		
+
 			$dvds_model_id = $dvds_model->create_new();
 			if($debug)
 				shell::stdout("! Created new DVD id: $dvds_model_id");
@@ -30,9 +30,9 @@
 		// Update the disc as needed
 		if(empty($dvds_model->title))
 			$dvds_model->title = $dvd->getTitle();
-		if(empty($dvds_model->vmg_id) && !empty($dvd->getVMGID()))
+		if($dvd->getVMGID() && !$dvds_model->vmg_id)
 			$dvds_model->vmg_id = $dvd->getVMGID();
-		if(empty($dvds_model->provider_id) && !empty($dvd->getProviderID()))
+		if($dvd->getProviderID() && !$dvds_model->provider_id)
 			$dvds_model->provider_id = $dvd->getProviderID();
 		if(is_null($dvds_model->longest_track))
 			$dvds_model->longest_track = $dvd->getLongestTrack();
@@ -58,35 +58,28 @@
 
 			$dvd_track = new DVDTrack($track_number, $device);
 
-			$track = tracks::first(array('conditions' => array('dvd_id' => $d->id, 'ix' => $track_number)));
-
-			if(is_null($track)) {
-
-				$arr = array(
-					'dvd_id' => $d->id,
-					'ix' => $dvd_track->getIX(),
-				);
-
-				$track = tracks::create($arr);
-
+			// Lookup the database tracks.id
+			$tracks_model = new Tracks_Model;
+			$tracks_model_id = $tracks_model->find_track_id($dvds_model_id, $track_number);
+			if(!$tracks_model_id) {
+				$tracks_model_id = $tracks_model->create_new();
+				$tracks_model->dvd_id = $dvds_model_id;
+				$tracks_model->ix = $track_number;
+				if($debug)
+					shell::stdout("! Created new track id: $tracks_model_id");
 			}
 
-			$arr = array(
-				'length' => $dvd_track->getLength(),
-				'vts_id' => $dvd_track->getVTSID(),
-				'vts' => $dvd_track->getVTS(),
-				'ttn' => $dvd_track->getTTN(),
-				'fps' => $dvd_track->getFPS(),
-				'format' => $dvd_track->getVideoFormat(),
-				'aspect' => $dvd_track->getAspectRatio(),
-				'width' => $dvd_track->getWidth(),
-				'height' => $dvd_track->getHeight(),
-				'df' => $dvd_track->getDF(),
-				'angles' => $dvd_track->getAngles(),
-			);
-
-			$track->update_attributes($arr);
-			$track->save();
+			$tracks_model->length = $dvd_track->getLength();
+			$tracks_model->vts_id = $dvd_track->getVTSID();
+			$tracks_model->vts = $dvd_track->getVTS();
+			$tracks_model->ttn = $dvd_track->getTTN();
+			$tracks_model->fps = $dvd_track->getFPS();
+			$tracks_model->format = $dvd_track->getVideoFormat();
+			$tracks_model->aspect = $dvd_track->getAspectRatio();
+			$tracks_model->width = $dvd_track->getWidth();
+			$tracks_model->height = $dvd_track->getHeight();
+			$tracks_model->df = $dvd_track->getDF();
+			$tracks_model->angles = $dvd_track->getAngles();
 
 			// Get lsdvd XML to pass to sub-classes
 			$xml = $dvd_track->getXML();
