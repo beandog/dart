@@ -19,11 +19,11 @@
 		if(!$disc_indexed) {
 
 			$dvds_model_id = $dvds_model->create_new();
+
 			if($debug)
 				shell::stdout("! Created new DVD id: $dvds_model_id");
 
 			$dvds_model->uniq_id = $uniq_id;
-
 			$dvds_model->title = $dvd->getTitle();
 			$dvds_model->vmg_id = $dvd->getVMGID();
 			$dvds_model->provider_id = $dvd->getProviderID();
@@ -80,12 +80,12 @@
 			if(!$tracks_model_id) {
 
 				$tracks_model_id = $tracks_model->create_new();
-				$tracks_model->dvd_id = $dvds_model_id;
-				$tracks_model->ix = $track_number;
 
 				if($debug)
 					shell::stdout("! Created new track id: $tracks_model_id");
 
+				$tracks_model->dvd_id = $dvds_model_id;
+				$tracks_model->ix = $track_number;
 				$tracks_model->length = $dvd_track->getLength();
 				$tracks_model->vts_id = $dvd_track->getVTSID();
 				$tracks_model->vts = $dvd_track->getVTS();
@@ -123,12 +123,13 @@
 					if(!$palettes_model_id) {
 
 						$palettes_model_id = $palettes_model->create_new();
-						$palettes_model->track_id = $tracks_model_id;
-						$palettes_model->ix = $palette_ix;
-						$palettes_model->color = $color;
 
 						if($debug)
 							shell::stdout("! Created new palettes id: $palettes_model_id");
+
+						$palettes_model->track_id = $tracks_model_id;
+						$palettes_model->ix = $palette_ix;
+						$palettes_model->color = $color;
 
 					}
 
