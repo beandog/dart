@@ -30,9 +30,9 @@
 		// Update the disc as needed
 		if(empty($dvds_model->title))
 			$dvds_model->title = $dvd->getTitle();
-		if(empty($dvds_model->vmg_id))
+		if(empty($dvds_model->vmg_id) && !empty($dvd->getVMGID()))
 			$dvds_model->vmg_id = $dvd->getVMGID();
-		if(empty($dvds_model->provider_id))
+		if(empty($dvds_model->provider_id) && !empty($dvd->getProviderID()))
 			$dvds_model->provider_id = $dvd->getProviderID();
 		if(is_null($dvds_model->longest_track))
 			$dvds_model->longest_track = $dvd->getLongestTrack();
