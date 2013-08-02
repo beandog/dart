@@ -112,6 +112,9 @@
 		// If it's DVD drive, can it be accessed
 		$access_drive = false;
 
+		// Are we missing any data in the database
+		$missing_data = false;
+
 		// Change the device name to include the full path
 		// if it's a filename and not a block device
 		if($device_is_iso)
