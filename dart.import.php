@@ -90,13 +90,13 @@
 			$xml = $dvd_track->getXML();
 
 			/** Palettes **/
-			$track_palette_colors = $dvd_track->getPaletteColors();
+			$palette_colors = $dvd_track->getPaletteColors();
 
-			if(count($track_palette_colors)) {
+			if(count($palette_colors)) {
 
 				$palette_ix = 1;
 
-				foreach($track_palette_colors as $color) {
+				foreach($palette_colors as $color) {
 
 					// Lookup the database tracks.id
 					$palettes_model = new Palettes_Model;
@@ -114,7 +114,7 @@
 
 				}
 
-				unset($track_palette_colors);
+				unset($palette_colors);
 				unset($color);
 				unset($palettes_model);
 				unset($palettes_model_id);
