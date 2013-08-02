@@ -125,30 +125,30 @@
 
 				$dvd_audio = new DVDAudio($xml, $streamid);
 
-				$arr = array(
-					'track_id' => $track->id,
-					'ix' => $dvd_audio->getXMLIX(),
-				);
+				// Lookup the database tracks.id
+				$audio_model = new Audio_Model;
+				$audio_ix = $dvd_audio->getXMLIX(),
+				$audio_model_id = $audio_model->find_audio_id($tracks_model_id, $audio_ix);
 
-				$audio = audio::first(array('conditions' => $arr));
+				// Create a new record
+				if(!$audio_model_id) {
 
-				if(is_null($audio))
-					$audio = audio::create($arr);
+					$audio_model_id = $audio_model->create_new();
+					if($debug)
+						shell::stdout("! Created new audio id: $audio_model_id");
 
-				$arr = array(
-					'langcode' => $dvd_audio->getLangcode(),
-					'language' => $dvd_audio->getLanguage(),
-					'format' => $dvd_audio->getFormat(),
-					'frequency' => $dvd_audio->getFrequency(),
-					'quantization' => $dvd_audio->getQuantization(),
-					'channels' => $dvd_audio->getChannels(),
-					'ap_mode' => $dvd_audio->getAPMode(),
-					'content' => $dvd_audio->getContent(),
-					'streamid' => $streamid,
-				);
+					$audio_model->track_id = $tracks_model_id;
+					$audio_model->langcode = $dvd_audio->getLangcode();
+					$audio_model->language = $dvd_audio->getLanguage();
+					$audio_model->format = $dvd_audio->getFormat();
+					$audio_model->frequency = $dvd_audio->getFrequency();
+					$audio_model->quantization = $dvd_audio->getQuantization();
+					$audio_model->channels = $dvd_audio->getChannels();
+					$audio_model->ap_mode = $dvd_audio->getAPMode();
+					$audio_model->content = $dvd_audio->getContent();
+					$audio_model->streamid = $streamid;
 
-				$audio->set_attributes($arr);
-				$audio->save();
+				}
 
 			}
 
