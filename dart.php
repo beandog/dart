@@ -324,6 +324,7 @@
 		}
 
 		require 'dart.info.php';
+		require 'dart.archive.php';
 		require 'dart.import.php';
 		require 'dart.iso.php';
 		require 'dart.rip.php';
