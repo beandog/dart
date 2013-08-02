@@ -23,6 +23,9 @@
 
 		if($missing_dvd_metadata) {
 
+			if($debug)
+				shell::stdout("! DVD ID $dvds_model_id is missing metadata");
+
 			// DVD longest track
 			if(is_null($dvds_model->longest_track)) {
 				if($verbose)
@@ -68,6 +71,9 @@
 			// Only access the device if we need to
 			if($missing_track_metadata) {
 
+				if($debug)
+					shell::stdout("! Track $track_number is missing metadata");
+
 				$tracks_model->vts_id = $dvd_track->getVTSID();
 				$tracks_model->vts = $dvd_track->getVTS();
 				$tracks_model->ttn = $dvd_track->getTTN();
@@ -82,6 +88,9 @@
 			}
 
 			if($missing_track_palettes) {
+
+				if($debug)
+					shell::stdout("! Track $track_number is missing palettes");
 
 				// FIXME duplicate code of dart.import.php :(
 
