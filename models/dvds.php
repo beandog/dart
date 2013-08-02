@@ -15,7 +15,7 @@
 		public function missing_metadata() {
 
 			$sql = "SELECT 1 FROM dvds WHERE (longest_track IS NULL OR filesize IS NULL OR serial_id = '') AND id = ".$this->db->quote($this->id).";";
-			$var = $db->getOne($sql);
+			$var = $this->db->getOne($sql);
 			$bool = (bool)$var;
 
 			return $bool;
