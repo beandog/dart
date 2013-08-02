@@ -6,7 +6,7 @@
 	// Access to the device is given AND one of:
 	// a. The disc is indexed, but it is missing some metadata
 	// b. The disc is not indexed and an import command is given
-	if($access_device && (($disc_indexed && !$disc_archived) || ($import && !$disc_indexed))) {
+	if($access_device && ($import && !$disc_indexed)) {
 
 		if($verbose)
 			shell::msg("[Import]");
@@ -300,9 +300,6 @@
 			}
 
 		}
-
-		// Now flag it as archived. :D
-		$disc_archived = true;
 
 		// Close off the newline that the track count was displaying
 		if($verbose)
