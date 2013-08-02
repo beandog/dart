@@ -54,6 +54,11 @@
 		/** Tracks **/
 
 		$tracks = $dvds_model->get_tracks();
+		$num_tracks = count($tracks);
+
+		if($verbose)
+			shell::stdout("Checking $num_tracks: ", false);
+
 		foreach($tracks as $tracks_model_id) {
 
 			$tracks_model = new Tracks_Model;
@@ -66,6 +71,7 @@
 			if($missing_track_metadata || $missing_track_palettes) {
 				$track_number = $tracks_model->ix;
 				$dvd_track = new DVDTrack($track_number, $device);
+				shell::stdout("$track_number ", false);
 			}
 
 			// Only access the device if we need to
@@ -139,6 +145,9 @@
 			}
 
 		}
+
+		// Close out dangling output
+		shell::stdout("done");
 
 		// Mark disc as archived
 		// This is a legacy variable, but may come in
