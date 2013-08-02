@@ -63,6 +63,12 @@
 	// General boolean for various items
 	$first_run = true;
 
+	// Only allow overrding naptime in debug mode
+	if($debug && $nonap)
+		$naptime = 0;
+	else
+		$naptime = null;
+
 	foreach($devices as $device) {
 
 		start:
@@ -164,7 +170,7 @@
 				// and race conditions.
 				if($verbose)
 					shell::stdout("* Sleepy time . . .");
-				$drive->close();
+				$drive->close($naptime);
 
 				$has_media = $drive->has_media();
 

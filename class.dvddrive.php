@@ -137,6 +137,8 @@
 				system($cmd);
 			}
 
+			if(is_null($naptime))
+				$naptime = 30;
 			$naptime = abs(intval($naptime));
 
 			// ALWAYS take a short nap, regardless of other arguments
