@@ -16,8 +16,14 @@
 		$num_dvd_tracks = $dvd->getNumTracks();
 		$num_db_tracks = count($dvds_model->getTracks());
 
-		if($num_dvd_tracks != $num_db_tracks)
+		if($num_dvd_tracks != $num_db_tracks) {
 			$missing_data = true;
+
+			if($verbose) {
+				shell::stdout("* DVD tracks ($num_dvd_tracks) and DB tracks ($num_db_tracks) do not match");
+				shell::stdout("* Forcing import");
+			}
+		}
 
 	}
 
