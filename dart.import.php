@@ -110,7 +110,7 @@
 							shell::stdout("! Created new palettes id: $palettes_model_id");
 					}
 
-					$ix++;
+					$palette_ix++;
 
 				}
 
