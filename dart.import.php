@@ -85,19 +85,19 @@
 			$xml = $dvd_track->getXML();
 
 			/** Palettes **/
-			$colors = $dvd_track->getPaletteColors();
+			$track_palette_colors = $dvd_track->getPaletteColors();
 
-			if(count($colors)) {
+			if(count($track_palette_colors)) {
 
-				foreach($colors as $color_str) {
+				foreach($track_palette_colors as $color) {
 
 					// Lookup the database tracks.id
 					$palettes_model = new Palettes_Model;
-					$palettes_model_id = $palettes_model->find_palettes_id($tracks_model_id, $color_str);
+					$palettes_model_id = $palettes_model->find_palettes_id($tracks_model_id, $color);
 					if(!$palettes_model_id) {
 						$palettes_model_id = $palettes_model->create_new();
 						$palettes_model->track_id = $tracks_model_id;
-						$palettes_model->color = $color_str;
+						$palettes_model->color = $color;
 						if($debug)
 							shell::stdout("! Created new palettes id: $palettes_model_id");
 					}
