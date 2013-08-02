@@ -142,34 +142,38 @@
 
 			$audio_streams = $dvd_track->getAudioStreams();
 
-			foreach($audio_streams as $streamid) {
+			if(count($audio_streams)) {
 
-				$dvd_audio = new DVDAudio($xml, $streamid);
+				foreach($audio_streams as $streamid) {
 
-				// Lookup the database audio.id
-				$audio_model = new Audio_Model;
-				$audio_ix = $dvd_audio->getXMLIX();
-				$audio_model_id = $audio_model->find_audio_id($tracks_model_id, $audio_ix);
+					$dvd_audio = new DVDAudio($xml, $streamid);
 
-				// Create a new record
-				if(!$audio_model_id) {
+					// Lookup the database audio.id
+					$audio_model = new Audio_Model;
+					$audio_ix = $dvd_audio->getXMLIX();
+					$audio_model_id = $audio_model->find_audio_id($tracks_model_id, $audio_ix);
 
-					$audio_model_id = $audio_model->create_new();
+					// Create a new record
+					if(!$audio_model_id) {
 
-					if($debug)
-						shell::stdout("! Created new audio id: $audio_model_id");
+						$audio_model_id = $audio_model->create_new();
 
-					$audio_model->track_id = $tracks_model_id;
-					$audio_model->ix = $audio_ix;
-					$audio_model->langcode = $dvd_audio->getLangcode();
-					$audio_model->language = $dvd_audio->getLanguage();
-					$audio_model->format = $dvd_audio->getFormat();
-					$audio_model->frequency = $dvd_audio->getFrequency();
-					$audio_model->quantization = $dvd_audio->getQuantization();
-					$audio_model->channels = $dvd_audio->getChannels();
-					$audio_model->ap_mode = $dvd_audio->getAPMode();
-					$audio_model->content = $dvd_audio->getContent();
-					$audio_model->streamid = $streamid;
+						if($debug)
+							shell::stdout("! Created new audio id: $audio_model_id");
+
+						$audio_model->track_id = $tracks_model_id;
+						$audio_model->ix = $audio_ix;
+						$audio_model->langcode = $dvd_audio->getLangcode();
+						$audio_model->language = $dvd_audio->getLanguage();
+						$audio_model->format = $dvd_audio->getFormat();
+						$audio_model->frequency = $dvd_audio->getFrequency();
+						$audio_model->quantization = $dvd_audio->getQuantization();
+						$audio_model->channels = $dvd_audio->getChannels();
+						$audio_model->ap_mode = $dvd_audio->getAPMode();
+						$audio_model->content = $dvd_audio->getContent();
+						$audio_model->streamid = $streamid;
+
+					}
 
 				}
 
