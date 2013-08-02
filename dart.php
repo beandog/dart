@@ -143,7 +143,7 @@
 			$display_device = basename($device);
 
 		// Determine whether we are reading the device
-		if($rip || $info || $import || $dump_iso) {
+		if($rip || $info || $import || $archive || $dump_iso) {
 			$access_device = true;
 
 			if($verbose) {
