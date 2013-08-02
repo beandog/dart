@@ -198,9 +198,11 @@
 				if(!$subp_model_id) {
 
 					$subp_model_id = $subp_model->create_new();
+
 					if($debug)
 						shell::stdout("! Created new subp id: $subp_model_id");
 
+					$subp_model->ix = $subp_ix;
 					$subp_model->langcode = $dvd_subp->getLangcode();
 					$subp_model->language = $dvd_subp->getLanguage();
 					$subp_model->content = $dvd_subp->getContent();
