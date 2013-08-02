@@ -155,6 +155,11 @@
 
 				}
 
+				unset($dvd_audio);
+				unset($audio_model);
+				unset($audio_ix);
+				unset($audio_model_id);
+
 			}
 
 			/** Subtitles **/
