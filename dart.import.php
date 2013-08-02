@@ -145,6 +145,9 @@
 
 			$audio_streams = $dvd_track->getAudioStreams();
 
+			if(!count($audio_streams))
+				shell::stdout("? No audio streams on track $track_number");
+
 			if(count($audio_streams)) {
 
 				foreach($audio_streams as $streamid) {
