@@ -10,8 +10,6 @@
 
 		if($verbose)
 			shell::msg("[Import]");
-		if(!$disc_archived && $disc_indexed && $verbose)
-			shell::msg("* Updating metadata");
 
 		$uniq_id = $dvd->getID();
 
@@ -39,12 +37,23 @@
 		}
 
 		// Check for missing metadata
-		if(is_null($dvds_model->longest_track))
+		if(!$disc_archived && $disc_indexed && $verbose)
+			shell::msg("* Updating metadata");
+		if(is_null($dvds_model->longest_track)) {
+			if($verbose)
+				shell::stdout("* Updating longest track");
 			$dvds_model->longest_track = $dvd->getLongestTrack();
-		if(is_null($dvds_model->filesize))
+		}
+		if(is_null($dvds_model->filesize)) {
+			if($verbose)
+				shell::stdout("* Updating blocksize");
 			$dvds_model->filesize = $dvd->getSize();
-		if(empty($dvds_model->serial_id))
+		}
+		if(empty($dvds_model->serial_id)) {
+			if($verbose)
+				shell::stdout("* Updating serial ID");
 			$dvds_model->serial_id = $dvd->getSerialID();
+		}
 
 		/** Tracks **/
 
