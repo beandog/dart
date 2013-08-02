@@ -182,6 +182,7 @@
 				unset($audio_ix);
 				unset($audio_model_id);
 				unset($streamid);
+				unset($audio_streams);
 
 			}
 
@@ -224,6 +225,7 @@
 				unset($subp_ix);
 				unset($subp_model_id);
 				unset($streamid);
+				unset($subtitle_streams);
 
 			}
 
@@ -260,6 +262,7 @@
 				unset($chapters_model);
 				unset($chapters_ix);
 				unset($chapters_model_id);
+				unset($dvd_chapters);
 
 			}
 
