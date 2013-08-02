@@ -292,6 +292,9 @@
 				// or if there are no audio tracks registered.
 				$tracks = $dvds_model->get_tracks();
 
+				if(count($tracks) == 0)
+					$disc_archived = false;
+
 				foreach($tracks as $track_id) {
 					$tracks_model = new Tracks_Model($track_id);
 					if(is_null($tracks_model->angles))
