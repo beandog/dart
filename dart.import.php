@@ -104,6 +104,10 @@
 
 				}
 
+				// Unset variables that are unused after this
+				unset($palettes_model);
+				unset($palettes_model_id);
+
 			}
 
 			/** Audio Streams **/
