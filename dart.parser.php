@@ -23,6 +23,12 @@
 		'description' => 'Import DVD metadata into database',
 		'action' => 'StoreTrue',
 	));
+	$parser->addOption('archive', array(
+		'short_name' => '-a',
+		'long_name' => '--archive',
+		'description' => 'Update DVD metadata to latest schema',
+		'action' => 'StoreTrue',
+	));
 	$parser->addOption('rip', array(
 		'short_name' => '-r',
 		'long_name' => '--rip',
