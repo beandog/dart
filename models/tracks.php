@@ -67,5 +67,17 @@
 
 		}
 
+		// Check a track record to see if it is missing
+		// metadata somewhere.
+		public function missing_metadata() {
+
+			$sql = "SELECT 1 FROM tracks WHERE angles IS NULL AND id = ".$this->db->quote($this->id).";";
+			$var = $this->db->getOne($sql);
+			$bool = (bool)$var;
+
+			return $bool;
+
+		}
+
 	}
 ?>
