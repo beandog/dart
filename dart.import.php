@@ -288,18 +288,32 @@
 
 			$dvd_cells = $dvd_track->getCells();
 
-			foreach($dvd_cells as $cell_ix => $cell_length) {
+			if(count($dvd_cells)) {
 
-				$arr = array(
-					'ix' => $cell_ix,
-					'length' => $cell_length,
-					'track_id' => $track->id,
-				);
+				if($debug)
+					shell::stdout("! Track $track_number has ".count($dvd_cells)." cells");
 
-				$cells = cells::first(array('conditions' => $arr));
+				foreach($dvd_cells as $cells_ix => $cells_length) {
 
- 				if(is_null($cells))
- 					cells::create($arr);
+					// Lookup the database chapters.id
+					$cells = new Cells_Model;
+					$cells_model_id = $cells_model->find_cells_id($tracks_model_id, $cells_ix);
+
+					// Create a new record
+					if(!$cells_model_id) {
+
+						$cells_model_id = $cells_model->create_new();
+
+						if($debug)
+							shell::stdout("! Created new cells id: $cells_model_id");
+
+						$cells_model->track_id = $tracks_model_id;
+						$cells_model->ix = $cells_ix;
+						$cells_model->length = $cells_length;
+
+					}
+
+				}
 
 			}
 
