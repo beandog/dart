@@ -89,14 +89,18 @@
 
 			if(count($colors)) {
 
-				foreach($colors as $str) {
+				foreach($colors as $color_str) {
 
-					$arr = array('track_id' => $track->id, 'color' => $str);
-
-					$palette = palettes::first(array('conditions' => array($arr)));
-
-					if(is_null($palette))
-						$palette = palettes::create($arr);
+					// Lookup the database tracks.id
+					$palettes_model = new Palettes_Model;
+					$palettes_model_id = $palettes_model->find_palettes_id($tracks_model_id, $color_str);
+					if(!$palettes_model_id) {
+						$palettes_model_id = $palettes_model->create_new();
+						$palettes_model->track_id = $tracks_model_id;
+						$palettes_model->color = $color_str;
+						if($debug)
+							shell::stdout("! Created new palettes id: $palettes_model_id");
+					}
 
 				}
 
