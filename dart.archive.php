@@ -57,7 +57,7 @@
 		$num_tracks = count($tracks);
 
 		if($verbose)
-			shell::stdout("Checking $num_tracks: ", false);
+			shell::stdout("* Querying track records: ", false);
 
 		foreach($tracks as $tracks_model_id) {
 
