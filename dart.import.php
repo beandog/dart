@@ -61,25 +61,30 @@
 			// Lookup the database tracks.id
 			$tracks_model = new Tracks_Model;
 			$tracks_model_id = $tracks_model->find_track_id($dvds_model_id, $track_number);
+
+			// Create new database entry
 			if(!$tracks_model_id) {
+
 				$tracks_model_id = $tracks_model->create_new();
 				$tracks_model->dvd_id = $dvds_model_id;
 				$tracks_model->ix = $track_number;
+
 				if($debug)
 					shell::stdout("! Created new track id: $tracks_model_id");
-			}
 
-			$tracks_model->length = $dvd_track->getLength();
-			$tracks_model->vts_id = $dvd_track->getVTSID();
-			$tracks_model->vts = $dvd_track->getVTS();
-			$tracks_model->ttn = $dvd_track->getTTN();
-			$tracks_model->fps = $dvd_track->getFPS();
-			$tracks_model->format = $dvd_track->getVideoFormat();
-			$tracks_model->aspect = $dvd_track->getAspectRatio();
-			$tracks_model->width = $dvd_track->getWidth();
-			$tracks_model->height = $dvd_track->getHeight();
-			$tracks_model->df = $dvd_track->getDF();
-			$tracks_model->angles = $dvd_track->getAngles();
+				$tracks_model->length = $dvd_track->getLength();
+				$tracks_model->vts_id = $dvd_track->getVTSID();
+				$tracks_model->vts = $dvd_track->getVTS();
+				$tracks_model->ttn = $dvd_track->getTTN();
+				$tracks_model->fps = $dvd_track->getFPS();
+				$tracks_model->format = $dvd_track->getVideoFormat();
+				$tracks_model->aspect = $dvd_track->getAspectRatio();
+				$tracks_model->width = $dvd_track->getWidth();
+				$tracks_model->height = $dvd_track->getHeight();
+				$tracks_model->df = $dvd_track->getDF();
+				$tracks_model->angles = $dvd_track->getAngles();
+
+			}
 
 			// Get lsdvd XML to pass to sub-classes
 			$xml = $dvd_track->getXML();
@@ -151,7 +156,6 @@
 				}
 
 			}
-
 
 			/** Subtitles **/
 
