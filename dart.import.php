@@ -36,25 +36,6 @@
 
 		}
 
-		// Check for missing metadata
-		if(!$disc_archived && $disc_indexed && $verbose)
-			shell::msg("* Updating metadata");
-		if(is_null($dvds_model->longest_track)) {
-			if($verbose)
-				shell::stdout("* Updating longest track");
-			$dvds_model->longest_track = $dvd->getLongestTrack();
-		}
-		if(is_null($dvds_model->filesize)) {
-			if($verbose)
-				shell::stdout("* Updating blocksize");
-			$dvds_model->filesize = $dvd->getSize();
-		}
-		if(empty($dvds_model->serial_id)) {
-			if($verbose)
-				shell::stdout("* Updating serial ID");
-			$dvds_model->serial_id = $dvd->getSerialID();
-		}
-
 		/** Tracks **/
 
 		$num_tracks = $dvd->getNumTracks();
