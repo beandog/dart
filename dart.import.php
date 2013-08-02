@@ -127,7 +127,7 @@
 
 				// Lookup the database tracks.id
 				$audio_model = new Audio_Model;
-				$audio_ix = $dvd_audio->getXMLIX(),
+				$audio_ix = $dvd_audio->getXMLIX();
 				$audio_model_id = $audio_model->find_audio_id($tracks_model_id, $audio_ix);
 
 				// Create a new record
