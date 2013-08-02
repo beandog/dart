@@ -17,6 +17,7 @@
 	require_once 'class.matroska.php';
 	require_once 'class.handbrake.php';
 
+	require_once 'models/dbtable.php';
 	require_once 'models/dvds.php';
 	require_once 'models/episodes.php';
 	require_once 'models/series_dvds.php';
