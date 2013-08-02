@@ -11,8 +11,10 @@
 
 	if($access_device && $disc_indexed) {
 
-		if($verbose)
-			shell::stdout("[Metadata]");
+		if($verbose) {
+			shell::stdout("[Archival]");
+			shell::stdout("* Checking for missing metadata");
+		}
 
 		// Use database checks to see if archiving needs to happen
 		$missing_dvd_metadata = $dvds_model->missing_metadata();
@@ -131,6 +133,8 @@
 		// This is a legacy variable, but may come in
 		// useful sometime.
 		$disc_archived = true;
+
+		shell::stdout("* Disc archived");
 
 	}
 ?>
