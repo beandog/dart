@@ -271,25 +271,17 @@
 
 				// Update the longest track
 				if(is_null($dvds_model->longest_track)) {
-					if($verbose)
-						shell::msg("* Updating longest track in DB");
-					$dvds_model->longest_track = $dvd->getLongestTrack();
+					$disc_archived = false;
 				}
 
 				// Update disc size
 				if(is_null($dvds_model->filesize)) {
-					if($verbose)
-						shell::msg("* Updating filesize in DB");
-					$dvds_model->filesize = $dvd->getSize() ;
+					$disc_archived = false;
 				}
 
 				// Update serial ID
 				if(!$dvds_model->serial_id) {
-					$serial_id = trim($dvd->getSerialID());
-					if($verbose) {
-						shell::msg("* Updating serial id in DB");
-					}
-					$dvds_model->serial_id = $serial_id;
+					$disc_archived = false;
 				}
 
 				// Check all tracks to see if they have all
