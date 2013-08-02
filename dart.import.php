@@ -189,29 +189,33 @@
 
 			$subtitle_streams = $dvd_track->getSubtitleStreams();
 
-			foreach($subtitle_streams as $streamid) {
+			if(count($subtitle_streams)) {
 
-				$dvd_subp = new DVDSubs($xml, $streamid);
+				foreach($subtitle_streams as $streamid) {
 
-				// Lookup the database subp.id
-				$subp_model = new Subp_Model;
-				$subp_ix = $dvd_subp->getXMLIX();
-				$subp_model_id = $subp_model->find_subp_id($tracks_model_id, $subp_ix);
+					$dvd_subp = new DVDSubs($xml, $streamid);
 
-				// Create a new record
-				if(!$subp_model_id) {
+					// Lookup the database subp.id
+					$subp_model = new Subp_Model;
+					$subp_ix = $dvd_subp->getXMLIX();
+					$subp_model_id = $subp_model->find_subp_id($tracks_model_id, $subp_ix);
 
-					$subp_model_id = $subp_model->create_new();
+					// Create a new record
+					if(!$subp_model_id) {
 
-					if($debug)
-						shell::stdout("! Created new subp id: $subp_model_id");
+						$subp_model_id = $subp_model->create_new();
 
-					$subp_model->track_id = $tracks_model_id;
-					$subp_model->ix = $subp_ix;
-					$subp_model->langcode = $dvd_subp->getLangcode();
-					$subp_model->language = $dvd_subp->getLanguage();
-					$subp_model->content = $dvd_subp->getContent();
-					$subp_model->streamid = $streamid;
+						if($debug)
+							shell::stdout("! Created new subp id: $subp_model_id");
+
+						$subp_model->track_id = $tracks_model_id;
+						$subp_model->ix = $subp_ix;
+						$subp_model->langcode = $dvd_subp->getLangcode();
+						$subp_model->language = $dvd_subp->getLanguage();
+						$subp_model->content = $dvd_subp->getContent();
+						$subp_model->streamid = $streamid;
+
+					}
 
 				}
 
