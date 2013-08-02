@@ -12,14 +12,14 @@
 
 		/**
 		 * Do a lookup for a primary key based on
-		 * track_id and index.
+		 * track_id and streamid.
 		 *
 		 * @params int $track_id audio.track_id
-		 * @params int $ix audio.ix
+		 * @params int $streamid audio.streamid
 		 */
-		public function find_audio_id($track_id, $ix) {
+		public function find_audio_id($track_id, $streamid) {
 
-			$sql = "SELECT id FROM audio WHERE track_id = ".$this->db->quote($track_id)." AND ix = ".$this->db->quote($ix).";";
+			$sql = "SELECT id FROM audio WHERE track_id = ".$this->db->quote($track_id)." AND streamid = ".$this->db->quote($streamid).";";
 			$var = $this->db->getOne($sql);
 
 			return $var;
