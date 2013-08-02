@@ -15,35 +15,35 @@
 
 		$uniq_id = $dvd->getID();
 
-		$d = dvds::find_by_uniq_id($uniq_id);
-
 		echo "* Title: ".$dvd->getTitle()."\n";
 
-		if(is_null($d)) {
+		// Create a new database record for the DVD
+		if(!$disc_indexed) {
+		
+			$dvds_model_id = $dvds_model->create_new();
+			if($debug)
+				shell::stdout("! Created new DVD id: $dvds_model_id");
 
-			$arr = array(
-				'uniq_id' => $uniq_id,
-			);
-
-			$d = dvds::create($arr);
-
+			$dvds_model->uniq_id = $uniq_id;
 		}
 
-		$arr = array(
-			'title' => $dvd->getTitle(),
-			'vmg_id' => $dvd->getVMGID(),
-			'provider_id' => $dvd->getProviderID(),
-			'longest_track' => $dvd->getLongestTrack(),
-			'filesize' => $dvd->getSize(),
-			'serial_id' => $dvd->getSerialID(),
-		);
+		// Update the disc as needed
+		if(empty($dvds_model->title))
+			$dvds_model->title = $dvd->getTitle();
+		if(empty($dvds_model->vmg_id))
+			$dvds_model->vmg_id = $dvd->getVMGID();
+		if(empty($dvds_model->provider_id))
+			$dvds_model->provider_id = $dvd->getProviderID();
+		if(is_null($dvds_model->longest_track))
+			$dvds_model->longest_track = $dvd->getLongestTrack();
+		if(is_null($dvds_model->filesize))
+			$dvds_model->filesize = $dvd->getSize();
+		if(empty($dvds_model->serial_id))
+			$dvds_model->serial_id = $dvd->getSerialID();
 
-		$d->update_attributes($arr);
-
-		$d->save();
-
-		// Flag it as indexed
+		// Flag it as indexed and archived
 		$disc_indexed = true;
+		$disc_archived = true;
 
 		/** Tracks **/
 
