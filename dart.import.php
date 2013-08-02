@@ -109,7 +109,7 @@
 
 				foreach($palette_colors as $color) {
 
-					// Lookup the database tracks.id
+					// Lookup the database palettes.id
 					$palettes_model = new Palettes_Model;
 					$palettes_model_id = $palettes_model->find_palettes_id($tracks_model_id, $palette_ix, $color);
 					if(!$palettes_model_id) {
@@ -141,7 +141,7 @@
 
 				$dvd_audio = new DVDAudio($xml, $streamid);
 
-				// Lookup the database tracks.id
+				// Lookup the database audio.id
 				$audio_model = new Audio_Model;
 				$audio_ix = $dvd_audio->getXMLIX();
 				$audio_model_id = $audio_model->find_audio_id($tracks_model_id, $audio_ix);
