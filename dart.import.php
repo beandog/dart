@@ -43,7 +43,6 @@
 
 		// Flag it as indexed and archived
 		$disc_indexed = true;
-		$disc_archived = true;
 
 		/** Tracks **/
 
