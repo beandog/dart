@@ -108,6 +108,9 @@
 
 			if(count($palette_colors)) {
 
+				if($debug)
+					shell::stdout("! Track $track_number has ".count($palette_colors)." palette colors");
+
 				$palette_ix = 1;
 
 				foreach($palette_colors as $color) {
@@ -149,6 +152,9 @@
 				shell::stdout("? No audio streams on track $track_number");
 
 			if(count($audio_streams)) {
+
+				if($debug)
+					shell::stdout("! Track $track_number has ".count($audio_streams)." audio streams");
 
 				foreach($audio_streams as $streamid) {
 
@@ -198,6 +204,9 @@
 
 			if(count($subtitle_streams)) {
 
+				if($debug)
+					shell::stdout("! Track $track_number has ".count($subtitle_streams)." subtitle streams");
+
 				foreach($subtitle_streams as $streamid) {
 
 					$dvd_subp = new DVDSubs($xml, $streamid);
@@ -240,6 +249,9 @@
 			$dvd_chapters = $dvd_track->getChapters();
 
 			if(count($dvd_chapters)) {
+
+				if($debug)
+					shell::stdout("! Track $track_number has ".count($dvd_chapters)." chapters");
 
 				foreach($dvd_chapters as $chapter_number => $chapter_data) {
 
