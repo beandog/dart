@@ -23,6 +23,7 @@
 	require_once 'models/series_dvds.php';
 	require_once 'models/series.php';
 	require_once 'models/tracks.php';
+	require_once 'models/palettes.php';
 	require_once 'models/queue.php';
 
 	require_once 'dart.parser.php';
