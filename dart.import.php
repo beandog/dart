@@ -105,6 +105,8 @@
 				}
 
 				// Unset variables that are unused after this
+				unset($track_palette_colors);
+				unset($color);
 				unset($palettes_model);
 				unset($palettes_model_id);
 
