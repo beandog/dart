@@ -155,10 +155,12 @@
 				if(!$audio_model_id) {
 
 					$audio_model_id = $audio_model->create_new();
+
 					if($debug)
 						shell::stdout("! Created new audio id: $audio_model_id");
 
 					$audio_model->track_id = $tracks_model_id;
+					$audio_model->ix = $audio_ix;
 					$audio_model->langcode = $dvd_audio->getLangcode();
 					$audio_model->language = $dvd_audio->getLanguage();
 					$audio_model->format = $dvd_audio->getFormat();
