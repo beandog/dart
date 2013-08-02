@@ -7,7 +7,7 @@
 	 *
 	 */
 
-	if($rip && $disc_archived) {
+	if($rip && $disc_indexed) {
 
 		$queue_model = new Queue_Model;
 
