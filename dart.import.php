@@ -322,10 +322,6 @@
 		// Now flag it as archived. :D
 		$disc_archived = true;
 
-		// Load up data used later
-		$dvds_model_id = $dvds_model->find_id('uniq_id', $uniq_id);
-		$dvds_model->load($dvds_model_id);
-
 		// Close off the newline that the track count was displaying
 		if($verbose)
 			shell::stdout('', true);
