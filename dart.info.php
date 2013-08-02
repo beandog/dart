@@ -1,7 +1,7 @@
 <?
 
 	// Display info about disc
-	if($info && $disc_archived) {
+	if($info) {
 
 		if($verbose)
 			shell::msg("[Info]");
@@ -15,6 +15,4 @@
 			echo("$display_name\n");
 		}
 
-	} elseif($info && !$disc_archived){
-		shell::msg("* Unarchived");
 	}
