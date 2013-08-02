@@ -181,25 +181,30 @@
 
 				$dvd_subp = new DVDSubs($xml, $streamid);
 
-				$arr = array(
-					'track_id' => $track->id,
-					'ix' => $dvd_subp->getXMLIX(),
-				);
+				// Lookup the database subp.id
+				$subp_model = new Subp_Model;
+				$subp_ix = $dvd_subp->getXMLIX();
+				$subp_model_id = $subp_model->find_subp_id($tracks_model_id, $subp_ix);
 
-				$subp = subp::first(array('conditions' => $arr));
+				// Create a new record
+				if(!$subp_model_id) {
 
-				if(is_null($subp))
-					$subp = subp::create($arr);
+					$subp_model_id = $subp_model->create_new();
+					if($debug)
+						shell::stdout("! Created new subp id: $subp_model_id");
 
-				$arr = array(
-					'langcode' => $dvd_subp->getLangcode(),
-					'language' => $dvd_subp->getLanguage(),
-					'content' => $dvd_subp->getContent(),
-					'streamid' => $streamid,
-				);
+					$subp_model->langcode = $dvd_subp->getLangcode();
+					$subp_model->language = $dvd_subp->getLanguage();
+					$subp_model->content = $dvd_subp->getContent();
+					$subp_model->streamid = $streamid;
 
-				$subp->set_attributes($arr);
-				$subp->save();
+				}
+
+				unset($dvd_subp);
+				unset($subp_model);
+				unset($subp_ix);
+				unset($subp_model_id);
+				unset($streamid):
 
 			}
 
