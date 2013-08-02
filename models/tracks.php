@@ -10,6 +10,21 @@
 
 		}
 
+		/**
+		 * Do a lookup for a primary key based on
+		 * dvd_id and ix.
+		 *
+		 * @params int $dvd_id tracks.dvd_id
+		 * @params int $ix tracks.ix
+		 */
+		public function find_track_id($dvd_id, $ix) {
+
+			$sql = "SELECT id FROM tracks WHERE dvd_id = ".$this->db->quote($dvd_id)." AND ix = ".$this->db->quote($ix).";";
+			$var = $this->db->getOne($sql);
+
+			return $var;
+		}
+
 		public function get_audio_streams() {
 
 			$sql = "SELECT * FROM audio WHERE track_id = ".$this->db->quote($this->id)." ORDER BY langcode = 'en' DESC, channels DESC, format = 'dts' DESC, streamid;";
