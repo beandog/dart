@@ -296,7 +296,7 @@
 				foreach($dvd_cells as $cells_ix => $cells_length) {
 
 					// Lookup the database chapters.id
-					$cells = new Cells_Model;
+					$cells_model = new Cells_Model;
 					$cells_model_id = $cells_model->find_cells_id($tracks_model_id, $cells_ix);
 
 					// Create a new record
