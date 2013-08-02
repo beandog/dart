@@ -295,6 +295,9 @@
 				if(count($tracks) == 0)
 					$disc_archived = false;
 
+				if($dvd->getNumTracks() != count($tracks))
+					$disc_archived = false;
+
 				foreach($tracks as $track_id) {
 					$tracks_model = new Tracks_Model($track_id);
 					if(is_null($tracks_model->angles))
