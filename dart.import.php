@@ -270,8 +270,8 @@
 
 						$chapters_model->track_id = $tracks_model_id;
 						$chapters_model->ix = $chapters_ix;
-						$chapters_model->length = $chapters_data['length'];
-						$chapters_model->startcell = $chapters_data['startcell'];
+						$chapters_model->length = $chapter_data['length'];
+						$chapters_model->startcell = $chapter_data['startcell'];
 
 					}
 
