@@ -89,18 +89,23 @@
 
 			if(count($track_palette_colors)) {
 
+				$ix = 1;
+
 				foreach($track_palette_colors as $color) {
 
 					// Lookup the database tracks.id
 					$palettes_model = new Palettes_Model;
-					$palettes_model_id = $palettes_model->find_palettes_id($tracks_model_id, $color);
+					$palettes_model_id = $palettes_model->find_palettes_id($tracks_model_id, $ix, $color);
 					if(!$palettes_model_id) {
 						$palettes_model_id = $palettes_model->create_new();
 						$palettes_model->track_id = $tracks_model_id;
+						$palettes_model->ix = $ix;
 						$palettes_model->color = $color;
 						if($debug)
 							shell::stdout("! Created new palettes id: $palettes_model_id");
 					}
+
+					$ix++;
 
 				}
 
