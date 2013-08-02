@@ -127,5 +127,10 @@
 
 		}
 
+		// Mark disc as archived
+		// This is a legacy variable, but may come in
+		// useful sometime.
+		$disc_archived = true;
+
 	}
 ?>
