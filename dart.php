@@ -56,7 +56,7 @@
 		}
 	}
 
-	if(!count($devices) && ($rip || $info || $dump_iso || $import))
+	if(!count($devices) && ($rip || $info || $dump_iso || $import || $archive))
 		$devices = $all_devices;
 
 	// Process request to reset the queue
