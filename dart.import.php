@@ -202,6 +202,7 @@
 					if($debug)
 						shell::stdout("! Created new subp id: $subp_model_id");
 
+					$subp_model->track_id = $tracks_model_id;
 					$subp_model->ix = $subp_ix;
 					$subp_model->langcode = $dvd_subp->getLangcode();
 					$subp_model->language = $dvd_subp->getLanguage();
