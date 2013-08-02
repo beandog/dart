@@ -25,24 +25,24 @@
 				shell::stdout("! Created new DVD id: $dvds_model_id");
 
 			$dvds_model->uniq_id = $uniq_id;
+
+			$dvds_model->title = $dvd->getTitle();
+			$dvds_model->vmg_id = $dvd->getVMGID();
+			$dvds_model->provider_id = $dvd->getProviderID();
+			$dvds_model->longest_track = $dvd->getLongestTrack();
+			$dvds_model->filesize = $dvd->getSize();
+			$dvds_model->serial_id = $dvd->getSerialID();
+
+			// Flag it as indexed
+			$disc_indexed = true;
+
 		}
 
-		// Update the disc as needed
-		if(empty($dvds_model->title))
-			$dvds_model->title = $dvd->getTitle();
-		if($dvd->getVMGID() && !$dvds_model->vmg_id)
-			$dvds_model->vmg_id = $dvd->getVMGID();
-		if($dvd->getProviderID() && !$dvds_model->provider_id)
-			$dvds_model->provider_id = $dvd->getProviderID();
-		if(is_null($dvds_model->longest_track))
-			$dvds_model->longest_track = $dvd->getLongestTrack();
+		// Check for missing metadata
 		if(is_null($dvds_model->filesize))
 			$dvds_model->filesize = $dvd->getSize();
 		if(empty($dvds_model->serial_id))
 			$dvds_model->serial_id = $dvd->getSerialID();
-
-		// Flag it as indexed and archived
-		$disc_indexed = true;
 
 		/** Tracks **/
 
