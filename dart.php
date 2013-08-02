@@ -46,7 +46,7 @@
 	if($close_trays && !$open_trays) {
 		foreach($all_devices as $str) {
 			$drive = new DVDDrive($str);
-			$drive->close(false);
+			$drive->close(0);
 		}
 	}
 
