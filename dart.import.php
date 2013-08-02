@@ -59,6 +59,9 @@
 
 		$num_tracks = $dvd->getNumTracks();
 
+		if(!count($num_tracks))
+			die("? No tracks? No good. Exiting\n");
+
 		if($verbose)
 			shell::stdout("* Importing $num_tracks tracks: ", false);
 
