@@ -27,6 +27,7 @@
 	require_once 'models/audio.php';
 	require_once 'models/subp.php';
 	require_once 'models/chapters.php';
+	require_once 'models/cells.php';
 	require_once 'models/queue.php';
 
 	require_once 'dart.parser.php';
