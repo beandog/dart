@@ -39,6 +39,8 @@
 		}
 
 		// Check for missing metadata
+		if(is_null($dvds_model->longest_track))
+			$dvds_model->longest_track = $dvd->getLongestTrack();
 		if(is_null($dvds_model->filesize))
 			$dvds_model->filesize = $dvd->getSize();
 		if(empty($dvds_model->serial_id))
