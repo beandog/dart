@@ -265,60 +265,16 @@
 
 				$disc_indexed = true;
 
-				// Assume the disc is archived, but flag it later
-				// as false if untrue
-				$disc_archived = true;
-
 				$dvds_model->load($dvds_model_id);
-
-				/** Metadata **/
-				/** Fix any missing database values **/
-
-				// Update the longest track
-				if(is_null($dvds_model->longest_track)) {
-					$disc_archived = false;
-				}
-
-				// Update disc size
-				if(is_null($dvds_model->filesize)) {
-					$disc_archived = false;
-				}
-
-				// Update serial ID
-				if(!$dvds_model->serial_id) {
-					$disc_archived = false;
-				}
-
-				// Check all tracks to see if they have all
-				// the metadata recorded.  Two ways to look:
-				// if the angles value is set in the database
-				// or if there are no audio tracks registered.
-				$tracks = $dvds_model->get_tracks();
-
-				if(count($tracks) == 0)
-					$disc_archived = false;
-
-				if($dvd->getNumTracks() != count($tracks))
-					$disc_archived = false;
-
-				foreach($tracks as $track_id) {
-					$tracks_model = new Tracks_Model($track_id);
-					if(is_null($tracks_model->angles))
-						$disc_archived = false;
-				}
 
 			}
 
 			if($verbose) {
 				if($disc_indexed) {
 					shell::msg("* Indexed");
-					if($disc_archived)
-						shell::msg("* Archived");
-					else
-						shell::msg("* Unarchived");
-
-				} else
+				} else {
 					shell::msg("* Unindexed");
+				}
 			}
 
 		}
