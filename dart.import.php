@@ -14,7 +14,7 @@
 		// didn't include all the tracks.  Make sure
 		// the amount matches up.
 		$num_dvd_tracks = $dvd->getNumTracks();
-		$num_db_tracks = count($dvds_model->getTracks());
+		$num_db_tracks = count($dvds_model->get_tracks());
 
 		if($num_dvd_tracks != $num_db_tracks) {
 			$missing_data = true;
