@@ -10,6 +10,18 @@
 
 		}
 
+		// Check a DVD record to see if it is missing
+		// metadata somewhere.
+		public function missing_metadata() {
+
+			$sql = "SELECT 1 FROM dvds WHERE (longest_track IS NULL OR filesize IS NULL OR serial_id = '') AND id = ".$this->db->quote($this->id).";";
+			$var = $db->getOne($sql);
+			$bool = (bool)$var;
+
+			return $bool;
+
+		}
+
 		public function get_episodes() {
 
 			$sql = "SELECT e.id FROM episodes e INNER JOIN tracks t ON e.track_id = t.id INNER JOIN dvds d ON t.dvd_id = d.id WHERE d.id = ".$this->db->quote($this->id).";";
