@@ -60,8 +60,10 @@
 			$missing_track_metadata = $tracks_model->missing_metadata();
 			$missing_track_palettes = $tracks_model->missing_palettes();
 
-			if($missing_track_metadata || $missing_track_palettes)
+			if($missing_track_metadata || $missing_track_palettes) {
+				$track_number = $tracks_model->ix;
 				$dvd_track = new DVDTrack($track_number, $device);
+			}
 
 			// Only access the device if we need to
 			if($missing_track_metadata) {
