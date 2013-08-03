@@ -378,7 +378,7 @@
 
 			$this->num_bitmaps = count($vobsubs);
 
-			$cc = preg_grep("/.*Closed Captions.*/", $arr);
+			$cc = preg_grep("/.*Closed Captions.*eng.*/", $arr);
 
 			if(count($cc)) {
 				$this->cc = true;
