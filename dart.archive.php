@@ -78,6 +78,7 @@
 				if($debug)
 					shell::stdout("! Track $track_number is missing metadata");
 
+				$tracks_model->length = $dvd_track->getLength();
 				$tracks_model->vts_id = $dvd_track->getVTSID();
 				$tracks_model->vts = $dvd_track->getVTS();
 				$tracks_model->ttn = $dvd_track->getTTN();
@@ -157,7 +158,7 @@
 
 		}
 
-		if($verbose && $missing_audio_streams) {
+		if($verbose && $missing_audio_streams)
 			shell::stdout("* No audio streams found in database for tracks");
 		if($verbose && $missing_import_data)
 			shell::stdout("* Forcing import");
