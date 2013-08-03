@@ -378,6 +378,7 @@
 
 			$this->num_bitmaps = count($vobsubs);
 
+			// Sample source string: Closed Captions (iso639-2: eng) (Text)(CC)
 			$cc = preg_grep("/.*Closed Captions.*eng.*/", $arr);
 
 			if(count($cc)) {
