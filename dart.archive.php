@@ -139,6 +139,7 @@
 		}
 
 		$tracks = $dvds_model->get_tracks();
+		$num_db_audio_streams = 0;
 
 		foreach($tracks as $tracks_model_id) {
 
@@ -158,13 +159,13 @@
 			// database that don't have any audio streams
 			$tracks_model = new Tracks_Model;
 			$tracks_model->load($tracks_model_id);
-			$num_db_audio_streams = count($tracks_model->get_audio_streams());
+			$num_db_audio_streams += count($tracks_model->get_audio_streams());
 
-			if(!$num_db_audio_streams) {
-				$missing_import_data = true;
-				$missing_audio_streams = true;
-			}
+		}
 
+		if(!$num_db_audio_streams) {
+			$missing_import_data = true;
+			$missing_audio_streams = true;
 		}
 
 		if($verbose && $missing_audio_streams)
