@@ -79,21 +79,5 @@
 
 		}
 
-		// Check a track record to see if it is missing
-		// palettes
-		public function missing_palettes() {
-
-			$sql = "SELECT 1 FROM palettes WHERE track_id = ".$this->db->quote($this->id).";";
-			$var = $this->db->getOne($sql);
-
-			if($var)
-				$bool = false;
-			else
-				$bool = true;
-
-			return $bool;
-
-		}
-
 	}
 ?>

@@ -45,7 +45,6 @@
 		private $dts;
 		private $audio_streams;
 		private $subtitle_streams;
-		private $palette_colors = array();
 
 		private $verbose = false;
 		private $debug = false;
@@ -228,12 +227,6 @@
 					$this->cells[$ix] = $length;
 				}
 
-				// Palettes
-				foreach($this->sxe->track->palette->color as $obj) {
-					$color = (string)$obj;
-					$this->palette_colors[] = $color;
-				}
-
 				// I've seen this regularly on some sources, especially
 				// cartoons where the last chapter is really short.  It
 				// makes navigation annoying, because you want to skip
@@ -342,12 +335,6 @@
 			if(!$this->cells)
 				$this->lsdvd();
 			return $this->cells;
-		}
-
-		public function getPaletteColors() {
-			if(!$this->sxe)
-				$this->lsdvd();
-			return $this->palette_colors;
 		}
 
 		/** Language **/

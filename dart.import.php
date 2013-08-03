@@ -106,48 +106,6 @@
 			// Get lsdvd XML to pass to sub-classes
 			$xml = $dvd_track->getXML();
 
-			/** Palettes **/
-			$palette_colors = $dvd_track->getPaletteColors();
-
-			if(count($palette_colors)) {
-
-				if($debug)
-					shell::stdout("! Track $track_number has ".count($palette_colors)." palette colors");
-
-				$palette_ix = 1;
-
-				foreach($palette_colors as $color) {
-
-					// Lookup the database palettes.id
-					$palettes_model = new Palettes_Model;
-					$palettes_model_id = $palettes_model->find_palettes_id($tracks_model_id, $palette_ix, $color);
-
-					// Create new database record
-					if(!$palettes_model_id) {
-
-						$palettes_model_id = $palettes_model->create_new();
-
-						if($debug)
-							shell::stdout("! Created new palettes id: $palettes_model_id");
-
-						$palettes_model->track_id = $tracks_model_id;
-						$palettes_model->ix = $palette_ix;
-						$palettes_model->color = $color;
-
-					}
-
-					$palette_ix++;
-
-				}
-
-				unset($palette_colors);
-				unset($color);
-				unset($palettes_model);
-				unset($palettes_model_id);
-				unset($palette_ix);
-
-			}
-
 			/** Audio Streams **/
 
 			$audio_streams = $dvd_track->getAudioStreams();
