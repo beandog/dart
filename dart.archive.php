@@ -90,6 +90,22 @@
 				$tracks_model->df = $dvd_track->getDF();
 				$tracks_model->angles = $dvd_track->getAngles();
 
+				// Check for closed captioning
+				$has_cc = $tracks_model->cc;
+				if(is_null($has_cc)) {
+
+					$handbrake = new Handbrake;
+					$handbrake->input_filename($device, $track_number);
+
+					$has_cc = $handbrake->has_cc();
+
+					if($has_cc)
+						$tracks_model->cc = 't';
+					else
+						$tracks_model->cc = 'f';
+
+				}
+
 			}
 
 		}
