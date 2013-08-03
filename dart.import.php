@@ -273,6 +273,6 @@
 
 
 	// Eject the disc if we are polling, and nothing else
-	if($import && $wait && !$rip) {
+	if(($import || $archive) && $wait && !$rip) {
 		$drive->open();
 	}
