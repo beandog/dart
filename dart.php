@@ -112,7 +112,8 @@
 		$access_drive = false;
 
 		// Are we missing any data in the database
-		$missing_data = false;
+		$missing_import_data = false;
+		$missing_audio_streams = false;
 
 		// Change the device name to include the full path
 		// if it's a filename and not a block device

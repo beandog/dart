@@ -6,29 +6,9 @@
 	 * Import a new DVD into the database
 	 */
 
-	// Run a sanity check to see if we are missing some
-	// database content.
-	if($access_device && $disc_indexed && !$import) {
-
-		// There are some cases where early imports
-		// didn't include all the tracks.  Make sure
-		// the amount matches up.
-		$num_dvd_tracks = $dvd->getNumTracks();
-		$num_db_tracks = count($dvds_model->get_tracks());
-
-		if($num_dvd_tracks != $num_db_tracks) {
-			$missing_data = true;
-
-			if($verbose) {
-				shell::stdout("* DVD tracks ($num_dvd_tracks) and DB tracks ($num_db_tracks) do not match");
-				shell::stdout("* Forcing import");
-			}
-		}
-
-	}
 
 	// Start import
-	if($access_device && (($import && !$disc_indexed) || $missing_data)) {
+	if($access_device && (($import && !$disc_indexed) || $missing_import_data)) {
 
 		if($verbose)
 			shell::msg("[Import]");

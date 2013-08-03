@@ -54,7 +54,6 @@
 		/** Tracks **/
 
 		$tracks = $dvds_model->get_tracks();
-		$num_tracks = count($tracks);
 
 		if($verbose)
 			shell::stdout("* Querying track records: ", false);
@@ -104,5 +103,65 @@
 
 		shell::stdout("* Disc archived");
 
+
+		/** Sanity Checks **/
+
+		// Run a sanity check to see if we are missing some
+		// database content that can only be input by the
+		// import sequence.
+
+		/** DVDs **/
+
+		// There are some cases where early imports
+		// didn't include all the tracks.  Make sure
+		// the amount matches up.
+		$num_dvd_tracks = $dvd->getNumTracks();
+		$tracks = $dvds_model->get_tracks();
+		$num_db_tracks = count($tracks);
+
+		if($num_dvd_tracks != $num_db_tracks) {
+
+			$missing_import_data = true;
+
+			if($verbose) {
+				shell::stdout("* DVD tracks ($num_dvd_tracks) and DB tracks ($num_db_tracks) do not match");
+			}
+		}
+
+		$tracks = $dvds_model->get_tracks();
+
+		foreach($tracks as $tracks_model_id) {
+
+			$tracks_model = new Tracks_Model;
+			$tracks_model->load($tracks_model_id);
+
+			// Check for missing metadata
+			$missing_track_metadata = $tracks_model->missing_metadata();
+
+			if($missing_track_metadata) {
+				$track_number = $tracks_model->ix;
+				$dvd_track = new DVDTrack($track_number, $device);
+				shell::stdout("$track_number ", false);
+			}
+
+			// Check to see if there are tracks in the
+			// database that don't have any audio streams
+			$tracks_model = new Tracks_Model;
+			$tracks_model->load($tracks_model_id);
+			$num_db_audio_streams = count($tracks_model->get_audio_streams());
+
+			if(!$num_db_audio_streams) {
+				$missing_import_data = true;
+				$missing_audio_streams = true;
+			}
+
+		}
+
+		if($verbose && $missing_audio_streams) {
+			shell::stdout("* No audio streams found in database for tracks");
+		if($verbose && $missing_import_data)
+			shell::stdout("* Forcing import");
+
 	}
+
 ?>
