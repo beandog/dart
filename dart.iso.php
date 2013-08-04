@@ -18,8 +18,13 @@
 		$collection_id = $dvds_model->get_collection_id();
 		$collection_id = intval($collection_id);
 
-		// Get the series ID
+		// Get the series ID and title
 		$series_id = $dvds_model->get_series_id();
+		$series_title = '';
+		if($series_id) {
+			$series_model = new Series_Model($series_id);
+			$series_title = $series_model->title;
+		}
 
 		// Get the series title
 		$str = strtoupper($series_title);
@@ -61,7 +66,7 @@
 
 		// Operations on filename
 		if($device_is_iso) {
-		
+
 			// At this point, we already know if the file
 			// exists or not, so check if it's a symlink.
 			$device_is_symlink = is_link($device);
