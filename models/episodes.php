@@ -1,4 +1,4 @@
-<?
+<?php
 
 	class Episodes_Model extends DBTable {
 
