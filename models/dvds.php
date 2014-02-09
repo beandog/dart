@@ -1,4 +1,4 @@
-<?
+<?php
 
 	class Dvds_Model extends DBTable {
 

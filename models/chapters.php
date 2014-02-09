@@ -1,4 +1,4 @@
-<?
+<?php
 
 	class Chapters_Model extends DBTable {
 

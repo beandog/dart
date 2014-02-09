@@ -1,4 +1,4 @@
-<?
+<?php
 
 	class Cells_Model extends DBTable {
 

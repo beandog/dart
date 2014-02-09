@@ -1,4 +1,4 @@
-<?
+<?php
 
 	require_once 'Console/CommandLine.php';
 

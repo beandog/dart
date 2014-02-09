@@ -1,4 +1,4 @@
-<?
+<?php
 
 	/**
 	 * A few words about chapters

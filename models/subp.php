@@ -1,4 +1,4 @@
-<?
+<?php
 
 	class Subp_Model extends DBTable {
 

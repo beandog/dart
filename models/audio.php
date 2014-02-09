@@ -1,4 +1,4 @@
-<?
+<?php
 
 	class Audio_Model extends DBTable {
 

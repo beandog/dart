@@ -1,4 +1,4 @@
-<?
+<?php
 
 	class DVD {
 
@@ -177,7 +177,7 @@
 
 				$cmd = "ddrescue -b 2048 -n $device $dest $logfile";
 				passthru($cmd, $return);
-	
+
 				$return = intval($return);
 
 				if($return) {

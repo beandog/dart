@@ -1,4 +1,4 @@
-<?
+<?php
 
 	class Tracks_Model extends DBTable {
 

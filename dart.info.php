@@ -1,4 +1,4 @@
-<?
+<?php
 
 	// Display info about disc
 	if($info) {
