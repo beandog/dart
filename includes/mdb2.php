@@ -1,5 +1,7 @@
 <?php
 
+	ini_set('error_reporting', E_ALL & ~E_DEPRECATED & ~E_STRICT);
+
 	require_once 'PEAR.php';
 	require_once 'MDB2.php';
 
@@ -23,5 +25,7 @@
 	}
 
 	@PEAR::setErrorHandling(PEAR_ERROR_CALLBACK, 'pearError');
+
+	ini_set('error_reporting', E_ALL & ~E_DEPRECATED);
 
 ?>
