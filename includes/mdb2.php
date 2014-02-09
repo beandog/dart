@@ -12,7 +12,7 @@
 		'portability' => MDB2_PORTABILITY_ALL ^ MDB2_PORTABILITY_EMPTY_TO_NULL,
 	);
 
-	@$db =& MDB2::factory($dsn, $options);
+	$db =& MDB2::factory($dsn, $options);
 	$db->loadModule('Manager');
 	$db->loadModule('Extended');
 
