@@ -170,16 +170,6 @@
 			// 2. Waiting is set, but the tray has been manually closed
 			if(!$wait || ($wait && $drive->is_closed())) {
 
-				// **ALWAYS** send a call to the close() function
-				// regardless of whether it's open or not.  This can
-				// catch situations when the device is closing and
-				// polling as well as the expected situation where the
-				// tray is just open.  In short, this will avoid headaches
-				// and race conditions.
-				if($verbose)
-					shell::stdout("* Sleepy time . . .");
-				$drive->close();
-
 				$has_media = $drive->has_media();
 
 				if($has_media) {
