@@ -178,7 +178,7 @@
 				// and race conditions.
 				if($verbose)
 					shell::stdout("* Sleepy time . . .");
-				$drive->close($naptime);
+				$drive->close();
 
 				$has_media = $drive->has_media();
 
@@ -303,13 +303,6 @@
 			// If there is only one device, then wait until the tray is
 			// closed.
 			else {
-				if($debug)
-					shell::stdout("! Waiting for the tray to be closed");
-				while($drive->is_open()) {
-					sleep(1);
-				}
-				if($debug)
-					shell::stdout("! Wait sequence is closing the tray");
 				$drive->close(false);
 			}
 
