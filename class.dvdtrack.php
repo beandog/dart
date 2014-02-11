@@ -38,7 +38,9 @@
 		private $angles;	// integer
 
 		private $track;
+		private $num_audio_tracks = 0;
 		private $num_chapters = 0;
+		private $num_subtitles = 0;
 		private $aspect_ratio;
 		private $audio_codecs;
 		private $prefer_dts;
