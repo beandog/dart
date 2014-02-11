@@ -3,7 +3,8 @@ tray_status=`which tray_status 2> /dev/null`
 if [[ $? -ne 0 || -z $tray_status ]]; then echo "couldn't find tray_status"; exit 1; fi
 ddrescue=`which ddrescue 2> /dev/null`
 if [[ $? -ne 0 || -z $ddrescue ]]; then echo "couldn't find ddrescue"; exit 1; fi
-if [ -z $1 ]; then dvd=/dev/dvd; fi
+if [ -z $1 ]; then dvd=/dev/dvd; else dvd=$1; fi
 dvd_title=`dvd_title $dvd`
 if [[ $? -ne  0 ]]; then echo "dvd_title $dvd failed"; fi
+if [[ "/dev/" = ${dvd:0:5} ]]; then tray_status $dvd &> /dev/null; if [[ $? -ne 4 ]]; then echo "$dvd is not ready to access"; exit 1; fi; fi
 ddrescue -b 2048 -n $dvd $dvd_title ${dvd_title}.log
