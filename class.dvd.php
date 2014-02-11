@@ -11,6 +11,7 @@
 		private $is_iso;
 		private $sxe;
 		private $debug;
+		private $num_tracks = 0;
 
 		function __construct($device = "/dev/dvd") {
 
