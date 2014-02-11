@@ -297,7 +297,6 @@
 			// be accessed at the same time
 			if(count($devices) > 1) {
 				$device = toggle_device($device);
-				sleep(1);
 			}
 			// If there is only one device, then wait until the tray is
 			// closed.
