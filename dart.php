@@ -168,8 +168,9 @@
 			if(!$wait || ($wait && $drive->is_closed())) {
 
 				// Close the tray if not waiting (i.e., --import, --info, etc. is passed)
-				if(!$wait)
+				if(!$wait && $drive->is_open()) {
 					$drive->close();
+				}
 
 				$has_media = $drive->has_media();
 
