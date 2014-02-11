@@ -250,6 +250,8 @@
 		 * This reads directly from the device to get the title
 		 * instead of using lsdvd(), which should in some cases
 		 * save a call to the hardware device.
+		 *
+		 * Also, this is much faster :)
 		 */
 		public function getTitle() {
 
