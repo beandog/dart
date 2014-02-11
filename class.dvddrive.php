@@ -57,7 +57,7 @@
 				shell::stdout("! drive::get_status(".$this->device.")");
 
 			$cmd = "tray_status ".$this->getDevice();
-			system($cmd, $return);
+			exec($cmd, $arr, $return);
 
 			return $return;
 		}
