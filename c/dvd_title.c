@@ -45,12 +45,15 @@ int main(int argc, char **argv) {
 
 	drive_status = ioctl(cdrom, CDROM_DRIVE_STATUS);
 
-	// If the device is a DVD drive, then wait for it to be ready (not opening or closing),
+	// If the device is a DVD drive, then wait up to 30 seconds for it to be ready (not opening or closing),
 	// and then check if there is a disc in the tray.  If there's no disc, exit quietly.
+	// If the drive is open, then it just quietly exits.
 	if(drive_status > 0) {
-		while(ioctl(cdrom, CDROM_DRIVE_STATUS) == CDS_DRIVE_NOT_READY) {
-			close(cdrom);
+		int max_sleepy_time = 30;
+		int num_sleepy_times = 0;
+		while(ioctl(cdrom, CDROM_DRIVE_STATUS) == CDS_DRIVE_NOT_READY && num_sleepy_times < max_sleepy_time) {
 			sleep(1);
+			num_sleepy_times++;
 		}
 		if(ioctl(cdrom, CDROM_DRIVE_STATUS) != CDS_DISC_OK) {
 			close(cdrom);
