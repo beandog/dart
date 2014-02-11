@@ -144,9 +144,10 @@
 			if($this->debug)
 				echo "! dvd->load_css()\n";
 
-			if($use_lsdvd)
+			if($use_lsdvd) {
 				$this->lsdvd(true);
-			else {
+				return = 0;
+			} else {
 				$exec = "mplayer dvd:// -dvd-device ".escapeshellarg($this->getDevice())." -frames 60 -nosound -vo null -noconfig all 2>&1 > /dev/null";
 				exec($exec, $arr, $return);
 			}
