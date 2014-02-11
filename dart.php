@@ -205,6 +205,10 @@
 				$dvd->load_css();
 			*/
 
+
+			if($verbose);
+				echo "[DVD]\n";
+
 			$device_filesize = $dvd->getSize();
 			$display_filesize = number_format($device_filesize);
 			if(!$device_filesize) {
@@ -213,12 +217,12 @@
 			}
 
 			if($verbose)
-				shell::msg("* $display_filesize MB");
+				shell::msg("* Filesize:\t$display_filesize MB");
 
 			// Get the uniq ID for the disc
 			if($verbose) {
-				shell::msg("* Title: ".$dvd->getTitle());
-				shell::stdout("* Disc ID: ", false);
+				shell::msg("* Title:\t".$dvd->getTitle());
+				shell::stdout("* Disc ID:\t", false);
 			}
 			$uniq_id = $dvd->getID();
 
@@ -227,10 +231,13 @@
 
 			// Get the serial ID for the disc
 			if($verbose)
-				shell::stdout("* Serial ID: ", false);
+				shell::stdout("* Serial ID:\t", false);
 			$serial_id = $dvd->getSerialID();
 			if($verbose)
 				shell::stdout($serial_id, true);
+
+			if($verbose)
+				echo "[Database]\n";
 
 			// Lookup the database dvds.id
 			$dvds_model_id = $dvds_model->find_id('uniq_id', $uniq_id);
@@ -260,8 +267,8 @@
 				$series_title = $dvds_model->get_series_title();
 
 				if($verbose) {
-					shell::stdout("* DVD ID: $dvds_model_id");
-					shell::stdout("* Series: $series_title");
+					shell::stdout("* DVD ID:\t$dvds_model_id");
+					shell::stdout("* Series:\t$series_title");
 				}
 
 				$disc_indexed = true;
@@ -272,9 +279,9 @@
 
 			if($verbose) {
 				if($disc_indexed) {
-					shell::msg("* Indexed");
+					shell::msg("* Indexed:\tYes");
 				} else {
-					shell::msg("* Unindexed");
+					shell::msg("* Unindexed:\tNo");
 				}
 			}
 
