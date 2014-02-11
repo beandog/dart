@@ -211,7 +211,7 @@
 
 			$cmd = "handbrake --scan -i ".$this->getDevice()." 2>&1 > /dev/null";
 			exec($cmd, $arr, $return);
-			sleep(1);
+
 			return $return;
 
 		}
