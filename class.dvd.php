@@ -139,20 +139,23 @@
 		 * to access the disc.  By decoding the CSS once,
 		 * it should prevent problems. :)
 		 */
-		public function load_css($use_lsdvd = false) {
+		public function load_css($program = 'mplayer') {
 
 			if($this->debug)
 				echo "! dvd->load_css()\n";
 
-			if($use_lsdvd) {
+			if($program == 'lsdvd') {
 				$this->lsdvd(true);
-				$return = 0;
-			} else {
-				$exec = "mplayer dvd:// -dvd-device ".escapeshellarg($this->getDevice())." -frames 60 -nosound -vo null -noconfig all 2>&1 > /dev/null";
-				exec($exec, $arr, $return);
+				return true;
 			}
 
-			return $return;
+			if($program == 'mplayer') {
+				$exec = "mplayer dvd:// -dvd-device ".escapeshellarg($this->getDevice())." -frames 60 -nosound -vo null -noconfig all 2>&1 > /dev/null";
+				exec($exec, $arr, $return);
+				return $return;
+			}
+
+			return $false;
 
 		}
 
