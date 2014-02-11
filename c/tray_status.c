@@ -66,16 +66,16 @@ int main(int argc, char **argv) {
 	close(cdrom);
 
 	switch(drive_status) {
-		case 1:
+		case CDS_NO_DISC:
 			status = "no disc";
 			break;
-		case 2:
+		case CDS_TRAY_OPEN:
 			status = "tray open";
 			break;
-		case 3:
+		case CDS_DRIVE_NOT_READY:
 			status = "drive not ready";
 			break;
-		case 4:
+		case CDS_DISC_OK:
 			status = "drive ready";
 			break;
 		default:
