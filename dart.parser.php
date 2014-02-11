@@ -90,11 +90,6 @@
 		'description' => 'Close all DVD trays',
 		'action' => 'StoreTrue',
 	));
-	$parser->addOption('nonap', array(
-		'short_name' => '-n',
-		'description' => 'Ignore naptime for closing tray (debug only)',
-		'action' => 'StoreTrue',
-	));
 	$parser->addOption('ftp', array(
 		'short_name' => '-f',
 		'long_name' => '--ftp',
