@@ -165,10 +165,11 @@
 			$drive = new DVDDrive($device);
 			$drive->set_debug($debug);
 
-			// Close the tray in one of these conditions:
-			// 1. Not waiting (i.e., --import, --info, etc. is passed)
-			// 2. Waiting is set, but the tray has been manually closed
 			if(!$wait || ($wait && $drive->is_closed())) {
+
+				// Close the tray if not waiting (i.e., --import, --info, etc. is passed)
+				if(!$wait)
+					$drive->close();
 
 				$has_media = $drive->has_media();
 
