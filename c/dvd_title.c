@@ -84,6 +84,7 @@ int main(int argc, char **argv) {
 
 	fclose(filehandle);
 
+	y = sizeof(title);
 	while(y-- > 2) {
 		if(title[y] == ' ') {
 			title[y] = '\0';
