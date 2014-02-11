@@ -1,0 +1,97 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdbool.h>
+#include <string.h>
+#include <sys/ioctl.h>
+#include <fcntl.h>
+#include <linux/cdrom.h>
+
+/**
+ * A simple little program to get the DVD title
+ *
+ * Checks if the device is a DVD drive or not, and if it is, also looks to see
+ * if it can be polled or not.
+ */
+
+int main(int argc, char **argv) {
+
+	int cdrom;
+	int drive_status;
+	int disc_status;
+	char* dvd_device;
+	char* status;
+	char title[33];
+	FILE* filehandle = 0;
+	int x, y, z;
+
+	if(argc == 1)
+		dvd_device = "/dev/dvd";
+	else
+		dvd_device = argv[1];
+
+	// Check if device exists
+	if(access(dvd_device, F_OK) != 0) {
+		printf("cannot access %s\n", dvd_device);
+		exit(1);
+	}
+
+	// Open device
+	cdrom = open(dvd_device, O_RDONLY | O_NONBLOCK);
+	if(cdrom < 0) {
+		printf("error opening %s\n", dvd_device);
+		exit(1);
+	}
+
+	drive_status = ioctl(cdrom, CDROM_DRIVE_STATUS);
+
+	// If the device is a DVD drive, then wait for it to be ready (not opening or closing),
+	// and then check if there is a disc in the tray.  If there's no disc, exit quietly.
+	if(drive_status > 0) {
+		while(ioctl(cdrom, CDROM_DRIVE_STATUS) == CDS_DRIVE_NOT_READY) {
+			close(cdrom);
+			sleep(1);
+		}
+		if(ioctl(cdrom, CDROM_DRIVE_STATUS) != CDS_DISC_OK) {
+			close(cdrom);
+			exit(1);
+		}
+	}
+
+	close(cdrom);
+
+	filehandle = fopen(dvd_device, "r");
+	if(filehandle == NULL) {
+		printf("could not open device %s for reading\n", dvd_device);
+		exit(1);
+	}
+
+	if(fseek(filehandle, 32808, SEEK_SET) == -1) {
+		printf("could not seek on device %s\n", dvd_device);
+		fclose(filehandle);
+		exit(1);
+	}
+
+	x = fread(title, 1, 32, filehandle);
+	if(x == 0) {
+		printf("could not read device %s\n", dvd_device);
+		fclose(filehandle);
+		exit(1);
+	}
+	title[32] = '\0';
+
+	fclose(filehandle);
+
+	while(y-- > 2) {
+		if(title[y] == ' ') {
+			title[y] = '\0';
+		}
+	}
+
+	for(z = 0; z < strlen(title); z++) {
+		printf("%c", title[z]);
+	}
+	printf("\n");
+
+	exit(0);
+}
