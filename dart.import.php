@@ -27,7 +27,6 @@
 
 			$dvds_model->uniq_id = $uniq_id;
 			$dvds_model->title = $dvd->getTitle();
-			$dvds_model->vmg_id = $dvd->getVMGID();
 			$dvds_model->provider_id = $dvd->getProviderID();
 			$dvds_model->longest_track = $dvd->getLongestTrack();
 			$dvds_model->filesize = $dvd->getSize();

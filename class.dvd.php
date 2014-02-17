@@ -6,7 +6,6 @@
 		private $lsdvd;
 		private $id;
 		private $serial_id;
-		private $vmg_id;
 		private $provider_id;
 		private $is_iso;
 		private $sxe;
@@ -122,7 +121,6 @@
 
 				$this->setLongestTrack((int)$this->sxe->longest_track);
 
-				$this->vmg_id = (string)$this->sxe->vmg_id;
 				$this->provider_id = (string)$this->sxe->provider_id;
 
 				foreach($this->sxe->track as $track) {
@@ -307,15 +305,6 @@
 				$this->lsdvd();
 
 			return $this->longest_track;
-		}
-
-		public function getVMGID() {
-
-			if(!$this->sxe)
-				$this->lsdvd();
-
-			return $this->vmg_id;
-
 		}
 
 		public function getProviderID() {
