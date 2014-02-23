@@ -3,7 +3,7 @@
 	class Handbrake {
 
 		// Handbrake
-		private $binary = "handbrake";
+		private $binary = "HandBrakeCLI";
 		private $verbose = false;
 		private $debug = false;
 		private $dvdnav = true;
