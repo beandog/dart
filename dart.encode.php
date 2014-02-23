@@ -147,11 +147,14 @@
 						$crf = $series_model->get_crf();
 
 						$handbrake->set_video_encoder('x264');
-						$handbrake->autocrop();
+						$handbrake->set_video_quality($crf);
+						$handbrake->deinterlace(false);
+						$handbrake->decomb(true);
+						$handbrake->detelecine(true);
 						if($series_model->grayscale == 't')
 							$handbrake->grayscale();
+						$handbrake->autocrop();
 						$handbrake->dvdnav($dvdnav);
-						$handbrake->set_video_quality($crf);
 
 						// Some DVDs may report more audio streams than
 						// Handbrake does.  If that's the case, check
