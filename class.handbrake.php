@@ -21,9 +21,9 @@
 		private $detelecine = true;
 		private $grayscale = false;
 		private $crop = "0:0:0:0";
-		private $h264_preset = 'medium';
 		private $h264_profile = 'high';
 		private $h264_level = '3.1';
+		private $x264_preset = 'medium';
 		private $x264_tune = 'film';
 		private $x264 = array();
 
@@ -240,6 +240,26 @@
 			// Set cropping parameters
 			if(!is_null($this->crop)) {
 				$args['--crop'] = $this->crop;
+			}
+
+			// Set H.264 profile
+			if(!is_null($this->h264_profile)) {
+				$args['--h264-profile'] = $this->h264_profile;
+			}
+
+			// Set H.264 level
+			if(!is_null($this->h264_level)) {
+				$args['--h264-level'] = $this->h264_level;
+			}
+
+			// Set x264 preset
+			if(!is_null($this->x264_preset)) {
+				$args['--x264-preset'] = $this->x264_preset;
+			}
+
+			// Set x264 tune option
+			if(!is_null($this->x264_tune)) {
+				$args['--x264-tune'] = $this->x264_tune;
 			}
 
 			// Set x264 encoding options
