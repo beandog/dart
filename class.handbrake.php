@@ -184,6 +184,10 @@
 			if($this->add_chapters)
 				$options[] = "--markers";
 
+			// Check for deinterlacing filter
+			if($this->deinterlace)
+				$options[] = "--deinterlace";
+
 			// Check for decombing filter
 			if($this->decomb)
 				$options[] = "--decomb";
@@ -303,7 +307,6 @@
 			if(!empty($this->ending_chapter)) {
 			 	$args['--chapters'] .= $this->ending_chapter;
 			}
-
 
 			return $args;
 
