@@ -237,6 +237,16 @@
 				$args['--quality'] = $this->video_quality;
 			}
 
+			// Deinterlacing
+			if($this->deinterlace) {
+				$args['--deinterlace'] = '';
+			}
+
+			// Decombing
+			if($this->decomb) {
+				$args['--decomb'] = '';
+			}
+
 			// Set cropping parameters
 			if(!is_null($this->crop)) {
 				$args['--crop'] = $this->crop;
