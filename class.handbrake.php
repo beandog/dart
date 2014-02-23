@@ -14,7 +14,7 @@
 
 		// Video
 		private $encoder = 'x264';
-		private $preset = 'Normal';
+		private $preset;
 		private $video_quality = 20;
 		private $deinterlace = false;
 		private $decomb = true;
