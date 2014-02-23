@@ -138,10 +138,14 @@
 
 						$dest = tempnam(dirname($episode_filename), "x264.$episode_id.");
 
+						// Handbrake
 						$handbrake->input_filename($src);
 						if(!$dumpvob)
 							$handbrake->input_track($track_number);
 						$handbrake->output_filename($dest);
+						$handbrake->dvdnav($dvdnav);
+						$handbrake->output_format('mkv');
+
 
 						/** Video **/
 						$crf = $series_model->get_crf();
@@ -160,9 +164,6 @@
 						$handbrake->set_x264_tune('film');
 						if($series_model->animation == 't')
 							$handbrake->set_x264_tune('animation');
-
-
-						$handbrake->dvdnav($dvdnav);
 
 						// Some DVDs may report more audio streams than
 						// Handbrake does.  If that's the case, check
