@@ -146,6 +146,7 @@
 						/** Video **/
 						$crf = $series_model->get_crf();
 
+						$handbrake->set_video_encoder('x264');
 						$handbrake->autocrop();
 						if($series_model->grayscale == 't')
 							$handbrake->grayscale();
