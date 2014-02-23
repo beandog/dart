@@ -14,17 +14,17 @@
 		private $args = array();
 
 		// Video
-		private $video_encoder = 'x264';
-		private $video_quality = 20;
-		private $deinterlace = false;
-		private $decomb = true;
-		private $detelecine = true;
-		private $grayscale = false;
-		private $crop = "0:0:0:0";
-		private $h264_profile = 'high';
-		private $h264_level = '3.1';
-		private $x264_preset = 'medium';
-		private $x264_tune = 'film';
+		private $video_encoder;
+		private $video_quality;
+		private $deinterlace;
+		private $decomb;
+		private $detelecine;
+		private $grayscale;
+		private $crop;
+		private $h264_profile;
+		private $h264_level;
+		private $x264_preset;
+		private $x264_tune;
 		private $x264 = array();
 
 		// Audio
