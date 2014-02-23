@@ -14,7 +14,7 @@
 		private $args = array();
 
 		// Video
-		private $encoder = 'x264';
+		private $video_encoder = 'x264';
 		private $video_quality = 20;
 		private $deinterlace = false;
 		private $decomb = true;
@@ -93,6 +93,11 @@
 
 		public function add_chapters($bool = true) {
 			$this->add_chapters = (boolean)$bool;
+		}
+
+		public function set_video_encoder($str) {
+			if($str == 'x264' || $str == 'ffmpeg4' || $str == 'ffmpeg2' || $str == 'theora')
+				$this->video_encoder = $str;
 		}
 
 		public function set_video_quality($int) {
@@ -230,7 +235,7 @@
 			 **/
 
 			// Set encoder
-			$args['--encoder'] = $this->encoder;
+			$args['--encoder'] = $this->video_encoder;
 
 			// Add video quality
 			if(!is_null($this->video_quality)) {
