@@ -173,6 +173,23 @@
 
 		}
 
+		public function set_h264_profile($str) {
+			$this->h264_profile = $str;
+		}
+
+		public function set_h264_level($str) {
+			$this->h264_profile = $str;
+		}
+
+		public function set_x264_preset($str) {
+			$this->x264_preset = $str;
+		}
+
+		public function set_x264_tune($str) {
+			if($str == 'animation' || $str == 'grain' || $str == 'film')
+				$this->x264_tune = $str;
+		}
+
 		public function add_subtitle_track($int) {
 
 			$int = intval($int);
