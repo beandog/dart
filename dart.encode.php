@@ -143,9 +143,14 @@
 							$handbrake->input_track($track_number);
 						$handbrake->output_filename($dest);
 
-						$handbrake_base_preset = $series_model->get_handbrake_base_preset();
-						$x264opts = $series_model->get_x264opts();
+						/** Video **/
 						$crf = $series_model->get_crf();
+
+						$handbrake->autocrop();
+						if($series_model->grayscale == 't')
+							$handbrake->grayscale();
+						$handbrake->dvdnav($dvdnav);
+						$handbrake->set_video_quality($crf);
 
 						// Some DVDs may report more audio streams than
 						// Handbrake does.  If that's the case, check
@@ -196,14 +201,6 @@
 						// Set Chapters
 						if(!$dumpvob)
 							$handbrake->set_chapters($episode_starting_chapter, $episode_ending_chapter);
-
-						$handbrake->autocrop();
-						if($series_model->grayscale == 't')
-							$handbrake->grayscale();
-						$handbrake->dvdnav($dvdnav);
-						$handbrake->set_preset($handbrake_base_preset);
-						$handbrake->set_x264opts($x264opts);
-						$handbrake->set_video_quality($crf);
 
 						$handbrake->encode();
 
