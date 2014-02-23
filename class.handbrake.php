@@ -33,7 +33,7 @@
 		private $audio_streams = array();
 
 		// Container
-		private $format = 'mkv';
+		private $format;
 		private $add_chapters = false;
 		private $starting_chapter;
 		private $ending_chapter;
