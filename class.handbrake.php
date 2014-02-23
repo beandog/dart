@@ -2,47 +2,48 @@
 
 	class Handbrake {
 
+		// Handbrake
 		private $binary = "handbrake";
-
 		private $verbose = false;
 		private $debug = false;
-
+		private $dvdnav = true;
 		private $filename;
 		private $track;
 		private $flags = array();
 		private $args = array();
 
-		private $audio_tracks = array();
-		private $audio_encoders = array();
-		private $audio_streams = array();
-
-		private $preset = 'Normal';
-		private $format = 'mkv';
+		// Video
 		private $encoder = 'x264';
-
-		private $add_chapters = false;
-		private $starting_chapter;
-		private $ending_chapter;
+		private $preset = 'Normal';
 		private $video_quality = 20;
-
-		private $crop = "0:0:0:0";
-
 		private $deinterlace = false;
 		private $decomb = true;
 		private $detelecine = true;
 		private $grayscale = false;
-
-		private $subtitle_tracks = array();
-
-		private $srt_language = 'eng';
-
-		private $cc = false;
-		private $cc_ix;
-
-		private $num_bitmaps;
+		private $crop = "0:0:0:0";
+		private $h264_preset = 'medium';
+		private $h264_profile = 'high';
+		private $h264_level = '3.1';
+		private $x264_tune = 'film';
 		private $x264 = array();
 
-		private $dvdnav = true;
+		// Audio
+		private $audio_tracks = array();
+		private $audio_encoders = array();
+		private $audio_streams = array();
+
+		// Container
+		private $format = 'mkv';
+		private $add_chapters = false;
+		private $starting_chapter;
+		private $ending_chapter;
+
+		// Subtitles
+		private $subtitle_tracks = array();
+		private $srt_language = 'eng';
+		private $cc = false;
+		private $cc_ix;
+		private $num_bitmaps;
 
 		function __construct($filename = null) {
 
