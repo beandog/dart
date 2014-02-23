@@ -154,6 +154,11 @@
 						if($series_model->grayscale == 't')
 							$handbrake->grayscale();
 						$handbrake->autocrop();
+						$handbrake->set_h264_profile('high');
+						$handbrake->set_h264_level('3.1');
+						$handbrake->set_x264_preset('medium');
+						$handbrake->set_x264_tune('film');
+
 						$handbrake->dvdnav($dvdnav);
 
 						// Some DVDs may report more audio streams than
