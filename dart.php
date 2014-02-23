@@ -33,7 +33,7 @@
 	require_once 'includes/prefs.php';
 
 	/** Start everything **/
-	$all_devices = array('/dev/dvd', '/dev/dvd1', '/dev/dvd2');
+	$all_devices = array('/dev/dvd', '/dev/dvd1', '/dev/dvd2', '/dev/dvd3');
 	$export_dir = getenv('HOME').'/dvds/';
 
 	// Base URL to access DVD admin frontend
