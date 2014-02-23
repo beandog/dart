@@ -7,6 +7,7 @@
 		private $verbose = false;
 		private $debug = false;
 		private $dvdnav = true;
+		private $preset;
 		private $filename;
 		private $track;
 		private $flags = array();
@@ -14,7 +15,6 @@
 
 		// Video
 		private $encoder = 'x264';
-		private $preset;
 		private $video_quality = 20;
 		private $deinterlace = false;
 		private $decomb = true;
@@ -208,12 +208,44 @@
 
 			$args = array();
 
+			/**
+			 * Handbrake
+			 **/
+
+			// Add preset
+			if(!is_null($this->preset)) {
+				$args['--preset'] = $this->preset;
+			}
+
 			// Set track #
 			if($this->track)
 				$args['--title'] = $this->track;
 
+			/**
+			 * Video
+			 **/
+
 			// Set encoder
 			$args['--encoder'] = $this->encoder;
+
+			// Add video quality
+			if(!is_null($this->video_quality)) {
+				$args['--quality'] = $this->video_quality;
+			}
+
+			// Set cropping parameters
+			if(!is_null($this->crop)) {
+				$args['--crop'] = $this->crop;
+			}
+
+			// Set x264 encoding options
+			if(count($this->x264)) {
+				$args['--encopts'] = $this->get_x264opts();
+			}
+
+			/**
+			 * Audio
+			 **/
 
 			// Add audio tracks
 			if(count($this->audio_tracks)) {
@@ -241,36 +273,27 @@
 				$args['--audio'] = 1;
 			}
 
-			// Add subtitle tracks
-			if(count($this->subtitle_tracks)) {
-				$str = implode(",", $this->subtitle_tracks);
-				$args['--subtitle'] = $str;
-			}
-
 			// Add audio encoders
 			if(count($this->audio_encoders)) {
 				$str = implode(",", $this->audio_encoders);
 				$args['--aencoder'] = $str;
 			}
 
-			// Add preset
-			if(!is_null($this->preset)) {
-				$args['--preset'] = $this->preset;
+			/** Subtitles **/
+
+			// Add subtitle tracks
+			if(count($this->subtitle_tracks)) {
+				$str = implode(",", $this->subtitle_tracks);
+				$args['--subtitle'] = $str;
 			}
+
+			/**
+			 * Container
+			 */
 
 			// Add format
 			if(!is_null($this->format)) {
 				$args['--format'] = $this->format;
-			}
-
-			// Add video quality
-			if(!is_null($this->video_quality)) {
-				$args['--quality'] = $this->video_quality;
-			}
-
-			// Set cropping parameters
-			if(!is_null($this->crop)) {
-				$args['--crop'] = $this->crop;
 			}
 
 			// Add chapters
@@ -281,10 +304,6 @@
 			 	$args['--chapters'] .= $this->ending_chapter;
 			}
 
-			// Set x264 encoding options
-			if(count($this->x264)) {
-				$args['--encopts'] = $this->get_x264opts();
-			}
 
 			return $args;
 
