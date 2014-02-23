@@ -259,26 +259,32 @@
 			}
 
 			// Add format
-			if(!is_null($this->format))
+			if(!is_null($this->format)) {
 				$args['--format'] = $this->format;
+			}
 
 			// Add video quality
-			if(!is_null($this->video_quality))
+			if(!is_null($this->video_quality)) {
 				$args['--quality'] = $this->video_quality;
+			}
 
 			// Set cropping parameters
-			if(!is_null($this->crop))
+			if(!is_null($this->crop)) {
 				$args['--crop'] = $this->crop;
+			}
 
 			// Add chapters
-			if(!empty($this->starting_chapter))
+			if(!empty($this->starting_chapter)) {
 				$args['--chapters'] = $this->starting_chapter."-";
-			 if(!empty($this->ending_chapter))
+			}
+			if(!empty($this->ending_chapter)) {
 			 	$args['--chapters'] .= $this->ending_chapter;
+			}
 
 			// Set x264 encoding options
-			if(count($this->x264))
+			if(count($this->x264)) {
 				$args['--encopts'] = $this->get_x264opts();
+			}
 
 			return $args;
 
