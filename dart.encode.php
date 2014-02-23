@@ -158,6 +158,9 @@
 						$handbrake->set_h264_level('3.1');
 						$handbrake->set_x264_preset('medium');
 						$handbrake->set_x264_tune('film');
+						if($series_model->animation == 't')
+							$handbrake->set_x264_tune('animation');
+
 
 						$handbrake->dvdnav($dvdnav);
 
