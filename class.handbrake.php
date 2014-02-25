@@ -55,13 +55,6 @@
 		private $cc_ix;
 		private $num_bitmaps;
 
-		function __construct($filename = null) {
-
-			if(!is_null($filename))
-				$this->input_filename($filename);
-
-		}
-
 		function debug($bool) {
 			$this->debug = $this->verbose = (boolean)$bool;
 		}
