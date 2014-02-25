@@ -108,6 +108,17 @@
 			return true;
 		}
 
+		public function set_video_bitrate($int) {
+			$int = abs(intval($int));
+
+			if($int) {
+				$this->video_bitrate = $int;
+				return true;
+			} else {
+				return false;
+			}
+		}
+
 		public function set_video_encoder($str) {
 			if($str == 'x264' || $str == 'ffmpeg4' || $str == 'ffmpeg2' || $str == 'theora') {
 				$this->video_encoder = $str;
@@ -125,6 +136,18 @@
 			} else {
 				return false;
 			}
+		}
+
+		public function set_two_pass($bool) {
+			$bool = (bool)$bool;
+			$this->two_pass = $bool;
+			return true;
+		}
+
+		public function two_pass_turbo($bool) {
+			$bool = (bool)$bool;
+			$this->two_pass_turbo = $bool;
+			return true;
 		}
 
 		public function add_audio_track($int) {
@@ -279,6 +302,12 @@
 			if($this->http_optimize)
 				$options[] = "--optimize";
 
+			// Two pass encoding options
+			if($this->two_pass)
+				$options[] = "--two-pass";
+			if($this->two_pass_turbo)
+				$options[] = "--turbo";
+
 			return $options;
 
 		}
@@ -306,6 +335,11 @@
 
 			// Set encoder
 			$args['--encoder'] = $this->video_encoder;
+
+			// Add video bitrate
+			if($this->video_bitrate) {
+				$args['--vb'] = $this->video_bitrate;
+			}
 
 			// Add video quality
 			if(!is_null($this->video_quality)) {
