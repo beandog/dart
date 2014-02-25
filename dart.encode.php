@@ -162,10 +162,8 @@
 
 
 						/** Video **/
-						$crf = $series_model->get_crf();
-
 						$video_encoder = 'x264';
-						$video_quality = $crf;
+						$video_quality = $series_model->get_crf();
 						$deinterlace = false;
 						$decomb = true;
 						$detelecine = true;
