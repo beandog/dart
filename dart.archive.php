@@ -91,7 +91,8 @@
 				if(is_null($has_cc)) {
 
 					$handbrake = new Handbrake;
-					$handbrake->input_filename($device, $track_number);
+					$handbrake->input_filename($device);
+					$handbrake->input_track($track_number);
 
 					$has_cc = $handbrake->has_cc();
 
