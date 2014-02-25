@@ -95,7 +95,7 @@
 					$matroska->setDebug($debug);
 					$matroska->setTitle($episode_title);
 
-					$handbrake = new Handbrake();
+					$handbrake = new Handbrake;
 
 					if($svn)
 						$handbrake->set_binary('handbrake-svn');
