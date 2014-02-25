@@ -67,6 +67,9 @@
 		// Operations on filename
 		if($device_is_iso) {
 
+			if($debug)
+				shell::msg("! device is iso");
+
 			// At this point, we already know if the file
 			// exists or not, so check if it's a symlink.
 			$device_is_symlink = is_link($device);
@@ -107,13 +110,14 @@
 					shell::sdout("* Source file is a symlink, ignoring file");
 				}
 			}
-
-
 		}
 
 
 		// Operations on a block device
 		if(!$device_is_iso) {
+
+			if($debug);
+				shell::msg("! device is not an iso");
 
 			// If we have access to the device, and we
 			// are trying to dump it, and the output filename
