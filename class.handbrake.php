@@ -26,7 +26,7 @@
 		private $two_pass;
 		private $two_pass_turbo;
 		private $h264_profile;
-		private $h264_profiles = array('auto', 'main', 'baseline');
+		private $h264_profiles = array('auto', 'high', 'main', 'baseline');
 		private $h264_level;
 		private $h264_levels = array('auto', '1.0', '1.b', '1.1', '1.2', '1.3', '2.0', '2.1', '2.2', '3.0', '3.1', '3.2', '4.0', '4.1', '4.2', '5.0', '5.1', '5.2');
 		private $x264_preset;
@@ -336,9 +336,7 @@
 				// scan.
 				$args['--audio'] = 1;
 			} else {
-				// FIXME?
-				// Why would I ever willingly disable audio?
-				//$args['--audio'] = 'none';
+				// If there's no audio tracks or streams, use the first one.
 				$args['--audio'] = 1;
 			}
 
