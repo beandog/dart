@@ -43,7 +43,7 @@
 		private $audio_fallback;
 
 		// Container
-		private $add_chapters = false;
+		private $add_chapters;
 		private $format;
 		private $starting_chapter;
 		private $ending_chapter;
@@ -62,15 +62,15 @@
 
 		}
 
-		function debug($bool = true) {
+		function debug($bool) {
 			$this->debug = $this->verbose = (boolean)$bool;
 		}
 
-		function verbose($bool = true) {
+		function verbose($bool) {
 			$this->verbose = (boolean)$bool;
 		}
 
-		public function set_binary($str = "handbrake") {
+		public function set_binary($str) {
 			$this->binary = $str;
 		}
 
@@ -90,7 +90,7 @@
 			$this->track = $str;
 		}
 
-		public function set_debug($bool = true) {
+		public function set_debug($bool) {
 			$this->debug = $this->verbose = (boolean)$bool;
 		}
 
@@ -103,7 +103,7 @@
 			}
 		}
 
-		public function add_chapters($bool = true) {
+		public function add_chapters($bool) {
 			$this->add_chapters = (boolean)$bool;
 			return true;
 		}
@@ -157,7 +157,7 @@
 			}
 		}
 
-		public function autocrop($bool = true) {
+		public function autocrop($bool) {
 			$bool = (boolean)$bool;
 			if($bool)
 				$this->crop = null;
@@ -166,27 +166,27 @@
 			return true;
 		}
 
-		public function deinterlace($bool = true) {
+		public function deinterlace($bool) {
 			$this->deinterlace = (boolean)$bool;
 			return true;
 		}
 
-		public function decomb($bool = true) {
+		public function decomb($bool) {
 			$this->decomb = (boolean)$bool;
 			return true;
 		}
 
-		public function detelecine($bool = true) {
+		public function detelecine($bool) {
 			$this->detelecine = (boolean)$bool;
 			return true;
 		}
 
-		public function dvdnav($bool = true) {
+		public function dvdnav($bool) {
 			$this->dvdnav = (boolean)$bool;
 			return true;
 		}
 
-		public function grayscale($bool = true) {
+		public function grayscale($bool) {
 			$this->grayscale = (boolean)$bool;
 			return true;
 		}
