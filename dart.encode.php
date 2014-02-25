@@ -281,29 +281,32 @@
 
 						// Handbrake exited on a non-zero code
 						if($ret) {
+							$handbrake_success = false;
 							shell::msg("! Handbrake died :(");
-							// FIXME this probably is not right
-							break;
+						} else {
+							$handbrake_success = true;
+
+							// Post-encode checks
+
+							// Handbrake can exit successfully and not actually encode anything,
+							// by leaving an empty file.
+							if(sprintf("%u", filesize($dest))) {
+								rename($dest, $x264);
+
+								if(!$debug && $dumpvob && file_exists($vob))
+									unlink($vob);
+
+							// FIXME
+							// Add checks on Matroska file to see if it actually has data
+							// Matroska will allow an empty container file
+							} else {
+								shell::msg("$episode_filename didn't encode properly: zero filesize");
+							}
 						}
-
-						// Handbrake can exit successfully and not actually encode anything,
-						// by leaving an empty file.
-						if(sprintf("%u", filesize($dest))) {
-							rename($dest, $x264);
-
-							if(!$debug && $dumpvob && file_exists($vob))
-								unlink($vob);
-
-						// FIXME
-						// Add checks on Matroska file to see if it actually has data
-						// Matroska will allow an empty container file
-						} else
-							shell::msg("$episode_filename didn't encode properly: zero filesize");
-
 					}
 
 					/** Matroska Metadata */
-					if(!file_exists($mkv)) {
+					if(!file_exists($mkv) && $handbrake_success) {
 
 						$production_studio = $series_model->production_studio;
 						$production_year = $series_model->production_year;
@@ -377,11 +380,13 @@
 				} elseif (!file_exists($iso) && !file_exists($mkv)) {
 					// At this point, it shouldn't be in the queue.
 					shell::msg("! ISO not found ($iso), MKV not found ($mkv), force removing episode from queue");
+					if(!$handbrake_success)
+						shell::msg("! Also, Handbrake did not successfully run; removing episode to prevent encoding loop");
 					$queue_model->remove_episode($episode_id);
 				}
 
 				// Delete old files
-				if(file_exists($mkv)) {
+				if(file_exists($mkv) && $handbrake_success) {
 
 					$queue_model->remove_episode($episode_id);
 
