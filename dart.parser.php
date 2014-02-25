@@ -47,6 +47,13 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('dry_run', array(
+		'short_name' => '-n',
+		'long_name' => '--dry-run',
+		'description' => 'Do a dry run',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('info', array(
 		'long_name' => '--info',
 		'description' => 'Display metadata about a DVD',
