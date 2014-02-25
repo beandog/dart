@@ -40,6 +40,7 @@
 		private $audio_encoders = array();
 		private $audio_tracks = array();
 		private $audio_streams = array();
+		private $audio_fallback;
 
 		// Container
 		private $add_chapters = false;
@@ -218,6 +219,10 @@
 			$this->http_optimize = (bool)$bool;
 		}
 
+		public function set_audio_fallback($str) {
+			$this->audio_fallback = $str;
+		}
+
 		public function add_subtitle_track($int) {
 
 			$int = intval($int);
@@ -354,6 +359,13 @@
 				$str = implode(",", $this->audio_encoders);
 				$args['--aencoder'] = $str;
 			}
+
+			// Set fallback audio encoder -- this is used if Handbrake
+			// cannot copy or encode the audio with previous arguments
+			if($this->audio_fallback) {
+				$args['--audio-fallback'] = $this->audio_fallback;
+			}
+
 
 			/** Subtitles **/
 
