@@ -95,88 +95,100 @@
 		}
 
 		public function output_format($str) {
-
-			if($str == 'mkv' || $str == 'mp4')
+			if($str == 'mkv' || $str == 'mp4') {
 				$this->format = $str;
-
+				return true;
+			} else {
+				return false;
+			}
 		}
 
 		public function add_chapters($bool = true) {
 			$this->add_chapters = (boolean)$bool;
+			return true;
 		}
 
 		public function set_video_encoder($str) {
-			if($str == 'x264' || $str == 'ffmpeg4' || $str == 'ffmpeg2' || $str == 'theora')
+			if($str == 'x264' || $str == 'ffmpeg4' || $str == 'ffmpeg2' || $str == 'theora') {
 				$this->video_encoder = $str;
+				return true;
+			} else {
+				return false;
+			}
 		}
 
 		public function set_video_quality($int) {
-
-			$int = intval($int);
-
-			$this->video_quality = $int;
-
+			$int = abs(intval($int));
+			if($intval) {
+				$this->video_quality = $int;
+				return true;
+			} else {
+				return false;
+			}
 		}
 
 		public function add_audio_track($int) {
-
-			$int = intval($int);
-
-			$this->audio_tracks[] = $int;
-
+			$int = abs(intval($int));
+			if($int) {
+				$this->audio_tracks[] = $int;
+				return true;
+			} else {
+				return false;
+			}
 		}
 
 		public function add_audio_stream($stream_id) {
-
 			// Add the audio track only if the stream ID is available from scan
-			if(array_key_exists($stream_id, $this->audio_streams))
+			if(array_key_exists($stream_id, $this->audio_streams)) {
 				$this->add_audio_track($this->audio_streams[$stream_id]);
-
+				return true;
+			} else {
+				return false;
+			}
 		}
 
+		// FIXME limit to set audio encoders
 		public function add_audio_encoder($str) {
-
-			if(!is_null($str))
+			if(!is_null($str)) {
 				$this->audio_encoders[] = $str;
-
+				return true;
+			} else {
+				return false;
+			}
 		}
 
 		public function autocrop($bool = true) {
-
 			$bool = (boolean)$bool;
-
 			if($bool)
 				$this->crop = null;
 			else
 				$this->crop = "0:0:0:0";
-
-
+			return true;
 		}
 
 		public function deinterlace($bool = true) {
-
 			$this->deinterlace = (boolean)$bool;
-
+			return true;
 		}
 
 		public function decomb($bool = true) {
-
 			$this->decomb = (boolean)$bool;
-
+			return true;
 		}
 
 		public function detelecine($bool = true) {
-
 			$this->detelecine = (boolean)$bool;
-
+			return true;
 		}
 
 		public function dvdnav($bool = true) {
 			$this->dvdnav = (boolean)$bool;
+			return true;
 		}
 
 		public function grayscale($bool = true) {
 			$this->grayscale = (boolean)$bool;
+			return true;
 		}
 
 		public function set_h264_profile($str) {
@@ -217,18 +229,22 @@
 
 		public function set_http_optimize($bool) {
 			$this->http_optimize = (bool)$bool;
+			return true;
 		}
 
+		// FIXME do checks for audio types
 		public function set_audio_fallback($str) {
 			$this->audio_fallback = $str;
 		}
 
 		public function add_subtitle_track($int) {
-
-			$int = intval($int);
-
-			$this->subtitle_tracks[] = $int;
-
+			$int = abs(intval($int));
+			if($int) {
+				$this->subtitle_tracks[] = $int;
+				return true;
+			} else {
+				return false;
+			}
 		}
 
 		public function get_options() {
@@ -426,6 +442,7 @@
 			elseif(!is_null($value))
 				$this->x264[$key] = $value;
 
+
 		}
 
 		public function set_x264opts($str) {
@@ -499,6 +516,8 @@
 				$this->cc_ix = (count($vobsubs) + 1);
 			}
 
+			// FIXME return error code of Handbrake binary
+
 		}
 
 		public function set_chapters($a, $b) {
@@ -536,6 +555,8 @@
 				shell::cmd("$str", true, false, $this->verbose, array(0));
 			else
 				shell::cmd($str, !$this->verbose, false, $this->debug, array(0));
+
+			// FIXME return exit code of Handbrake
 
 		}
 
