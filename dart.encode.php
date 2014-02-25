@@ -186,8 +186,7 @@
 						$handbrake->deinterlace($deinterlace);
 						$handbrake->decomb($decomb);
 						$handbrake->detelecine($detelecine);
-						if($grayscale)
-							$handbrake->grayscale();
+						$handbrake->grayscale($grayscale);
 						$handbrake->autocrop($autocrop);
 						$handbrake->set_h264_profile($h264_profile);
 						$handbrake->set_h264_level($h264_level);
