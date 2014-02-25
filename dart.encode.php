@@ -196,7 +196,7 @@
 						$handbrake->set_x264_preset($x264_preset);
 						$handbrake->set_x264_tune($x264_tune);
 
-						if($verbose) {
+						if($verbose > 1) {
 							shell::msg("// Handbrake Video //");
 							shell::msg("* Quality: $video_quality");
 							shell::msg("* Deinterlace: ".intval($deinterlace));

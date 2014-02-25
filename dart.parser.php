@@ -10,7 +10,7 @@
 		'long_name' => '--verbose',
 		'description' => 'Be verbose',
 		'action' => 'Counter',
-		'default' => false,
+		'default' => 0,
 	));
 	$parser->addOption('debug', array(
 		'short_name' => '-z',
