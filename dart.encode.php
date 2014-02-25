@@ -74,7 +74,13 @@
 				// Check to see if file exists, if not, encode it
 				if(file_exists($iso) && !file_exists($mkv)) {
 
-					echo("$display_name\n");
+					$basename_iso = basename($iso);
+					$basename_mkv = basename($mkv);
+
+					shell::msg("Series:\t\t$series_title");
+					shell::msg("Episode:\t$episode_title");
+					shell::msg("Source:\t\t$basename_iso");
+					shell::msg("Target:\t\t$basename_mkv");
 
 					$matroska = new Matroska($mkv);
 					$matroska->setDebug($debug);
@@ -160,8 +166,10 @@
 						$handbrake->set_h264_level('3.1');
 						$handbrake->set_x264_preset('medium');
 						$handbrake->set_x264_tune('film');
-						if($series_model->animation == 't')
+						if($series_model->animation == 't') {
+							shell::msg("Cartoons!! :D");
 							$handbrake->set_x264_tune('animation');
+						}
 
 						// Some DVDs may report more audio streams than
 						// Handbrake does.  If that's the case, check
