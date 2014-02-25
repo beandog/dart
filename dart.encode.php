@@ -100,10 +100,8 @@
 					if($svn)
 						$handbrake->set_binary('handbrake-svn');
 
-					if($debug)
-						$handbrake->debug();
-					if($verbose)
-						$handbrake->verbose();
+					$handbrake->verbose($verbose);
+					$handbrake->debug($debug);
 
 					if(!file_exists($x264)) {
 
