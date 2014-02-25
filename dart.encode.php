@@ -32,7 +32,8 @@
 
 				clearstatcache();
 
-				shell::msg("[$num_encoded/$num_queued_episodes]");
+				echo "\n";
+				shell::msg("[Encode ".($num_encoded + 1)."/$num_queued_episodes]");
 
 				$episodes_model = new Episodes_Model($episode_id);
 				$episode_title = $episodes_model->title;
