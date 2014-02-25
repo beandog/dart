@@ -294,7 +294,12 @@
 
 						// Handbrake exited on a non-zero code
 						if(!$handbrake_success && !$dry_run) {
+
 							shell::msg("! Handbrake died :(");
+							shell::msg("! Handbrake exited on error code $exit_code");
+							shell::msg("! Here's the last command sent:");
+							shell::msg("! ".$handbrake->get_executable_string());
+
 						} elseif($handbrake_success && !$dry_run) {
 							// Post-encode checks
 
