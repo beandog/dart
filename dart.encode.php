@@ -258,7 +258,7 @@
 						}
 
 						// Cartoons!
-						if($series_model->animation == 't') {
+						if($animation) {
 							shell::msg("Cartoons!! :D");
 						}
 
