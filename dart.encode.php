@@ -231,6 +231,9 @@
 							if(!$debug && $dumpvob && file_exists($vob))
 								unlink($vob);
 
+						// FIXME
+						// Add checks on Matroska file to see if it actually has data
+						// Matroska will allow an empty container file
 						} else
 							shell::msg("$episode_filename didn't encode properly: zero filesize");
 
@@ -304,6 +307,7 @@
 					$matroska->setFilename($tmpfname);
 					$matroska->mux();
 					rename($tmpfname, $mkv);
+					chmod($mkv, 0644);
 
 					$num_encoded++;
 
@@ -317,6 +321,13 @@
 				if(file_exists($mkv)) {
 
 					$queue_model->remove_episode($episode_id);
+
+					if($debug) {
+						if(file_exists($xml))
+							shell::msg("! Not removing $xml");
+						if(file_exists($x264))
+							shell::Msg("! Not removing $x264");
+					}
 
 					if(!$debug) {
 						if(file_exists($xml) && is_writable($xml))
