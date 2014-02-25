@@ -12,9 +12,6 @@
 
 		$num_encoded = 0;
 
-		// FIXME This variable is never set
-		$movie = false;
-
 		if($verbose)
 			shell::msg("[Encode]");
 
@@ -270,21 +267,19 @@
 						}
 
 						/** Episode **/
-						if(!$movie) {
-							$matroska->addTag();
-							$matroska->addTarget(50, "EPISODE");
-							if($episode_title)
-								$matroska->addSimpleTag("TITLE", $episode_title);
-							if($episode_number)
-								$matroska->addSimpleTag("PART_NUMBER", $episode_number);
-							$matroska->addSimpleTag("DATE_TAGGED", date("Y-m-d"));
-							$matroska->addSimpleTag("PLAY_COUNTER", 0);
+						$matroska->addTag();
+						$matroska->addTarget(50, "EPISODE");
+						if($episode_title)
+							$matroska->addSimpleTag("TITLE", $episode_title);
+						if($episode_number)
+							$matroska->addSimpleTag("PART_NUMBER", $episode_number);
+						$matroska->addSimpleTag("DATE_TAGGED", date("Y-m-d"));
+						$matroska->addSimpleTag("PLAY_COUNTER", 0);
 
-							if($episodes_model->part > 1) {
-								$matroska->addTag();
-								$matroska->addTarget(40, "PART");
-								$matroska->addSimpleTag("PART_NUMBER", $episodes_model->part);
-							}
+						if($episodes_model->part > 1) {
+							$matroska->addTag();
+							$matroska->addTarget(40, "PART");
+							$matroska->addSimpleTag("PART_NUMBER", $episodes_model->part);
 						}
 
 						$str = $matroska->getXML();
