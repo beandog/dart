@@ -14,27 +14,35 @@
 		private $args = array();
 
 		// Video
+		private $video_bitrate;
 		private $video_encoder;
+		private $video_encoders = array('x264', 'ffmpeg4', 'ffmpeg2', 'theora');
 		private $video_quality;
+		private $crop;
 		private $deinterlace;
 		private $decomb;
 		private $detelecine;
 		private $grayscale;
-		private $crop;
+		private $two_pass;
+		private $two_pass_turbo;
 		private $h264_profile;
+		private $h264_profiles = array('auto', 'main', 'baseline');
 		private $h264_level;
+		private $h264_levels = array('auto', '1.0', '1.b', '1.1', '1.2', '1.3', '2.0', '2.1', '2.2', '3.0', '3.1', '3.2', '4.0', '4.1', '4.2', '5.0', '5.1', '5.2');
 		private $x264_preset;
+		private $x264_presets = array('ultrafast', 'superfast', 'veryfast', 'faster', 'fast', 'medium', 'slow', 'slower', 'veryslow', 'placebo');
 		private $x264_tune;
+		private $x264_tuning_options = array('film', 'animation', 'grain', 'stillimage', 'psnr', 'ssim', 'fastdecode', 'zerolatency');
 		private $x264 = array();
 
 		// Audio
-		private $audio_tracks = array();
 		private $audio_encoders = array();
+		private $audio_tracks = array();
 		private $audio_streams = array();
 
 		// Container
-		private $format;
 		private $add_chapters = false;
+		private $format;
 		private $starting_chapter;
 		private $ending_chapter;
 
@@ -162,32 +170,47 @@
 		}
 
 		public function dvdnav($bool = true) {
-
 			$this->dvdnav = (boolean)$bool;
-
 		}
 
 		public function grayscale($bool = true) {
-
 			$this->grayscale = (boolean)$bool;
-
 		}
 
 		public function set_h264_profile($str) {
-			$this->h264_profile = $str;
+			if(in_array($str, $this->h264_profiles)) {
+				$this->h264_profile = $str;
+				return true;
+			} else {
+				return false;
+			}
 		}
 
 		public function set_h264_level($str) {
-			$this->h264_profile = $str;
+			if(in_array($str, $this->h264_levels)) {
+				$this->h264_level = $str;
+				return true;
+			else {
+				return false;
+			}
 		}
 
 		public function set_x264_preset($str) {
-			$this->x264_preset = $str;
+			if(in_array($str, $this->x264_presets) {
+				$this->x264_preset = $str;
+				return true;
+			} else {
+				return false;
+			}
 		}
 
 		public function set_x264_tune($str) {
-			if($str == 'animation' || $str == 'grain' || $str == 'film')
+			if(in_array($str, $this->x264_tuning_options)) {
 				$this->x264_tune = $str;
+				return true;
+			} else {
+				return false;
+			}
 		}
 
 		public function add_subtitle_track($int) {
