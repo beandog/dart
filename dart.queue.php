@@ -14,6 +14,8 @@
 
 		if(count($queue_episodes))
 			echo "[Total: ".count($queue_episodes)."]\n";
+		else
+			shell::msg("* Queue is empty");
 
 		foreach($queue_episodes as $episode_id) {
 
