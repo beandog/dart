@@ -167,7 +167,6 @@
 						$handbrake->set_x264_preset('medium');
 						$handbrake->set_x264_tune('film');
 						if($series_model->animation == 't') {
-							shell::msg("Cartoons!! :D");
 							$handbrake->set_x264_tune('animation');
 						}
 
@@ -216,14 +215,25 @@
 
 						// If we have a VobSub one, add it
 						// Otherwise, check for a CC stream, and add that
-						if(!is_null($subp_ix))
+						if(!is_null($subp_ix)) {
 							$handbrake->add_subtitle_track($subp_ix);
-						elseif($handbrake->has_cc())
+							shell::msg("Subtitles:\tVOBSUB");
+						} elseif($handbrake->has_cc()) {
 							$handbrake->add_subtitle_track($handbrake->get_cc_ix());
+							shell::msg("Subtitles:\tClosed Captioning");
+						} else {
+							shell::msg("Subtitles:\tNone :(");
+						}
 
 						// Set Chapters
-						if(!$dumpvob)
+						if(!$dumpvob) {
 							$handbrake->set_chapters($episode_starting_chapter, $episode_ending_chapter);
+						}
+
+						// Cartoons!
+						if($series_model->animation == 't') {
+							shell::msg("Cartoons!! :D");
+						}
 
 						$handbrake->encode();
 
