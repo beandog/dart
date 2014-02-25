@@ -427,7 +427,6 @@
 				}
 
 				// Refresh the queue
-				$hostname = php_uname('n');
 				$queue_episodes = $queue_model->get_episodes($hostname, $skip);
 
 				$count = count($queue_episodes);
