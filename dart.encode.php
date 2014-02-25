@@ -32,6 +32,8 @@
 
 				clearstatcache();
 
+				shell::msg("[$num_encoded/$num_queued_episodes]");
+
 				$episodes_model = new Episodes_Model($episode_id);
 				$episode_title = $episodes_model->title;
 				$track_id = $episodes_model->track_id;
@@ -381,9 +383,10 @@
 						$matroska->mux();
 						rename($tmpfname, $mkv);
 						chmod($mkv, 0644);
+
+						$num_encoded++;
 					}
 
-					$num_encoded++;
 
 				} elseif (!file_exists($iso) && !file_exists($mkv)) {
 					// At this point, it shouldn't be in the queue.
