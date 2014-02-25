@@ -279,11 +279,18 @@
 						// One line break to clear out the encoding line from handbrake
 						echo("\n");
 
-						// Handbrake exited on a non-zero code
-						if($ret) {
+						if($ret === 0)
+							$handbrake_success = true;
+						else
 							$handbrake_success = false;
+
+						var_dump($ret);
+						die;
+
+						// Handbrake exited on a non-zero code
+						if(!$handbrake_success && !$dry_run) {
 							shell::msg("! Handbrake died :(");
-						} else {
+						} elseif($handbrake_success && !$dry_run) {
 							$handbrake_success = true;
 
 							// Post-encode checks
@@ -306,7 +313,7 @@
 					}
 
 					/** Matroska Metadata */
-					if(!file_exists($mkv) && $handbrake_success) {
+					if(!file_exists($mkv) && $handbrake_success && !$dry_run) {
 
 						$production_studio = $series_model->production_studio;
 						$production_year = $series_model->production_year;

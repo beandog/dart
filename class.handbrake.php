@@ -600,7 +600,7 @@
 				echo "* Dry run\n";
 				echo escapeshellcmd($str);
 				echo "\n";
-				return false;
+				return 1;
 			}
 
 			$return_var = null;
