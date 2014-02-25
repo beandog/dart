@@ -422,12 +422,13 @@
 					}
 				}
 
-				// Remove the episode on a dry run to avoid loops
+				// On a dry run, pretend that the file was encoded, by incrementing the skip
 				if($dry_run)
-					$queue_model->remove_episode($episode_id);
+					$skip++;
 
 				// Refresh the queue
-				$queue_episodes = $queue_model->get_episodes(php_uname('n'), $skip);
+				$hostname = php_uname('n');
+				$queue_episodes = $queue_model->get_episodes($hostname, $skip);
 
 				$count = count($queue_episodes);
 
