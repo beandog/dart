@@ -13,6 +13,7 @@
 		private $http_optimize;
 		private $flags = array();
 		private $args = array();
+		private $scan_complete = false;
 
 		// Video
 		private $video_bitrate;
@@ -68,11 +69,8 @@
 		}
 
 		/** Filename **/
-		public function input_filename($src, $track = null) {
+		public function input_filename($src) {
 			$this->input = $src;
-			if($track)
-				$this->input_track($track);
-			$this->scan();
 		}
 
 		public function output_filename($str) {
@@ -154,6 +152,10 @@
 		}
 
 		public function add_audio_stream($stream_id) {
+
+			if(!$this->scan_complete)
+				$this->scan();
+
 			// Add the audio track only if the stream ID is available from scan
 			if(array_key_exists($stream_id, $this->audio_streams)) {
 				$this->add_audio_track($this->audio_streams[$stream_id]);
@@ -543,6 +545,8 @@
 				$this->cc_ix = (count($vobsubs) + 1);
 			}
 
+			$this->scan_complete = true;
+
 			// FIXME return error code of Handbrake binary
 
 		}
@@ -556,6 +560,9 @@
 
 		public function get_audio_index($stream_id) {
 
+			if(!$this->scan_complete)
+				$this->scan();
+
 			$var = null;
 			if(in_array($stream_id, $this->audio_streams))
 				$var = $this->audio_streams[$stream_id];
@@ -564,10 +571,16 @@
 		}
 
 		public function has_cc() {
+			if(!$this->scan_complete)
+				$this->scan();
+
 			return $this->cc;
 		}
 
 		public function get_cc_ix() {
+			if(!$this->scan_complete)
+				$this->scan();
+
 			return $this->cc_ix;
 		}
 
