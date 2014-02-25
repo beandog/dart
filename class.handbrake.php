@@ -8,7 +8,6 @@
 		private $debug = false;
 		private $dvdnav = true;
 		private $preset;
-		private $filename;
 		private $track;
 		private $http_optimize;
 		private $flags = array();
