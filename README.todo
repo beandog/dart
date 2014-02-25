@@ -3,3 +3,4 @@
 * dart.encode.php, see FIXME note -- sets copy, faac by default, completely ignoring preferences in database
 * Do verbosity checks throughout, use levels
 * For debugging, echo command lines run to a 'debug' file or directory somewhere
+* Parse an .ini file to get devices to use
