@@ -135,7 +135,7 @@
 			return true;
 		}
 
-		public function two_pass_turbo($bool) {
+		public function set_two_pass_turbo($bool) {
 			$bool = (bool)$bool;
 			$this->two_pass_turbo = $bool;
 			return true;
