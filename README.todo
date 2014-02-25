@@ -1,1 +1,3 @@
 * Run qa after Handbrake runs -- check if the Matroska file has the video tracks and audio tracks I was expecting
+* capture SIGINT and do cleanup
+* dart.encode.php, see FIXME note -- sets copy, faac by default, completely ignoring preferences in database
