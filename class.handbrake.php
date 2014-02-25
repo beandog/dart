@@ -13,6 +13,7 @@
 		private $flags = array();
 		private $args = array();
 		private $scan_complete = false;
+		private $dry_run = false;
 
 		// Video
 		private $video_bitrate;
@@ -82,6 +83,11 @@
 
 		public function set_debug($bool) {
 			$this->debug = $this->verbose = (boolean)$bool;
+		}
+
+		public function set_dry_run($bool) {
+			$this->dry_run = (boolean)$bool;
+			return true;
 		}
 
 		public function output_format($str) {
@@ -589,6 +595,13 @@
 
 			if($this->debug)
 				echo "Executing: ".escapeshellcmd($str)."\n";
+
+			if($this->dry_run) {
+				echo "* Dry run\n";
+				echo escapeshellcmd($str);
+				echo "\n";
+				return false;
+			}
 
 			$return_var = null;
 
