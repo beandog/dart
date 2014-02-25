@@ -421,8 +421,10 @@
 				}
 
 				// On a dry run, pretend that the file was encoded, by incrementing the skip
-				if($dry_run)
+				if($dry_run) {
 					$skip++;
+					$num_encoded++;
+				}
 
 				// Refresh the queue
 				$hostname = php_uname('n');
