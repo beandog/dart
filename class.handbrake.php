@@ -551,10 +551,10 @@
 			if($this->debug)
 				shell::msg("Executing: $str");
 
-			if($this->verbose && !$this->debug)
-				shell::cmd("$str", true, false, $this->verbose, array(0));
-			else
+			if($this->debug)
 				shell::cmd($str, !$this->verbose, false, $this->debug, array(0));
+			else
+				shell::cmd("$str", true, false, true, array(0));
 
 			// FIXME return exit code of Handbrake
 

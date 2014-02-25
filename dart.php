@@ -36,6 +36,11 @@
 	$all_devices = array('/dev/dvd', '/dev/dvd1', '/dev/dvd2', '/dev/dvd3');
 	$export_dir = getenv('HOME').'/dvds/';
 
+	// Parser allows multiple levels of verbosity
+
+	if($debug)
+		$verbose = 10;
+
 	// Base URL to access DVD admin frontend
 	// Override in preferences
 	if(empty($baseurl))

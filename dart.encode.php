@@ -196,20 +196,6 @@
 						$handbrake->set_x264_preset($x264_preset);
 						$handbrake->set_x264_tune($x264_tune);
 
-						if($verbose > 1) {
-							shell::msg("// Handbrake Video //");
-							shell::msg("* Quality: $video_quality");
-							shell::msg("* Deinterlace: ".intval($deinterlace));
-							shell::msg("* Decomb: ".intval($decomb));
-							shell::msg("* Detelecine: ".intval($detelecine));
-							shell::msg("* Grayscale: ".intval($grayscale));
-							shell::msg("* Animation: ".intval($animation));
-							shell::msg("* Autocrop: ".intval($autocrop));
-							shell::msg("* H.264 profile: $h264_profile");
-							shell::msg("* H.264 level: $h264_level");
-							shell::msg("* x264 preset: $x264_preset");
-							shell::msg("* x264 tune: $x264_tune");
-						}
 
 						// Some DVDs may report more audio streams than
 						// Handbrake does.  If that's the case, check
@@ -276,11 +262,26 @@
 							shell::msg("Cartoons!! :D");
 						}
 
+						if($verbose > 1) {
+							shell::msg("// Handbrake Video //");
+							shell::msg("* Quality: $video_quality");
+							shell::msg("* Deinterlace: ".intval($deinterlace));
+							shell::msg("* Decomb: ".intval($decomb));
+							shell::msg("* Detelecine: ".intval($detelecine));
+							shell::msg("* Grayscale: ".intval($grayscale));
+							shell::msg("* Animation: ".intval($animation));
+							shell::msg("* Autocrop: ".intval($autocrop));
+							shell::msg("* H.264 profile: $h264_profile");
+							shell::msg("* H.264 level: $h264_level");
+							shell::msg("* x264 preset: $x264_preset");
+							shell::msg("* x264 tune: $x264_tune");
+						}
+
+						// Handbrake class will output encoding status
 						$handbrake->encode();
 
 						// One line break to clear out the encoding line from handbrake
-						if($verbose)
-							echo("\n");
+						echo("\n");
 
 						// Handbrake can exit successfully and not actually encode anything,
 						// by leaving an empty file.
