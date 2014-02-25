@@ -282,7 +282,7 @@
 							echo("\n");
 						}
 
-						if($ret === 0 && !$dry_run)
+						if($exit_code === 0 && !$dry_run)
 							$handbrake_success = true;
 						else
 							$handbrake_success = false;
