@@ -190,13 +190,13 @@
 			if(in_array($str, $this->h264_levels)) {
 				$this->h264_level = $str;
 				return true;
-			else {
+			} else {
 				return false;
 			}
 		}
 
 		public function set_x264_preset($str) {
-			if(in_array($str, $this->x264_presets) {
+			if(in_array($str, $this->x264_presets)) {
 				$this->x264_preset = $str;
 				return true;
 			} else {
