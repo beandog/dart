@@ -119,7 +119,7 @@
 
 		public function set_video_quality($int) {
 			$int = abs(intval($int));
-			if($intval) {
+			if($int) {
 				$this->video_quality = $int;
 				return true;
 			} else {
