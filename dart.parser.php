@@ -9,7 +9,7 @@
 		'short_name' => '-v',
 		'long_name' => '--verbose',
 		'description' => 'Be verbose',
-		'action' => 'StoreTrue',
+		'action' => 'Counter',
 	));
 	$parser->addOption('debug', array(
 		'short_name' => '-z',
