@@ -588,14 +588,19 @@
 			$str = $this->get_executable_string();
 
 			if($this->debug)
-				echo "Executing: $str\n";
+				echo "Executing: ".escapeshellcmd($str)."\n";
+
+			$return_var = null;
 
 			if($this->debug)
-				shell::cmd($str, !$this->verbose, false, $this->debug, array(0));
-			else
-				shell::cmd("$str", true, false, true, array(0));
+				$exec = escapeshellcmd($str).;
+				passthru($exec, $return_var);
+			else {
+				$exec = escapeshellcmd($str)." 2> /dev/null";
+				passthru($exec, $return_var);
+			}
 
-			// FIXME return exit code of Handbrake
+			return $return_var;
 
 		}
 
