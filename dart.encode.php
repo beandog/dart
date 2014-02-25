@@ -12,12 +12,21 @@
 
 		$num_encoded = 0;
 
-		if($verbose)
-			shell::msg("[Encode]");
+		shell::msg("[Encode]");
 
-		$queue_episodes = $queue_model->get_episodes(php_uname('n'), $skip, $max);
+		$hostname = php_uname('n');
+		$queue_episodes = $queue_model->get_episodes($hostname, $skip, $max);
+
+		if($skip)
+			shell::msg("* Skipping $skip episodes");
+		if($max)
+			shell::msg("* Limiting encoding to $max episodes");
 
 		do {
+
+			$num_queued_episodes = count($queue_episodes);
+			if($num_queued_episodes > 1)
+				shell::msg("* $num_queued_episodes episodes queued up!");
 
 			foreach($queue_episodes as $episode_id) {
 
