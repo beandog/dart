@@ -416,35 +416,6 @@
 						// Get the dvd_ids from episodes that are in the entire queue
 						$queue_dvds = $queue_model->get_dvds(php_uname('n'));
 
-						/**
-						// For each of those DVDs, build an array of ISO filenames
-						foreach($queue_dvds as $queue_dvd_id) {
-
-							$dvds_model = new Dvds_Model($queue_dvd_id);
-
-							// FIXME isn't going to match new format for ISO filename
-							$queue_isos[] = $export_dir.$dvds_model->id.".".$dvds_model->title.".iso";
-
-						}
-
-						if(!in_array($iso, $queue_isos) && file_exists($iso)) {
-
-
-							// If we told it to rip from the disc, and the ISO
-							// is a symlink to the device, then eject the disc
-							// drive now that we're finished with it.
-							if($handbrake && is_link($iso)) {
-
-								$readlink = readlink($iso);
-
-								// FIXME this probably won't work with new dvddrive class
-								if(substr($readlink, 0, 4) == "/dev") {
-									$drive->open();
-								}
-
-							}
-						}
-						**/
 					}
 				}
 
