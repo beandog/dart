@@ -456,8 +456,8 @@
 
 			$str = $this->binary." ".implode(" ", $exec);
 
-			$str .= " --input ".shell::escape_string($this->input);
-			$str .= " --output ".shell::escape_string($this->output);
+			$str .= " --input ".escapeshellcmd($this->input);
+			$str .= " --output ".escapeshellcmd($this->output);
 
 			return $str;
 
@@ -511,10 +511,10 @@
 			if($this->track)
 				$options = "--title ".$this->track;
 
-			$exec = $this->binary." --scan --verbose $options --input ".shell::escape_string($this->input)." 2>&1";
+			$exec = $this->binary." --scan --verbose $options --input ".escapeshellarg($this->input)." 2>&1";
 
 			if($this->debug)
-				shell::msg("Executing: $exec");
+				echo "Executing: $exec\n";
 
 			exec($exec, $arr, $return);
 
@@ -588,7 +588,7 @@
 			$str = $this->get_executable_string();
 
 			if($this->debug)
-				shell::msg("Executing: $str");
+				echo "Executing: $str\n";
 
 			if($this->debug)
 				shell::cmd($str, !$this->verbose, false, $this->debug, array(0));
