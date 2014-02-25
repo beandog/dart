@@ -42,7 +42,8 @@
 	// used to the code spitting out the output as normal.
 	// Need to review all the code and change verbosity checks
 	// if they are too much.
-	$verbose = true;
+	if(!$verbose)
+		$verbose = 1;
 
 	if($debug)
 		$verbose = 10;
