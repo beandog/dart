@@ -148,7 +148,8 @@
 							$src = $iso;
 						}
 
-						$dest = tempnam(dirname($episode_filename), "x264.$episode_id.");
+						$episode_dirname = dirname($episode_filename);
+						$dest = tempnam($episode_dirname, "x264.$episode_id.");
 
 						// Handbrake
 						$handbrake->input_filename($src);
@@ -163,20 +164,51 @@
 						/** Video **/
 						$crf = $series_model->get_crf();
 
-						$handbrake->set_video_encoder('x264');
-						$handbrake->set_video_quality($crf);
-						$handbrake->deinterlace(false);
-						$handbrake->decomb(true);
-						$handbrake->detelecine(true);
+						$video_encoder = 'x264';
+						$video_quality = $crf;
+						$deinterlace = false;
+						$decomb = true;
+						$detelecine = true;
+						$grayscale = false;
 						if($series_model->grayscale == 't')
-							$handbrake->grayscale();
-						$handbrake->autocrop();
-						$handbrake->set_h264_profile('high');
-						$handbrake->set_h264_level('3.1');
-						$handbrake->set_x264_preset('medium');
-						$handbrake->set_x264_tune('film');
+							$grayscale = true;
+						$autocrop = true;
+						$h264_profile = 'high';
+						$h264_level = '3.1';
+						$x264_preset = 'medium';
+						$x264_tune = 'film';
+						$animation = false;
 						if($series_model->animation == 't') {
-							$handbrake->set_x264_tune('animation');
+							$animation = true;
+							$x264_tune = 'animation';
+						}
+
+						$handbrake->set_video_encoder($video_encoder);
+						$handbrake->set_video_quality($video_quality);
+						$handbrake->deinterlace($deinterlace);
+						$handbrake->decomb($decomb);
+						$handbrake->detelecine($detelecine);
+						if($grayscale)
+							$handbrake->grayscale();
+						$handbrake->autocrop($autocrop);
+						$handbrake->set_h264_profile($h264_profile);
+						$handbrake->set_h264_level($h264_level);
+						$handbrake->set_x264_preset($x264_preset);
+						$handbrake->set_x264_tune($x264_tune);
+
+						if($verbose) {
+							shell::msg("// Handbrake Video //");
+							shell::msg("* Quality: $video_quality");
+							shell::msg("* Deinterlace: ".intval($deinterlace));
+							shell::msg("* Decomb: ".intval($decomb));
+							shell::msg("* Detelecine: ".intval($detelecine));
+							shell::msg("* Grayscale: ".intval($grayscale));
+							shell::msg("* Animation: ".intval($animation));
+							shell::msg("* Autocrop: ".intval($autocrop));
+							shell::msg("* H.264 profile: $h264_profile");
+							shell::msg("* H.264 level: $h264_level");
+							shell::msg("* x264 preset: $x264_preset");
+							shell::msg("* x264 tune: $x264_tune");
 						}
 
 						// Some DVDs may report more audio streams than
