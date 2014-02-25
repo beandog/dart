@@ -291,8 +291,6 @@
 						if(!$handbrake_success && !$dry_run) {
 							shell::msg("! Handbrake died :(");
 						} elseif($handbrake_success && !$dry_run) {
-							$handbrake_success = true;
-
 							// Post-encode checks
 
 							// Handbrake can exit successfully and not actually encode anything,
