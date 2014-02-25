@@ -102,6 +102,7 @@
 
 					$handbrake->verbose($verbose);
 					$handbrake->debug($debug);
+					$handbrake->set_dry_run($dry_run);
 
 					if(!file_exists($x264)) {
 
@@ -273,10 +274,17 @@
 						}
 
 						// Handbrake class will output encoding status
-						$handbrake->encode();
+						$ret = $handbrake->encode();
 
 						// One line break to clear out the encoding line from handbrake
 						echo("\n");
+
+						// Handbrake exited on a non-zero code
+						if($ret) {
+							shell::msg("! Handbrake died :(");
+							// FIXME this probably is not right
+							break;
+						}
 
 						// Handbrake can exit successfully and not actually encode anything,
 						// by leaving an empty file.
