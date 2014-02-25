@@ -313,7 +313,7 @@
 					}
 
 					/** Matroska Metadata */
-					if(!file_exists($mkv) && $handbrake_success && !$dry_run) {
+					if(!file_exists($mkv) && !$dry_run) {
 
 						$production_studio = $series_model->production_studio;
 						$production_year = $series_model->production_year;
@@ -370,17 +370,20 @@
 
 					}
 
-					if(file_exists($x264))
-						$matroska->addFile($x264);
+					// Only re-mux if it's not a dry run
+					if(!$dry_run) {
+						if(file_exists($x264))
+							$matroska->addFile($x264);
 
-					if(file_exists($xml) && filesize($xml))
-						$matroska->addGlobalTags($xml);
+						if(file_exists($xml) && filesize($xml))
+							$matroska->addGlobalTags($xml);
 
-					$tmpfname = tempnam(dirname($episode_filename), "mkv.$episode_id.");
-					$matroska->setFilename($tmpfname);
-					$matroska->mux();
-					rename($tmpfname, $mkv);
-					chmod($mkv, 0644);
+						$tmpfname = tempnam(dirname($episode_filename), "mkv.$episode_id.");
+						$matroska->setFilename($tmpfname);
+						$matroska->mux();
+						rename($tmpfname, $mkv);
+						chmod($mkv, 0644);
+					}
 
 					$num_encoded++;
 
@@ -393,7 +396,7 @@
 				}
 
 				// Delete old files
-				if(file_exists($mkv) && $handbrake_success) {
+				if(file_exists($mkv) && !$dry_run) {
 
 					$queue_model->remove_episode($episode_id);
 
@@ -418,6 +421,10 @@
 
 					}
 				}
+
+				// Remove the episode on a dry run to avoid loops
+				if($dry_run)
+					$queue_model->remove_episode($episode_id);
 
 				// Refresh the queue
 				$queue_episodes = $queue_model->get_episodes(php_uname('n'), $skip);
