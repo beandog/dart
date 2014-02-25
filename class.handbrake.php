@@ -10,6 +10,7 @@
 		private $preset;
 		private $filename;
 		private $track;
+		private $http_optimize;
 		private $flags = array();
 		private $args = array();
 
@@ -213,6 +214,10 @@
 			}
 		}
 
+		public function set_http_optimize($bool) {
+			$this->http_optimize = (bool)$bool;
+		}
+
 		public function add_subtitle_track($int) {
 
 			$int = intval($int);
@@ -248,6 +253,10 @@
 			// Check for no-dvdnav
 			if(!$this->dvdnav)
 				$options[] = "--no-dvdnav";
+
+			// Check for HTTP optimization
+			if($this->http_optimize)
+				$options[] = "--optimize";
 
 			return $options;
 
