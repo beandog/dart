@@ -273,19 +273,19 @@
 							shell::msg("* x264 tune: $x264_tune");
 						}
 
-						// Handbrake class will output encoding status
-						$ret = $handbrake->encode();
+						$exit_code = null;
+						if(!$dry_run) {
+							// Handbrake class will output encoding status
+							$exit_code = $handbrake->encode();
 
-						// One line break to clear out the encoding line from handbrake
-						echo("\n");
+							// One line break to clear out the encoding line from handbrake
+							echo("\n");
+						}
 
-						if($ret === 0)
+						if($ret === 0 && !$dry_run)
 							$handbrake_success = true;
 						else
 							$handbrake_success = false;
-
-						var_dump($ret);
-						die;
 
 						// Handbrake exited on a non-zero code
 						if(!$handbrake_success && !$dry_run) {
