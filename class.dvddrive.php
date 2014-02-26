@@ -39,7 +39,7 @@
 		function wait_until_ready() {
 
 			if($this->debug)
-				shell::stdout("! drive::wait_until_ready(".$this->device.")");
+				echo "! drive::wait_until_ready(".$this->device.")\n";
 
 			while(!$this->is_ready())
 				usleep(10000);
@@ -54,7 +54,7 @@
 		function get_status() {
 
 			if($this->debug)
-				shell::stdout("! drive::get_status(".$this->device.")");
+				echo "! drive::get_status(".$this->device.")\n";
 
 			$cmd = "tray_status ".$this->getDevice();
 			exec($cmd, $arr, $return);
@@ -68,7 +68,7 @@
 		function has_media() {
 
 			if($this->debug)
-				shell::stdout("! drive::has_media(".$this->device.")");
+				echo "! drive::has_media(".$this->device.")\n";
 
 			$this->wait_until_ready();
 
@@ -86,7 +86,7 @@
 		function is_open() {
 
 			if($this->debug)
-				shell::stdout("! drive::is_open(".$this->device.")");
+				echo "! drive::is_open(".$this->device.")\n";
 
 			$this->wait_until_ready();
 
@@ -104,7 +104,7 @@
 		function is_closed() {
 
 			if($this->debug)
-				shell::stdout("! drive::is_closed(".$this->device.")");
+				echo "! drive::is_closed(".$this->device.")\n";
 
 			$this->wait_until_ready();
 
@@ -120,7 +120,7 @@
 		 */
 		function is_ready() {
 			if($this->debug)
-				shell::stdout("! drive::is_ready(".$this->device.")");
+				echo "! drive::is_ready(".$this->device.")\n";
 
 			$status = $this->get_status();
 			if($status != 3)
@@ -164,7 +164,7 @@
 		function close() {
 
 			if($this->debug)
-				shell::stdout("! drive::close(".$this->device.")");
+				echo "! drive::close(".$this->device.")\n";
 
 			$this->wait_until_ready();
 
@@ -202,7 +202,7 @@
 		function load_css() {
 
 			if($this->debug)
-				shell::stdout("! drive::load_css(".$this->device.")");
+				echo "! drive::load_css(".$this->device.")\n";
 
 			$this->wait_until_ready();
 
