@@ -56,8 +56,8 @@
 			if($this->debug)
 				echo "! drive::get_status(".$this->device.")\n";
 
-			$cmd = "tray_status ".$this->getDevice();
-			exec($cmd, $arr, $return);
+			$command = "tray_status ".$this->getDevice();
+			exec($command, $arr, $return);
 
 			return $return;
 		}
@@ -169,8 +169,8 @@
 			$this->wait_until_ready();
 
 			if($this->is_open()) {
-				$cmd = "eject -t ".$this->getDevice()." 2>&1 > /dev/null";
-				system($cmd);
+				$command = "eject -t ".$this->getDevice()." 2>&1 > /dev/null";
+				system($command);
 			}
 
 			return true;
@@ -185,7 +185,7 @@
 				$this->close_tray();
 
 			if($this->has_media()) {
-				shell::cmd("mount ".$this->getDevice(), true, true, false, array(0, 32, 64));
+				command("mount ".$this->getDevice(), true, true, false, array(0, 32, 64));
 				return true;
 			} else
 				return false;
@@ -193,7 +193,7 @@
 
 		function unmount() {
 			$this->wait_until_ready();
-			shell::cmd("umount ".$this->getDevice());
+			command("umount ".$this->getDevice());
 		}
 
 		// Use Handbrake to access the device and scan for media
@@ -209,8 +209,8 @@
 			if(!$this->is_closed())
 				$this->close_tray();
 
-			$cmd = "handbrake --scan -i ".$this->getDevice()." 2>&1 > /dev/null";
-			exec($cmd, $arr, $return);
+			$command = "handbrake --scan -i ".$this->getDevice()." 2>&1 > /dev/null";
+			exec($command, $arr, $return);
 
 			return $return;
 
