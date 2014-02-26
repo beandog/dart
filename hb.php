@@ -213,10 +213,10 @@
 	if(is_null($output_filename))
 		$output_filename = implode($arr_fn, '-').".mkv";
 
-	// Minimum filesize, 4 MB
-	$min_filesize = 4194304;
+	// Minimum filesize, 1 MB
+	$min_filesize = 1048576;
 
-	// Remove old file if it's not larger than 4 MBs
+	// Remove old file if it's not larger than 1 MBs
 	if(file_exists($output_filename) && filesize($output_filename) < $min_filesize) {
 		unlink($output_filename);
 	}
