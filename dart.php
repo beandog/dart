@@ -195,17 +195,8 @@
 		if($access_device) {
 
 			// Decrypt the CSS to avoid disc access errors
-			/** Testing ignoring this after adding tray_status
-			 * properly knows when a drive is ready to poll.  I'm guessing
-			 * that a lot of the problems were caused by a race condition.
-			 */
-			/*
-			if($verbose)
-				stdout("* Decrypting CSS");
 			if(!$device_is_iso)
 				$dvd->load_css();
-			*/
-
 
 			echo "[DVD]\n";
 
