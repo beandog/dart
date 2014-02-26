@@ -85,4 +85,37 @@
 		if($device == '/dev/dvd2')
 			return '/dev/dvd';
 	}
+
+	/** imported from class.shell.php **/
+
+	/**
+	* Execute shell scripts
+	*
+	* @param string execution string
+	* @param boolean drop stderr to /dev/null
+	* @param boolean ignore exit codes
+	* @param array exit codes that indicate success
+	* @return output array
+	*/
+	function command($str, $stderr_to_null = true, $ignore_exit_code = false, $passthru = false, $arr_successful_exit_codes = array(0)) {
+
+		$arr = array();
+
+		if($stderr_to_null)
+			$exec = "$str 2> /dev/null";
+		else
+			$exec =& $str;
+
+		if($passthru)
+			passthru($exec, $return);
+		else
+			exec($exec, $arr, $return);
+
+		if(!in_array($return, $arr_successful_exit_codes) && !$ignore_exit_code) {
+			shell::msg("execution died: $str");
+			die($return);
+		} else
+			return $arr;
+
+	}
 ?>
