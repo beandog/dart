@@ -270,6 +270,9 @@
 	echo "// Video //\n";
 	echo "* Quality: $d_video_quality\n";
 	echo "* Bitrate: $d_video_bitrate\n";
+	echo "* Two-pass: ".intval($two_pass)."\n";
+	if($two_pass)
+		echo "* Turbo: ".intval($two_pass_turbo)."\n";
 	echo "* Deinterlace: ".intval($deinterlace)."\n";
 	echo "* Decomb: ".intval($decomb)."\n";
 	echo "* Detelecine: ".intval($detelecine)."\n";
