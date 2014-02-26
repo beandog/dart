@@ -54,7 +54,7 @@
 		'long_name' => '--ab',
 		'description' => 'Audio Bitrate (kbps)',
 		'action' => 'StoreInt',
-		'default' => 0,
+		'default' => 96,
 	));
 	$parser->addOption('video_quality', array(
 		'short_name' => '-q',
