@@ -389,7 +389,8 @@
 					}
 
 					// Only re-mux if it's not a dry run
-					if(!$dry_run) {
+					if(!$dry_run && file_exists($x264)) {
+
 						if(file_exists($x264))
 							$matroska->addFile($x264);
 
