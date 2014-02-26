@@ -219,20 +219,16 @@
 			stdout("* Filesize:\t$display_filesize MB");
 
 			// Get the uniq ID for the disc
-			stdout("* Title:\t".$dvd->getTitle());
-			stdout("* Disc ID:\t", false);
 			$uniq_id = $dvd->getID();
-
-			stdout($uniq_id, true);
+			echo "* Title:\t".$dvd->getTitle()."\n";
+			echo "* Disc ID:\t$uniq_id\n";
 
 			// Get the serial ID for the disc
-			stdout("* Serial ID:\t", false);
 			$serial_id = $dvd->getSerialID();
-			stdout($serial_id, true);
-
-			echo "[Database]\n";
+			echo "* Serial ID:\t$serial_id\n";
 
 			// Lookup the database dvds.id
+			echo "[Database]\n";
 			$dvds_model_id = $dvds_model->find_id('uniq_id', $uniq_id);
 
 			// Use the serial ID as a unique identifer as well
