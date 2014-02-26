@@ -147,7 +147,7 @@
 		$h264_profile,
 		$h264_level,
 		$audio_encoder,
-		'x264',
+		$video_encoder,
 		$x264_preset,
 		$x264_tune,
 		'vfr',
@@ -181,12 +181,16 @@
 
 	$d_video_quality = $video_quality;
 	if(!$video_quality)
-		$d_video_quality = '(unset)';
+		$d_video_quality = "(default)";
+	$d_video_bitrate = "$video_bitrate kbps";
+	if(!$video_bitrate)
+		$d_video_bitrate = "(default)";
 
 	echo "// Handbrake Video //\n";
 	echo "* Source: $input_filename\n";
 	echo "* Target: $output_filename\n";
 	echo "* Quality: $d_video_quality\n";
+	echo "* Bitrate: $d_video_bitrate\n";
 	echo "* Deinterlace: ".intval($deinterlace)."\n";
 	echo "* Decomb: ".intval($decomb)."\n";
 	echo "* Detelecine: ".intval($detelecine)."\n";
@@ -199,6 +203,8 @@
 		echo "* x264 preset: $x264_preset\n";
 		echo "* x264 tune: $x264_tune\n";
 	}
+	echo "// Handbrake Audio //\n";
+	echo "* Encoder: $audio_encoder\n";
 
 	$command = $hb->get_executable_string();
 
