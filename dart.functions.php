@@ -10,7 +10,7 @@
 	}
 	pcntl_signal(SIGINT, 'master_crash');
 
-	stdout($str) {
+	function stdout($str) {
 		$int = fwrite(STDOUT, "$str\n");
 		if($int === false) {
 			echo "stdout() failed on fwrite\n";
@@ -18,7 +18,7 @@
 		}
 	}
 
-	stderr($str) {
+	function stderr($str) {
 		$int = fwrite(STDERR, "$str\n");
 		if($int === false) {
 			echo "stderr() failed on fwrite\n";
