@@ -300,6 +300,16 @@
 							shell::msg("! Here's the last command sent:");
 							shell::msg("! ".$handbrake->get_executable_string());
 
+							// If Handbrake didn't die upon immediate execution, then
+							// it's likely that it dumped some kind of output to the
+							// filesystem.  Perform that cleanup here.
+							if(file_exists($dest))
+								unlink($dest);
+							if(file_exists($x264))
+								unlink($x264);
+							if(file_exists($mkv))
+								unlink($mkv);
+
 						} elseif($handbrake_success && !$dry_run) {
 							// Post-encode checks
 
