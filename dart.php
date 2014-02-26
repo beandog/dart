@@ -7,7 +7,6 @@
 
 	require_once 'Console/ProgressBar.php';
 
-
 	require_once 'includes/class.shell.php';
 	require_once 'includes/mdb2.php';
 

@@ -10,6 +10,22 @@
 	}
 	pcntl_signal(SIGINT, 'master_crash');
 
+	stdout($str) {
+		$int = fwrite(STDOUT, "$str\n");
+		if($int === false) {
+			echo "stdout() failed on fwrite\n";
+			echo "original string: $str\n";
+		}
+	}
+
+	stderr($str) {
+		$int = fwrite(STDERR, "$str\n");
+		if($int === false) {
+			echo "stderr() failed on fwrite\n";
+			echo "original string: $str\n";
+		}
+	}
+
 	/**
 	 * Format a title for saving to filesystem
 	 *
