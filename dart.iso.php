@@ -107,7 +107,7 @@
 				$device_readlink = readlink($device);
 
 				if($verbose) {
-					shell::sdout("* Source file is a symlink, ignoring file");
+					stdout("* Source file is a symlink, ignoring file");
 				}
 			}
 		}
