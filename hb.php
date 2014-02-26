@@ -243,6 +243,7 @@
 	$hb->set_two_pass($two_pass);
 	$hb->set_two_pass_turbo($two_pass_turbo);
 	$hb->add_audio_encoder($audio_encoder);
+	$hb->set_audio_bitrate($audio_bitrate);
 	$hb->autocrop($autocrop);
 	$hb->decomb($decomb);
 	$hb->detelecine($detelecine);
@@ -275,6 +276,8 @@
 	echo "* Source: $input_filename\n";
 	echo "* Target: $output_filename\n";
 	echo "* Track: $d_input_track\n";
+	if($last_chapter)
+		echo "* Chapters: 1-$last_chapter\n";
 	echo "// Video //\n";
 	echo "* Quality: $d_video_quality\n";
 	echo "* Bitrate: $d_video_bitrate\n";
