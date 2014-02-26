@@ -216,8 +216,7 @@
 				// $cmd = "( nohup readdvd -d $device -o $dest > /dev/null 2>&1 > $outfile & echo $! > $pidfile ) > /dev/null 2>&1";
 				$cmd = "nohup readdvd -d $device -o $dest > /dev/null 2>&1 > $outfile & echo $! > $pidfile";
 				exec($cmd, $arr, $return);
-				shell::stdout("* System command: $cmd");
-				die;
+				echo "* System command: $cmd\n";
 				system($cmd, $return);
 				if(intval($return))
 					return false;
