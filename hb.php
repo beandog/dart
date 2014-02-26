@@ -26,28 +26,35 @@
 		'long_name' => '--track',
 		'description' => 'DVD track',
 		'action' => 'StoreInt',
-		'default' => null,
+		'default' => 0,
+	));
+	$parser->addOption('last_chapter', array(
+		'short_name' => '-l',
+		'long_name' => '--last-chapter',
+		'description' => 'Final chapter',
+		'action' => 'StoreInt',
+		'default' => 0,
 	));
 	$parser->addOption('video_bitrate', array(
 		'short_name' => '-b',
 		'long_name' => '--vb',
 		'description' => 'Video Bitrate (kbps)',
 		'action' => 'StoreInt',
-		'default' => null,
+		'default' => 0,
 	));
 	$parser->addOption('audio_bitrate', array(
 		'short_name' => '-B',
 		'long_name' => '--ab',
 		'description' => 'Audio Bitrate (kbps)',
 		'action' => 'StoreInt',
-		'default' => null,
+		'default' => 0,
 	));
 	$parser->addOption('video_quality', array(
 		'short_name' => '-q',
 		'long_name' => '--video-quality',
 		'description' => 'Video Quality (CRF)',
 		'action' => 'StoreInt',
-		'default' => null,
+		'default' => 0,
 	));
 	$parser->addOption('x264_preset', array(
 		'short_name' => '-p',
@@ -85,7 +92,7 @@
 		'default' => false,
 	));
 	$parser->addOption('animation', array(
-		'short_name' => '-c',
+		'short_name' => '-a',
 		'long_name' => '--animation',
 		'description' => 'Animated video',
 		'action' => 'StoreTrue',
@@ -96,7 +103,7 @@
 		'long_name' => '--film',
 		'description' => 'Film tuning',
 		'action' => 'StoreTrue',
-		'default' => false,
+		'default' => true,
 	));
 	$parser->addOption('grain', array(
 		'short_name' => '-g',
@@ -116,6 +123,13 @@
 	extract($result->args);
 	extract($result->options);
 
+	function d_yes_no($var) {
+		if($var)
+			return "yes";
+		else
+			return "no";
+	}
+
 	// Handle options, defaults
 
 	if(is_null($input_filename))
@@ -124,6 +138,12 @@
 		if(!file_exists($input_filename))
 			die("* Can't open $input_filename\n");
 	}
+	$input_track = abs(intval($input_track));
+	$last_chapter = abs(intval($last_chapter));
+	$video_bitrate = abs(intval($video_bitrate));
+	$video_quality = abs(intval($video_quality));
+	$audio_bitrate = abs(intval($audio_bitrate));
+	$verbose = abs(intval($verbose));
 
 	// Defaults
 	$add_chapters = true;
@@ -133,6 +153,12 @@
 	$detelecine = true;
 	$h264_profile = 'high';
 	$h264_level = '3.1';
+	if($film)
+		$x264_tune = 'film';
+	if($animation)
+		$x264_tune = 'animation';
+	if($grain)
+		$x264_tune = 'grain';
 	$output_format = 'mkv';
 	$http_optimize = true;
 	$video_encoder = 'x264';
@@ -142,27 +168,43 @@
 
 	$hb = new Handbrake();
 
-	// An array of elements to put in the filename
-	$arr_fn = array(
-		$h264_profile,
-		$h264_level,
-		$audio_encoder,
-		$video_encoder,
-		$x264_preset,
-		$x264_tune,
-		'vfr',
-		'480p'
-	);
+	$arr_fn = array();
+	$arr_fn[] = $video_encoder;
+	if($video_encoder == 'x264') {
+		$arr_fn[] = $x264_preset;
+		$arr_fn[] = $x264_tune;
+	}
+	if($video_bitrate)
+		$arr_fn[] = $video_bitrate."k";
+	if($two_pass) {
+		$arr_fn[] = "2pass";
+		if($two_pass_turbo)
+			$arr_fn[] = "turbo";
+	}
+	if($video_encoder == 'x264') {
+		$arr_fn[] = $h264_profile;
+		$arr_fn[] = $h264_level;
+	}
+	if($grayscale)
+		$arr_fn[] = 'grayscale';
+	$arr_fn[] = $audio_encoder;
+	if($audio_bitrate)
+		$arr_fn[] = $audio_bitrate."k";
+	if($last_chapter)
+		$arr_fn[] = "chap-1-$last_chapter";
 
-	$output_filename = implode($arr_fn, '-').".mkv";
+	if(is_null($output_filename))
+		$output_filename = implode($arr_fn, '-').".mkv";
 
 	$hb->verbose($verbose);
 	$hb->input_filename($input_filename);
+	if($input_track)
+		$hb->input_track($input_track);
 	$hb->output_filename($output_filename);
-	$hb->set_h264_profile($h264_profile);
-	$hb->set_h264_level($h264_level);
 	$hb->output_format($output_format);
 	$hb->add_chapters($add_chapters);
+	if($last_chapter)
+		$hb->set_chapters(1, $last_chapter);
 	if($video_bitrate)
 		$hb->set_video_bitrate($video_bitrate);
 	$hb->set_video_encoder($video_encoder);
@@ -175,8 +217,12 @@
 	$hb->decomb($decomb);
 	$hb->detelecine($detelecine);
 	$hb->deinterlace($deinterlace);
+	$hb->grayscale($grayscale);
+	$hb->set_h264_profile($h264_profile);
+	$hb->set_h264_level($h264_level);
 	$hb->set_x264_preset($x264_preset);
-	$hb->set_x264_tune($x264_tune);
+	if($x264_tune)
+		$hb->set_x264_tune($x264_tune);
 	$hb->set_http_optimize($http_optimize);
 
 	$d_video_quality = $video_quality;
@@ -185,10 +231,17 @@
 	$d_video_bitrate = "$video_bitrate kbps";
 	if(!$video_bitrate)
 		$d_video_bitrate = "(default)";
+	$d_input_track = $input_track;
+	if(!$input_track)
+		$d_input_track = "(default)";
+	$d_audio_bitrate = "$audio_bitrate kbps";
+	if(!$audio_bitrate)
+		$d_audio_bitrate = "(default)";
 
 	echo "// General //\n";
 	echo "* Source: $input_filename\n";
 	echo "* Target: $output_filename\n";
+	echo "* Track: $d_input_track\n";
 	echo "// Video //\n";
 	echo "* Quality: $d_video_quality\n";
 	echo "* Bitrate: $d_video_bitrate\n";
@@ -206,6 +259,7 @@
 	}
 	echo "// Audio //\n";
 	echo "* Encoder: $audio_encoder\n";
+	echo "* Bitrate: $d_audio_bitrate\n";
 
 	$command = $hb->get_executable_string();
 
