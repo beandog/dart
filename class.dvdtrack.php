@@ -763,7 +763,7 @@
 			$str = "mplayer ".implode(' ', $flags);
 
 			if($this->verbose || $this->debug)
-				shell::msg("Executing: $str");
+				echo "Executing: $str\n";
 
  			shell::cmd($str);
 		}
@@ -793,7 +793,7 @@
 			$str = "mencoder ".implode(' ', $flags);
 
 			if($this->debug)
-				shell::msg("Executing: $str");
+				echo "Executing: $str\n";
 
  			shell::cmd($str, !$this->debug);
 		}

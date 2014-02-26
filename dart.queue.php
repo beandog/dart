@@ -15,7 +15,7 @@
 		if(count($queue_episodes))
 			echo "[Total: ".count($queue_episodes)."]\n";
 		else
-			shell::msg("* Queue is empty");
+			stdout("* Queue is empty");
 
 		foreach($queue_episodes as $episode_id) {
 
@@ -30,7 +30,7 @@
 			if($verbose)
 				$str .= " (".$episodes_model->get_iso().")";
 
-			echo("$str\n");
+			echo "$str\n";
 		}
 
 	}

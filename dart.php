@@ -154,8 +154,8 @@
 		// Determine whether we are reading the device
 		if($rip || $info || $import || $archive || $dump_iso) {
 			$access_device = true;
-			msg("[Access Device]");
-			msg("* Reading $display_device");
+			stdout("[Access Device]");
+			stdout("* Reading $display_device");
 		}
 
 		// Determine whether we need physical access to a disc.
@@ -201,7 +201,7 @@
 			 */
 			/*
 			if($verbose)
-				msg("* Decrypting CSS");
+				stdout("* Decrypting CSS");
 			if(!$device_is_iso)
 				$dvd->load_css();
 			*/
@@ -212,14 +212,14 @@
 			$device_filesize = $dvd->getSize();
 			$display_filesize = number_format($device_filesize);
 			if(!$device_filesize) {
-				msg("* DVD size reported as zero! Aborting");
+				stdout("* DVD size reported as zero! Aborting");
 				exit(1);
 			}
 
-			msg("* Filesize:\t$display_filesize MB");
+			stdout("* Filesize:\t$display_filesize MB");
 
 			// Get the uniq ID for the disc
-			msg("* Title:\t".$dvd->getTitle());
+			stdout("* Title:\t".$dvd->getTitle());
 			stdout("* Disc ID:\t", false);
 			$uniq_id = $dvd->getID();
 
@@ -269,9 +269,9 @@
 			}
 
 			if($disc_indexed) {
-				msg("* Indexed:\tYes");
+				stdout("* Indexed:\tYes");
 			} else {
-				msg("* Unindexed:\tNo");
+				stdout("* Unindexed:\tNo");
 			}
 
 		}

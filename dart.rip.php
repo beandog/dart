@@ -12,7 +12,7 @@
 		$queue_model = new Queue_Model;
 
 		if($verbose)
-			shell::msg("[Rip]");
+			stdout("[Rip]");
 
 		$dvd_episodes = $dvds_model->get_episodes();
 
@@ -22,8 +22,8 @@
 		// episodes ... so cancel ejecting it since access
 		// is probably likely.
 		if(!$num_episodes) {
-			shell::msg("The disc is archived, but there are no episodes to rip.");
-			shell::msg("Check the frontend to see if titles need to be added.");
+			stdout("The disc is archived, but there are no episodes to rip.");
+			stdout("Check the frontend to see if titles need to be added.");
 		} else {
 
 			/** Create directory to dump files to */

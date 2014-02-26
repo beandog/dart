@@ -4,7 +4,7 @@
 	if($info) {
 
 		if($verbose)
-			shell::msg("[Info]");
+			stdout("[Info]");
 
 		$dvd_episodes = $dvds_model->get_episodes();
 
@@ -12,7 +12,7 @@
 		foreach($dvd_episodes as $episode_id) {
 			$episodes_model = new Episodes_Model($episode_id);
 			$display_name = $episodes_model->get_display_name();
-			echo("$display_name\n");
+			stdout("$display_name");
 		}
 
 	}

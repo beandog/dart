@@ -251,7 +251,7 @@ XML;
 				$str = $this->getCommandString();
 
 			if($this->debug)
-				shell::msg("Executing: $str");
+				echo "Executing: $str";
 
 			shell::cmd($str, !$this->verbose, false, $this->debug, array(0,1));
 

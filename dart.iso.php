@@ -11,7 +11,7 @@
 
 		/** ISO Information **/
 		if($verbose)
-			shell::msg("[ISO]");
+			stdout("[ISO]");
 
 		// Get the collection ID to prefix the filename
 		// of the ISO, for easy indexing by cartoons, movies, etc.
@@ -44,7 +44,7 @@
 
 		$display_iso = basename($target_iso);
 		if($verbose)
-			shell::msg("* Target filename: $display_iso");
+			stdout("* Target filename: $display_iso");
 
 		/** Filename and filesystem operations **/
 
@@ -68,7 +68,7 @@
 		if($device_is_iso) {
 
 			if($debug)
-				shell::msg("! device is iso");
+				stdout("! device is iso");
 
 			// At this point, we already know if the file
 			// exists or not, so check if it's a symlink.
@@ -117,7 +117,7 @@
 		if(!$device_is_iso) {
 
 			if($debug);
-				shell::msg("! device is not an iso");
+				stdout("! device is not an iso");
 
 			// If we have access to the device, and we
 			// are trying to dump it, and the output filename
@@ -148,7 +148,7 @@
 					stdout("* DVD copy successful. Ready for another :D");
 					$drive->open();
 				} else {
-					shell::msg("* DVD extraction failed :(");
+					stdout("* DVD extraction failed :(");
 				}
 			}
 		}

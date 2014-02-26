@@ -11,7 +11,7 @@
 	if($access_device && (($import && !$disc_indexed) || $missing_import_data)) {
 
 		if($verbose)
-			shell::msg("[Import]");
+			stdout("[Import]");
 
 		$uniq_id = $dvd->getID();
 

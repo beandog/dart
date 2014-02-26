@@ -12,21 +12,21 @@
 
 		$num_encoded = 0;
 
-		shell::msg("[Encode]");
+		stdout("[Encode]");
 
 		$hostname = php_uname('n');
 		$queue_episodes = $queue_model->get_episodes($hostname, $skip, $max);
 
 		if($skip)
-			shell::msg("* Skipping $skip episodes");
+			stdout("* Skipping $skip episodes");
 		if($max)
-			shell::msg("* Limiting encoding to $max episodes");
+			stdout("* Limiting encoding to $max episodes");
 
 		do {
 
 			$num_queued_episodes = count($queue_episodes);
 			if($num_queued_episodes > 1)
-				shell::msg("* $num_queued_episodes episodes queued up!");
+				stdout("* $num_queued_episodes episodes queued up!");
 
 			foreach($queue_episodes as $episode_id) {
 
@@ -34,7 +34,7 @@
 
 				if($num_queued_episodes > 1) {
 					echo "\n";
-					shell::msg("[Encode ".($num_encoded + 1)."/$num_queued_episodes]");
+					stdout("[Encode ".($num_encoded + 1)."/$num_queued_episodes]");
 				}
 
 				$episodes_model = new Episodes_Model($episode_id);
@@ -91,10 +91,10 @@
 					$basename_iso = basename($iso);
 					$basename_mkv = basename($mkv);
 
-					shell::msg("Series:\t\t$series_title");
-					shell::msg("Episode:\t$episode_title");
-					shell::msg("Source:\t\t$basename_iso");
-					shell::msg("Target:\t\t$basename_mkv");
+					stdout("Series:\t\t$series_title");
+					stdout("Episode:\t$episode_title");
+					stdout("Source:\t\t$basename_iso");
+					stdout("Target:\t\t$basename_mkv");
 
 					$matroska = new Matroska($mkv);
 					$matroska->setDebug($debug);
@@ -245,12 +245,12 @@
 						// Otherwise, check for a CC stream, and add that
 						if(!is_null($subp_ix)) {
 							$handbrake->add_subtitle_track($subp_ix);
-							shell::msg("Subtitles:\tVOBSUB");
+							stdout("Subtitles:\tVOBSUB");
 						} elseif($handbrake->has_cc()) {
 							$handbrake->add_subtitle_track($handbrake->get_cc_ix());
-							shell::msg("Subtitles:\tClosed Captioning");
+							stdout("Subtitles:\tClosed Captioning");
 						} else {
-							shell::msg("Subtitles:\tNone :(");
+							stdout("Subtitles:\tNone :(");
 						}
 
 						// Set Chapters
@@ -260,22 +260,22 @@
 
 						// Cartoons!
 						if($animation) {
-							shell::msg("Cartoons!! :D");
+							stdout("Cartoons!! :D");
 						}
 
 						if($verbose > 1) {
-							shell::msg("// Handbrake Video //");
-							shell::msg("* Quality: $video_quality");
-							shell::msg("* Deinterlace: ".intval($deinterlace));
-							shell::msg("* Decomb: ".intval($decomb));
-							shell::msg("* Detelecine: ".intval($detelecine));
-							shell::msg("* Grayscale: ".intval($grayscale));
-							shell::msg("* Animation: ".intval($animation));
-							shell::msg("* Autocrop: ".intval($autocrop));
-							shell::msg("* H.264 profile: $h264_profile");
-							shell::msg("* H.264 level: $h264_level");
-							shell::msg("* x264 preset: $x264_preset");
-							shell::msg("* x264 tune: $x264_tune");
+							stdout("// Handbrake Video //");
+							stdout("* Quality: $video_quality");
+							stdout("* Deinterlace: ".intval($deinterlace));
+							stdout("* Decomb: ".intval($decomb));
+							stdout("* Detelecine: ".intval($detelecine));
+							stdout("* Grayscale: ".intval($grayscale));
+							stdout("* Animation: ".intval($animation));
+							stdout("* Autocrop: ".intval($autocrop));
+							stdout("* H.264 profile: $h264_profile");
+							stdout("* H.264 level: $h264_level");
+							stdout("* x264 preset: $x264_preset");
+							stdout("* x264 tune: $x264_tune");
 						}
 
 						$exit_code = null;
@@ -284,7 +284,7 @@
 							$exit_code = $handbrake->encode();
 
 							// One line break to clear out the encoding line from handbrake
-							echo("\n");
+							echo "\n";
 						}
 
 						if($exit_code === 0 && !$dry_run)
@@ -295,13 +295,13 @@
 						// Handbrake exited on a non-zero code
 						if(!$handbrake_success && !$dry_run) {
 
-							shell::msg("! Handbrake died :(");
-							shell::msg("! Handbrake exited on error code $exit_code");
+							stdout("! Handbrake died :(");
+							stdout("! Handbrake exited on error code $exit_code");
 							// Skipping over this episode is performed as a last action in the loop,
 							// but add a note here that this one will stay queued.
-							shell::msg("! Skipping over this episode, but it will stay in the queue");
-							shell::msg("! Here's the last command sent:");
-							shell::msg("! ".$handbrake->get_executable_string());
+							stdout("! Skipping over this episode, but it will stay in the queue");
+							stdout("! Here's the last command sent:");
+							stdout("! ".$handbrake->get_executable_string());
 
 							// If Handbrake didn't die upon immediate execution, then
 							// it's likely that it dumped some kind of output to the
@@ -328,7 +328,7 @@
 							// Add checks on Matroska file to see if it actually has data
 							// Matroska will allow an empty container file
 							} else {
-								shell::msg("$episode_filename didn't encode properly: zero filesize");
+								stdout("$episode_filename didn't encode properly: zero filesize");
 							}
 						}
 					}
@@ -412,9 +412,9 @@
 
 				} elseif (!file_exists($iso) && !file_exists($mkv)) {
 					// At this point, it shouldn't be in the queue.
-					shell::msg("! ISO not found ($iso), MKV not found ($mkv), force removing episode from queue");
+					stdout("! ISO not found ($iso), MKV not found ($mkv), force removing episode from queue");
 					if(!$handbrake_success)
-						shell::msg("! Also, Handbrake did not successfully run; removing episode to prevent encoding loop");
+						stdout("! Also, Handbrake did not successfully run; removing episode to prevent encoding loop");
 					$queue_model->remove_episode($episode_id);
 				}
 
@@ -425,9 +425,9 @@
 
 					if($debug) {
 						if(file_exists($xml))
-							shell::msg("! Not removing $xml");
+							stdout("! Not removing $xml");
 						if(file_exists($x264))
-							shell::Msg("! Not removing $x264");
+							stdout("! Not removing $x264");
 					}
 
 					if(!$debug) {

@@ -43,7 +43,7 @@
 			$str = "mencoder ".implode(' ', $flags);
 
 			if($this->debug)
-				shell::msg("Executing: $str");
+				echo "Executing: $str\n";
 
 			$start = time();
 			shell::cmd($str, !$this->debug);
@@ -51,7 +51,7 @@
 
 			if($this->debug) {
 				$exec_time = shell::executionTime($start, $finish);
-				shell::msg("Execution time: ".$exec_time['minutes']."m ".$exec_time['seconds']."s");
+				echo "Execution time: ".$exec_time['minutes']."m ".$exec_time['seconds']."s";
 			}
 
 		}
@@ -68,7 +68,7 @@
 			$str = "mencoder ".implode(' ', $flags);
 
 			if($this->debug)
-				shell::msg("Executing: $str");
+				echo "Executing: $str";
 
 			$start = time();
 			shell::cmd($str, !$this->debug);
@@ -76,7 +76,7 @@
 
 			if($this->debug) {
 				$exec_time = shell::executionTime($start, $finish);
-				shell::msg("Execution time: ".$exec_time['minutes']."m ".$exec_time['seconds']."s");
+				echo "Execution time: ".$exec_time['minutes']."m ".$exec_time['seconds']."s\n";
 			}
 
 		}
@@ -91,7 +91,7 @@
 		 	$str = "ccextractor -unicode -nomyth -ps \"".$this->getFilename()."\"";
 
 		 	if($this->debug)
-				shell::msg("Executing: $str");
+				echo "Executing: $str\n";
 
 			$start = time();
 			shell::cmd($str, !$this->debug);
@@ -99,7 +99,7 @@
 
 			if($this->debug) {
 				$exec_time = shell::executionTime($start, $finish);
-				shell::msg("Execution time: ".$exec_time['minutes']."m ".$exec_time['seconds']."s");
+				echo "Execution time: ".$exec_time['minutes']."m ".$exec_time['seconds']."s\n";
 			}
 
 		 }
