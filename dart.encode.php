@@ -272,7 +272,7 @@
 							echo "* Grayscale: ".intval($grayscale)."\n";
 							echo "* Animation: ".intval($animation)."\n";
 							echo "* Autocrop: ".intval($autocrop)."\n";
-							echo "* H.264 profile: $h264_profile\n"
+							echo "* H.264 profile: $h264_profile\n";
 							echo "* H.264 level: $h264_level\n";
 							echo "* x264 preset: $x264_preset\n";
 							echo "* x264 tune: $x264_tune\n";
