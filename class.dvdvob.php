@@ -70,14 +70,7 @@
 			if($this->debug)
 				echo "Executing: $str";
 
-			$start = time();
 			command($str, !$this->debug);
-			$finish = time();
-
-			if($this->debug) {
-				$exec_time = shell::executionTime($start, $finish);
-				echo "Execution time: ".$exec_time['minutes']."m ".$exec_time['seconds']."s\n";
-			}
 
 		}
 
@@ -93,14 +86,7 @@
 		 	if($this->debug)
 				echo "Executing: $str\n";
 
-			$start = time();
 			command($str, !$this->debug);
-			$finish = time();
-
-			if($this->debug) {
-				$exec_time = shell::executionTime($start, $finish);
-				echo "Execution time: ".$exec_time['minutes']."m ".$exec_time['seconds']."s\n";
-			}
 
 		 }
 	}
