@@ -119,6 +119,13 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('overwrite', array(
+		'short_name' => '-x',
+		'long_name' => '--overwrite',
+		'description' => 'Overwrite existing file',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('verbose', array(
 		'short_name' => '-v',
 		'long_name' => '--verbose',
@@ -205,6 +212,11 @@
 
 	if(is_null($output_filename))
 		$output_filename = implode($arr_fn, '-').".mkv";
+
+	if(file_exists($output_filename) && !$overwrite) {
+		echo "Output file $output_filename exists, and overwrite is not enabled.  Quitting.\n";
+		exit(1);
+	}
 
 	$hb->verbose($verbose);
 	$hb->input_filename($input_filename);
