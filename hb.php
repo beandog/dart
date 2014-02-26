@@ -42,6 +42,13 @@
 		'action' => 'StoreInt',
 		'default' => 0,
 	));
+	$parser->addOption('audio_encoder', array(
+		'short_name' => '-E',
+		'long_name' => '--ae',
+		'description' => 'Audio encoder',
+		'action' => 'StoreString',
+		'default' => '',
+	));
 	$parser->addOption('audio_bitrate', array(
 		'short_name' => '-B',
 		'long_name' => '--ab',
@@ -143,11 +150,13 @@
 	$video_bitrate = abs(intval($video_bitrate));
 	$video_quality = abs(intval($video_quality));
 	$audio_bitrate = abs(intval($audio_bitrate));
+	$audio_encoder = trim($audio_encoder);
 	$verbose = abs(intval($verbose));
 
 	// Defaults
 	$add_chapters = true;
-	$audio_encoder = 'lame';
+	if(!$audio_encoder)
+		$audio_encoder = 'fdk_aac';
 	$deinterlace = false;
 	$decomb = true;
 	$detelecine = true;
@@ -187,7 +196,8 @@
 	}
 	if($grayscale)
 		$arr_fn[] = 'grayscale';
-	$arr_fn[] = $audio_encoder;
+	if($audio_encoder)
+		$arr_fn[] = $audio_encoder;
 	if($audio_bitrate)
 		$arr_fn[] = $audio_bitrate."k";
 	if($last_chapter)
@@ -237,6 +247,9 @@
 	$d_audio_bitrate = "$audio_bitrate kbps";
 	if(!$audio_bitrate)
 		$d_audio_bitrate = "(default)";
+	$d_audio_encoder = $audio_encoder;
+	if(!$audio_encoder)
+		$d_audio_encoder = "(default)";
 
 	echo "// General //\n";
 	echo "* Source: $input_filename\n";
