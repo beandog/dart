@@ -112,7 +112,7 @@
 			exec($exec, $arr, $return);
 
 		if(!in_array($return, $arr_successful_exit_codes) && !$ignore_exit_code) {
-			shell::msg("execution died: $str");
+			echo "execution died: $str\n";
 			die($return);
 		} else
 			return $arr;
