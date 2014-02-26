@@ -78,9 +78,9 @@
 		}
 
 		public function input_track($str) {
-			$track = abs(intval($track));
+			$track = abs(intval($str));
 			if($track) {
-				$this->track = $str;
+				$this->track = $track;
 				return true;
 			} else {
 				return false;
