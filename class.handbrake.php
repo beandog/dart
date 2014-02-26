@@ -78,7 +78,13 @@
 		}
 
 		public function input_track($str) {
-			$this->track = $str;
+			$track = abs(intval($track));
+			if($track) {
+				$this->track = $str;
+				return true;
+			} else {
+				return false;
+			}
 		}
 
 		public function set_debug($bool) {
