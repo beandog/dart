@@ -253,7 +253,7 @@ XML;
 			if($this->debug)
 				echo "Executing: $str";
 
-			shell::cmd($str, !$this->verbose, false, $this->debug, array(0,1));
+			command($str, !$this->verbose, false, $this->debug, array(0,1));
 
 		}
 
@@ -265,11 +265,11 @@ XML;
 
 			$str = "mkvpropedit -s title=$title $mkv";
 
-			shell::cmd($str, !$this->verbose, false, $this->debug, array(0,1));
+			command($str, !$this->verbose, false, $this->debug, array(0,1));
 
 			$str = "mkvpropedit -t global:$xml $mkv";
 
-			shell::cmd($str, !$this->verbose, false, $this->debug, array(0,1));
+			command($str, !$this->verbose, false, $this->debug, array(0,1));
 
 		}
 

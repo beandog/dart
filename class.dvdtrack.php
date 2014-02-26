@@ -136,7 +136,7 @@
 
 			if(is_null($this->xml)) {
 				$exec = "lsdvd -Ox -v -a -s -c -x -t ".$this->getTrack()." ".$this->getDevice();
-				$arr = shell::cmd($exec);
+				$arr = command($exec);
 				$str = implode("\n", $arr);
 
 				// Fix broken encoding on langcodes, standardize output
@@ -765,7 +765,7 @@
 			if($this->verbose || $this->debug)
 				echo "Executing: $str\n";
 
- 			shell::cmd($str);
+ 			command($str);
 		}
 
 		function dumpSubtitles() {
@@ -795,7 +795,7 @@
 			if($this->debug)
 				echo "Executing: $str\n";
 
- 			shell::cmd($str, !$this->debug);
+ 			command($str, !$this->debug);
 		}
 
 		function dumpChapters() {

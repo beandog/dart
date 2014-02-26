@@ -23,7 +23,7 @@
 
 			$exec = "mediainfo --output=XML \"".$this->filename."\"";
 
- 			$arr = shell::cmd($exec);
+ 			$arr = command($exec);
  			$this->xml = implode("\n", $arr);
  			$this->sxe = simplexml_load_string($this->xml);
 

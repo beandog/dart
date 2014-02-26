@@ -46,7 +46,7 @@
 				echo "Executing: $str\n";
 
 			$start = time();
-			shell::cmd($str, !$this->debug);
+			command($str, !$this->debug);
 			$finish = time();
 
 			if($this->debug) {
@@ -71,7 +71,7 @@
 				echo "Executing: $str";
 
 			$start = time();
-			shell::cmd($str, !$this->debug);
+			command($str, !$this->debug);
 			$finish = time();
 
 			if($this->debug) {
@@ -94,7 +94,7 @@
 				echo "Executing: $str\n";
 
 			$start = time();
-			shell::cmd($str, !$this->debug);
+			command($str, !$this->debug);
 			$finish = time();
 
 			if($this->debug) {

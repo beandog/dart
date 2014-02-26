@@ -61,7 +61,7 @@
 			if($this->debug)
 				echo "! dvd->disc_id()\n";
 
-			$arr = shell::cmd("dvd_id ".$this->getDevice(true));
+			$arr = command("dvd_id ".$this->getDevice(true));
 			$var = current($arr);
 			if(strlen($var) == 32)
 				$this->id = $var;
@@ -104,7 +104,7 @@
 
 			if(empty($this->lsdvd['output']) || $force) {
 				$str = "lsdvd -Ox -v -a -s -c ".$this->getDevice(true);
-				$arr = shell::cmd($str);
+				$arr = command($str);
 				$str = implode("\n", $arr);
 
 				// Fix broken encoding on langcodes, standardize output
@@ -180,8 +180,8 @@
 				if(file_exists($logfile))
 					unlink($logfile);
 
-				$cmd = "ddrescue -b 2048 -n $device $dest $logfile";
-				passthru($cmd, $return);
+				$command = "ddrescue -b 2048 -n $device $dest $logfile";
+				passthru($command, $return);
 
 				$return = intval($return);
 
@@ -302,7 +302,7 @@
 				$exec = "blockdev --getsize64 $device 2> /dev/null";
 			}
 
-			$b_size = current(shell::cmd($exec));
+			$b_size = current(command($exec));
 
 			$kb_size = $b_size / 1024;
 			$mb_size = intval($kb_size / 1024);
