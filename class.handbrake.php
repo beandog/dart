@@ -41,6 +41,7 @@
 		private $audio_encoders = array();
 		private $audio_tracks = array();
 		private $audio_streams = array();
+		private $audio_bitrate;
 		private $audio_fallback;
 
 		// Container
@@ -115,6 +116,17 @@
 
 			if($int) {
 				$this->video_bitrate = $int;
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		public function set_audio_bitrate($int) {
+			$int = abs(intval($int));
+
+			if($int) {
+				$this->audio_bitrate = $int;
 				return true;
 			} else {
 				return false;
@@ -420,6 +432,10 @@
 			// cannot copy or encode the audio with previous arguments
 			if($this->audio_fallback) {
 				$args['--audio-fallback'] = $this->audio_fallback;
+			}
+
+			if($this->audio_bitrate) {
+				$args['--ab'] = $this->audio_bitrate;
 			}
 
 
