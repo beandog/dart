@@ -151,7 +151,7 @@
 			if($missing_track_metadata) {
 				$track_number = $tracks_model->ix;
 				$dvd_track = new DVDTrack($track_number, $device);
-				echo "$track_number ");
+				echo "$track_number ";
 			}
 
 			// Check to see if there are tracks in the
