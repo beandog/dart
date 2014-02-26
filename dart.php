@@ -88,8 +88,8 @@
 		if(!$first_run)
 			echo "\n";
 		if($debug) {
-			shell::stdout("[Initialization]");
-			shell::stdout("* Device: $device");
+			stdout("[Initialization]");
+			stdout("* Device: $device");
 		}
 
 		clearstatcache();
@@ -142,7 +142,7 @@
 
 		// Verify file exists
 		if(!file_exists($device)) {
-			shell::stdout("* Couldn't find $device");
+			stdout("* Couldn't find $device");
 			exit(1);
 		}
 
@@ -154,8 +154,8 @@
 		// Determine whether we are reading the device
 		if($rip || $info || $import || $archive || $dump_iso) {
 			$access_device = true;
-			shell::msg("[Access Device]");
-			shell::msg("* Reading $display_device");
+			msg("[Access Device]");
+			msg("* Reading $display_device");
 		}
 
 		// Determine whether we need physical access to a disc.
@@ -179,9 +179,9 @@
 
 				if($has_media) {
 					$access_drive = true;
-					shell::stdout("* Found a DVD, ready to nom!");
+					stdout("* Found a DVD, ready to nom!");
 				} else {
-					shell::stdout("* No media, so out we go!");
+					stdout("* No media, so out we go!");
 					$drive->open();
 					$access_device = false;
 				}
@@ -201,7 +201,7 @@
 			 */
 			/*
 			if($verbose)
-				shell::msg("* Decrypting CSS");
+				msg("* Decrypting CSS");
 			if(!$device_is_iso)
 				$dvd->load_css();
 			*/
@@ -212,23 +212,23 @@
 			$device_filesize = $dvd->getSize();
 			$display_filesize = number_format($device_filesize);
 			if(!$device_filesize) {
-				shell::msg("* DVD size reported as zero! Aborting");
+				msg("* DVD size reported as zero! Aborting");
 				exit(1);
 			}
 
-			shell::msg("* Filesize:\t$display_filesize MB");
+			msg("* Filesize:\t$display_filesize MB");
 
 			// Get the uniq ID for the disc
-			shell::msg("* Title:\t".$dvd->getTitle());
-			shell::stdout("* Disc ID:\t", false);
+			msg("* Title:\t".$dvd->getTitle());
+			stdout("* Disc ID:\t", false);
 			$uniq_id = $dvd->getID();
 
-			shell::stdout($uniq_id, true);
+			stdout($uniq_id, true);
 
 			// Get the serial ID for the disc
-			shell::stdout("* Serial ID:\t", false);
+			stdout("* Serial ID:\t", false);
 			$serial_id = $dvd->getSerialID();
-			shell::stdout($serial_id, true);
+			stdout($serial_id, true);
 
 			echo "[Database]\n";
 
@@ -238,17 +238,17 @@
 			// Use the serial ID as a unique identifer as well
 			if($device_is_iso && !$dvds_model_id) {
 
-				shell::stdout("* Lookup on serial ID and disc title: ", false);
+				stdout("* Lookup on serial ID and disc title: ", false);
 
 				$tmp_dvds_model = new Dvds_Model;
 				$find_serial_id = $tmp_dvds_model->find_id('serial_id', $serial_id);
 
 				if(!$find_serial_id)
-					shell::stdout("none found; marking as new disc");
+					stdout("none found; marking as new disc");
 				else {
 					$dvds_model->load($find_serial_id);
 					if($dvd->getTitle() == $tmp_dvds_model->title) {
-						shell::stdout("match found");
+						stdout("match found");
 						$dvds_model_id = $find_serial_id;
 						unset($tmp_dvds_model);
 					}
@@ -259,8 +259,8 @@
 
 				$series_title = $dvds_model->get_series_title();
 
-				shell::stdout("* DVD ID:\t$dvds_model_id");
-				shell::stdout("* Series:\t$series_title");
+				stdout("* DVD ID:\t$dvds_model_id");
+				stdout("* Series:\t$series_title");
 
 				$disc_indexed = true;
 
@@ -269,9 +269,9 @@
 			}
 
 			if($disc_indexed) {
-				shell::msg("* Indexed:\tYes");
+				msg("* Indexed:\tYes");
 			} else {
-				shell::msg("* Unindexed:\tNo");
+				msg("* Unindexed:\tNo");
 			}
 
 		}
@@ -300,7 +300,7 @@
 			}
 
 			if($debug)
-				shell::stdout("! Going to start position");
+				stdout("! Going to start position");
 
 			goto start;
 		}

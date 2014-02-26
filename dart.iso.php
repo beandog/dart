@@ -53,7 +53,7 @@
 		// a block device or an ISO.
 		$target_iso_exists = file_exists($target_iso);
 		if($verbose && $target_iso_exists)
-			shell::stdout("* target file exists");
+			stdout("* target file exists");
 
 		// If the target ISO is a symlink, also mention, and
 		// set a variable so we can ignore later.
@@ -61,7 +61,7 @@
 		if($target_iso_exists) {
 			$target_iso_is_symlink = is_link($target_iso);
 			if($target_iso_is_symlink && $verbose)
-				shell::stdout("* target file is a symlink");
+				stdout("* target file is a symlink");
 		}
 
 		// Operations on filename
@@ -78,7 +78,7 @@
 			// if the source and the target are the same.
 			if(($device == $target_iso) && !$device_is_symlink && $target_iso_exists) {
 				if($verbose)
-					shell::stdout("* Source file and target ISO are the same");
+					stdout("* Source file and target ISO are the same");
 			}
 
 			// Otherwise, the file needs to be renamed to its
@@ -93,7 +93,7 @@
 
 				// Rename the file
 				if($verbose)
-					shell::stdout("* Moving $display_device to $new_basename");
+					stdout("* Moving $display_device to $new_basename");
 				rename($device, $new_filename);
 
 				// Now update the filenames after they have moved
@@ -124,7 +124,7 @@
 			// already exists, just eject the drive.
 			if($target_iso_exists && $dump_iso && $access_drive) {
 				if($verbose)
-					shell::stdout("* ISO dump exists, ejecting drive");
+					stdout("* ISO dump exists, ejecting drive");
 				$drive->open();
 			}
 
@@ -134,7 +134,7 @@
 				$tmpfname = $target_iso.".dd";
 
 				if($verbose) {
-					shell::stdout("* Dumping to ISO ... ", false);
+					stdout("* Dumping to ISO ... ", false);
 				}
 				$success = $dvd->dump_iso($tmpfname);
 
@@ -145,7 +145,7 @@
 					rename($tmpfname, $target_iso);
 					chmod($target_iso, 0644);
 					unset($tmpfname);
-					shell::stdout("* DVD copy successful. Ready for another :D");
+					stdout("* DVD copy successful. Ready for another :D");
 					$drive->open();
 				} else {
 					shell::msg("* DVD extraction failed :(");

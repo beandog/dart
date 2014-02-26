@@ -23,7 +23,7 @@
 			$dvds_model_id = $dvds_model->create_new();
 
 			if($debug)
-				shell::stdout("! Created new DVD id: $dvds_model_id");
+				stdout("! Created new DVD id: $dvds_model_id");
 
 			$dvds_model->uniq_id = $uniq_id;
 			$dvds_model->title = $dvd->getTitle();
@@ -45,12 +45,12 @@
 			die("? No tracks? No good. Exiting\n");
 
 		if($verbose)
-			shell::stdout("* Importing $num_tracks tracks: ", false);
+			stdout("* Importing $num_tracks tracks: ", false);
 
 		for($track_number = 1; $track_number <= $num_tracks; $track_number++) {
 
 			if($verbose)
-				shell::stdout("$track_number ", false);
+				stdout("$track_number ", false);
 
 			$dvd_track = new DVDTrack($track_number, $device);
 
@@ -64,7 +64,7 @@
 				$tracks_model_id = $tracks_model->create_new();
 
 				if($debug)
-					shell::stdout("! Created new track id: $tracks_model_id");
+					stdout("! Created new track id: $tracks_model_id");
 
 				$tracks_model->dvd_id = $dvds_model_id;
 				$tracks_model->ix = $track_number;
@@ -92,7 +92,7 @@
 			if(count($audio_streams)) {
 
 				if($debug)
-					shell::stdout("! Track $track_number has ".count($audio_streams)." audio streams");
+					stdout("! Track $track_number has ".count($audio_streams)." audio streams");
 
 				foreach($audio_streams as $streamid) {
 
@@ -109,7 +109,7 @@
 						$audio_model_id = $audio_model->create_new();
 
 						if($debug)
-							shell::stdout("! Created new audio id: $audio_model_id");
+							stdout("! Created new audio id: $audio_model_id");
 
 						$audio_model->track_id = $tracks_model_id;
 						$audio_model->ix = $audio_ix;
@@ -143,7 +143,7 @@
 			if(count($subtitle_streams)) {
 
 				if($debug)
-					shell::stdout("! Track $track_number has ".count($subtitle_streams)." subtitle streams");
+					stdout("! Track $track_number has ".count($subtitle_streams)." subtitle streams");
 
 				foreach($subtitle_streams as $streamid) {
 
@@ -160,7 +160,7 @@
 						$subp_model_id = $subp_model->create_new();
 
 						if($debug)
-							shell::stdout("! Created new subp id: $subp_model_id");
+							stdout("! Created new subp id: $subp_model_id");
 
 						$subp_model->track_id = $tracks_model_id;
 						$subp_model->ix = $subp_ix;
@@ -189,7 +189,7 @@
 			if(count($dvd_chapters)) {
 
 				if($debug)
-					shell::stdout("! Track $track_number has ".count($dvd_chapters)." chapters");
+					stdout("! Track $track_number has ".count($dvd_chapters)." chapters");
 
 				foreach($dvd_chapters as $chapter_number => $chapter_data) {
 
@@ -204,7 +204,7 @@
 						$chapters_model_id = $chapters_model->create_new();
 
 						if($debug)
-							shell::stdout("! Created new chapters id: $chapters_model_id");
+							stdout("! Created new chapters id: $chapters_model_id");
 
 						$chapters_model->track_id = $tracks_model_id;
 						$chapters_model->ix = $chapters_ix;
@@ -229,7 +229,7 @@
 			if(count($dvd_cells)) {
 
 				if($debug)
-					shell::stdout("! Track $track_number has ".count($dvd_cells)." cells");
+					stdout("! Track $track_number has ".count($dvd_cells)." cells");
 
 				foreach($dvd_cells as $cells_ix => $cells_length) {
 
@@ -243,7 +243,7 @@
 						$cells_model_id = $cells_model->create_new();
 
 						if($debug)
-							shell::stdout("! Created new cells id: $cells_model_id");
+							stdout("! Created new cells id: $cells_model_id");
 
 						$cells_model->track_id = $tracks_model_id;
 						$cells_model->ix = $cells_ix;
@@ -259,10 +259,10 @@
 
 		// Close off the newline that the track count was displaying
 		if($verbose)
-			shell::stdout('', true);
+			stdout('', true);
 
 		if($verbose) {
-			shell::stdout("* New DVD imported! Yay! :D");
+			stdout("* New DVD imported! Yay! :D");
 		}
 
 	}
