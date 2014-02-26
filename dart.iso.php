@@ -11,7 +11,7 @@
 
 		/** ISO Information **/
 		if($verbose)
-			stdout("[ISO]");
+			echo "[ISO]\n";
 
 		// Get the collection ID to prefix the filename
 		// of the ISO, for easy indexing by cartoons, movies, etc.
@@ -44,7 +44,7 @@
 
 		$display_iso = basename($target_iso);
 		if($verbose)
-			stdout("* Target filename: $display_iso");
+			echo "* Target filename: $display_iso\n";
 
 		/** Filename and filesystem operations **/
 
@@ -53,7 +53,7 @@
 		// a block device or an ISO.
 		$target_iso_exists = file_exists($target_iso);
 		if($verbose && $target_iso_exists)
-			stdout("* target file exists");
+			echo "* target file exists\n";
 
 		// If the target ISO is a symlink, also mention, and
 		// set a variable so we can ignore later.
@@ -61,14 +61,14 @@
 		if($target_iso_exists) {
 			$target_iso_is_symlink = is_link($target_iso);
 			if($target_iso_is_symlink && $verbose)
-				stdout("* target file is a symlink");
+				echo "* target file is a symlink\n";
 		}
 
 		// Operations on filename
 		if($device_is_iso) {
 
 			if($debug)
-				stdout("! device is iso");
+				echo "! device is iso\n";
 
 			// At this point, we already know if the file
 			// exists or not, so check if it's a symlink.
@@ -78,7 +78,7 @@
 			// if the source and the target are the same.
 			if(($device == $target_iso) && !$device_is_symlink && $target_iso_exists) {
 				if($verbose)
-					stdout("* Source file and target ISO are the same");
+					echo "* Source file and target ISO are the same\n";
 			}
 
 			// Otherwise, the file needs to be renamed to its
@@ -93,7 +93,7 @@
 
 				// Rename the file
 				if($verbose)
-					stdout("* Moving $display_device to $new_basename");
+					echo "* Moving $display_device to $new_basename\n";
 				rename($device, $new_filename);
 
 				// Now update the filenames after they have moved
@@ -107,7 +107,7 @@
 				$device_readlink = readlink($device);
 
 				if($verbose) {
-					stdout("* Source file is a symlink, ignoring file");
+					echo "* Source file is a symlink, ignoring file\n";
 				}
 			}
 		}
@@ -117,14 +117,14 @@
 		if(!$device_is_iso) {
 
 			if($debug);
-				stdout("! device is not an iso");
+				echo "! device is not an iso\n";
 
 			// If we have access to the device, and we
 			// are trying to dump it, and the output filename
 			// already exists, just eject the drive.
 			if($target_iso_exists && $dump_iso && $access_drive) {
 				if($verbose)
-					stdout("* ISO dump exists, ejecting drive");
+					echo "* ISO dump exists, ejecting drive\n";
 				$drive->open();
 			}
 
@@ -134,7 +134,7 @@
 				$tmpfname = $target_iso.".dd";
 
 				if($verbose) {
-					stdout("* Dumping to ISO ... ", false);
+					echo "* Dumping to ISO ... ";
 				}
 				$success = $dvd->dump_iso($tmpfname);
 
@@ -145,10 +145,10 @@
 					rename($tmpfname, $target_iso);
 					chmod($target_iso, 0644);
 					unset($tmpfname);
-					stdout("* DVD copy successful. Ready for another :D");
+					echo "* DVD copy successful. Ready for another :D\n";
 					$drive->open();
 				} else {
-					stdout("* DVD extraction failed :(");
+					echo "* DVD extraction failed :(\n";
 				}
 			}
 		}
