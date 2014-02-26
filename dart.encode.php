@@ -153,13 +153,13 @@
 						}
 
 						$episode_dirname = dirname($episode_filename);
-						$dest = tempnam($episode_dirname, "x264.$episode_id.");
+						$x264_temp_file = tempnam($episode_dirname, "x264.$episode_id.");
 
 						// Handbrake
 						$handbrake->input_filename($src);
 						if(!$dumpvob)
 							$handbrake->input_track($track_number);
-						$handbrake->output_filename($dest);
+						$handbrake->output_filename($x264_temp_file);
 						$handbrake->dvdnav($dvdnav);
 						$handbrake->output_format('mkv');
 						$handbrake->set_http_optimize(true);
@@ -303,8 +303,8 @@
 							// If Handbrake didn't die upon immediate execution, then
 							// it's likely that it dumped some kind of output to the
 							// filesystem.  Perform that cleanup here.
-							if(file_exists($dest))
-								unlink($dest);
+							if(file_exists($x264_temp_file))
+								unlink($x264_temp_file);
 							if(file_exists($x264))
 								unlink($x264);
 							if(file_exists($mkv))
@@ -315,8 +315,8 @@
 
 							// Handbrake can exit successfully and not actually encode anything,
 							// by leaving an empty file.
-							if(sprintf("%u", filesize($dest))) {
-								rename($dest, $x264);
+							if(sprintf("%u", filesize($x264_temp_file))) {
+								rename($x264_temp_file, $x264);
 
 								if(!$debug && $dumpvob && file_exists($vob))
 									unlink($vob);
