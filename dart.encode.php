@@ -297,6 +297,9 @@
 
 							shell::msg("! Handbrake died :(");
 							shell::msg("! Handbrake exited on error code $exit_code");
+							// Skipping over this episode is performed as a last action in the loop,
+							// but add a note here that this one will stay queued.
+							shell::msg("! Skipping over this episode, but it will stay in the queue");
 							shell::msg("! Here's the last command sent:");
 							shell::msg("! ".$handbrake->get_executable_string());
 
@@ -442,8 +445,8 @@
 					}
 				}
 
-				// On a dry run, pretend that the file was encoded, by incrementing the skip
-				if($dry_run) {
+				// On a dry run or failed handbrake encode, increment to the next file
+				if($dry_run || !$handbrake_success) {
 					$skip++;
 					$num_encoded++;
 				}
