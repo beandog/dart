@@ -126,9 +126,17 @@
 	}
 
 	// Defaults
+	$add_chapters = true;
 	$audio_encoder = 'lame';
+	$deinterlace = false;
+	$decomb = true;
+	$detelecine = true;
 	$h264_profile = 'high';
 	$h264_level = '3.1';
+	$output_format = 'mkv';
+	$http_optimize = true;
+	$video_encoder = 'x264';
+	$autocrop = true;
 
 	require_once 'class.handbrake.php';
 
@@ -153,35 +161,44 @@
 	$hb->output_filename($output_filename);
 	$hb->set_h264_profile($h264_profile);
 	$hb->set_h264_level($h264_level);
-	$hb->output_format('mkv');
-	$hb->add_chapters(true);
+	$hb->output_format($output_format);
+	$hb->add_chapters($add_chapters);
 	if($video_bitrate)
 		$hb->set_video_bitrate($video_bitrate);
-	$hb->set_video_encoder('x264');
+	$hb->set_video_encoder($video_encoder);
 	if($video_quality)
 		$hb->set_video_quality($video_quality);
 	$hb->set_two_pass($two_pass);
 	$hb->set_two_pass_turbo($two_pass_turbo);
 	$hb->add_audio_encoder($audio_encoder);
-	$hb->autocrop(true);
-	$hb->decomb(true);
-	$hb->detelecine(true);
+	$hb->autocrop($autocrop);
+	$hb->decomb($decomb);
+	$hb->detelecine($detelecine);
+	$hb->deinterlace($deinterlace);
 	$hb->set_x264_preset($x264_preset);
 	$hb->set_x264_tune($x264_tune);
-	$hb->set_http_optimize(true);
+	$hb->set_http_optimize($http_optimize);
+
+	$d_video_quality = $video_quality;
+	if(!$video_quality)
+		$d_video_quality = '(unset)';
 
 	echo "// Handbrake Video //\n";
-	echo "* Quality: $video_quality\n";
+	echo "* Source: $input_filename\n";
+	echo "* Target: $output_filename\n";
+	echo "* Quality: $d_video_quality\n";
 	echo "* Deinterlace: ".intval($deinterlace)."\n";
 	echo "* Decomb: ".intval($decomb)."\n";
 	echo "* Detelecine: ".intval($detelecine)."\n";
 	echo "* Grayscale: ".intval($grayscale)."\n";
 	echo "* Animation: ".intval($animation)."\n";
 	echo "* Autocrop: ".intval($autocrop)."\n";
-	echo "* H.264 profile: $h264_profile\n";
-	echo "* H.264 level: $h264_level\n";
-	echo "* x264 preset: $x264_preset\n";
-	echo "* x264 tune: $x264_tune\n";
+	if($video_encoder == 'x264') {
+		echo "* H.264 profile: $h264_profile\n";
+		echo "* H.264 level: $h264_level\n";
+		echo "* x264 preset: $x264_preset\n";
+		echo "* x264 tune: $x264_tune\n";
+	}
 
 	$command = $hb->get_executable_string();
 
