@@ -13,7 +13,7 @@
 			$dest_filename = str_replace($src, "", $src_filename);
 			$dest_dir = $target.dirname($dest_filename);
 
-			$exec = "ncftpput -m -z -DD zotac ".shell::escape_string($dest_dir)." ".shell::escape_string($src_filename);
+			$exec = "ncftpput -m -z -DD zotac ".escapeshellarg($dest_dir)." ".escapeshellarg($src_filename);
 
 			passthru($exec);
 

@@ -163,7 +163,7 @@
 			if($this->debug)
 				echo "! dvd->dump_iso($dest, $method)\n";
 
-			$dest = shell::escape_string($dest);
+			$dest = escapeshellarg($dest);
 			$device = $this->getDevice();
 
 			// ddrescue README

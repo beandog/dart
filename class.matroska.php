@@ -259,9 +259,9 @@ XML;
 
 		public function mkvpropedit($xml, $mkv) {
 
-			$title = shell::escape_string($this->title);
-			$mkv = shell::escape_string($mkv);
-			$xml = shell::escape_string($xml);
+			$title = escapeshellarg($this->title);
+			$mkv = escapeshellarg($mkv);
+			$xml = escapeshellarg($xml);
 
 			$str = "mkvpropedit -s title=$title $mkv";
 
