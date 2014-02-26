@@ -186,9 +186,10 @@
 	if(!$video_bitrate)
 		$d_video_bitrate = "(default)";
 
-	echo "// Handbrake Video //\n";
+	echo "// General //\n";
 	echo "* Source: $input_filename\n";
 	echo "* Target: $output_filename\n";
+	echo "// Video //\n";
 	echo "* Quality: $d_video_quality\n";
 	echo "* Bitrate: $d_video_bitrate\n";
 	echo "* Deinterlace: ".intval($deinterlace)."\n";
@@ -203,7 +204,7 @@
 		echo "* x264 preset: $x264_preset\n";
 		echo "* x264 tune: $x264_tune\n";
 	}
-	echo "// Handbrake Audio //\n";
+	echo "// Audio //\n";
 	echo "* Encoder: $audio_encoder\n";
 
 	$command = $hb->get_executable_string();
