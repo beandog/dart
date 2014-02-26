@@ -14,6 +14,13 @@
 		'action' => 'StoreString',
 		'default' => null,
 	));
+	$parser->addOption('dry_run', array(
+		'short_name' => '-n',
+		'long_name' => '--dry-run',
+		'description' => 'Dry run',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('input_track', array(
 		'short_name' => '-t',
 		'long_name' => '--track',
@@ -163,7 +170,20 @@
 	$hb->set_x264_tune($x264_tune);
 	$hb->set_http_optimize(true);
 
+	echo "// Handbrake Video //\n";
+	echo "* Quality: $video_quality\n";
+	echo "* Deinterlace: ".intval($deinterlace)."\n";
+	echo "* Decomb: ".intval($decomb)."\n";
+	echo "* Detelecine: ".intval($detelecine)."\n";
+	echo "* Grayscale: ".intval($grayscale)."\n";
+	echo "* Animation: ".intval($animation)."\n";
+	echo "* Autocrop: ".intval($autocrop)."\n";
+	echo "* H.264 profile: $h264_profile\n";
+	echo "* H.264 level: $h264_level\n";
+	echo "* x264 preset: $x264_preset\n";
+	echo "* x264 tune: $x264_tune\n";
+
 	$command = $hb->get_executable_string();
 
-	if($input_filename)
+	if($input_filename && !$dry_run)
 		$hb->encode();
