@@ -12,8 +12,8 @@
 	if($access_device && $disc_indexed) {
 
 		if($verbose) {
-			stdout("[Archival]");
-			stdout("* Checking for missing metadata");
+			echo "[Archival]\n";
+			echo "* Checking for missing metadata\n";
 		}
 
 		// Use database checks to see if archiving needs to happen
@@ -24,19 +24,19 @@
 		if($missing_dvd_metadata) {
 
 			if($debug)
-				stdout("! DVD ID $dvds_model_id is missing metadata");
+				echo "! DVD ID $dvds_model_id is missing metadata\n";
 
 			// DVD longest track
 			if(is_null($dvds_model->longest_track)) {
 				if($verbose)
-					stdout("* Updating longest track");
+					echo "* Updating longest track\n";
 				$dvds_model->longest_track = $dvd->getLongestTrack();
 			}
 
 			// DVD filesize
 			if(is_null($dvds_model->filesize)) {
 				if($verbose)
-					stdout("* Updating filesize");
+					echo "* Updating filesize\n";
 				$dvds_model->filesize = $dvd->getSize();
 			}
 
@@ -45,7 +45,7 @@
 			// not a function.
 			if(!($dvds_model->serial_id)) {
 				if($verbose)
-					stdout("* Updating serial ID");
+					echo "* Updating serial ID\n";
 				$dvds_model->serial_id = $dvd->getSerialID();
 			}
 
@@ -72,7 +72,7 @@
 			if($missing_track_metadata) {
 
 				if($debug)
-					stdout("! Track $track_number is missing metadata");
+					echo "! Track $track_number is missing metadata\n";
 
 				$tracks_model->length = $dvd_track->getLength();
 				$tracks_model->vts_id = $dvd_track->getVTSID();
@@ -111,9 +111,7 @@
 		// This is a legacy variable, but may come in
 		// useful sometime.
 		$disc_archived = true;
-
-		stdout("* Disc archived");
-
+		echo "* Disc archived\n";
 
 		/** Sanity Checks **/
 
@@ -135,7 +133,7 @@
 			$missing_import_data = true;
 
 			if($verbose) {
-				stdout("* DVD tracks ($num_dvd_tracks) and DB tracks ($num_db_tracks) do not match");
+				echo "* DVD tracks ($num_dvd_tracks) and DB tracks ($num_db_tracks) do not match\n";
 			}
 		}
 
@@ -153,7 +151,7 @@
 			if($missing_track_metadata) {
 				$track_number = $tracks_model->ix;
 				$dvd_track = new DVDTrack($track_number, $device);
-				stdout("$track_number ", false);
+				echo "$track_number ");
 			}
 
 			// Check to see if there are tracks in the
@@ -170,9 +168,9 @@
 		}
 
 		if($verbose && $missing_audio_streams)
-			stdout("* No audio streams found in database for tracks");
+			echo "* No audio streams found in database for tracks\n";
 		if($verbose && $missing_import_data)
-			stdout("* Forcing import");
+			echo "* Forcing import\n";
 
 	}
 
