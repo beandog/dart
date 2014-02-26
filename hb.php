@@ -213,6 +213,14 @@
 	if(is_null($output_filename))
 		$output_filename = implode($arr_fn, '-').".mkv";
 
+	// Minimum filesize, 4 MB
+	$min_filesize = 4194304;
+
+	// Remove old file if it's not larger than 4 MBs
+	if(file_exists($output_filename) && filesize($output_filename) < $min_filesize) {
+		unlink($output_filename);
+	}
+
 	if(file_exists($output_filename) && !$overwrite) {
 		echo "Output file $output_filename exists, and overwrite is not enabled.  Quitting.\n";
 		exit(1);
