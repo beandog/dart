@@ -104,11 +104,8 @@
 		// If all the disc metadata is in the database
 		$disc_archived = false;
 
-		// Is the device an ISO file
-		$device_is_iso = false;
-
-		// Is the device a symlink
-		$device_is_symlink = false;
+		// Is the source filename a block device
+		$device_is_hardware = false;
 
 		// Can we poll the file or device
 		$access_device = false;
@@ -120,23 +117,23 @@
 		$missing_import_data = false;
 		$missing_audio_streams = false;
 
-		// Change the device name to include the full path
-		// if it's a filename and not a block device
-		if($device_is_iso)
-			$device = realpath($device);
-
 		// Does the device tray have media
 		$has_media = false;
 
 		// Making a run for it! :)
 		$first_run = false;
 
-		// File is an ISO (or a non-block device) if
-		// it is not found in /dev
-		$device_dirname = dirname(realpath($device));
-		if($device_dirname != "/dev") {
+		// Get the real path of the device (no symlinks, full dirname)
+		$device_realpath = realpath($device);
+
+		// Check if source filename is a block device or not
+		$device_dirname = dirname($device_realpath);
+		if($device_dirname == "/dev") {
+			$device_is_hardware = true;
+			$device_is_iso = false;
+		} else {
+			$device_is_hardware = false;
 			$device_is_iso = true;
-			$device_is_symlink = is_link($device);
 		}
 
 		// Verify file exists
