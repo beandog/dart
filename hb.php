@@ -71,7 +71,7 @@
 		'default' => 'medium',
 	));
 	$parser->addOption('x264_tune', array(
-		'short_name' => '-t',
+		'short_name' => '-u',
 		'long_name' => '--x264-tune',
 		'description' => 'x264 tune',
 		'action' => 'StoreString',
