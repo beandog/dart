@@ -62,7 +62,7 @@
 					$queue_model->add_episode($episode_id, php_uname('n'));
 
 				// Bump up the queue if we are accessing the drive directly
-				if($device_is_symlink)
+				if($device_is_hardware)
 					$queue_model->prioritize();
 
 				$i++;

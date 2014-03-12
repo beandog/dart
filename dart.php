@@ -152,14 +152,15 @@
 			$access_device = true;
 			echo "[Access Device]\n";
 			echo "* Reading $display_device\n";
+			if($debug)
+				echo "* Reading $device_realpath\n";
 		}
 
 		// Determine whether we need physical access to a disc.
 		// Note that since the next steps are so dependent upon
 		// whether 'wait' is true or not, it's easier to just
 		// create a whole new block
-		// if(!$wait && !$device_is_iso && $access_device) {
-		if(!$device_is_iso && $access_device) {
+		if($device_is_hardware && $access_device) {
 
 			$drive = new DVDDrive($device);
 			$drive->set_debug($debug);
@@ -191,7 +192,7 @@
 		if($access_device) {
 
 			// Decrypt the CSS to avoid disc access errors
-			if(!$device_is_iso)
+			if($device_is_hardware)
 				$dvd->load_css();
 
 			echo "[DVD]\n";
@@ -267,7 +268,7 @@
 
 		// If polling for a new disc, check to see if one is in the
 		// drive.  If there is, start over.
-		if($wait && ($rip || $import || $archive || $dump_iso) && !$device_is_iso) {
+		if($wait && ($rip || $import || $archive || $dump_iso) && $device_is_hardware) {
 			// Only toggle devices if passed more than one
 			// Otherwise, just re-poll the original.
 			// This is useful in cases where --wait is called

@@ -64,57 +64,10 @@
 				echo "* target file is a symlink\n";
 		}
 
-		// Operations on filename
-		if($device_is_iso) {
-
-			if($debug)
-				echo "! device is iso\n";
-
-			// At this point, we already know if the file
-			// exists or not, so check if it's a symlink.
-			$device_is_symlink = is_link($device);
-
-			// The source is an ISO file, so check to see
-			// if the source and the target are the same.
-			if(($device == $target_iso) && !$device_is_symlink && $target_iso_exists) {
-				if($verbose)
-					echo "* Source file and target ISO are the same\n";
-			}
-
-			// Otherwise, the file needs to be renamed to its
-			// new syntax.
-			if(($device != $target_iso) && !$device_is_symlink && !$target_iso_exists) {
-
-				// Only rename the file since it exists, don't
-				// move it to the target directory.
-				$new_dirname = dirname($device);
-				$new_basename = basename($target_iso);
-				$new_filename = "$new_dirname/$new_basename";
-
-				// Rename the file
-				if($verbose)
-					echo "* Moving $display_device to $new_basename\n";
-				rename($device, $new_filename);
-
-				// Now update the filenames after they have moved
-				$device = $new_filename;
-				$target_iso_exists = true;
-			}
-
-			// If the source is a symlink, don't touch it.
-			if($device_is_symlink) {
-
-				$device_readlink = readlink($device);
-
-				if($verbose) {
-					echo "* Source file is a symlink, ignoring file\n";
-				}
-			}
-		}
 
 
 		// Operations on a block device
-		if(!$device_is_iso) {
+		if($device_is_hardware) {
 
 			if($debug);
 				echo "! device is not an iso\n";
@@ -152,4 +105,74 @@
 				}
 			}
 		}
+
+		// Operations on filename
+		if($device_is_iso) {
+
+			if($debug) {
+				echo "* Device '$device' is an iso\n";
+				echo "* Full path of device: ".realpath($device)."\n";
+			}
+
+			// Move the filename to standard naming convention for the ISOs, so that it
+			// is always apparent where the device can be *accessed*.
+
+			// First, rename the existing file to the basename of the target ISO, if it
+			// is not already.
+			$source_realpath = realpath($device);
+			$source_dirname = dirname($device);
+			$source_basename = basename($device);
+
+			$target_realpath = realpath($target_iso);
+			$target_dirname = dirname($target_iso);
+			$target_basename = basename($target_iso);
+
+			if($debug) {
+				echo "* Source realpath: $source_realpath\n";
+				echo "* Target basename: $target_basename\n";
+			}
+
+			// At this point, we already know if the file
+			// exists or not, so check if it's a symlink.
+			$device_is_symlink = is_link($device);
+
+			// The source is an ISO file, so check to see
+			// if the source and the target are the same.
+			if(($device == $target_iso) && !$device_is_symlink && $target_iso_exists) {
+				if($verbose)
+					echo "* Source file and target ISO are the same\n";
+			}
+
+			// Rename the file to its new syntax if it's not already done
+			if($device != $target_iso && !$device_is_symlink && !$target_iso_exists) {
+
+				// Only rename the file since it exists, don't
+				// move it to the target directory.
+				$new_dirname = dirname($device);
+				$new_basename = basename($target_iso);
+				$new_filename = "$new_dirname/$new_basename";
+
+				// Rename the file
+				if($verbose)
+					echo "* Moving $display_device to $new_basename\n";
+				if($debug)
+					echo "* Moving $device to $new_filename\n";
+				rename($device, $new_filename);
+
+				// Now update the filenames after they have moved
+				$device = $new_filename;
+				$target_iso_exists = true;
+			}
+
+			// If the source is a symlink, don't touch it.
+			if($device_is_symlink) {
+
+				$device_readlink = readlink($device);
+
+				if($verbose) {
+					echo "* Source file is a symlink, ignoring file\n";
+				}
+			}
+		}
+
 	}
