@@ -52,6 +52,17 @@
 
 		foreach($tracks as $tracks_model_id) {
 
+			// Check to see if there are tracks in the
+			// database that don't have any audio streams
+			$tracks_model = new Tracks_Model;
+			$tracks_model->load($tracks_model_id);
+			$num_db_audio_streams = count($tracks_model->get_audio_streams());
+
+			if(!$num_db_audio_streams) {
+				$missing_import_data = true;
+				$missing_audio_streams = true;
+			}
+
 			// Check for missing metadata
 			$tracks_model = new Tracks_Model;
 			$tracks_model->load($tracks_model_id);
@@ -152,36 +163,6 @@
 			$missing_import_data = true;
 
 			echo "* DVD tracks ($num_dvd_tracks) and DB tracks ($num_db_tracks) do not match\n";
-		}
-
-		$tracks = $dvds_model->get_tracks();
-		$num_db_audio_streams = 0;
-
-		foreach($tracks as $tracks_model_id) {
-
-			$tracks_model = new Tracks_Model;
-			$tracks_model->load($tracks_model_id);
-
-			// Check for missing metadata
-			$missing_track_metadata = $tracks_model->missing_metadata();
-
-			if($missing_track_metadata) {
-				$track_number = $tracks_model->ix;
-				$dvd_track = new DVDTrack($track_number, $device);
-				echo "$track_number ";
-			}
-
-			// Check to see if there are tracks in the
-			// database that don't have any audio streams
-			$tracks_model = new Tracks_Model;
-			$tracks_model->load($tracks_model_id);
-			$num_db_audio_streams += count($tracks_model->get_audio_streams());
-
-		}
-
-		if(!$num_db_audio_streams) {
-			$missing_import_data = true;
-			$missing_audio_streams = true;
 		}
 
 		if($missing_audio_streams)
