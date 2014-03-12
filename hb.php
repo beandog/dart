@@ -245,7 +245,8 @@
 	$hb->set_two_pass($two_pass);
 	$hb->set_two_pass_turbo($two_pass_turbo);
 	$hb->add_audio_encoder($audio_encoder);
-	$hb->set_audio_bitrate($audio_bitrate);
+	if($audio_encoder != 'copy')
+		$hb->set_audio_bitrate($audio_bitrate);
 	$hb->autocrop($autocrop);
 	$hb->decomb($decomb);
 	$hb->detelecine($detelecine);
@@ -268,7 +269,7 @@
 	if(!$input_track)
 		$d_input_track = "(default)";
 	$d_audio_bitrate = "$audio_bitrate kbps";
-	if(!$audio_bitrate)
+	if(!$audio_bitrate || $audio_encoder == 'copy')
 		$d_audio_bitrate = "(default)";
 	$d_audio_encoder = $audio_encoder;
 	if(!$audio_encoder)
