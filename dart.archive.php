@@ -58,13 +58,11 @@
 			// Check for missing metadata
 			$missing_track_metadata = $tracks_model->missing_metadata();
 
-			if($missing_track_metadata) {
-				$track_number = $tracks_model->ix;
-				$dvd_track = new DVDTrack($track_number, $device);
-			}
-
 			// Only access the device if we need to
 			if($missing_track_metadata) {
+
+				$track_number = $tracks_model->ix;
+				$dvd_track = new DVDTrack($track_number, $device);
 
 				echo "* Updating metadata for track $track_number\n";
 
