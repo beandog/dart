@@ -139,7 +139,7 @@
 
 			// Check if the file can be accessed in the export directory, either with
 			// the original file or a symlink.  If not, make a symlink.
-			if(!file_exists($target_iso)) {
+			if(!file_exists($target_iso) && $rip) {
 
 				if($debug)
 					echo "* Creating a symlink\n";
