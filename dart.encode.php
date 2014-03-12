@@ -186,7 +186,8 @@
 						}
 
 						$handbrake->set_video_encoder($video_encoder);
-						$handbrake->set_video_quality($video_quality);
+						if($video_quality)
+							$handbrake->set_video_quality($video_quality);
 						$handbrake->deinterlace($deinterlace);
 						$handbrake->decomb($decomb);
 						$handbrake->detelecine($detelecine);
