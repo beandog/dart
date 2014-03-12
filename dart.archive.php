@@ -52,13 +52,11 @@
 
 		foreach($tracks as $tracks_model_id) {
 
+			// Check for missing metadata
 			$tracks_model = new Tracks_Model;
 			$tracks_model->load($tracks_model_id);
-
-			// Check for missing metadata
 			$missing_track_metadata = $tracks_model->missing_metadata();
 
-			// Only access the device if we need to
 			if($missing_track_metadata) {
 
 				$track_number = $tracks_model->ix;
@@ -109,8 +107,7 @@
 				}
 
 				// Check for closed captioning
-				$has_cc = $tracks_model->cc;
-				if(is_null($has_cc)) {
+				if(is_null($tracks_model->cc)) {
 
 					echo "* Updating closed captioning\n";
 
@@ -118,9 +115,7 @@
 					$handbrake->input_filename($device);
 					$handbrake->input_track($track_number);
 
-					$has_cc = $handbrake->has_cc();
-
-					if($has_cc)
+					if($handbrake->has_cc())
 						$tracks_model->cc = 't';
 					else
 						$tracks_model->cc = 'f';
