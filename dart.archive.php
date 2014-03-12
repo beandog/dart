@@ -11,10 +11,8 @@
 
 	if($access_device && $disc_indexed) {
 
-		if($verbose) {
-			echo "[Archival]\n";
-			echo "* Checking for missing metadata\n";
-		}
+		echo "[Archival]\n";
+		echo "* Checking for missing metadata\n";
 
 		// Use database checks to see if archiving needs to happen
 		$missing_dvd_metadata = $dvds_model->missing_metadata();
@@ -28,15 +26,13 @@
 
 			// DVD longest track
 			if(is_null($dvds_model->longest_track)) {
-				if($verbose)
-					echo "* Updating longest track\n";
+				echo "* Updating longest track\n";
 				$dvds_model->longest_track = $dvd->getLongestTrack();
 			}
 
 			// DVD filesize
 			if(is_null($dvds_model->filesize)) {
-				if($verbose)
-					echo "* Updating filesize\n";
+				echo "* Updating filesize\n";
 				$dvds_model->filesize = $dvd->getSize();
 			}
 
@@ -44,8 +40,7 @@
 			// Not using 'empty' because it's a constructor, and
 			// not a function.
 			if(!($dvds_model->serial_id)) {
-				if($verbose)
-					echo "* Updating serial ID\n";
+				echo "* Updating serial ID\n";
 				$dvds_model->serial_id = $dvd->getSerialID();
 			}
 
@@ -71,8 +66,7 @@
 			// Only access the device if we need to
 			if($missing_track_metadata) {
 
-				if($verbose)
-					echo "* Updating metadata for track $track_number\n";
+				echo "* Updating metadata for track $track_number\n";
 
 				$tracks_model->length = $dvd_track->getLength();
 				if(!strlen($tracks_model->vts_id))
@@ -142,9 +136,7 @@
 
 			$missing_import_data = true;
 
-			if($verbose) {
-				echo "* DVD tracks ($num_dvd_tracks) and DB tracks ($num_db_tracks) do not match\n";
-			}
+			echo "* DVD tracks ($num_dvd_tracks) and DB tracks ($num_db_tracks) do not match\n";
 		}
 
 		$tracks = $dvds_model->get_tracks();
@@ -177,9 +169,9 @@
 			$missing_audio_streams = true;
 		}
 
-		if($verbose && $missing_audio_streams)
+		if($missing_audio_streams)
 			echo "* No audio streams found in database for tracks\n";
-		if($verbose && $missing_import_data)
+		if($missing_import_data)
 			echo "* Forcing import\n";
 
 	}
