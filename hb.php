@@ -207,7 +207,7 @@
 		$arr_fn[] = 'grayscale';
 	if($audio_encoder)
 		$arr_fn[] = $audio_encoder;
-	if($audio_bitrate)
+	if($audio_bitrate && $audio_encoder != 'copy')
 		$arr_fn[] = $audio_bitrate."k";
 	if($last_chapter)
 		$arr_fn[] = "chap-1-$last_chapter";
