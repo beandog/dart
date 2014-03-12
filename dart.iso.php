@@ -64,13 +64,11 @@
 				echo "* target file is a symlink\n";
 		}
 
-
-
 		// Operations on a block device
 		if($device_is_hardware) {
 
 			if($debug);
-				echo "! device is not an iso\n";
+				echo "! device is not an ISO\n";
 
 			// If we have access to the device, and we
 			// are trying to dump it, and the output filename
@@ -110,7 +108,7 @@
 		if($device_is_iso) {
 
 			if($debug) {
-				echo "* Device '$device' is an iso\n";
+				echo "* Device '$device' is an ISO\n";
 				echo "* Full path of device: ".realpath($device)."\n";
 			}
 
