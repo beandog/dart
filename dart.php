@@ -133,7 +133,7 @@
 
 		// File is an ISO (or a non-block device) if
 		// it is not found in /dev
-		$device_dirname = dirname($device);
+		$device_dirname = dirname(realpath($device));
 		if($device_dirname != "/dev") {
 			$device_is_iso = true;
 			$device_is_symlink = is_link($device);
