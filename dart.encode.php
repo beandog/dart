@@ -422,8 +422,6 @@
 				} elseif (!file_exists($iso) && !file_exists($mkv)) {
 					// At this point, it shouldn't be in the queue.
 					echo "! ISO not found ($iso), MKV not found ($mkv), force removing episode from queue\n";
-					if(!$handbrake_success)
-						echo "! Also, Handbrake did not successfully run; removing episode to prevent encoding loop\n";
 					$queue_model->remove_episode($episode_id);
 				}
 
