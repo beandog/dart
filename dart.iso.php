@@ -45,6 +45,8 @@
 		$display_iso = basename($target_iso);
 		if($verbose)
 			echo "* Target filename: $display_iso\n";
+		if($debug)
+			echo "* Target filename: $target_iso\n";
 
 		/** Filename and filesystem operations **/
 
@@ -53,13 +55,10 @@
 		// a block device or an ISO.
 		$target_iso_exists = file_exists($target_iso);
 		if($verbose && $target_iso_exists)
-			echo "* target file exists\n";
+			echo "* File exists\n";
 
 		// Operations on a block device
 		if($device_is_hardware) {
-
-			if($debug);
-				echo "! device is not an ISO\n";
 
 			// If we have access to the device, and we
 			// are trying to dump it, and the output filename
@@ -99,7 +98,7 @@
 		if($device_is_iso) {
 
 			if($debug) {
-				echo "* Full path of device: ".realpath($device)."\n";
+				echo "* Real path: ".realpath($device)."\n";
 			}
 
 			// Move the filename to standard naming convention for the ISOs, so that it
@@ -108,7 +107,6 @@
 			// First, rename the existing file to the basename of the target ISO, if it
 			// is not already.
 			$source_dirname = dirname($device);
-
 			$target_rename = $source_dirname."/".basename($target_iso);
 			$target_rename_exists = file_exists($target_rename);
 
@@ -125,7 +123,6 @@
 
 				// Now update the filenames after they have moved
 				$device = $target_rename;
-				$target_iso_exists = true;
 
 			}
 
