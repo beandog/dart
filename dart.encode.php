@@ -177,6 +177,7 @@
 						$autocrop = true;
 						$h264_profile = 'high';
 						$h264_level = '3.1';
+						$x264_opts = $series_model->get_x264opts();
 						$x264_preset = 'medium';
 						$x264_tune = 'film';
 						$animation = false;
@@ -195,6 +196,8 @@
 						$handbrake->autocrop($autocrop);
 						$handbrake->set_h264_profile($h264_profile);
 						$handbrake->set_h264_level($h264_level);
+						if($x264_opts)
+							$handbrake->set_x264opts($x264_opts);
 						$handbrake->set_x264_preset($x264_preset);
 						$handbrake->set_x264_tune($x264_tune);
 
