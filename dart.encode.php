@@ -202,6 +202,7 @@
 						$handbrake->set_x264_tune($x264_tune);
 
 
+						/** Audio **/
 						// Some DVDs may report more audio streams than
 						// Handbrake does.  If that's the case, check
 						// each one that lsdvd reports, to see if Handbrake
@@ -233,14 +234,15 @@
 
 						}
 
-						// Add the audio encoders to use
-						// Add two tracks: copy the AC3/DTS, and also a secondary AAC channel
-						// FIXME!! this completely ignores preferences stored in the database.
-						$handbrake->add_audio_encoder('copy');
-						// Disabling adding AAC at all for now
-						// $handbrake->add_audio_encoder('faac');
-						// Setting a default audio fallback in case 'copy' doesn't work (0.9.9)
-						$handbrake->set_audio_fallback('fdk_aac');
+						$audio_encoder = $series_model->get_audio_encoder();
+						if($audio_encoder == 'aac') {
+							$handbrake->add_audio_encoder('fdk_aac');
+							$handbrake->set_audio_fallback('copy');
+						} elseif($audio_encoder == 'copy') {
+							$handbrake->add_audio_encoder('copy');
+						} else {
+							$handbrake->set_audio_fallback('copy');
+						}
 
 						// Check for a subtitle track
 						$subp_ix = $tracks_model->get_first_english_subp();
