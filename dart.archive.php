@@ -50,13 +50,16 @@
 
 		$tracks = $dvds_model->get_tracks();
 
+		// Default to empty, will be counted later
+		$num_db_audio_streams = 0;
+
 		foreach($tracks as $tracks_model_id) {
 
-			// Check to see if there are tracks in the
-			// database that don't have any audio streams
+			// Check to see if there are tracks in the database that don't have any audio streams.
+			// Fixes legacy import
 			$tracks_model = new Tracks_Model;
 			$tracks_model->load($tracks_model_id);
-			$num_db_audio_streams = count($tracks_model->get_audio_streams());
+			$num_db_audio_streams += count($tracks_model->get_audio_streams());
 
 			if(!$num_db_audio_streams) {
 				$missing_import_data = true;
