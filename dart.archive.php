@@ -71,20 +71,30 @@
 			// Only access the device if we need to
 			if($missing_track_metadata) {
 
-				if($debug)
-					echo "! Track $track_number is missing metadata\n";
+				if($verbose)
+					echo "* Updating metadata for track $track_number\n";
 
 				$tracks_model->length = $dvd_track->getLength();
-				$tracks_model->vts_id = $dvd_track->getVTSID();
-				$tracks_model->vts = $dvd_track->getVTS();
-				$tracks_model->ttn = $dvd_track->getTTN();
-				$tracks_model->fps = $dvd_track->getFPS();
-				$tracks_model->format = $dvd_track->getVideoFormat();
-				$tracks_model->aspect = $dvd_track->getAspectRatio();
-				$tracks_model->width = $dvd_track->getWidth();
-				$tracks_model->height = $dvd_track->getHeight();
-				$tracks_model->df = $dvd_track->getDF();
-				$tracks_model->angles = $dvd_track->getAngles();
+				if(!strlen($tracks_model->vts_id))
+					$tracks_model->vts_id = $dvd_track->getVTSID();
+				if(is_null($tracks_model->vts))
+					$tracks_model->vts = $dvd_track->getVTS();
+				if(is_null($tracks_model->ttn))
+					$tracks_model->ttn = $dvd_track->getTTN();
+				if(is_null($tracks_model->fps))
+					$tracks_model->fps = $dvd_track->getFPS();
+				if(!strlen($tracks_model->format))
+					$tracks_model->format = $dvd_track->getVideoFormat();
+				if(!strlen($tracks_model->aspect))
+					$tracks_model->aspect = $dvd_track->getAspectRatio();
+				if(is_null($tracks_model->width))
+					$tracks_model->width = $dvd_track->getWidth();
+				if(is_null($tracks_model->height))
+					$tracks_model->height = $dvd_track->getHeight();
+				if(!strlen($tracks_model->df))
+					$tracks_model->df = $dvd_track->getDF();
+				if(is_null($tracks_model->angles))
+					$tracks_model->angles = $dvd_track->getAngles();
 
 				// Check for closed captioning
 				$has_cc = $tracks_model->cc;
