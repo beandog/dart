@@ -69,30 +69,52 @@
 				echo "* Updating metadata for track $track_number\n";
 
 				$tracks_model->length = $dvd_track->getLength();
-				if(!strlen($tracks_model->vts_id))
+				if(!strlen($tracks_model->vts_id)) {
+					echo "* Updating VTS ID\n";
 					$tracks_model->vts_id = $dvd_track->getVTSID();
-				if(is_null($tracks_model->vts))
+				}
+				if(is_null($tracks_model->vts)) {
+					echo "* Updating VTS\n";
 					$tracks_model->vts = $dvd_track->getVTS();
-				if(is_null($tracks_model->ttn))
+				}
+				if(is_null($tracks_model->ttn)) {
+					echo "* Updating TTN\n";
 					$tracks_model->ttn = $dvd_track->getTTN();
-				if(is_null($tracks_model->fps))
+				}
+				if(is_null($tracks_model->fps)) {
+					echo "* Updating FPS\n";
 					$tracks_model->fps = $dvd_track->getFPS();
-				if(!strlen($tracks_model->format))
+				}
+				if(!strlen($tracks_model->format)) {
+					echo "* Updating video format\n";
 					$tracks_model->format = $dvd_track->getVideoFormat();
-				if(!strlen($tracks_model->aspect))
+				}
+				if(!strlen($tracks_model->aspect)) {
+					echo "* Updating video aspect ratio\n";
 					$tracks_model->aspect = $dvd_track->getAspectRatio();
-				if(is_null($tracks_model->width))
+				}
+				if(is_null($tracks_model->width)) {
+					echo "* Updating video width\n";
 					$tracks_model->width = $dvd_track->getWidth();
-				if(is_null($tracks_model->height))
+				}
+				if(is_null($tracks_model->height)) {
+					echo "* Updating video height\n";
 					$tracks_model->height = $dvd_track->getHeight();
-				if(!strlen($tracks_model->df))
+				}
+				if(!strlen($tracks_model->df)) {
+					echo "* Updating DF\n";
 					$tracks_model->df = $dvd_track->getDF();
-				if(is_null($tracks_model->angles))
+				}
+				if(is_null($tracks_model->angles)) {
+					echo "* Updating angles\n";
 					$tracks_model->angles = $dvd_track->getAngles();
+				}
 
 				// Check for closed captioning
 				$has_cc = $tracks_model->cc;
 				if(is_null($has_cc)) {
+
+					echo "* Updating closed captioning\n";
 
 					$handbrake = new Handbrake;
 					$handbrake->input_filename($device);
