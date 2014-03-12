@@ -168,6 +168,9 @@
 						/** Video **/
 						$video_encoder = 'x264';
 						$video_quality = $series_model->get_crf();
+						$video_bitrate = $series_model->get_video_bitrate();
+						$video_two_pass = $series_model->get_two_pass();
+						$video_two_pass_turbo = $series_model->get_two_pass_turbo();
 						$deinterlace = false;
 						$decomb = true;
 						$detelecine = true;
@@ -189,6 +192,11 @@
 						$handbrake->set_video_encoder($video_encoder);
 						if($video_quality)
 							$handbrake->set_video_quality($video_quality);
+						if($video_bitrate)
+							$handbrake->set_video_bitrate($video_bitrate);
+						$handbrake->set_two_pass($video_two_pass);
+						if($video_two_pass)
+							$handbrake->set_two_pass_turbo($video_two_pass_turbo);
 						$handbrake->deinterlace($deinterlace);
 						$handbrake->decomb($decomb);
 						$handbrake->detelecine($detelecine);
