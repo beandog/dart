@@ -44,9 +44,9 @@
 
 		$display_iso = basename($target_iso);
 		if($verbose)
-			echo "* Target filename: $display_iso\n";
+			echo "* Filename: $display_iso\n";
 		if($debug)
-			echo "* Target filename: $target_iso\n";
+			echo "* Filename: $target_iso\n";
 
 		/** Filename and filesystem operations **/
 
@@ -54,8 +54,6 @@
 		// is for the source regardless of whether it is
 		// a block device or an ISO.
 		$target_iso_exists = file_exists($target_iso);
-		if($verbose && $target_iso_exists)
-			echo "* File exists\n";
 
 		// Operations on a block device
 		if($device_is_hardware) {
@@ -65,7 +63,7 @@
 			// already exists, just eject the drive.
 			if($target_iso_exists && $dump_iso && $access_drive) {
 				if($verbose)
-					echo "* ISO dump exists, ejecting drive\n";
+					echo "* File exists, ejecting drive\n";
 				$drive->open();
 			}
 
@@ -75,7 +73,7 @@
 				$tmpfname = $target_iso.".dd";
 
 				if($verbose) {
-					echo "* Dumping to ISO ... ";
+					echo "* Dumping $device to ISO ... ";
 				}
 				$success = $dvd->dump_iso($tmpfname);
 
@@ -110,8 +108,19 @@
 			$target_rename = $source_dirname."/".basename($target_iso);
 			$target_rename_exists = file_exists($target_rename);
 
+			if($debug)
+				echo "* Checking to see if $target_rename exists ... ";
+
 			// Rename the file to its new syntax if it's not already done
-			if(!$target_rename_exists) {
+			if($target_rename_exists) {
+
+				if($debug)
+					echo "yes\n";
+
+			} else {
+
+				if($debug)
+					echo "no\n";
 
 				// Rename the file
 				if($verbose)
