@@ -55,15 +55,6 @@
 		if($verbose && $target_iso_exists)
 			echo "* target file exists\n";
 
-		// If the target ISO is a symlink, also mention, and
-		// set a variable so we can ignore later.
-		$target_iso_is_symlink = false;
-		if($target_iso_exists) {
-			$target_iso_is_symlink = is_link($target_iso);
-			if($target_iso_is_symlink && $verbose)
-				echo "* target file is a symlink\n";
-		}
-
 		// Operations on a block device
 		if($device_is_hardware) {
 
