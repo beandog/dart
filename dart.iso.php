@@ -104,6 +104,8 @@
 
 			// First, rename the existing file to the basename of the target ISO, if it
 			// is not already.
+
+			// This only changes the naming scheme of the file *in its current directory*
 			$source_dirname = dirname($device);
 			$target_rename = $source_dirname."/".basename($target_iso);
 			$target_rename_exists = file_exists($target_rename);
@@ -132,6 +134,16 @@
 
 				// Now update the filenames after they have moved
 				$device = $target_rename;
+
+			}
+
+			// Check if the file can be accessed in the export directory, either with
+			// the original file or a symlink.  If not, make a symlink.
+			if(!file_exists($target_iso)) {
+
+				if($debug)
+					echo "* Creating a symlink\n";
+				symlink(realpath($device), $target_iso);
 
 			}
 
