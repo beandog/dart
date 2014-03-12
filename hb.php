@@ -113,7 +113,7 @@
 		'default' => true,
 	));
 	$parser->addOption('grain', array(
-		'short_name' => '-g',
+		'short_name' => '-r',
 		'long_name' => '--grain',
 		'description' => 'Grain tuning',
 		'action' => 'StoreTrue',
