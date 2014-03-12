@@ -192,6 +192,8 @@
 	}
 	if($video_bitrate)
 		$arr_fn[] = $video_bitrate."k";
+	if($video_quality)
+		$arr_fn[] = $video_quality."q";
 	if($two_pass) {
 		$arr_fn[] = "2pass";
 		if($two_pass_turbo)
