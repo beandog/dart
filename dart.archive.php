@@ -69,6 +69,13 @@
 			// Check for missing metadata
 			$tracks_model = new Tracks_Model;
 			$tracks_model->load($tracks_model_id);
+
+			// ** Notice ** //
+			// The query that runs the check for the missing metadata is customized to
+			// be a cut-off for when the last time the schema was checked and properly
+			// input.  If this flag is triggered, update *all* the metadata that is in
+			// there, regardless of whether it is in the database or not.
+			// In other words, no touchy the code!
 			$missing_track_metadata = $tracks_model->missing_metadata();
 
 			if($missing_track_metadata) {
@@ -76,49 +83,18 @@
 				$track_number = $tracks_model->ix;
 				$dvd_track = new DVDTrack($track_number, $device);
 
-				echo "* Updating metadata for track $track_number\n";
+				echo "* Updating legacy metadata for track $track_number\n";
 
-				$tracks_model->length = $dvd_track->getLength();
-				if(!strlen($tracks_model->vts_id)) {
-					echo "* Updating VTS ID\n";
-					$tracks_model->vts_id = $dvd_track->getVTSID();
-				}
-				if(is_null($tracks_model->vts)) {
-					echo "* Updating VTS\n";
-					$tracks_model->vts = $dvd_track->getVTS();
-				}
-				if(is_null($tracks_model->ttn)) {
-					echo "* Updating TTN\n";
-					$tracks_model->ttn = $dvd_track->getTTN();
-				}
-				if(is_null($tracks_model->fps)) {
-					echo "* Updating FPS\n";
-					$tracks_model->fps = $dvd_track->getFPS();
-				}
-				if(!strlen($tracks_model->format)) {
-					echo "* Updating video format\n";
-					$tracks_model->format = $dvd_track->getVideoFormat();
-				}
-				if(!strlen($tracks_model->aspect)) {
-					echo "* Updating video aspect ratio\n";
-					$tracks_model->aspect = $dvd_track->getAspectRatio();
-				}
-				if(is_null($tracks_model->width)) {
-					echo "* Updating video width\n";
-					$tracks_model->width = $dvd_track->getWidth();
-				}
-				if(is_null($tracks_model->height)) {
-					echo "* Updating video height\n";
-					$tracks_model->height = $dvd_track->getHeight();
-				}
-				if(!strlen($tracks_model->df)) {
-					echo "* Updating DF\n";
-					$tracks_model->df = $dvd_track->getDF();
-				}
-				if(is_null($tracks_model->angles)) {
-					echo "* Updating angles\n";
-					$tracks_model->angles = $dvd_track->getAngles();
-				}
+				$tracks_model->vts_id = $dvd_track->getVTSID();
+				$tracks_model->vts = $dvd_track->getVTS();
+				$tracks_model->ttn = $dvd_track->getTTN();
+				$tracks_model->fps = $dvd_track->getFPS();
+				$tracks_model->format = $dvd_track->getVideoFormat();
+				$tracks_model->aspect = $dvd_track->getAspectRatio();
+				$tracks_model->width = $dvd_track->getWidth();
+				$tracks_model->height = $dvd_track->getHeight();
+				$tracks_model->df = $dvd_track->getDF();
+				$tracks_model->angles = $dvd_track->getAngles();
 
 				// Check for closed captioning
 				if(is_null($tracks_model->cc)) {
