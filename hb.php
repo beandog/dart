@@ -176,7 +176,6 @@
 	if($grain)
 		$x264_tune = 'grain';
 	$output_format = 'mkv';
-	$http_optimize = true;
 	$video_encoder = 'x264';
 	$autocrop = true;
 
@@ -257,7 +256,6 @@
 	$hb->set_x264_preset($x264_preset);
 	if($x264_tune)
 		$hb->set_x264_tune($x264_tune);
-	$hb->set_http_optimize($http_optimize);
 
 	$d_video_quality = $video_quality;
 	if(!$video_quality)
