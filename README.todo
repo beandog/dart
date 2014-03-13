@@ -1,7 +1,0 @@
-* Run qa after Handbrake runs -- check if the Matroska file has the video tracks and audio tracks I was expecting
-* capture SIGINT and do cleanup
-* dart.encode.php, see FIXME note -- sets copy, faac by default, completely ignoring preferences in database
-* Do verbosity checks throughout, use levels
-* For debugging, echo command lines run to a 'debug' file or directory somewhere
-* Parse an .ini file to get devices to use
-* If there are no chapters, or something like only one, add chapter markers for each 5 minutes (or so)
