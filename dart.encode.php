@@ -67,6 +67,16 @@
 				if(!is_dir($series_dir))
 					mkdir($series_dir);
 
+				// Fix a rare case where the starting chapter is not null in the database,
+				// but the ending chapter is.  In situations like this, set the ending
+				// chapter to the last chapter.  Ideally, this should not happen in the
+				// front end, but do an extra check here as well.
+				// Handbrake will need an ending chapter passed to it if a starting chapter
+				// is given, it will default to only encoding that one chapter otherwise.
+				if(is_null($episode_ending_chapter) && !is_null($episode_starting_chapter)) {
+					$episode_ending_chapter = $tracks_model->get_num_chapters();
+				}
+
 				// Clean up any old tmp files
 				$scandir = scandir($series_dir);
 
