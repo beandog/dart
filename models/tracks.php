@@ -67,6 +67,14 @@
 
 		}
 
+		public function get_num_chapters() {
+
+			$sql = "SELECT COUNT(1) FROM chapters WHERE track_id = ".$this->db->quote($this->id).";";
+			$var = $this->db->getOne($sql);
+			return $var;
+
+		}
+
 		// Check a track record to see if it is missing
 		// metadata somewhere.
 		public function missing_metadata() {
