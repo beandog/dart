@@ -59,10 +59,12 @@
 				$series_title = $series_model->title;
 				$series_dir = $export_dir.formatTitle($series_title)."/";
 
+				/*
 				if($dvds_model->get_no_dvdnav() == 't')
 					$dvdnav = false;
 				else
 					$dvdnav = true;
+				*/
 
 				if(!is_dir($series_dir))
 					mkdir($series_dir);
@@ -141,7 +143,7 @@
 							if(!file_exists($vob)) {
 
 								$tmpfname = tempnam(dirname($episode_filename), "vob.$episode_id.");
-								$dvdtrack = new DvdTrack($track_number, $iso, $dvdnav);
+								$dvdtrack = new DvdTrack($track_number, $iso);
 								$dvdtrack->getNumAudioTracks();
 								$dvdtrack->setVerbose($verbose);
 								$dvdtrack->setDebug($debug);
@@ -170,7 +172,7 @@
 						if(!$dumpvob)
 							$handbrake->input_track($track_number);
 						$handbrake->output_filename($x264_temp_file);
-						$handbrake->dvdnav($dvdnav);
+						// $handbrake->dvdnav($dvdnav);
 						$handbrake->add_chapters();
 						$handbrake->output_format('mkv');
 
