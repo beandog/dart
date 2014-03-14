@@ -57,11 +57,11 @@
 		private $cc_ix;
 		private $num_bitmaps;
 
-		function debug($bool) {
+		function debug($bool = true) {
 			$this->debug = $this->verbose = (boolean)$bool;
 		}
 
-		function verbose($bool) {
+		function verbose($bool = true) {
 			$this->verbose = (boolean)$bool;
 		}
 
@@ -88,13 +88,12 @@
 			}
 		}
 
-		public function set_debug($bool) {
+		public function set_debug($bool = true) {
 			$this->debug = $this->verbose = (boolean)$bool;
 		}
 
-		public function set_dry_run($bool) {
+		public function set_dry_run($bool = true) {
 			$this->dry_run = (boolean)$bool;
-			return true;
 		}
 
 		public function output_format($str) {
@@ -106,9 +105,8 @@
 			}
 		}
 
-		public function add_chapters($bool) {
+		public function add_chapters($bool = true) {
 			$this->add_chapters = (boolean)$bool;
-			return true;
 		}
 
 		public function set_video_bitrate($int) {
@@ -124,13 +122,8 @@
 
 		public function set_audio_bitrate($int) {
 			$int = abs(intval($int));
-
-			if($int) {
+			if($int)
 				$this->audio_bitrate = $int;
-				return true;
-			} else {
-				return false;
-			}
 		}
 
 		public function set_video_encoder($str) {
@@ -144,34 +137,23 @@
 
 		public function set_video_quality($int) {
 			$int = abs(intval($int));
-			if($int) {
+			if($int)
 				$this->video_quality = $int;
-				return true;
-			} else {
-				return false;
-			}
 		}
 
-		public function set_two_pass($bool) {
+		public function set_two_pass($bool = true) {
 			$bool = (bool)$bool;
 			$this->two_pass = $bool;
-			return true;
 		}
 
-		public function set_two_pass_turbo($bool) {
+		public function set_two_pass_turbo($bool = true) {
 			$bool = (bool)$bool;
 			$this->two_pass_turbo = $bool;
-			return true;
 		}
 
 		public function add_audio_track($int) {
 			$int = abs(intval($int));
-			if($int) {
-				$this->audio_tracks[] = $int;
-				return true;
-			} else {
-				return false;
-			}
+			$this->audio_tracks[] = $int;
 		}
 
 		public function add_audio_stream($stream_id) {
@@ -190,15 +172,11 @@
 
 		// FIXME limit to set audio encoders
 		public function add_audio_encoder($str) {
-			if(!is_null($str)) {
+			if(!is_null($str))
 				$this->audio_encoders[] = $str;
-				return true;
-			} else {
-				return false;
-			}
 		}
 
-		public function autocrop($bool) {
+		public function autocrop($bool = true) {
 			$bool = (boolean)$bool;
 			if($bool)
 				$this->crop = null;
@@ -207,29 +185,24 @@
 			return true;
 		}
 
-		public function deinterlace($bool) {
+		public function deinterlace($bool = true) {
 			$this->deinterlace = (boolean)$bool;
-			return true;
 		}
 
-		public function decomb($bool) {
+		public function decomb($bool = true) {
 			$this->decomb = (boolean)$bool;
-			return true;
 		}
 
-		public function detelecine($bool) {
+		public function detelecine($bool = true) {
 			$this->detelecine = (boolean)$bool;
-			return true;
 		}
 
-		public function dvdnav($bool) {
+		public function dvdnav($bool = true) {
 			$this->dvdnav = (boolean)$bool;
-			return true;
 		}
 
-		public function grayscale($bool) {
+		public function grayscale($bool = true) {
 			$this->grayscale = (boolean)$bool;
-			return true;
 		}
 
 		public function set_h264_profile($str) {
@@ -268,9 +241,8 @@
 			}
 		}
 
-		public function set_http_optimize($bool) {
+		public function set_http_optimize($bool = true) {
 			$this->http_optimize = (bool)$bool;
-			return true;
 		}
 
 		// FIXME do checks for audio types
@@ -280,12 +252,7 @@
 
 		public function add_subtitle_track($int) {
 			$int = abs(intval($int));
-			if($int) {
-				$this->subtitle_tracks[] = $int;
-				return true;
-			} else {
-				return false;
-			}
+			$this->subtitle_tracks[] = $int;
 		}
 
 		public function get_options() {
