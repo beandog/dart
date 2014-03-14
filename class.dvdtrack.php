@@ -56,7 +56,7 @@
 		public $chapters;
 		public $cells;
 
-		function __construct($track = 1, $device = "/dev/dvd", $dvdnav = false) {
+		function __construct($track = 1, $device = "/dev/dvd") {
 
 			$this->setTrack($track);
 
@@ -77,9 +77,6 @@
 
 			// Have DTS audio track(s)
 			$this->dts = false;
-
-			// Prefer dvdnav:// over dvd://
-			$this->dvdnav = $dvdnav;
 
 			bcscale(3);
 
