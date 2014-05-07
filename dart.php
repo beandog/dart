@@ -276,13 +276,10 @@
 			// This is useful in cases where --wait is called
 			// on two separate devices, so two drives can
 			// be accessed at the same time
+			// Otherwise, if there is only one device, then wait until
+			// the tray is closed manually.
 			if(count($devices) > 1) {
 				$device = toggle_device($device);
-			}
-			// If there is only one device, then wait until the tray is
-			// closed.
-			else {
-				$drive->close(false);
 			}
 
 			if($debug)
