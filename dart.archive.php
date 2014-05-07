@@ -9,7 +9,7 @@
 	 * compile in here, and be stored centrally.
 	 */
 
-	if($access_device && $disc_indexed) {
+	if($access_device && $disc_indexed && !$fast) {
 
 		echo "[Archival]\n";
 		echo "* Checking for missing metadata\n";

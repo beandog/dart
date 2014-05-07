@@ -8,7 +8,7 @@
 
 
 	// Start import
-	if($access_device && ($import || !$disc_indexed || $missing_import_data)) {
+	if($access_device && ($import || (!$disc_indexed && !$fast) || ($missing_import_data && !$fast))) {
 
 		if($verbose)
 			echo "[Import]\n";
