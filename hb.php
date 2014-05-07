@@ -303,5 +303,8 @@
 
 	$command = $hb->get_executable_string();
 
+	if($dry_run && $verbose)
+		echo "* Handbrake command: $command\n";
+
 	if($input_filename && !$dry_run)
 		$hb->encode();
