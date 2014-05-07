@@ -145,6 +145,8 @@
 				$exec = "eject ".$this->getDevice()." &";
 				exec($exec);
 
+				$this->wait_until_ready();
+
 				return true;
 			}
 			return false;
@@ -172,6 +174,8 @@
 				$command = "eject -t ".$this->getDevice()." 2>&1 > /dev/null";
 				system($command);
 			}
+
+			$this->wait_until_ready();
 
 			return true;
 
