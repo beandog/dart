@@ -43,7 +43,7 @@
 			$target_iso .= ".".$dvds_model->title.".iso";
 
 		$display_iso = basename($target_iso);
-		if($verbose)
+		if($verbose && !$debug)
 			echo "* Filename: $display_iso\n";
 		if($debug)
 			echo "* Filename: $target_iso\n";
