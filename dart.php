@@ -36,6 +36,7 @@
 	/** Start everything **/
 	$all_devices = array('/dev/dvd', '/dev/dvd1', '/dev/dvd2', '/dev/dvd3');
 	$export_dir = getenv('HOME').'/dvds/';
+	$ifo_export_dir = $export_dir.'ifos/';
 
 	// Parser allows multiple levels of verbosity
 
@@ -68,7 +69,7 @@
 		}
 	}
 
-	if(!count($devices) && ($rip || $info || $dump_iso || $import || $archive))
+	if(!count($devices) && ($rip || $info || $dump_iso || $dump_ifo || $import || $archive))
 		$devices = $all_devices;
 
 	// Process request to reset the queue
@@ -148,7 +149,7 @@
 			$display_device = basename($device);
 
 		// Determine whether we are reading the device
-		if($rip || $info || $import || $archive || $dump_iso) {
+		if($rip || $info || $import || $archive || $dump_iso || $dump_ifo) {
 			$access_device = true;
 			echo "[Access Device]\n";
 			echo "* Reading $display_device\n";
@@ -263,12 +264,13 @@
 		require 'dart.info.php';
 		require 'dart.archive.php';
 		require 'dart.import.php';
+		require 'dart.ifo.php';
 		require 'dart.iso.php';
 		require 'dart.rip.php';
 
 		// If polling for a new disc, check to see if one is in the
 		// drive.  If there is, start over.
-		if($wait && ($rip || $import || $archive || $dump_iso) && $device_is_hardware) {
+		if($wait && ($rip || $import || $archive || $dump_iso || $dump_ifo) && $device_is_hardware) {
 			// Only toggle devices if passed more than one
 			// Otherwise, just re-poll the original.
 			// This is useful in cases where --wait is called

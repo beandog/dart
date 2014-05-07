@@ -66,6 +66,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('dump_ifo', array(
+		'long_name' => '--ifo',
+		'description' => 'Backup the DVD IFOs',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('max', array(
 		'short_name' => '-m',
 		'long_name' => '--max',

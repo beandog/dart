@@ -206,6 +206,30 @@
 
 		}
 
+		public function dump_ifo($dest) {
+
+			if($this->debug)
+				echo "! dvd->dump_ifo($dest)\n";
+
+			chdir($dest);
+			$device = $this->getDevice();
+
+			$exec = "dvd_backup_ifo $device &> /dev/null";
+
+			$arr = array();
+
+			exec($exec, $arr, $return);
+
+			$return = intval($return);
+
+			if($return) {
+				return false;
+			} else {
+				return true;
+			}
+
+		}
+
 		private function setTitle($str) {
 			$this->title = $str;
 		}
