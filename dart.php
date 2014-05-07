@@ -256,7 +256,7 @@
 			if($disc_indexed) {
 				echo "* Indexed:\tYes\n";
 			} else {
-				echo "* Unindexed:\tNo\n";
+				echo "* Indexed:\tNo\n";
 			}
 
 		}
