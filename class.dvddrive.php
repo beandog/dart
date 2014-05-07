@@ -190,6 +190,7 @@
 
 			if($this->has_media()) {
 				command("mount ".$this->getDevice(), true, true, false, array(0, 32, 64));
+				$this->wait_until_ready();
 				return true;
 			} else
 				return false;
@@ -198,6 +199,7 @@
 		function unmount() {
 			$this->wait_until_ready();
 			command("umount ".$this->getDevice());
+			$this->wait_until_ready();
 		}
 
 		// Use Handbrake to access the device and scan for media
