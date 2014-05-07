@@ -56,7 +56,7 @@
 			if($this->debug)
 				echo "! drive::get_status(".$this->device.")\n";
 
-			$command = "tray_status ".$this->getDevice();
+			$command = "dvd_drive_status ".$this->getDevice();
 			exec($command, $arr, $return);
 
 			return $return;
