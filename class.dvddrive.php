@@ -138,11 +138,7 @@
 			$this->wait_until_ready();
 
 			if($this->is_closed()) {
-				// For good measure, unlock the eject button
-				$exec = "eject -i off ".$this->getDevice();
-				exec($exec, $arr, $return);
-
-				$exec = "eject ".$this->getDevice()." &";
+				$exec = "dvd_eject ".$this->getDevice()." &";
 				exec($exec);
 
 				$this->wait_until_ready();
@@ -171,7 +167,7 @@
 			$this->wait_until_ready();
 
 			if($this->is_open()) {
-				$command = "eject -t ".$this->getDevice()." 2>&1 > /dev/null";
+				$command = "dvd_eject -t ".$this->getDevice()." 2>&1 > /dev/null";
 				system($command);
 			}
 
