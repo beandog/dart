@@ -85,8 +85,6 @@
 
 		start:
 
-		if(!$first_run)
-			echo "\n";
 		if($debug) {
 			echo "[Initialization]\n";
 			echo "* Device: $device\n";
@@ -151,10 +149,12 @@
 		// Determine whether we are reading the device
 		if($rip || $info || $import || $archive || $dump_iso || $dump_ifo) {
 			$access_device = true;
-			echo "[Access Device]\n";
-			echo "* Reading $display_device\n";
-			if($debug)
-				echo "* Reading $device_realpath\n";
+			if(!$wait) {
+				echo "[Access Device]\n";
+				echo "* Reading $display_device\n";
+				if($debug)
+					echo "* Reading $device_realpath\n";
+			}
 		}
 
 		// Determine whether we need physical access to a disc.
