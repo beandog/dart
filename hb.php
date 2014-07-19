@@ -28,8 +28,15 @@
 		'action' => 'StoreInt',
 		'default' => 0,
 	));
+	$parser->addOption('first_chapter', array(
+		'short_name' => '-c',
+		'long_name' => '--first-chapter',
+		'description' => 'First chapter',
+		'action' => 'StoreInt',
+		'default' => 1,
+	));
 	$parser->addOption('last_chapter', array(
-		'short_name' => '-l',
+		'short_name' => '-C',
 		'long_name' => '--last-chapter',
 		'description' => 'Final chapter',
 		'action' => 'StoreInt',
@@ -174,6 +181,7 @@
 			die("* Can't open $input_filename\n");
 	}
 	$input_track = abs(intval($input_track));
+	$first_chapter = abs(intval($first_chapter));
 	$last_chapter = abs(intval($last_chapter));
 	$video_bitrate = abs(intval($video_bitrate));
 	$video_quality = abs(intval($video_quality));
@@ -230,8 +238,12 @@
 		$arr_fn[] = $audio_encoder;
 	if($audio_bitrate && $audio_encoder != 'copy')
 		$arr_fn[] = $audio_bitrate."k";
+	if($audio_fallback && ($audio_fallback != $audio_encoder))
+		$arr_fn[] = "fallback-$audio_fallback";
 	if($last_chapter)
-		$arr_fn[] = "chap-1-$last_chapter";
+		$arr_fn[] = "chap-$first_chapter-$last_chapter";
+	elseif($first_chapter)
+		$arr_fn[] = "chap-$first_chapter-final";
 
 	if(is_null($output_filename))
 		$output_filename = implode($arr_fn, '-').".mkv";
@@ -256,8 +268,8 @@
 	$hb->output_filename($output_filename);
 	$hb->output_format($output_format);
 	$hb->add_chapters($add_chapters);
-	if($last_chapter)
-		$hb->set_chapters(1, $last_chapter);
+	if($first_chapter || $last_chapter)
+		$hb->set_chapters($first_chapter, $last_chapter);
 	if($video_bitrate)
 		$hb->set_video_bitrate($video_bitrate);
 	$hb->set_video_encoder($video_encoder);
