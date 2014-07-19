@@ -86,6 +86,14 @@
 			return '/dev/dvd';
 	}
 
+	// Human-friendly output
+	function d_yes_no($var) {
+		if($var)
+			return "yes";
+		else
+			return "no";
+	}
+
 	/** imported from class.shell.php **/
 
 	/**
