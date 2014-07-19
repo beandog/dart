@@ -49,6 +49,13 @@
 		'action' => 'StoreString',
 		'default' => '',
 	));
+	$parser->addOption('audio_fallback', array(
+		'short_name' => '-F',
+		'long_name' => '--af',
+		'description' => 'Audio fallback',
+		'action' => 'StoreString',
+		'default' => '',
+	));
 	$parser->addOption('audio_bitrate', array(
 		'short_name' => '-B',
 		'long_name' => '--ab',
@@ -246,6 +253,8 @@
 	$hb->add_audio_encoder($audio_encoder);
 	if($audio_encoder != 'copy')
 		$hb->set_audio_bitrate($audio_bitrate);
+	if($audio_encoder != $audio_fallback)
+		$hb->set_audio_fallback($audio_fallback);
 	$hb->autocrop($autocrop);
 	$hb->decomb($decomb);
 	$hb->detelecine($detelecine);
@@ -299,6 +308,8 @@
 	}
 	echo "// Audio //\n";
 	echo "* Encoder: $audio_encoder\n";
+	if($audio_fallback)
+		echo "* Fallback: $audio_fallback\n";
 	echo "* Bitrate: $d_audio_bitrate\n";
 
 	$command = $hb->get_executable_string();
