@@ -311,15 +311,15 @@
 	echo "// Video //\n";
 	echo "* Quality: $d_video_quality\n";
 	echo "* Bitrate: $d_video_bitrate\n";
-	echo "* Two-pass: ".intval($two_pass)."\n";
+	echo "* Two-pass: ".d_yes_no(intval($two_pass))."\n";
 	if($two_pass)
-		echo "* Turbo: ".intval($two_pass_turbo)."\n";
-	echo "* Deinterlace: ".intval($deinterlace)."\n";
-	echo "* Decomb: ".intval($decomb)."\n";
-	echo "* Detelecine: ".intval($detelecine)."\n";
-	echo "* Grayscale: ".intval($grayscale)."\n";
-	echo "* Animation: ".intval($animation)."\n";
-	echo "* Autocrop: ".intval($autocrop)."\n";
+		echo "* Turbo: ".d_yes_no(intval($two_pass_turbo))."\n";
+	echo "* Deinterlace: ".d_yes_no(intval($deinterlace))."\n";
+	echo "* Decomb: ".d_yes_no(intval($decomb))."\n";
+	echo "* Detelecine: ".d_yes_no(intval($detelecine))."\n";
+	echo "* Grayscale: ".d_yes_no(intval($grayscale))."\n";
+	echo "* Animation: ".d_yes_no(intval($animation))."\n";
+	echo "* Autocrop: ".d_yes_no(intval($autocrop))."\n";
 	if($video_encoder == 'x264') {
 		echo "* H.264 profile: $h264_profile\n";
 		echo "* H.264 level: $h264_level\n";
