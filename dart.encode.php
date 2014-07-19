@@ -314,6 +314,10 @@
 
 							// One line break to clear out the encoding line from handbrake
 							echo "\n";
+						} else if ($dry_run && $verbose) {
+
+							echo "* Handbrake command: ".$handbrake->get_executable_string()."\n";
+
 						}
 
 						if($exit_code === 0 && !$dry_run)
