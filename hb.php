@@ -70,6 +70,20 @@
 		'action' => 'StoreInt',
 		'default' => 96,
 	));
+	$parser->addOption('subtitles', array(
+		'short_name' => '-s',
+		'long_name' => '--subtitles',
+		'description' => 'Subtitles',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
+	$parser->addOption('subtitle_track', array(
+		'short_name' => '-S',
+		'long_name' => '--st',
+		'description' => 'Subtitle track',
+		'action' => 'StoreInt',
+		'default' => 1,
+	));
 	$parser->addOption('x264_preset', array(
 		'short_name' => '-p',
 		'long_name' => '--x264-preset',
@@ -165,6 +179,7 @@
 	$video_quality = abs(intval($video_quality));
 	$audio_bitrate = abs(intval($audio_bitrate));
 	$audio_encoder = trim($audio_encoder);
+	$subtitle_track = abs(intval($subtitle_track));
 	$verbose = abs(intval($verbose));
 
 	// Defaults
@@ -255,6 +270,8 @@
 		$hb->set_audio_bitrate($audio_bitrate);
 	if($audio_encoder != $audio_fallback)
 		$hb->set_audio_fallback($audio_fallback);
+	if($subtitles)
+		$hb->add_subtitle_track($subtitle_track);
 	$hb->autocrop($autocrop);
 	$hb->decomb($decomb);
 	$hb->detelecine($detelecine);
@@ -281,6 +298,9 @@
 	$d_audio_encoder = $audio_encoder;
 	if(!$audio_encoder)
 		$d_audio_encoder = "(default)";
+	$d_subtitle_track = $subtitle_track;
+	if(!$subtitle_track)
+		$d_subtitle_track = "(default)";
 
 	echo "// General //\n";
 	echo "* Source: $input_filename\n";
@@ -311,6 +331,10 @@
 	if($audio_fallback)
 		echo "* Fallback: $audio_fallback\n";
 	echo "* Bitrate: $d_audio_bitrate\n";
+	if($subtitles) {
+		echo "// Subtitles //\n";
+		echo "* Track: $d_subtitle_track\n";
+	}
 
 	$command = $hb->get_executable_string();
 
