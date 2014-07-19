@@ -42,6 +42,13 @@
 		'action' => 'StoreInt',
 		'default' => 0,
 	));
+	$parser->addOption('video_quality', array(
+		'short_name' => '-q',
+		'long_name' => '--video-quality',
+		'description' => 'Video Quality (CRF)',
+		'action' => 'StoreInt',
+		'default' => 0,
+	));
 	$parser->addOption('audio_encoder', array(
 		'short_name' => '-E',
 		'long_name' => '--ae',
@@ -62,13 +69,6 @@
 		'description' => 'Audio Bitrate (kbps)',
 		'action' => 'StoreInt',
 		'default' => 96,
-	));
-	$parser->addOption('video_quality', array(
-		'short_name' => '-q',
-		'long_name' => '--video-quality',
-		'description' => 'Video Quality (CRF)',
-		'action' => 'StoreInt',
-		'default' => 0,
 	));
 	$parser->addOption('x264_preset', array(
 		'short_name' => '-p',
