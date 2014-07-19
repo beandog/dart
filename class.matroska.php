@@ -170,7 +170,7 @@ XML;
 			$args = array();
 
 			// Added for spec dlna-usb-1
-			$args[] = "--engage no_cue_duration --engage no_cue_relative_position";
+			$flags['engage'] = array('no_cue_duration', 'no_cue_relative_position');
 
 			if($this->title)
 				$flags['title'] = $this->title;
