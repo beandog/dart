@@ -193,6 +193,11 @@
 						$h264_profile = 'high';
 						$h264_level = '3.1';
 						$x264_opts = $series_model->get_x264opts();
+						// Add support for dlna-usb-1 spec
+						if($x264_opts)
+							$x264_opts .= ":keyint=30";
+						else
+							$x264_opts = "keyint=30";
 						$x264_preset = 'medium';
 						$x264_tune = 'film';
 						$animation = false;
