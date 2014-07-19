@@ -391,6 +391,9 @@
 							$matroska->addSimpleTag("DATE_RELEASE", $production_year);
 						$matroska->addSimpleTag("ORIGINAL_MEDIA_TYPE", "DVD");
 
+						// Tag MKV with latest spec I've created
+						$matroska->addSimpleTag("ENCODING_SPEC", "dlna-usb-1");
+
 						/** Season **/
 						if($episode_season) {
 
