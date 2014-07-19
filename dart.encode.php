@@ -299,13 +299,16 @@
 
 						if($verbose > 1) {
 							echo "// Handbrake Video //\n";
-							echo "* Quality: $video_quality\n";
-							echo "* Deinterlace: ".intval($deinterlace)."\n";
-							echo "* Decomb: ".intval($decomb)."\n";
-							echo "* Detelecine: ".intval($detelecine)."\n";
-							echo "* Grayscale: ".intval($grayscale)."\n";
-							echo "* Animation: ".intval($animation)."\n";
-							echo "* Autocrop: ".intval($autocrop)."\n";
+							if($video_quality)
+								echo "* CRF: $video_quality\n";
+							if($video_bitrate)
+								echo "* Bitrate: ${video_bitrate}k\n";
+							echo "* Deinterlace: ".d_yes_no(intval($deinterlace))."\n";
+							echo "* Decomb: ".d_yes_no(intval($decomb))."\n";
+							echo "* Detelecine: ".d_yes_no(intval($detelecine))."\n";
+							echo "* Grayscale: ".d_yes_no(intval($grayscale))."\n";
+							echo "* Animation: ".d_yes_no(intval($animation))."\n";
+							echo "* Autocrop: ".d_yes_no(intval($autocrop))."\n";
 							echo "* H.264 profile: $h264_profile\n";
 							echo "* H.264 level: $h264_level\n";
 							echo "* x264 preset: $x264_preset\n";
