@@ -100,12 +100,6 @@
 
 			$arr = array();
 
-			$sql = "SELECT x264opts FROM presets WHERE name = ".$this->db->quote($this->get_handbrake_base_preset()).";";
-			$str = $this->db->getOne($sql);
-
-			if(strlen($str))
-				$arr[] = $str;
-
 			$sql = "SELECT presets.x264opts FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->db->quote($this->id).";";
 			$str = $this->db->getOne($sql);
 
