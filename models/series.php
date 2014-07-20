@@ -10,9 +10,9 @@
 
 		}
 
-		function get_collection_name() {
+		function get_collection_title() {
 
-			$sql = "SELECT c.name FROM collections c INNER JOIN series s ON s.collection_id = c.id WHERE s.id = ".$this->db->quote($this->id).";";
+			$sql = "SELECT c.title FROM collections c INNER JOIN series s ON s.collection_id = c.id WHERE s.id = ".$this->db->quote($this->id).";";
 
 			$var = $this->db->getOne($sql);
 
