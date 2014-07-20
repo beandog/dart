@@ -55,9 +55,14 @@
 
 				$dvds_model = new Dvds_Model($tracks_model->dvd_id);
 
-				$series_model = new Series_Model($episodes_model->get_series_id());
+				$series_id = $episodes_model->get_series_id();
+				$series_model = new Series_Model($series_id);
+				$collection_title = $series_model->get_collection_title();
 				$series_title = $series_model->title;
 				$series_dir = $export_dir.formatTitle($series_title)."/";
+				$series_volume = $episodes_model->get_volume();
+				$series_dvds_ix = $series_dvds_model->ix;
+				$dvd_disc_side = $series_dvds_model->side;
 
 				/*
 				if($dvds_model->get_no_dvdnav() == 't')
@@ -103,6 +108,7 @@
 					$basename_iso = basename($iso);
 					$basename_mkv = basename($mkv);
 
+					echo "Collection:\t$collection_title\n";
 					echo "Series:\t\t$series_title\n";
 					echo "Episode:\t$episode_title\n";
 					echo "Source:\t\t$basename_iso\n";
@@ -396,6 +402,28 @@
 
 						// Tag MKV with latest spec I've created
 						$matroska->addSimpleTag("ENCODING_SPEC", "dlna-usb-1");
+
+						// Metadata specification DVD-MKV-1
+						$matroska->addSimpleTag("METADATA_SPEC", "DVD-MKV-1");
+						$matroska->addSimpleTag("DVD_COLLECTION", $collection_title);
+						$matroska->addSimpleTag("DVD_SERIES_TITLE", $series_title);
+						if($episode_season)
+							$matroska->addSimpleTag("DVD_SERIES_SEASON", $episode_season);
+						if($series_volume)
+							$matroska->addSimpleTag("DVD_SERIES_VOLUME", $series_volume);
+						$matroska->addSimpleTag("DVD_DISC_NUMBER", $series_dvds_ix);
+						if($dvd_disc_side)
+							$matroska->addSimpleTag("DVD_DISC_SIDE", $dvd_disc_side);
+						$matroska->addSimpleTag("DVD_TRACK_NUMBER", $track_number);
+						if($episode_number)
+							$matroska->addSimpleTag("DVD_EPISODE_NUMBER", $episode_number);
+						$matroska->addSimpleTag("DVD_EPISODE_TITLE", $episode_title);
+						if($episode_part)
+							$matroska->addSimpleTag("DVD_EPISODE_PART_NUMBER", $episode_part);
+						$matroska->addSimpleTag("DVD_ID", $tracks_model->dvd_id);
+						$matroska->addSimpleTag("DVD_SERIES_ID", $series_id);
+						$matroska->addSimpleTag("DVD_TRACK_ID", $track_id);
+						$matroska->addSimpleTag("DVD_EPISODE_ID", $episode_id);
 
 						/** Season **/
 						if($episode_season) {
