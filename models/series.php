@@ -10,6 +10,16 @@
 
 		}
 
+		function get_collection_name() {
+
+			$sql = "SELECT c.name FROM collections c INNER JOIN series s ON s.collection_id = c.id WHERE s.id = ".$this->db->quote($this->id).";";
+
+			$var = $this->db->getOne($sql);
+
+			return $var;
+
+		}
+
 		function get_audio_encoder() {
 
 			$sql = "SELECT presets.acodec FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->db->quote($this->id).";";
