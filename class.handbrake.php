@@ -38,6 +38,7 @@
 		private $x264 = array();
 
 		// Audio
+		private $audio = true;
 		private $audio_encoders = array();
 		private $audio_tracks = array();
 		private $audio_streams = array();
@@ -174,6 +175,14 @@
 		public function add_audio_encoder($str) {
 			if(!is_null($str))
 				$this->audio_encoders[] = $str;
+		}
+
+		public function enable_audio() {
+			$this->audio = true;
+		}
+
+		public function disable_audio() {
+			$this->audio = false;
 		}
 
 		public function autocrop($bool = true) {
@@ -366,43 +375,52 @@
 			 **/
 
 			// Add audio tracks
-			if(count($this->audio_tracks)) {
-				$str = implode(",", $this->audio_tracks);
-				$args['--audio'] = $str;
-			} elseif(count($this->audio_streams)) {
+			if($this->audio) {
 
-				// FIXME temporary?
-				// Hit a bug on a DVD where lsdvd reported
-				// 8 English audio tracks, but Handbrake
-				// correctly said there is only one.
-				// So, in this case, there are audio streams
-				// so encoding the first one will work, it's
-				// just that none were passed in.
+				if(count($this->audio_tracks)) {
+					$str = implode(",", $this->audio_tracks);
+					$args['--audio'] = $str;
+				} elseif(count($this->audio_streams)) {
 
-				// This is an obvious workaround to the lsdvd
-				// bug.  The correct approach would be to sync
-				// up the output of lsdvd's report and handbrake's
-				// scan.
-				$args['--audio'] = 1;
+					// FIXME temporary?
+					// Hit a bug on a DVD where lsdvd reported
+					// 8 English audio tracks, but Handbrake
+					// correctly said there is only one.
+					// So, in this case, there are audio streams
+					// so encoding the first one will work, it's
+					// just that none were passed in.
+
+					// This is an obvious workaround to the lsdvd
+					// bug.  The correct approach would be to sync
+					// up the output of lsdvd's report and handbrake's
+					// scan.
+					$args['--audio'] = 1;
+				} else {
+					// If there's no audio tracks or streams, use the first one, and
+					// let Handbrake
+					$args['--audio'] = 1;
+				}
+
+				// Add audio encoders
+				if(count($this->audio_encoders)) {
+					$str = implode(",", $this->audio_encoders);
+					$args['--aencoder'] = $str;
+				}
+
+				// Set fallback audio encoder -- this is used if Handbrake
+				// cannot copy or encode the audio with previous arguments
+				if($this->audio_fallback) {
+					$args['--audio-fallback'] = $this->audio_fallback;
+				}
+
+				if($this->audio_bitrate) {
+					$args['--ab'] = $this->audio_bitrate;
+				}
+
 			} else {
-				// If there's no audio tracks or streams, use the first one.
-				$args['--audio'] = 1;
-			}
 
-			// Add audio encoders
-			if(count($this->audio_encoders)) {
-				$str = implode(",", $this->audio_encoders);
-				$args['--aencoder'] = $str;
-			}
+				$args['--audio'] = 'none';
 
-			// Set fallback audio encoder -- this is used if Handbrake
-			// cannot copy or encode the audio with previous arguments
-			if($this->audio_fallback) {
-				$args['--audio-fallback'] = $this->audio_fallback;
-			}
-
-			if($this->audio_bitrate) {
-				$args['--ab'] = $this->audio_bitrate;
 			}
 
 
