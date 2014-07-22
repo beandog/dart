@@ -61,8 +61,6 @@
 				$series_title = $series_model->title;
 				$series_dir = $export_dir.formatTitle($series_title)."/";
 				$series_volume = $episodes_model->get_volume();
-				$series_dvds_ix = $series_dvds_model->ix;
-				$dvd_disc_side = $series_dvds_model->side;
 
 				/*
 				if($dvds_model->get_no_dvdnav() == 't')
@@ -196,10 +194,10 @@
 						if($series_model->grayscale == 't')
 							$grayscale = true;
 						$autocrop = true;
-						$h264_profile = 'high';
-						$h264_level = '3.1';
 						$x264_opts = $series_model->get_x264opts();
 						// Add support for dlna-usb-1 spec
+						$h264_profile = 'high';
+						$h264_level = '3.1';
 						if($x264_opts)
 							$x264_opts .= ":keyint=30";
 						else
@@ -411,9 +409,6 @@
 							$matroska->addSimpleTag("DVD_SERIES_SEASON", $episode_season);
 						if($series_volume)
 							$matroska->addSimpleTag("DVD_SERIES_VOLUME", $series_volume);
-						$matroska->addSimpleTag("DVD_DISC_NUMBER", $series_dvds_ix);
-						if($dvd_disc_side)
-							$matroska->addSimpleTag("DVD_DISC_SIDE", $dvd_disc_side);
 						$matroska->addSimpleTag("DVD_TRACK_NUMBER", $track_number);
 						if($episode_number)
 							$matroska->addSimpleTag("DVD_EPISODE_NUMBER", $episode_number);
