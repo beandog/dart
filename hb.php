@@ -212,7 +212,6 @@
 		$x264_tune = 'animation';
 	if($grain)
 		$x264_tune = 'grain';
-	$output_format = 'mkv';
 	$video_encoder = 'x264';
 	$autocrop = true;
 

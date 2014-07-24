@@ -178,7 +178,6 @@
 						$handbrake->output_filename($x264_temp_file);
 						// $handbrake->dvdnav($dvdnav);
 						$handbrake->add_chapters();
-						$handbrake->output_format('mkv');
 
 
 						/** Video **/
