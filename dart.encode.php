@@ -373,7 +373,9 @@
 							// Add checks on Matroska file to see if it actually has data
 							// Matroska will allow an empty container file
 							} else {
+								// FIXME this should tag the file in the queue as a broken encode, and be skipped over later.
 								echo "$episode_filename didn't encode properly: zero filesize\n";
+								exit;
 							}
 						}
 					}
