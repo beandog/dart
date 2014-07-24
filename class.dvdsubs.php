@@ -20,9 +20,6 @@
 		// Sequential index
 		private $ix;
 
-		// Content
-		private $content;
-
 		function __construct($xml, $stream_id = "0x20") {
 			$this->parse_xml($xml, $stream_id);
 		}
@@ -43,7 +40,6 @@
 					$this->language = (string)$subp->language;
 					$this->stream_id = (string)$subp->streamid;
 					$this->ix = (int)$subp->ix;
-					$this->content = (string)$subp->content;
 
 				}
 
@@ -65,10 +61,6 @@
 
 		public function getLangcode() {
 			return $this->langcode;
-		}
-
-		public function getContent() {
-			return $this->content;
 		}
 
 		/**
