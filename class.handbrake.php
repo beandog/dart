@@ -98,12 +98,7 @@
 		}
 
 		public function output_format($str) {
-			if($str == 'mkv' || $str == 'mp4') {
 				$this->format = $str;
-				return true;
-			} else {
-				return false;
-			}
 		}
 
 		public function add_chapters($bool = true) {
