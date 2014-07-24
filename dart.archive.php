@@ -85,6 +85,7 @@
 
 				echo "* Updating legacy metadata for track $track_number\n";
 
+				$tracks_model->length = $dvd_track->getLength();
 				$tracks_model->vts_id = $dvd_track->getVTSID();
 				$tracks_model->vts = $dvd_track->getVTS();
 				$tracks_model->ttn = $dvd_track->getTTN();
