@@ -120,7 +120,6 @@
 						$audio_model->quantization = $dvd_audio->getQuantization();
 						$audio_model->channels = $dvd_audio->getChannels();
 						$audio_model->ap_mode = $dvd_audio->getAPMode();
-						$audio_model->content = $dvd_audio->getContent();
 						$audio_model->streamid = $streamid;
 
 					}

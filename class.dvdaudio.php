@@ -24,7 +24,6 @@
 		private $frequency;
 		private $quantization;
 		private $ap_mode;
-		private $content;
 		private $streamid;
 
 		function __construct($xml, $stream_id = "0x80") {
@@ -50,7 +49,6 @@
 					$this->quantization = (string)$audio->quantization;
 					$this->channels = (int)$audio->channels;
 					$this->ap_mode = (int)$audio->ap_mode;
-					$this->content = (string)$audio->content;
 					$this->streamid = $this->stream_id = (string)$audio->streamid;
 				}
 
@@ -88,10 +86,6 @@
 
 		function getAPMode() {
 			return $this->ap_mode;
-		}
-
-		function getContent() {
-			return $this->content;
 		}
 
 		function getStreamID() {
