@@ -178,6 +178,7 @@
 						$handbrake->output_filename($x264_temp_file);
 						// $handbrake->dvdnav($dvdnav);
 						$handbrake->add_chapters();
+						$handbrake->output_format('mkv');
 
 
 						/** Video **/
@@ -194,13 +195,15 @@
 							$grayscale = true;
 						$autocrop = true;
 						$x264_opts = $series_model->get_x264opts();
-						// Add support for dlna-usb-1 spec
+						// Add support for dlna-usb-4 spec
 						$h264_profile = 'high';
 						$h264_level = '3.1';
 						if($x264_opts)
 							$x264_opts .= ":keyint=30";
 						else
 							$x264_opts = "keyint=30";
+						// Added for dlna-usb-4
+						$x264_opts .= ":vbv-bufsize=1024:vbv-maxrate=1024";
 						$x264_preset = 'medium';
 						$x264_tune = 'film';
 						$animation = false;
@@ -400,7 +403,7 @@
 						$matroska->addSimpleTag("ORIGINAL_MEDIA_TYPE", "DVD");
 
 						// Tag MKV with latest spec I've created
-						$matroska->addSimpleTag("ENCODING_SPEC", "dlna-usb-1");
+						$matroska->addSimpleTag("ENCODING_SPEC", "dlna-usb-4");
 
 						// Metadata specification DVD-MKV-1
 						$matroska->addSimpleTag("METADATA_SPEC", "DVD-MKV-1");
