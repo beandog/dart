@@ -179,7 +179,7 @@
 						// $handbrake->dvdnav($dvdnav);
 						$handbrake->add_chapters();
 						// dlna-usb-3 HandBrake support
-						$handbrake->output_format("av_mkv");
+						$handbrake->output_format("libmkv");
 
 
 						/** Video **/
@@ -204,7 +204,7 @@
 						else
 							$x264_opts = "keyint=30";
 						// Override HandBrake defaults to match 3.1 level max
-						$x264_opts .= ":vbv-bufsize=14000:vbv-maxrate=14000";
+						$x264_opts .= ":vbv-bufsize=1024:vbv-maxrate=1024";
 						$x264_preset = 'medium';
 						$x264_tune = 'film';
 						$animation = false;
