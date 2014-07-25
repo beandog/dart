@@ -98,7 +98,7 @@
 		}
 
 		public function output_format($str) {
-			$this->format = $str;
+				$this->format = $str;
 		}
 
 		public function add_chapters($bool = true) {
@@ -342,22 +342,22 @@
 
 			// Set H.264 profile
 			if(!is_null($this->h264_profile)) {
-				$args['--encoder-profile'] = $this->h264_profile;
+				$args['--h264-profile'] = $this->h264_profile;
 			}
 
 			// Set H.264 level
 			if(!is_null($this->h264_level)) {
-				$args['--encoder-level'] = $this->h264_level;
+				$args['--h264-level'] = $this->h264_level;
 			}
 
 			// Set x264 preset
 			if(!is_null($this->x264_preset)) {
-				$args['--encoder-preset'] = $this->x264_preset;
+				$args['--x264-preset'] = $this->x264_preset;
 			}
 
 			// Set x264 tune option
 			if(!is_null($this->x264_tune)) {
-				$args['--encoder-tune'] = $this->x264_tune;
+				$args['--x264-tune'] = $this->x264_tune;
 			}
 
 			// Set x264 encoding options
