@@ -203,6 +203,8 @@
 							$x264_opts .= ":keyint=30";
 						else
 							$x264_opts = "keyint=30";
+						// Override HandBrake defaults to match 3.1 level max
+						$x264_opts .= ":vbv-bufsize=14000:vbv-maxrate=14000";
 						$x264_preset = 'medium';
 						$x264_tune = 'film';
 						$animation = false;
