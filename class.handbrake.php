@@ -98,7 +98,7 @@
 		}
 
 		public function output_format($str) {
-				$this->format = $str;
+			$this->format = $str;
 		}
 
 		public function add_chapters($bool = true) {
