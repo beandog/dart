@@ -219,7 +219,7 @@ XML;
 
 		}
 
-		private function getCommandString() {
+		public function getCommandString() {
 			$this->arguments();
 
 			$exec[] = "mkvmerge";
