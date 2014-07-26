@@ -18,6 +18,8 @@
 
 		$num_episodes = count($dvd_episodes);
 
+		$num_queued = 0;
+
 		// Passed the argument to rip it, but there are no
 		// episodes ... so cancel ejecting it since access
 		// is probably likely.
@@ -58,12 +60,16 @@
 				$mkv = "$episode_filename.mkv";
 
 				// Check to see if file exists, if not, rip it
-				if(!file_exists($mkv))
-					$queue_model->add_episode($episode_id, php_uname('n'));
+				if(!$max || ($max && $num_queued < $max)) {
+					if(!file_exists($mkv)) {
+						$queue_model->add_episode($episode_id, php_uname('n'));
+						$num_queued++;
+					}
 
-				// Bump up the queue if we are accessing the drive directly
-				if($device_is_hardware)
-					$queue_model->prioritize();
+					// Bump up the queue if we are accessing the drive directly
+					if($device_is_hardware)
+						$queue_model->prioritize();
+				}
 
 				$i++;
 
