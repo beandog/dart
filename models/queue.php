@@ -89,9 +89,9 @@
 
 		}
 
-		public function reset() {
+		public function reset($hostname) {
 
-			$sql = "DELETE FROM queue WHERE status = 0;";
+			$sql = "DELETE FROM queue WHERE status = 0 AND hostname = ".$this->db->quote($hostname).";";
 
 			$this->db->query($sql);
 

@@ -37,6 +37,7 @@
 	$all_devices = array('/dev/dvd', '/dev/dvd1', '/dev/dvd2', '/dev/dvd3', '/dev/dvd4');
 	$export_dir = getenv('HOME').'/dvds/';
 	$ifo_export_dir = $export_dir.'ifos/';
+	$hostname = php_uname('n');
 
 	// Parser allows multiple levels of verbosity
 
@@ -75,7 +76,7 @@
 	// Process request to reset the queue
 	if($reset_queue) {
 		$queue_model = new Queue_Model;
-		$queue_model->reset();
+		$queue_model->reset($hostname);
 	}
 
 	// General boolean for various items

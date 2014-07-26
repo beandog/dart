@@ -14,7 +14,6 @@
 
 		echo "[Encode]\n";
 
-		$hostname = php_uname('n');
 		$queue_episodes = $queue_model->get_episodes($hostname, $skip, $max);
 
 		if($skip)
