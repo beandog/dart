@@ -37,6 +37,10 @@
 					echo "[Encode ".($num_encoded + 1)."/$num_queued_episodes]\n";
 				}
 
+				$handbrake_success = false;
+				$matroska_xml_success = false;
+				$mkvmerge_success = false;
+
 				$episodes_model = new Episodes_Model($episode_id);
 				$episode_title = $episodes_model->title;
 				$track_id = $episodes_model->track_id;
@@ -47,6 +51,7 @@
 				$episode_part = $episodes_model->part;
 				$episode_season = $episodes_model->get_season();
 				$episode_filename = get_episode_filename($episode_id);
+				$episode_basename = basename($episode_filename);
 				$episode_filename = $export_dir.$episode_filename;
 				$display_name = $episodes_model->get_display_name();
 
@@ -64,7 +69,6 @@
 
 				if(!is_dir($series_dir))
 					mkdir($series_dir);
-
 				// Fix a rare case where the starting chapter is not null in the database,
 				// but the ending chapter is.  In situations like this, set the ending
 				// chapter to the last chapter.  Ideally, this should not happen in the
@@ -75,26 +79,25 @@
 					$episode_ending_chapter = $tracks_model->get_num_chapters();
 				}
 
-				// Clean up any old tmp files
-				$scandir = scandir($series_dir);
-
-				if(count($arr = preg_grep('/(^(x264|vob)|xml$)/', $scandir))) {
-					foreach($arr as $filename) {
-						$filename = $series_dir.$filename;
-						if(is_writable($filename))
-							unlink($filename);
-					}
-				}
-
 				$iso = $export_dir.$episodes_model->get_iso();
 				$mkv = "$episode_filename.mkv";
-				$x264 = "$episode_filename.x264";
 
-				// Store XML metadata in temporary file
-				$xml = tempnam(sys_get_temp_dir(), "xml");
+				// Temporary files stored in queue directory
+				$episode_queue_dir = $export_dir."queue/".formatTitle($series_title)."/".$episode_id;
+				$queue_handbrake = $episode_queue_dir."/".$episode_basename.".handbrake.sh";
+				$queue_handbrake_output = $episode_queue_dir."/".$episode_basename.".handbrake.out";
+				$queue_mkvmerge = $episode_queue_dir."/".$episode_basename.".mkvmerge.sh";
+				$queue_mkvmerge_output = $episode_queue_dir."/".$episode_basename.".mkvmerge.out";
+				$queue_x264 = $episode_queue_dir."/".$episode_basename.".x264";
+				$queue_xml = $episode_queue_dir."/".$episode_basename.".xml";
+				$queue_mkv = $episode_queue_dir."/".$episode_basename.".mkv";
+				if(!is_dir($episode_queue_dir))
+					mkdir($episode_queue_dir, 0755, true);
+
+				$queue_status = $queue_model->get_episode_status($episode_id);
 
 				// Check to see if file exists, if not, encode it
-				if(file_exists($iso) && !file_exists($mkv)) {
+				if(file_exists($iso) && !file_exists($mkv) && $queue_status == 0) {
 
 					$basename_iso = basename($iso);
 					$basename_mkv = basename($mkv);
@@ -105,7 +108,7 @@
 					echo "Source:\t\t$basename_iso\n";
 					echo "Target:\t\t$basename_mkv\n";
 
-					$matroska = new Matroska($mkv);
+					$matroska = new Matroska($queue_mkv);
 					$matroska->setDebug($debug);
 					$matroska->setTitle($episode_title);
 
@@ -118,7 +121,7 @@
 					$handbrake->debug($debug);
 					$handbrake->set_dry_run($dry_run);
 
-					if(!file_exists($x264)) {
+					if(!file_exists($queue_x264)) {
 
 						// Find the audio track to use
 						$best_quality_audio_streamid = $tracks_model->get_best_quality_audio_streamid();
@@ -162,13 +165,12 @@
 						}
 
 						$episode_dirname = dirname($episode_filename);
-						$x264_temp_file = tempnam($episode_dirname, "x264.$episode_id.");
 
 						// Handbrake
 						$handbrake->input_filename($src);
 						if(!$dumpvob)
 							$handbrake->input_track($track_number);
-						$handbrake->output_filename($x264_temp_file);
+						$handbrake->output_filename($queue_x264);
 						// $handbrake->dvdnav($dvdnav);
 						$handbrake->add_chapters();
 						$handbrake->output_format('mkv');
@@ -316,6 +318,12 @@
 
 						$exit_code = null;
 						if(!$dry_run) {
+
+							$queue_model->set_episode_status($episode_id, 1);
+
+							file_put_contents($queue_handbrake, $handbrake->get_executable_string()."\n");
+							chmod($queue_handbrake, 0755);
+
 							// Handbrake class will output encoding status
 							$exit_code = $handbrake->encode();
 
@@ -332,51 +340,32 @@
 						else
 							$handbrake_success = false;
 
-						// Handbrake exited on a non-zero code
-						if(!$handbrake_success && !$dry_run) {
+						// Handbrake failed -- either by non-zero exit code, or empty file
+						if(!$dry_run && (!$handbrake_success || ($handbrake_success && !sprintf("%u", filesize($queue_x264))))) {
 
-							echo "! Handbrake died :(\n";
-							echo "! Handbrake exited on error code $exit_code\n";
-							// Skipping over this episode is performed as a last action in the loop,
-							// but add a note here that this one will stay queued.
-							echo "! Skipping over this episode, but it will stay in the queue\n";
-							echo "! Here's the last command sent:\n";
-							echo "! ".$handbrake->get_executable_string()."\n";
+							$handbrake_success = false;
 
-							// If Handbrake didn't die upon immediate execution, then
-							// it's likely that it dumped some kind of output to the
-							// filesystem.  Perform that cleanup here.
-							if(file_exists($x264_temp_file))
-								unlink($x264_temp_file);
-							if(file_exists($x264))
-								unlink($x264);
-							if(file_exists($mkv))
-								unlink($mkv);
+							echo "HandBrake failed for some reason.  See $episode_queue_dir for temporary files.\n";
 
-						} elseif($handbrake_success && !$dry_run) {
+							file_put_contents($queue_handbrake, $handbrake->get_executable_string());
+							chmod($queue_handbrake, 0755);
+							$queue_model->set_episode_status($episode_id, 2);
+
+						} else {
+
 							// Post-encode checks
 
-							// Handbrake can exit successfully and not actually encode anything,
-							// by leaving an empty file.
-							if(sprintf("%u", filesize($x264_temp_file))) {
-								rename($x264_temp_file, $x264);
+							if(!$debug && $dumpvob && file_exists($vob))
+								unlink($vob);
 
-								if(!$debug && $dumpvob && file_exists($vob))
-									unlink($vob);
-
-							// FIXME
-							// Add checks on Matroska file to see if it actually has data
-							// Matroska will allow an empty container file
-							} else {
-								// FIXME this should tag the file in the queue as a broken encode, and be skipped over later.
-								echo "$episode_filename didn't encode properly: zero filesize\n";
-								exit;
-							}
 						}
+
 					}
 
 					/** Matroska Metadata */
-					if(!file_exists($mkv) && !$dry_run) {
+					if(!file_exists($mkv) && !file_exists($queue_xml) && !$dry_run && $handbrake_success) {
+
+						$queue_model->set_episode_status($episode_id, 3);
 
 						$production_studio = $series_model->production_studio;
 						$production_year = $series_model->production_year;
@@ -450,53 +439,80 @@
 
 						$str = $matroska->getXML();
 
-						if($str)
-							file_put_contents($xml, $str);
+						if($str) {
+							file_put_contents($queue_xml, $str);
+							$matroska_xml_success = true;
+						} else {
+							// Creating the XML file failed for some reason
+							$queue_model->set_episode_status($episode_id, 4);
+							$matroska_xml_success = false;
+						}
 
 					}
 
 					// Only re-mux if it's not a dry run
-					if(!$dry_run && file_exists($x264)) {
+					if(!$dry_run && $handbrake_success && $matroska_xml_success) {
 
-						if(file_exists($x264))
-							$matroska->addFile($x264);
+						$queue_model->set_episode_status($episode_id, 4);
 
-						if(file_exists($xml) && filesize($xml))
-							$matroska->addGlobalTags($xml);
+						$matroska->addFile($queue_x264);
 
-						$tmpfname = tempnam(dirname($episode_filename), "mkv.$episode_id.");
-						$matroska->setFilename($tmpfname);
-						$matroska->mux();
-						rename($tmpfname, $mkv);
+						$matroska->addGlobalTags($queue_xml);
+
+						$matroska->setFilename($queue_mkv);
+
+						file_put_contents($queue_mkvmerge, $matroska->getCommandString());
+						chmod($queue_mkvmerge, 0755);
+
+						exec($matroska->getCommandString." 2>&1", $mkvmerge_output_arr, $mkvmerge_exit_code);
 						chmod($mkv, 0644);
 
-						$num_encoded++;
+						$queue_mkvmerge_output = implode("\n", $mkvmerge_output_arr);
+
+						file_put_contents($queue_mkvmerge_out, $queue_mkvmerge_output);
+
+						if($mkvmerge_exit_code == 0 || $mkvmerge_exit_code == 1) {
+
+							$mkvmerge_success = true;
+							rename($queue_mkv, $mkv);
+							$num_encoded++;
+
+						} else {
+
+							$mkvmerge_success = false;
+							$queue_model->set_episode_status($episode_id, 5);
+
+						}
+
 					}
 
-
 				} elseif (!file_exists($iso) && !file_exists($mkv)) {
+
 					// At this point, it shouldn't be in the queue.
 					echo "! ISO not found ($iso), MKV not found ($mkv), force removing episode from queue\n";
 					$queue_model->remove_episode($episode_id);
+
+					$queue_model->set_episode_status($episode_id, 6);
+
 				}
 
 				// Delete old files
-				if(file_exists($mkv) && !$dry_run) {
+				if(file_exists($mkv) && $handbrake_success && $matroska_xml_success && $mkvmerge_success && !$dry_run) {
 
 					$queue_model->remove_episode($episode_id);
 
 					if($debug) {
-						if(file_exists($xml))
-							echo "! Not removing $xml\n";
-						if(file_exists($x264))
-							echo "! Not removing $x264\n";
+						if(file_exists($queue_xml))
+							echo "! Not removing $queue_xml\n";
+						if(file_exists($queue_x264))
+							echo "! Not removing $queue_x264\n";
 					}
 
 					if(!$debug) {
-						if(file_exists($xml) && is_writable($xml))
-							unlink($xml);
-						if(file_exists($x264) && is_writable($x264))
-							unlink($x264);
+						if(file_exists($queue_xml))
+							unlink($queue_xml);
+						if(file_exists($queue_x264))
+							unlink($queue_x264);
 
 						/** Remove any old ISOs */
 						$queue_isos = array();
