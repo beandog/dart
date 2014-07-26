@@ -62,13 +62,6 @@
 				$series_dir = $export_dir.formatTitle($series_title)."/";
 				$series_volume = $episodes_model->get_volume();
 
-				/*
-				if($dvds_model->get_no_dvdnav() == 't')
-					$dvdnav = false;
-				else
-					$dvdnav = true;
-				*/
-
 				if(!is_dir($series_dir))
 					mkdir($series_dir);
 
