@@ -70,7 +70,7 @@
 
 		public function reset() {
 
-			$sql = "DELETE FROM queue;";
+			$sql = "DELETE FROM queue WHERE status = 0;";
 
 			$this->db->query($sql);
 
