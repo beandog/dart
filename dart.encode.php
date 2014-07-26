@@ -463,16 +463,16 @@
 						file_put_contents($queue_mkvmerge, $matroska->getCommandString());
 						chmod($queue_mkvmerge, 0755);
 
-						exec($matroska->getCommandString." 2>&1", $mkvmerge_output_arr, $mkvmerge_exit_code);
-						chmod($mkv, 0644);
+						exec($matroska->getCommandString()." 2>&1", $mkvmerge_output_arr, $mkvmerge_exit_code);
 
 						$queue_mkvmerge_output = implode("\n", $mkvmerge_output_arr);
 
-						file_put_contents($queue_mkvmerge_out, $queue_mkvmerge_output);
+						file_put_contents($queue_mkvmerge, $queue_mkvmerge_output);
 
 						if($mkvmerge_exit_code == 0 || $mkvmerge_exit_code == 1) {
 
 							$mkvmerge_success = true;
+							chmod($mkv, 0644);
 							rename($queue_mkv, $mkv);
 							$num_encoded++;
 
