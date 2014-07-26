@@ -48,6 +48,27 @@
 
 		}
 
+		public function get_episode_status($episode_id) {
+
+			$sql = "SELECT status FROM queue WHERE episode_id = ".$this->db->quote($episode_id).";";
+
+			$var = $this->db->getOne($sql);
+
+			return $var;
+
+		}
+
+		public function set_episode_status($episode_id, $status) {
+
+			$episode_id = abs(intval($episode_id));
+			$status = abs(intval($status));
+
+			$sql = "UPDATE queue SET status = $status WHERE episode_id = $episode_id;";
+
+			$this->db->query($sql);
+
+		}
+
 		public function get_dvds($hostname) {
 
 			$sql = "SELECT DISTINCT dvd_id FROM view_episodes e JOIN queue q ON q.episode_id = e.episode_id WHERE q.hostname = ".$this->db->quote($hostname).";";
