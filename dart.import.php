@@ -288,32 +288,27 @@
 
 			$dvd_cells = $dvd_track->getCells();
 
-			if(count($dvd_cells)) {
+			foreach($dvd_cells as $cells_ix => $cells_length) {
 
-				if($debug)
-					echo "! Track $track_number has ".count($dvd_cells)." cells\n";
+				// Lookup the database chapters.id
+				$cells_model = new Cells_Model;
+				$cells_model_id = $cells_model->find_cells_id($tracks_model_id, $cells_ix);
 
-				foreach($dvd_cells as $cells_ix => $cells_length) {
+				// Create a new record
+				if(!$cells_model_id) {
 
-					// Lookup the database chapters.id
-					$cells_model = new Cells_Model;
-					$cells_model_id = $cells_model->find_cells_id($tracks_model_id, $cells_ix);
+					$cells_model_id = $cells_model->create_new();
 
-					// Create a new record
-					if(!$cells_model_id) {
+					if($debug)
+						echo "! Created new cells id: $cells_model_id\n";
 
-						$cells_model_id = $cells_model->create_new();
-
-						if($debug)
-							echo "! Created new cells id: $cells_model_id\n";
-
-						$cells_model->track_id = $tracks_model_id;
-						$cells_model->ix = $cells_ix;
-						$cells_model->length = $cells_length;
-
-					}
+					$cells_model->track_id = $tracks_model_id;
+					$cells_model->ix = $cells_ix;
 
 				}
+
+				if(is_null($cells_model->length))
+					$cells_model->length = $cells_length;
 
 			}
 
@@ -327,11 +322,13 @@
 			echo "* New DVD imported! Yay! :D\n";
 		}
 
-		// FIXME needs a function
-		$dvds_model->metadata_spec = 1;
-
 	}
 
+	// FIXME needs a function
+	if($missing_dvd_metadata) {
+		$missing_dvd_metadata = false;
+		$dvds_model->metadata_spec = 1;
+	}
 
 	// Eject the disc if we are polling, and nothing else
 	if(($import || $archive) && $wait && !$rip) {
