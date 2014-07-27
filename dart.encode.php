@@ -348,7 +348,7 @@
 
 							echo "HandBrake failed for some reason.  See $episode_queue_dir for temporary files.\n";
 
-							file_put_contents($queue_handbrake, $handbrake->get_executable_string());
+							file_put_contents($queue_handbrake, $handbrake->get_executable_string()."\n");
 							chmod($queue_handbrake, 0755);
 							$queue_model->set_episode_status($episode_id, 2);
 
