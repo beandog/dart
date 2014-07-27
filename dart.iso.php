@@ -6,7 +6,7 @@
 	 */
 
 	// Continue if we can access the device (source file)
-	// and it has a database reord.
+	// and it has a database record.
 	if($access_device && $dvds_model_id && $dump_iso) {
 
 		/** ISO Information **/
