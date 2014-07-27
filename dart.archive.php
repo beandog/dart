@@ -11,6 +11,8 @@
 
 	if($access_device && $disc_indexed && !$fast) {
 
+		$missing_dvd_metadata = $dvds_model->missing_metadata();
+
 		/** Tracks **/
 
 		$tracks = $dvds_model->get_tracks();
