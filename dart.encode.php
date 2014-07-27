@@ -90,8 +90,10 @@
 				$queue_x264 = $episode_queue_dir."/".$episode_basename.".x264";
 				$queue_xml = $episode_queue_dir."/".$episode_basename.".xml";
 				$queue_mkv = $episode_queue_dir."/".$episode_basename.".mkv";
+				$queue_iso_symlink = $episode_queue_dir."/".basename($iso);
 				if(!is_dir($episode_queue_dir))
 					mkdir($episode_queue_dir, 0755, true);
+				symlink($iso, $queue_iso_symlink);
 
 				$queue_status = $queue_model->get_episode_status($episode_id);
 
@@ -475,6 +477,21 @@
 							rename($queue_mkv, $mkv);
 							$num_encoded++;
 							$queue_model->remove_episode($episode_id);
+
+							// Cleanup
+							if(!$debug) {
+
+								unlink($queue_handbrake);
+								unlink($queue_handbrake_output);
+								unlink($queue_mkvmerge);
+								unlink($queue_mkvmerge_output);
+								unlink($queue_x264);
+								unlink($queue_xml);
+								unlink($queue_iso_symlink);
+
+								rmdir($episode_queue_dir);
+
+							}
 
 						} else {
 
