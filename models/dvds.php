@@ -14,11 +14,17 @@
 		// metadata somewhere.
 		public function missing_metadata() {
 
-			$sql = "SELECT 1 FROM dvds WHERE (longest_track IS NULL OR filesize IS NULL OR serial_id = '') AND id = ".$this->db->quote($this->id).";";
-			$var = $this->db->getOne($sql);
-			$bool = (bool)$var;
 
-			return $bool;
+			$sql = "SELECT MAX(version) FROM specs WHERE metadata = 'database';";
+			$version = $this->db->getOne($sql);
+
+			$sql = "SELECT COUNT(1) FROM dvds d WHERE id = ".$this->db->quote($this->id)." AND metadata_spec = $version;";
+			$count = $this->db->getOne($sql);
+
+			if($count)
+				return false;
+			else
+				return true;
 
 		}
 
