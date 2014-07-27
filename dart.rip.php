@@ -28,10 +28,6 @@
 			echo "Check the frontend to see if titles need to be added.\n";
 		} else {
 
-			/** Create directory to dump files to */
- 			if(!is_dir($export_dir))
- 				mkdir($export_dir, 0755);
-
 			$bar = new Console_ProgressBar('[%bar%] %percent%'." ($num_episodes episodes)", ':', ' :D ', 80, $num_episodes);
 			$i = 0;
 
@@ -56,6 +52,18 @@
 				$series_model = new Series_Model($series_id);
 				$collection_title = $series_model->get_collection_title();
 				$series_title = $series_model->title;
+
+				$series_queue_dir = $export_dir."queue/".formatTitle($series_title);
+
+				/** Create directory to dump files to */
+				if(!is_dir($series_queue_dir))
+					mkdir($series_queue_dir, 0755, true);
+
+
+				// Create a symlink to the ISO in the queue directory
+				$series_queue_dir_iso = $series_queue_dir."/".$episodes_model->get_iso();
+				if(!file_exists($series_queue_dir_iso))
+					symlink($device_realpath, $series_queue_dir_iso);
 
 				$episode_filename = $export_dir."episodes/".$episode_filename;
 				$mkv = "$episode_filename.mkv";
