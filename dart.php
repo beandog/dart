@@ -31,13 +31,14 @@
 	require_once 'models/queue.php';
 
 	require_once 'dart.parser.php';
-	require_once 'includes/prefs.php';
 
 	/** Start everything **/
-	$all_devices = array('/dev/dvd', '/dev/dvd1', '/dev/dvd2', '/dev/dvd3', '/dev/dvd4');
+	$all_devices = array('/dev/dvd');
 	$export_dir = getenv('HOME').'/dvds/';
 	$ifo_export_dir = $export_dir.'ifos/';
 	$hostname = php_uname('n');
+
+	require_once 'includes/prefs.php';
 
 	// Parser allows multiple levels of verbosity
 
