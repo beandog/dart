@@ -8,10 +8,8 @@
 
 
 	// Start import
-	if($access_device && ($import || !$disc_indexed || ($missing_import_data && !$fast))) {
+	if($access_device && ($import || !$disc_indexed || ($missing_dvd_data && !$fast))) {
 
-		if($verbose)
-			echo "[Import]\n";
 
 		$uniq_id = $dvd->getID();
 
@@ -20,27 +18,56 @@
 		// Create a new database record for the DVD
 		if(!$disc_indexed) {
 
+			if($verbose)
+				echo "[Import]\n";
+
 			$dvds_model_id = $dvds_model->create_new();
 
 			if($debug)
 				echo "! Created new DVD id: $dvds_model_id\n";
 
-			$dvds_model->uniq_id = $uniq_id;
-			$dvds_model->title = $dvd->getTitle();
 			$dvds_model->provider_id = $dvd->getProviderID();
-			$dvds_model->longest_track = $dvd->getLongestTrack();
-			$dvds_model->filesize = $dvd->getSize();
-			$dvds_model->serial_id = $dvd->getSerialID();
 
-			// Flag it as indexed
-			$disc_indexed = true;
+		} elseif($disc_indexed && $missing_dvd_metadata) {
 
+			if($verbose)
+				echo "[Metadata]\n";
+				echo "* Updating legacy metadata\n";
 		}
+
+		if(!$dvds_model->uniq_id) {
+			echo "* dvdread id = $uniq_id\n";
+			$dvds_model->uniq_id = $uniq_id;
+		}
+		if(!$dvds_model->title) {
+			$dvd_title = $dvd-getTitle();
+			echo "* title: $dvd_title\n";
+			$dvds_model->title = $dvd_title;
+		}
+		if(!$dvds_model->longest_track) {
+			$dvd_longest_track = $dvd->getLongestTrack();
+			echo "* longest track: $dvd_longest_track\n";
+			$dvds_model->longest_track = $dvd_longest_track;
+		}
+		if($missing_dvd_metadata || !$disc_indexed) {
+			$dvd_filesize = $dvd->getSize();
+			echo "* DVD filesize: $dvd_filesize\n";
+			$dvds_model->filesize = $dvd_filesize;
+		}
+		if(!$dvds->model->serial_id) {
+			$dvd_serial_id = $dvd->getSerialID();
+			echo "* serial id: $dvd_serial_id\n";
+			$dvds_model->serial_id = $dvd->getSerialID();
+		}
+
+		// Flag it as indexed
+		$disc_indexed = true;
 
 		/** Tracks **/
 
 		$num_tracks = $dvd->getNumTracks();
 
+		// FIXME jump to the next DVD
 		if(!count($num_tracks))
 			die("? No tracks? No good. Exiting\n");
 

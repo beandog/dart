@@ -11,38 +11,6 @@
 
 	if($access_device && $disc_indexed && !$fast) {
 
-		echo "[Archival]\n";
-		echo "* Checking for missing metadata\n";
-
-		// Use database checks to see if archiving needs to happen
-		$missing_dvd_metadata = $dvds_model->missing_metadata();
-
-		/** DVDS **/
-
-		if($missing_dvd_metadata) {
-
-			if($debug)
-				echo "! DVD ID $dvds_model_id is missing metadata\n";
-
-			// DVD longest track
-			if(is_null($dvds_model->longest_track)) {
-				echo "* Updating longest track\n";
-				$dvds_model->longest_track = $dvd->getLongestTrack();
-			}
-
-			// DVD filesize
-			$dvds_model->filesize = $dvd->getSize();
-
-			// DVD serial ID
-			// Not using 'empty' because it's a constructor, and
-			// not a function.
-			if(!($dvds_model->serial_id)) {
-				echo "* Updating serial ID\n";
-				$dvds_model->serial_id = $dvd->getSerialID();
-			}
-
-		}
-
 		/** Tracks **/
 
 		$tracks = $dvds_model->get_tracks();
@@ -73,45 +41,42 @@
 			// input.  If this flag is triggered, update *all* the metadata that is in
 			// there, regardless of whether it is in the database or not.
 			// In other words, no touchy the code!
-			$missing_track_metadata = $tracks_model->missing_metadata();
 
-			if($missing_track_metadata) {
 
-				$track_number = $tracks_model->ix;
-				$dvd_track = new DVDTrack($track_number, $device);
+			$track_number = $tracks_model->ix;
+			$dvd_track = new DVDTrack($track_number, $device);
 
-				echo "* Updating legacy metadata for track $track_number\n";
+			echo "* Updating legacy metadata for track $track_number\n";
 
-				$tracks_model->ix = $track_number;
-				$tracks_model->length = $dvd_track->getLength();
-				$tracks_model->vts_id = $dvd_track->getVTSID();
-				$tracks_model->vts = $dvd_track->getVTS();
-				$tracks_model->ttn = $dvd_track->getTTN();
-				$tracks_model->fps = $dvd_track->getFPS();
-				$tracks_model->format = $dvd_track->getVideoFormat();
-				$tracks_model->aspect = $dvd_track->getAspectRatio();
-				$tracks_model->width = $dvd_track->getWidth();
-				$tracks_model->height = $dvd_track->getHeight();
-				$tracks_model->df = $dvd_track->getDF();
-				$tracks_model->angles = $dvd_track->getAngles();
+			$tracks_model->ix = $track_number;
+			$tracks_model->length = $dvd_track->getLength();
+			$tracks_model->vts_id = $dvd_track->getVTSID();
+			$tracks_model->vts = $dvd_track->getVTS();
+			$tracks_model->ttn = $dvd_track->getTTN();
+			$tracks_model->fps = $dvd_track->getFPS();
+			$tracks_model->format = $dvd_track->getVideoFormat();
+			$tracks_model->aspect = $dvd_track->getAspectRatio();
+			$tracks_model->width = $dvd_track->getWidth();
+			$tracks_model->height = $dvd_track->getHeight();
+			$tracks_model->df = $dvd_track->getDF();
+			$tracks_model->angles = $dvd_track->getAngles();
 
-				// Check for closed captioning
-				if(is_null($tracks_model->cc)) {
+			// Check for closed captioning
+			if(is_null($tracks_model->cc)) {
 
-					echo "* Updating closed captioning\n";
+				echo "* Updating closed captioning\n";
 
-					$handbrake = new Handbrake;
-					$handbrake->input_filename($device);
-					$handbrake->input_track($track_number);
+				$handbrake = new Handbrake;
+				$handbrake->input_filename($device);
+				$handbrake->input_track($track_number);
 
-					if($handbrake->has_cc())
-						$tracks_model->cc = 't';
-					else
-						$tracks_model->cc = 'f';
-
-				}
+				if($handbrake->has_cc())
+					$tracks_model->cc = 't';
+				else
+					$tracks_model->cc = 'f';
 
 			}
+
 
 		}
 
