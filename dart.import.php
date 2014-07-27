@@ -95,18 +95,46 @@
 
 				$tracks_model->dvd_id = $dvds_model_id;
 				$tracks_model->ix = $track_number;
+
+			}
+
+
+			// Track length has been through a lot of revisions, always update
+			// it if the missing DVD metadata flag is set.
+			if($missing_dvd_metadata || $import || is_null($tracks_model->length))
 				$tracks_model->length = $dvd_track->getLength();
+
+			if(!$tracks_model->vts_id)
 				$tracks_model->vts_id = $dvd_track->getVTSID();
+
+			if(is_null($tracks_model->vts))
 				$tracks_model->vts = $dvd_track->getVTS();
+
+			if(is_null($tracks_model->ttn))
 				$tracks_model->ttn = $dvd_track->getTTN();
+
+			if(is_null($tracks_model->fps))
 				$tracks_model->fps = $dvd_track->getFPS();
+
+			if(!$tracks_model->format)
 				$tracks_model->format = $dvd_track->getVideoFormat();
+
+			if(!$tracks_model->aspect)
 				$tracks_model->aspect = $dvd_track->getAspectRatio();
+
+			if(is_null($tracks_model->width))
 				$tracks_model->width = $dvd_track->getWidth();
+
+			if(is_null($tracks_model->height)
 				$tracks_model->height = $dvd_track->getHeight();
+
+			if(!$tracks_model->df)
 				$tracks_model->df = $dvd_track->getDF();
+
+			if(is_null($tracks_model->angles))
 				$tracks_model->angles = $dvd_track->getAngles();
 
+			if(is_null($tracks_model->cc)) {
 				$handbrake = new Handbrake;
 				$handbrake->input_filename($device);
 				$handbrake->input_track($track_number);
