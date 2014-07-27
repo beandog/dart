@@ -149,7 +149,7 @@
 				$handbrake->input_filename($device);
 				$handbrake->input_track($track_number);
 
-				if($handbrake->has_cc())
+				if($handbrake->has_closed_capitioning())
 					$tracks_model->closed_captioning = 't';
 				else
 					$tracks_model->closed_captioning = 'f';

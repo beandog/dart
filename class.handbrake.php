@@ -54,8 +54,8 @@
 		// Subtitles
 		private $subtitle_tracks = array();
 		private $srt_language = 'eng';
-		private $cc = false;
-		private $cc_ix;
+		private $closed_captioning = false;
+		private $closed_captioning_ix;
 		private $num_bitmaps;
 
 		function debug($bool = true) {
@@ -545,11 +545,11 @@
 			$this->num_bitmaps = count($vobsubs);
 
 			// Sample source string: Closed Captions (iso639-2: eng) (Text)(CC)
-			$cc = preg_grep("/.*Closed Captions.*eng.*/", $arr);
+			$closed_captioning = preg_grep("/.*Closed Captions.*eng.*/", $arr);
 
-			if(count($cc)) {
-				$this->cc = true;
-				$this->cc_ix = (count($vobsubs) + 1);
+			if(count($closed_captioning)) {
+				$this->closed_captioning = true;
+				$this->closed_captioning_ix = (count($vobsubs) + 1);
 			}
 
 			$this->scan_complete = true;
@@ -577,18 +577,18 @@
 			return $var;
 		}
 
-		public function has_cc() {
+		public function has_closed_captioning() {
 			if(!$this->scan_complete)
 				$this->scan();
 
-			return $this->cc;
+			return $this->closed_captioning;
 		}
 
-		public function get_cc_ix() {
+		public function get_closed_captioning_ix() {
 			if(!$this->scan_complete)
 				$this->scan();
 
-			return $this->cc_ix;
+			return $this->closed_captioning_ix;
 		}
 
 		public function encode() {

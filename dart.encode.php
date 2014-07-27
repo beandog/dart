@@ -282,8 +282,8 @@
 						if(!is_null($subp_ix)) {
 							$handbrake->add_subtitle_track($subp_ix);
 							echo "Subtitles:\tVOBSUB\n";
-						} elseif($handbrake->has_cc()) {
-							$handbrake->add_subtitle_track($handbrake->get_cc_ix());
+						} elseif($handbrake->has_closed_captioning()) {
+							$handbrake->add_subtitle_track($handbrake->get_closed_captioning_ix());
 							echo "Subtitles:\tClosed Captioning\n";
 						} else {
 							echo "Subtitles:\tNone :(\n";
