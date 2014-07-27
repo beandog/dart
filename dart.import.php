@@ -6,9 +6,10 @@
 	 * Import a new DVD into the database
 	 */
 
-	// Start import
-	if($access_device && ($archive || $import || !$disc_indexed || $missing_dvd_data)) {
+	$missing_dvd_metadata = $dvds_model->missing_metadata();
 
+	// Start import
+	if($access_device && ($archive || $import || !$disc_indexed || $missing_dvd_metadata)) {
 
 		$dvdread_id = $dvd->getID();
 
@@ -123,7 +124,7 @@
 			if(is_null($tracks_model->width))
 				$tracks_model->width = $dvd_track->getWidth();
 
-			if(is_null($tracks_model->height)
+			if(is_null($tracks_model->height))
 				$tracks_model->height = $dvd_track->getHeight();
 
 			if(!$tracks_model->df)
