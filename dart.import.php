@@ -184,6 +184,11 @@
 					if($debug)
 						echo "! Created new audio id: $audio_model_id\n";
 					$audio_model->track_id = $tracks_model_id;
+
+				} else {
+
+					$audio_model->load($audio_model_id);
+
 				}
 
 				if(is_null($audio_model->ix))
@@ -239,6 +244,10 @@
 					$subp_model->track_id = $tracks_model_id;
 					$subp_model->ix = $subp_ix;
 
+				} else {
+
+					$subp_model->load($subp_model_id);
+
 				}
 
 				if(!$subp_model->langcode)
@@ -281,6 +290,10 @@
 					$chapters_model->track_id = $tracks_model_id;
 					$chapters_model->ix = $chapters_ix;
 
+				} else {
+
+					$chapters_model->load($chapters_model_id);
+
 				}
 
 				if(is_null($chapters_model->length))
@@ -316,6 +329,10 @@
 
 					$cells_model->track_id = $tracks_model_id;
 					$cells_model->ix = $cells_ix;
+
+				} else {
+
+					$cells_model->load($cells_model_id);
 
 				}
 
