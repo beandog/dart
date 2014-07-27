@@ -332,6 +332,9 @@
 			echo "* New DVD imported! Yay! :D\n";
 		}
 
+		// FIXME needs a function
+		$dvds_model->metadata_spec = 1;
+
 	}
 
 
