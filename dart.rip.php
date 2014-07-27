@@ -45,7 +45,6 @@
 				$episode_title = $episodes_model->title;
 				$episode_part = $episodes_model->part;
 				$episode_filename = get_episode_filename($episode_id);
-				$episode_filename = $export_dir.$episode_filename;
 
 				$tracks_model = new Tracks_Model($episodes_model->track_id);
  				$track_number = $tracks_model->ix;
@@ -55,8 +54,10 @@
 
 				// New instance of a DB series
 				$series_model = new Series_Model($series_id);
+				$collection_title = $series_model->get_collection_title();
 				$series_title = $series_model->title;
 
+				$episode_filename = $export_dir."episodes/".$episode_filename;
 				$mkv = "$episode_filename.mkv";
 
 				// Check to see if file exists, if not, rip it
