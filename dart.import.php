@@ -251,41 +251,38 @@
 
 			$dvd_chapters = $dvd_track->getChapters();
 
-			if(count($dvd_chapters)) {
+			foreach($dvd_chapters as $chapter_number => $chapter_data) {
 
-				if($debug)
-					echo "! Track $track_number has ".count($dvd_chapters)." chapters\n";
+				// Lookup the database chapters.id
+				$chapters_model = new Chapters_Model;
+				$chapters_ix = $chapter_data['ix'];
+				$chapters_model_id = $chapters_model->find_chapters_id($tracks_model_id, $chapters_ix);
 
-				foreach($dvd_chapters as $chapter_number => $chapter_data) {
+				// Create a new record
+				if(!$chapters_model_id) {
 
-					// Lookup the database chapters.id
-					$chapters_model = new Chapters_Model;
-					$chapters_ix = $chapter_data['ix'];
-					$chapters_model_id = $chapters_model->find_chapters_id($tracks_model_id, $chapters_ix);
+					$chapters_model_id = $chapters_model->create_new();
 
-					// Create a new record
-					if(!$chapters_model_id) {
+					if($debug)
+						echo "! Created new chapters id: $chapters_model_id\n";
 
-						$chapters_model_id = $chapters_model->create_new();
-
-						if($debug)
-							echo "! Created new chapters id: $chapters_model_id\n";
-
-						$chapters_model->track_id = $tracks_model_id;
-						$chapters_model->ix = $chapters_ix;
-						$chapters_model->length = $chapter_data['length'];
-						$chapters_model->startcell = $chapter_data['startcell'];
-
-					}
+					$chapters_model->track_id = $tracks_model_id;
+					$chapters_model->ix = $chapters_ix;
 
 				}
 
-				unset($chapters_model);
-				unset($chapters_ix);
-				unset($chapters_model_id);
-				unset($dvd_chapters);
+				if(is_null($chapters_model->length))
+					$chapters_model->length = $chapter_data['length'];
+
+				if(is_null($chapters_model->startcell))
+					$chapters_model->startcell = $chapter_data['startcell'];
 
 			}
+
+			unset($chapters_model);
+			unset($chapters_ix);
+			unset($chapters_model_id);
+			unset($dvd_chapters);
 
 			/** Cells **/
 
