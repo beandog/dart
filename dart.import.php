@@ -97,7 +97,6 @@
 
 			}
 
-
 			// Track length has been through a lot of revisions, always update
 			// it if the missing DVD metadata flag is set.
 			if($missing_dvd_metadata || $import || is_null($tracks_model->length))
@@ -208,46 +207,45 @@
 
 			$subtitle_streams = $dvd_track->getSubtitleStreams();
 
-			if(count($subtitle_streams)) {
+			foreach($subtitle_streams as $streamid) {
 
-				if($debug)
-					echo "! Track $track_number has ".count($subtitle_streams)." subtitle streams\n";
+				$dvd_subp = new DVDSubs($xml, $streamid);
 
-				foreach($subtitle_streams as $streamid) {
+				// Lookup the database subp.id
+				$subp_model = new Subp_Model;
+				$subp_ix = $dvd_subp->getXMLIX();
+				$subp_model_id = $subp_model->find_subp_id($tracks_model_id, $subp_ix);
 
-					$dvd_subp = new DVDSubs($xml, $streamid);
+				// Create a new record
+				if(!$subp_model_id) {
 
-					// Lookup the database subp.id
-					$subp_model = new Subp_Model;
-					$subp_ix = $dvd_subp->getXMLIX();
-					$subp_model_id = $subp_model->find_subp_id($tracks_model_id, $subp_ix);
+					$subp_model_id = $subp_model->create_new();
 
-					// Create a new record
-					if(!$subp_model_id) {
+					if($debug)
+						echo "! Created new subp id: $subp_model_id\n";
 
-						$subp_model_id = $subp_model->create_new();
-
-						if($debug)
-							echo "! Created new subp id: $subp_model_id\n";
-
-						$subp_model->track_id = $tracks_model_id;
-						$subp_model->ix = $subp_ix;
-						$subp_model->langcode = $dvd_subp->getLangcode();
-						$subp_model->language = $dvd_subp->getLanguage();
-						$subp_model->streamid = $streamid;
-
-					}
+					$subp_model->track_id = $tracks_model_id;
+					$subp_model->ix = $subp_ix;
 
 				}
 
-				unset($dvd_subp);
-				unset($subp_model);
-				unset($subp_ix);
-				unset($subp_model_id);
-				unset($streamid);
-				unset($subtitle_streams);
+				if(!$sub_model->langcode)
+					$subp_model->langcode = $dvd_subp->getLangcode();
+
+				if(!$subp_model->language)
+					$subp_model->language = $dvd_subp->getLanguage();
+
+				if(!$subp_model->streamid)
+					$subp_model->streamid = $streamid;
 
 			}
+
+			unset($dvd_subp);
+			unset($subp_model);
+			unset($subp_ix);
+			unset($subp_model_id);
+			unset($streamid);
+			unset($subtitle_streams);
 
 			/** Chapters **/
 
