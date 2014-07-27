@@ -31,10 +31,7 @@
 			}
 
 			// DVD filesize
-			if(is_null($dvds_model->filesize)) {
-				echo "* Updating filesize\n";
-				$dvds_model->filesize = $dvd->getSize();
-			}
+			$dvds_model->filesize = $dvd->getSize();
 
 			// DVD serial ID
 			// Not using 'empty' because it's a constructor, and
@@ -85,6 +82,7 @@
 
 				echo "* Updating legacy metadata for track $track_number\n";
 
+				$tracks_model->ix = $track_number;
 				$tracks_model->length = $dvd_track->getLength();
 				$tracks_model->vts_id = $dvd_track->getVTSID();
 				$tracks_model->vts = $dvd_track->getVTS();

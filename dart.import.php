@@ -80,6 +80,15 @@
 				$tracks_model->df = $dvd_track->getDF();
 				$tracks_model->angles = $dvd_track->getAngles();
 
+				$handbrake = new Handbrake;
+				$handbrake->input_filename($device);
+				$handbrake->input_track($track_number);
+
+				if($handbrake->has_cc())
+					$tracks_model->cc = 't';
+				else
+					$tracks_model->cc = 'f';
+
 			}
 
 			// Get lsdvd XML to pass to sub-classes
