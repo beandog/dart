@@ -210,9 +210,9 @@
 			echo "* Filesize:\t$display_filesize MB\n";
 
 			// Get the uniq ID for the disc
-			$uniq_id = $dvd->getID();
+			$dvdread_id = $dvd->getID();
 			echo "* Title:\t".$dvd->getTitle()."\n";
-			echo "* Disc ID:\t$uniq_id\n";
+			echo "* Disc ID:\t$dvdread_id\n";
 
 			// Get the serial ID for the disc
 			$serial_id = $dvd->getSerialID();
@@ -220,7 +220,7 @@
 
 			// Lookup the database dvds.id
 			echo "[Database]\n";
-			$dvds_model_id = $dvds_model->find_id('uniq_id', $uniq_id);
+			$dvds_model_id = $dvds_model->find_id('dvdread_id', $dvdread_id);
 
 			// Use the serial ID as a unique identifer as well
 			if($device_is_iso && !$dvds_model_id) {

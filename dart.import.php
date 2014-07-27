@@ -6,12 +6,11 @@
 	 * Import a new DVD into the database
 	 */
 
-
 	// Start import
 	if($access_device && ($import || !$disc_indexed || $missing_dvd_data)) {
 
 
-		$uniq_id = $dvd->getID();
+		$dvdread_id = $dvd->getID();
 
 		echo "* Title: ".$dvd->getTitle()."\n";
 
@@ -35,9 +34,9 @@
 				echo "* Updating legacy metadata\n";
 		}
 
-		if(!$dvds_model->uniq_id) {
-			echo "* dvdread id = $uniq_id\n";
-			$dvds_model->uniq_id = $uniq_id;
+		if(!$dvds_model->dvdread_id) {
+			echo "* dvdread id = $dvdread_id\n";
+			$dvds_model->dvdread_id = $dvdread_id;
 		}
 		if(!$dvds_model->title) {
 			$dvd_title = $dvd-getTitle();
