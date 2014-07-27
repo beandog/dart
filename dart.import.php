@@ -7,7 +7,7 @@
 	 */
 
 	// Start import
-	if($access_device && ($import || !$disc_indexed || $missing_dvd_data)) {
+	if($access_device && ($archive || $import || !$disc_indexed || $missing_dvd_data)) {
 
 
 		$dvdread_id = $dvd->getID();

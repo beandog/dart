@@ -264,7 +264,6 @@
 		}
 
 		require 'dart.info.php';
-		require 'dart.archive.php';
 		require 'dart.import.php';
 		require 'dart.ifo.php';
 		require 'dart.iso.php';
