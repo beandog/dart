@@ -65,16 +65,16 @@
 
 		/** Tracks **/
 
-		$num_tracks = $dvd->getNumTracks();
+		$dvd_num_tracks = $dvd->getNumTracks();
 
 		// FIXME jump to the next DVD
-		if(!count($num_tracks))
+		if(!count($dvd_num_tracks))
 			die("? No tracks? No good. Exiting\n");
 
 		if($verbose)
-			echo "* Importing $num_tracks tracks: ";
+			echo "* Importing $dvd_num_tracks tracks: ";
 
-		for($track_number = 1; $track_number <= $num_tracks; $track_number++) {
+		for($track_number = 1; $track_number <= $dvd_num_tracks; $track_number++) {
 
 			if($verbose)
 				echo "$track_number ";
