@@ -98,12 +98,5 @@
 			return $var;
 		}
 
-		public function get_collection_title() {
-
-			$sql = "SELECT collections.title FROM dvds JOIN series_dvds ON dvds.id = series_dvds.dvd_id JOIN series ON series.id = series_dvds.series_id JOIN collections ON collections.id = series.collection_id WHERE dvds.id = ".$this->db->quote($this->id).";";
-			$var = $this->db->getOne($sql);
-			return $var;
-		}
-
 	}
 ?>
