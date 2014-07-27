@@ -48,38 +48,6 @@
 			$track_number = $tracks_model->ix;
 			$dvd_track = new DVDTrack($track_number, $device);
 
-			echo "* Updating legacy metadata for track $track_number\n";
-
-			$tracks_model->ix = $track_number;
-			$tracks_model->length = $dvd_track->getLength();
-			$tracks_model->vts_id = $dvd_track->getVTSID();
-			$tracks_model->vts = $dvd_track->getVTS();
-			$tracks_model->ttn = $dvd_track->getTTN();
-			$tracks_model->fps = $dvd_track->getFPS();
-			$tracks_model->format = $dvd_track->getVideoFormat();
-			$tracks_model->aspect = $dvd_track->getAspectRatio();
-			$tracks_model->width = $dvd_track->getWidth();
-			$tracks_model->height = $dvd_track->getHeight();
-			$tracks_model->df = $dvd_track->getDF();
-			$tracks_model->angles = $dvd_track->getAngles();
-
-			// Check for closed captioning
-			if(is_null($tracks_model->cc)) {
-
-				echo "* Updating closed captioning\n";
-
-				$handbrake = new Handbrake;
-				$handbrake->input_filename($device);
-				$handbrake->input_track($track_number);
-
-				if($handbrake->has_cc())
-					$tracks_model->cc = 't';
-				else
-					$tracks_model->cc = 'f';
-
-			}
-
-
 		}
 
 		// Mark disc as archived
