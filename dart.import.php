@@ -71,8 +71,14 @@
 		if(!count($dvd_num_tracks))
 			die("? No tracks? No good. Exiting\n");
 
-		if($verbose)
-			echo "* Importing $dvd_num_tracks tracks: ";
+		if($verbose) {
+			if($missing_dvd_metadata && !$import)
+				echo "* Updating DVD track metadata: ";
+			elseif($archive)
+				echo "* Checking tracks for full archival: ";
+			elseif($import)
+				echo "* Importing $dvd_num_tracks tracks: ";
+		}
 
 		for($track_number = 1; $track_number <= $dvd_num_tracks; $track_number++) {
 
@@ -95,6 +101,10 @@
 
 				$tracks_model->dvd_id = $dvds_model_id;
 				$tracks_model->ix = $track_number;
+
+			} else {
+
+				$tracks_model->load($tracks_model_id);
 
 			}
 
@@ -133,15 +143,16 @@
 			if(is_null($tracks_model->angles))
 				$tracks_model->angles = $dvd_track->getAngles();
 
-			if(is_null($tracks_model->cc)) {
+			if(is_null($tracks_model->closed_captioning)) {
+
 				$handbrake = new Handbrake;
 				$handbrake->input_filename($device);
 				$handbrake->input_track($track_number);
 
 				if($handbrake->has_cc())
-					$tracks_model->cc = 't';
+					$tracks_model->closed_captioning = 't';
 				else
-					$tracks_model->cc = 'f';
+					$tracks_model->closed_captioning = 'f';
 
 			}
 
@@ -319,7 +330,7 @@
 		if($verbose)
 			echo "\n";
 
-		if($verbose) {
+		if($verbose && $import) {
 			echo "* New DVD imported! Yay! :D\n";
 		}
 
