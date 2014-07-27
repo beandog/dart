@@ -9,7 +9,7 @@
 	 * compile in here, and be stored centrally.
 	 */
 
-	if($access_device && $disc_indexed && !$fast) {
+	if($access_device && $disc_indexed) {
 
 		$missing_dvd_metadata = $dvds_model->missing_metadata();
 

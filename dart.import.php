@@ -8,7 +8,7 @@
 
 
 	// Start import
-	if($access_device && ($import || !$disc_indexed || ($missing_dvd_data && !$fast))) {
+	if($access_device && ($import || !$disc_indexed || $missing_dvd_data)) {
 
 
 		$uniq_id = $dvd->getID();

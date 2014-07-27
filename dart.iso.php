@@ -7,7 +7,7 @@
 
 	// Continue if we can access the device (source file)
 	// and it has a database reord.
-	if($access_device && $dvds_model_id && (!$fast || $dump_iso)) {
+	if($access_device && $dvds_model_id && $dump_iso) {
 
 		/** ISO Information **/
 		if($verbose)

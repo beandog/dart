@@ -118,12 +118,6 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('fast', array(
-		'long_name' => '--fast',
-		'description' => 'Do a minimum of steps',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
 	$parser->addOption('ftp', array(
 		'short_name' => '-f',
 		'long_name' => '--ftp',
