@@ -54,7 +54,7 @@
 			echo "* DVD filesize: $dvd_filesize\n";
 			$dvds_model->filesize = $dvd_filesize;
 		}
-		if(!$dvds->model->serial_id) {
+		if(!$dvds_model->serial_id) {
 			$dvd_serial_id = $dvd->getSerialID();
 			echo "* serial id: $dvd_serial_id\n";
 			$dvds_model->serial_id = $dvd->getSerialID();
@@ -230,7 +230,7 @@
 
 				}
 
-				if(!$sub_model->langcode)
+				if(!$subp_model->langcode)
 					$subp_model->langcode = $dvd_subp->getLangcode();
 
 				if(!$subp_model->language)
