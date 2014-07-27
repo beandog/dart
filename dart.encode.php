@@ -472,7 +472,6 @@
 						if($mkvmerge_exit_code == 0 || $mkvmerge_exit_code == 1) {
 
 							$mkvmerge_success = true;
-							chmod($mkv, 0644);
 							rename($queue_mkv, $mkv);
 							$num_encoded++;
 							$queue_model->remove_episode($episode_id);
