@@ -3,7 +3,7 @@
 	require_once 'PEAR.php';
 	require_once 'MDB2.php';
 
-	$dsn = "pgsql://steve@charlie/dvds";
+	$dsn = "pgsql://steve@localhost/dvds";
 
 	$options = array(
 		'debug'       => 2,
