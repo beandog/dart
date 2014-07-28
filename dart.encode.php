@@ -121,8 +121,10 @@
 					echo "Episode:\t".$episode['title']."\n";
 					echo "Source:\t\t".basename($episode['src_iso'])."\n";
 					echo "Target:\t\t".basename($episode['dest_mkv'])."\n";
-					echo "Episode ID:\t".$episode_id."\n";
-					echo "Queue:\t\t".$episode['queue_dir']."\n";
+					if($debug || $dry_run) {
+						echo "Episode ID:\t".$episode_id."\n";
+						echo "Queue:\t\t".str_replace($export_dir."queue/", "", $episode['queue_dir']."/")."\n";
+					}
 
 					$handbrake = new Handbrake;
 
