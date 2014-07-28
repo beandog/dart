@@ -118,6 +118,7 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	/*
 	$parser->addOption('ftp', array(
 		'short_name' => '-f',
 		'long_name' => '--ftp',
@@ -125,6 +126,7 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	*/
 	$parser->addOption('dumpvob', array(
 		'long_name' => '--vob',
 		'description' => 'Dump stream to .vob file',
