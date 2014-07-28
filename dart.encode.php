@@ -142,6 +142,7 @@
 						elseif($audio_preference === "2")
 							$default_audio_streamid = $best_quality_audio_streamid;
 
+						/*
 						if($dumpvob) {
 
 							$vob = "$episode_filename.vob";
@@ -169,11 +170,11 @@
 						} else {
 							$src = $episode['src_iso'];
 						}
+						*/
 
 						// Handbrake
 						$handbrake->input_filename($episode['src_iso']);
-						if(!$dumpvob)
-							$handbrake->input_track($track['number']);
+						$handbrake->input_track($track['number']);
 						$handbrake->output_filename($files['handbrake_x264']);
 						// $handbrake->dvdnav($dvdnav);
 						$handbrake->add_chapters();
@@ -257,9 +258,9 @@
 
 							// If one hasn't been added by now, just use
 							// the default one.
-							if(!$added_audio && !$dumpvob)
+							if(!$added_audio)
 								$handbrake->add_audio_stream("0x80");
-							elseif(!$added_audio && $dumpvob)
+							elseif(!$added_audio)
 								$handbrake->add_audio_track(1);
 
 						}
@@ -293,9 +294,7 @@
 						}
 
 						// Set Chapters
-						if(!$dumpvob) {
-							$handbrake->set_chapters($episode['starting_chapter'], $episode['ending_chapter']);
-						}
+						$handbrake->set_chapters($episode['starting_chapter'], $episode['ending_chapter']);
 
 						// Cartoons!
 						if($animation) {
@@ -357,8 +356,10 @@
 
 							// Post-encode checks
 
+							/*
 							if(!$debug && $dumpvob && file_exists($vob))
 								unlink($vob);
+							*/
 
 						}
 

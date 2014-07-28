@@ -127,12 +127,14 @@
 		'default' => false,
 	));
 	*/
+	/*
 	$parser->addOption('dumpvob', array(
 		'long_name' => '--vob',
 		'description' => 'Dump stream to .vob file',
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	*/
 
 	$result = $parser->parse();
 
