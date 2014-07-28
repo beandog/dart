@@ -327,7 +327,7 @@
 
 							$queue_model->set_episode_status($episode_id, 1);
 
-							file_put_contents($files['handbrake_command'], $handbrake->get_executable_string()." $*\n");
+							file_put_contents($files['handbrake_command'], escapeshellcmd($handbrake->get_executable_string())." $*\n");
 							chmod($files['handbrake_command'], 0755);
 
 							// Handbrake class will output encoding status
