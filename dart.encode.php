@@ -510,7 +510,7 @@
 				} elseif (!file_exists($episode['src_iso']) && !file_exists($episode['dest_mkv'])) {
 
 					// At this point, it shouldn't be in the queue.
-					echo "! ISO not found ($iso), MKV not found ($mkv), force removing episode from queue\n";
+					echo "! ISO not found (".$episode['src_iso']."), MKV not found (".$episode['dest_mkv']."), force removing episode from queue\n";
 					$queue_model->remove_episode($episode_id);
 
 					$queue_model->set_episode_status($episode_id, 6);
