@@ -486,10 +486,13 @@
 							// Cleanup
 							if(!$debug) {
 
-								foreach($files as $filename)
-									unlink($filename);
+								foreach($files as $filename) {
+									if(file_exists($filename))
+										unlink($filename);
+								}
 
-								rmdir($episode['queue_dir']);
+								if(is_dir($episode['queue_dir']))
+									rmdir($episode['queue_dir']);
 
 							}
 
@@ -518,8 +521,14 @@
 					$queue_model->remove_episode($episode_id);
 
 					if(!$debug) {
-						foreach($files as $filename)
-							unlink($filename);
+
+						foreach($files as $filename) {
+							if(file_exists($filename))
+								unlink($filename);
+						}
+
+						if(is_dir($episode['queue_dir']))
+							rmdir($episode['queue_dir']);
 
 						/** Remove any old ISOs */
 						$queue_isos = array();
