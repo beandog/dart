@@ -131,12 +131,6 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('svn', array(
-		'long_name' => '--svn',
-		'description' => 'Use svn binaries where possible',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
 
 	$result = $parser->parse();
 

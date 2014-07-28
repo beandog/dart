@@ -123,9 +123,6 @@
 
 					$handbrake = new Handbrake;
 
-					if($svn)
-						$handbrake->set_binary('handbrake-svn');
-
 					$handbrake->verbose($verbose);
 					$handbrake->debug($debug);
 					$handbrake->set_dry_run($dry_run);
