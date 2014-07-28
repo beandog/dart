@@ -375,12 +375,12 @@
 
 						$matroska = new Matroska();
 
-						if($episode_title)
+						if($episode['title'])
 							$matroska->setTitle($episode['title']);
 
 						$matroska->addTag();
 						$matroska->addTarget(70, "COLLECTION");
-						$matroska->addSimpleTag("TITLE", $series_model->title);
+						$matroska->addSimpleTag("TITLE", $series['title']);
 						if($production_studio)
 							$matroska->addSimpleTag("PRODUCTION_STUDIO", $production_studio);
 						if($production_year)
@@ -394,15 +394,15 @@
 						$matroska->addSimpleTag("METADATA_SPEC", "DVD-MKV-1");
 						$matroska->addSimpleTag("DVD_COLLECTION", $collection['title']);
 						$matroska->addSimpleTag("DVD_SERIES_TITLE", $series['title']);
-						if($episode_season)
+						if($episode['season'])
 							$matroska->addSimpleTag("DVD_SERIES_SEASON", $episode['season']);
-						if($series_volume)
+						if($series['volume'])
 							$matroska->addSimpleTag("DVD_SERIES_VOLUME", $series['volume']);
 						$matroska->addSimpleTag("DVD_TRACK_NUMBER", $track['number']);
-						if($episode_number)
+						if($episode['number'])
 							$matroska->addSimpleTag("DVD_EPISODE_NUMBER", $episode['number']);
 						$matroska->addSimpleTag("DVD_EPISODE_TITLE", $episode['title']);
-						if($episode_part)
+						if($episode['part'])
 							$matroska->addSimpleTag("DVD_EPISODE_PART_NUMBER", $episode['part']);
 						$matroska->addSimpleTag("DVD_ID", $tracks_model->dvd_id);
 						$matroska->addSimpleTag("DVD_SERIES_ID", $series['id']);
@@ -464,14 +464,14 @@
 
 						$matroska->setFilename($files['queue_mkv']);
 
-						file_put_contents($files['mkvmerge_command'], $matroska->getCommandString());
+						file_put_contents($files['mkvmerge_command']." $*\n", $matroska->getCommandString());
 						chmod($files['mkvmerge_command'], 0755);
 
 						exec($matroska->getCommandString()." 2>&1", $mkvmerge_output_arr, $mkvmerge_exit_code);
 
 						$queue_mkvmerge_output = implode("\n", $mkvmerge_output_arr);
 
-						file_put_contents($files['mkvmerge_output'], $queue_mkvmerge_output);
+						file_put_contents($files['mkvmerge_output']."\n", $queue_mkvmerge_output);
 
 						if($mkvmerge_exit_code == 0 || $mkvmerge_exit_code == 1) {
 
