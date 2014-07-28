@@ -87,6 +87,9 @@
 				if(!is_dir($episode['queue_dir']))
 					mkdir($episode['queue_dir'], 0755, true);
 
+				if(!is_dir($episode['dest_dir']))
+					mkdir($episode['dest_dir'], 0755, true);
+
 				// Fix a rare case where the starting chapter is not null in the database,
 				// but the ending chapter is.  In situations like this, set the ending
 				// chapter to the last chapter.  Ideally, this should not happen in the
@@ -410,7 +413,7 @@
 						$matroska->addSimpleTag("DVD_EPISODE_ID", $episode_id);
 
 						/** Season **/
-						if($episode_season) {
+						if($episode['season']) {
 
 							$matroska->addTag();
 							$matroska->addTarget(60, "SEASON");
@@ -464,14 +467,14 @@
 
 						$matroska->setFilename($files['queue_mkv']);
 
-						file_put_contents($files['mkvmerge_command']." $*\n", $matroska->getCommandString());
+						file_put_contents($files['mkvmerge_command'], $matroska->getCommandString()." $*\n");
 						chmod($files['mkvmerge_command'], 0755);
 
 						exec($matroska->getCommandString()." 2>&1", $mkvmerge_output_arr, $mkvmerge_exit_code);
 
 						$queue_mkvmerge_output = implode("\n", $mkvmerge_output_arr);
 
-						file_put_contents($files['mkvmerge_output']."\n", $queue_mkvmerge_output);
+						file_put_contents($files['mkvmerge_output'], $queue_mkvmerge_output."\n");
 
 						if($mkvmerge_exit_code == 0 || $mkvmerge_exit_code == 1) {
 
