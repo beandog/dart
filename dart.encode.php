@@ -329,11 +329,21 @@
 
 							$queue_model->set_episode_status($episode_id, 1);
 
-							file_put_contents($files['handbrake_command'], escapeshellcmd($handbrake->get_executable_string())." $*\n");
+							$handbrake_command = $handbrake->get_executable_string();
+							file_put_contents($files['handbrake_command'], escapeshellcmd($handbrake_command." $*\n"));
 							chmod($files['handbrake_command'], 0755);
 
 							// Handbrake class will output encoding status
-							$exit_code = $handbrake->encode();
+							// $exit_code = $handbrake->encode();
+
+							if($debug) {
+								$exec = escapeshellcmd($handbrake_command);
+								echo "Executing: $exec\n";
+								passthru($exec, $exit_code);
+							} else {
+								$exec = escapeshellcmd($handbrake_command)." 2> ".escapeshellcmd($files['handbrake_output']);
+								passthru($exec, $exit_code);
+							}
 
 							// One line break to clear out the encoding line from handbrake
 							echo "\n";
