@@ -121,10 +121,6 @@
 					echo "Episode ID:\t".$episode_id."\n";
 					echo "Queue:\t\t".$episode['queue_dir']."\n";
 
-					$matroska = new Matroska($files['queue_mkv']);
-					$matroska->setDebug($debug);
-					$matroska->setTitle($episode['title']);
-
 					$handbrake = new Handbrake;
 
 					if($svn)
