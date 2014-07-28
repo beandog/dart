@@ -67,6 +67,17 @@
 
 		}
 
+		public function create_queue_dir() {
+
+			$dir = $this->get_queue_dir();
+
+			if(!is_dir($dir))
+				return mkdir($dir, 0755, true);
+			else
+				return true;
+
+		}
+
 		public function get_episodes_dir() {
 
 			$dir = $this->export_dir;
@@ -74,6 +85,17 @@
 			$dir .= $this->safe_filename_title($this->title)."/";
 
 			return $dir;
+
+		}
+
+		public function create_episodes_dir() {
+
+			$dir = $this->get_episodes_dir();
+
+			if(!is_dir($dir))
+				return mkdir($dir, 0755, true);
+			else
+				return true;
 
 		}
 
@@ -85,6 +107,17 @@
 			$dir .= $this->safe_filename_title($this->title)."/";
 
 			return $dir;
+
+		}
+
+		public function create_isos_dir() {
+
+			$dir = $this->get_isos_dir();
+
+			if(!is_dir($dir))
+				return mkdir($dir, 0755, true);
+			else
+				return true;
 
 		}
 
