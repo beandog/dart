@@ -31,6 +31,16 @@
 
 				clearstatcache();
 
+				$episodes_model = new Episodes_Model($episode_id);
+				$series_id = $episodes_model->get_series_id();
+				$series_model = new Series_Model($series_id);
+				$series_title = $series_model->title;
+				$episode = new MediaEpisode($export_dir, $episodes_model->get_iso(), $series_model->get_collection_title(), $series_model->title, $episodes_model->title, $episode_id);
+				$queue_status = $queue_model->get_episode_status($episode_id);
+
+				if(file_exists($episode->episode_mkv))
+					break;
+
 				if($num_queued_episodes > 1) {
 					echo "\n";
 					echo "[Encode ".($num_encoded + 1)."/$num_queued_episodes]\n";
@@ -40,55 +50,16 @@
 				$matroska_xml_success = false;
 				$mkvmerge_success = false;
 
-				$episodes_model = new Episodes_Model($episode_id);
-				$series_id = $episodes_model->get_series_id();
-				$series_model = new Series_Model($series_id);
-				$series_title = $series_model->title;
 				$tracks_model = new Tracks_Model($episodes_model->track_id);
 				$dvds_model = new Dvds_Model($tracks_model->dvd_id);
-
-				$series = array();
-				$episode = array();
-				$track = array();
-				$collection = array();
-
-				$series = array(
-					'id' => $series_id,
-					'title' => $series_title,
-					'queue_dir' => $export_dir."queue/".formatTitle($series_title),
-					'volume' => $episodes_model->get_volume(),
-				);
-
-				$episode = array(
-					'id' => $episode_id,
-					'title' => $episodes_model->title,
-					'season' => $episodes_model->get_season(),
-					'part' => $episodes_model->part,
-					'number' => $episodes_model->get_number(),
-					'ix' => $episodes_model->ix,
-					'starting_chapter' => $episodes_model->starting_chapter,
-					'ending_chapter' => $episodes_model->ending_chapter,
-					'filename' => basename(get_episode_filename($episode_id)),
-					'src_iso' => $series['queue_dir']."/".$episodes_model->get_iso(),
-					'queue_dir' => $export_dir."queue/".formatTitle($series_title)."/$episode_id.".formatTitle($episodes_model->title),
-					'dest_dir' => $export_dir."episodes/".formatTitle($series_title),
-					'dest_mkv' => $export_dir."episodes/".formatTitle($series_title)."/".basename(get_episode_filename($episode_id)).".mkv",
-				);
 
 				$track = array(
 					'id' => $episodes_model->track_id,
 					'number' => $tracks_model->ix,
 				);
 
-				$collection = array(
-					'title' => $series_model->get_collection_title(),
-				);
-
-				if(!is_dir($episode['queue_dir']))
-					mkdir($episode['queue_dir'], 0755, true);
-
-				if(!is_dir($episode['dest_dir']))
-					mkdir($episode['dest_dir'], 0755, true);
+				$episode->create_queue_dir();
+				$episode->create_queue_iso_symlink();
 
 				// Fix a rare case where the starting chapter is not null in the database,
 				// but the ending chapter is.  In situations like this, set the ending
@@ -96,35 +67,26 @@
 				// front end, but do an extra check here as well.
 				// Handbrake will need an ending chapter passed to it if a starting chapter
 				// is given, it will default to only encoding that one chapter otherwise.
-				if(is_null($episode['ending_chapter']) && !is_null($episode['starting_chapter'])) {
-					$episode['ending_chapter'] = $tracks_model->get_num_chapters();
+				$starting_chapter = $episodes_model->starting_chapter;
+				$ending_chapter = $episodes_model->ending_chapter;
+				if(is_null($ending_chapter) && !is_null($starting_chapter)) {
+					$ending_chapter = $tracks_model->get_num_chapters();
 				}
 
-
-				$files = array(
-					'handbrake_command' => $episode['queue_dir']."/handbrake.sh",
-					'handbrake_output' => $episode['queue_dir']."/encode.out",
-					'handbrake_x264' => $episode['queue_dir']."/x264.mkv",
-					'mkvmerge_command' => $episode['queue_dir']."/mkvmerge.sh",
-					'mkvmerge_output' => $episode['queue_dir']."/mux.out",
-					'matroska_xml' => $episode['queue_dir']."/metadata.xml",
-					'queue_mkv' => $episode['queue_dir']."/".$episode['filename'].".mkv",
-				);
-
-				$queue_status = $queue_model->get_episode_status($episode_id);
-
 				// Check to see if file exists, if not, encode it
-				if(file_exists($episode['src_iso']) && !file_exists($episode['dest_mkv']) && $queue_status == 0) {
+				if($queue_status === 0) {
 
-					echo "Collection:\t".$collection['title']."\n";
-					echo "Series:\t\t".$series['title']."\n";
-					echo "Episode:\t".$episode['title']."\n";
-					echo "Source:\t\t".basename($episode['src_iso'])."\n";
-					echo "Target:\t\t".basename($episode['dest_mkv'])."\n";
+					echo "Collection:\t".$episode->collection_title."\n";
+					echo "Series:\t\t".$episode->series_title."\n";
+					echo "Episode:\t".$episode->episode_title."\n";
+					echo "Source:\t\t".$episode->dvd_iso."\n";
+					echo "Target:\t\t".basename($episode->episode_mkv)."\n";
 					if($debug || $dry_run) {
 						echo "Episode ID:\t".$episode_id."\n";
-						echo "Queue:\t\t".str_replace($export_dir."queue/", "", $episode['queue_dir']."/")."\n";
+						echo "Queue:\t\t".$episode->queue_dir."\n";
 					}
+
+					die;
 
 					$handbrake = new Handbrake;
 
@@ -178,9 +140,9 @@
 						*/
 
 						// Handbrake
-						$handbrake->input_filename($episode['src_iso']);
+						$handbrake->input_filename($episode->queue_iso_symlink);
 						$handbrake->input_track($track['number']);
-						$handbrake->output_filename($files['handbrake_x264']);
+						$handbrake->output_filename($episode->queue_handbrake_x264);
 						// $handbrake->dvdnav($dvdnav);
 						$handbrake->add_chapters();
 						$handbrake->output_format('mkv');
@@ -299,7 +261,7 @@
 						}
 
 						// Set Chapters
-						$handbrake->set_chapters($episode['starting_chapter'], $episode['ending_chapter']);
+						$handbrake->set_chapters($starting_chapter, $ending_chapter);
 
 						// Cartoons!
 						if($animation) {
@@ -330,8 +292,8 @@
 							$queue_model->set_episode_status($episode_id, 1);
 
 							$handbrake_command = $handbrake->get_executable_string();
-							file_put_contents($files['handbrake_command'], escapeshellcmd($handbrake_command." $*\n"));
-							chmod($files['handbrake_command'], 0755);
+							file_put_contents($episode->queue_handbrake_script, escapeshellcmd($handbrake_command." $*\n"));
+							chmod($episode->queue_handbrake_script, 0755);
 
 							// Handbrake class will output encoding status
 							// $exit_code = $handbrake->encode();
@@ -341,7 +303,7 @@
 								echo "Executing: $exec\n";
 								passthru($exec, $exit_code);
 							} else {
-								$exec = escapeshellcmd($handbrake_command)." 2> ".escapeshellcmd($files['handbrake_output']);
+								$exec = escapeshellcmd($handbrake_command)." 2> ".escapeshellcmd($episode->queue_handbrake_output);
 								passthru($exec, $exit_code);
 							}
 
@@ -381,7 +343,7 @@
 					}
 
 					/** Matroska Metadata */
-					if(!file_exists($files['queue_mkv']) && !file_exists($files['matroska_xml']) && !$dry_run && $handbrake_success) {
+					if(!file_exists($episode->queue_matroska_mkv) && !file_exists($episode->queue_matroska_xml) && !$dry_run && $handbrake_success) {
 
 						$queue_model->set_episode_status($episode_id, 3);
 
@@ -391,11 +353,11 @@
 						$matroska = new Matroska();
 
 						if($episode['title'])
-							$matroska->setTitle($episode['title']);
+							$matroska->setTitle($episode->episode_title);
 
 						$matroska->addTag();
 						$matroska->addTarget(70, "COLLECTION");
-						$matroska->addSimpleTag("TITLE", $series['title']);
+						$matroska->addSimpleTag("TITLE", $episode->series_title);
 						if($production_studio)
 							$matroska->addSimpleTag("PRODUCTION_STUDIO", $production_studio);
 						if($production_year)
@@ -407,18 +369,18 @@
 
 						// Metadata specification DVD-MKV-1
 						$matroska->addSimpleTag("METADATA_SPEC", "DVD-MKV-1");
-						$matroska->addSimpleTag("DVD_COLLECTION", $collection['title']);
-						$matroska->addSimpleTag("DVD_SERIES_TITLE", $series['title']);
+						$matroska->addSimpleTag("DVD_COLLECTION", $episode->collection_title);
+						$matroska->addSimpleTag("DVD_SERIES_TITLE", $episode->series_title);
 						if($episode['season'])
-							$matroska->addSimpleTag("DVD_SERIES_SEASON", $episode['season']);
+							$matroska->addSimpleTag("DVD_SERIES_SEASON", $episodes_model->season);
 						if($series['volume'])
 							$matroska->addSimpleTag("DVD_SERIES_VOLUME", $series['volume']);
 						$matroska->addSimpleTag("DVD_TRACK_NUMBER", $track['number']);
 						if($episode['number'])
-							$matroska->addSimpleTag("DVD_EPISODE_NUMBER", $episode['number']);
-						$matroska->addSimpleTag("DVD_EPISODE_TITLE", $episode['title']);
+							$matroska->addSimpleTag("DVD_EPISODE_NUMBER", $episodes_model->number);
+						$matroska->addSimpleTag("DVD_EPISODE_TITLE", $episode->episode_title);
 						if($episode['part'])
-							$matroska->addSimpleTag("DVD_EPISODE_PART_NUMBER", $episode['part']);
+							$matroska->addSimpleTag("DVD_EPISODE_PART_NUMBER", $episodes_model->part);
 						$matroska->addSimpleTag("DVD_ID", $tracks_model->dvd_id);
 						$matroska->addSimpleTag("DVD_SERIES_ID", $series['id']);
 						$matroska->addSimpleTag("DVD_TRACK_ID", $track['id']);
@@ -431,34 +393,34 @@
 							$matroska->addTarget(60, "SEASON");
 
 							if($series_model->production_year) {
-								$year = $production_year + $episode['season'] - 1;
+								$year = $production_year + $episodes_model->season - 1;
 								$matroska->addSimpleTag("DATE_RELEASE", $year);
 							}
 
-							$matroska->addSimpleTag("PART_NUMBER", $episode['season']);
+							$matroska->addSimpleTag("PART_NUMBER", $episodes_model->season);
 
 						}
 
 						/** Episode **/
 						$matroska->addTag();
 						$matroska->addTarget(50, "EPISODE");
-						if($episode['title'])
-							$matroska->addSimpleTag("TITLE", $episode['title']);
+						if($episode->episode_title)
+							$matroska->addSimpleTag("TITLE", $episode->title);
 						if($episode['number'])
-							$matroska->addSimpleTag("PART_NUMBER", $episode['number']);
+							$matroska->addSimpleTag("PART_NUMBER", $episodes_model->number);
 						$matroska->addSimpleTag("DATE_TAGGED", date("Y-m-d"));
 						$matroska->addSimpleTag("PLAY_COUNTER", 0);
 
 						if($episode['part'] > 1) {
 							$matroska->addTag();
 							$matroska->addTarget(40, "PART");
-							$matroska->addSimpleTag("PART_NUMBER", $episode['part']);
+							$matroska->addSimpleTag("PART_NUMBER", $episodes_model->part);
 						}
 
 						$str = $matroska->getXML();
 
 						if($str) {
-							file_put_contents($files['matroska_xml'], $str);
+							file_put_contents($episode->queue_matroska_xml, $str);
 							$matroska_xml_success = true;
 						} else {
 							// Creating the XML file failed for some reason
@@ -473,40 +435,30 @@
 
 						$queue_model->set_episode_status($episode_id, 4);
 
-						$matroska->addFile($files['handbrake_x264']);
+						$matroska->addFile($episode->queue_handbrake_x264);
+						$matroska->addGlobalTags($episode->queue_matroska_xml);
+						$matroska->setFilename($episode->queue_matroska_mkv);
 
-						$matroska->addGlobalTags($files['matroska_xml']);
-
-						$matroska->setFilename($files['queue_mkv']);
-
-						file_put_contents($files['mkvmerge_command'], $matroska->getCommandString()." $*\n");
-						chmod($files['mkvmerge_command'], 0755);
+						file_put_contents($episode->queue_mkvmerge_script, $matroska->getCommandString()." $*\n");
+						chmod($episode->queue_mkvmerge_script, 0755);
 
 						exec($matroska->getCommandString()." 2>&1", $mkvmerge_output_arr, $mkvmerge_exit_code);
 
 						$queue_mkvmerge_output = implode("\n", $mkvmerge_output_arr);
 
-						file_put_contents($files['mkvmerge_output'], $queue_mkvmerge_output."\n");
+						file_put_contents($episode->queue_mkvmerge_output, $queue_mkvmerge_output."\n");
 
 						if($mkvmerge_exit_code == 0 || $mkvmerge_exit_code == 1) {
 
 							$mkvmerge_success = true;
-							rename($files['queue_mkv'], $episode['dest_mkv']);
+							rename($episode->queue_matroska_mkv, $episode->episode_mkv);
 							$num_encoded++;
 							$queue_model->remove_episode($episode_id);
 
 							// Cleanup
-							if(!$debug) {
+							if(!$debug)
+								$episode->remove_queue_dir;
 
-								foreach($files as $filename) {
-									if(file_exists($filename))
-										unlink($filename);
-								}
-
-								if(is_dir($episode['queue_dir']))
-									rmdir($episode['queue_dir']);
-
-							}
 
 						} else {
 
@@ -517,10 +469,10 @@
 
 					}
 
-				} elseif (!file_exists($episode['src_iso']) && !file_exists($episode['dest_mkv'])) {
+				} elseif (!file_exists($episode->queue_iso_symlink) && !file_exists($episode->episode_mkv)) {
 
 					// At this point, it shouldn't be in the queue.
-					echo "! ISO not found (".$episode['src_iso']."), MKV not found (".$episode['dest_mkv']."), force removing episode from queue\n";
+					echo "! ISO not found (".$episode->queue_iso_symlink."), MKV not found (".$episode->episode_mkv."), force removing episode from queue\n";
 					$queue_model->remove_episode($episode_id);
 
 					$queue_model->set_episode_status($episode_id, 6);
@@ -528,19 +480,13 @@
 				}
 
 				// Delete old files
-				if(file_exists($episode['dest_mkv']) && $handbrake_success && $matroska_xml_success && $mkvmerge_success && !$dry_run) {
+				if(file_exists($episode->episode_mkv) && $handbrake_success && $matroska_xml_success && $mkvmerge_success && !$dry_run) {
 
 					$queue_model->remove_episode($episode_id);
 
 					if(!$debug) {
 
-						foreach($files as $filename) {
-							if(file_exists($filename))
-								unlink($filename);
-						}
-
-						if(is_dir($episode['queue_dir']))
-							rmdir($episode['queue_dir']);
+						$episode->remove_queue_dir;
 
 						/** Remove any old ISOs */
 						$queue_isos = array();
