@@ -363,9 +363,9 @@
 						$matroska->addTarget(70, "COLLECTION");
 						$matroska->addSimpleTag("TITLE", $episode->series_title);
 						if($episode_metadata['production_studio'])
-							$matroska->addSimpleTag("PRODUCTION_STUDIO", $episode_metadata->production_studio);
+							$matroska->addSimpleTag("PRODUCTION_STUDIO", $episode_metadata['production_studio']);
 						if($episode_metadata['production_year'])
-							$matroska->addSimpleTag("DATE_RELEASE", $episode_metadata->production_year);
+							$matroska->addSimpleTag("DATE_RELEASE", $episode_metadata['production_year']);
 						$matroska->addSimpleTag("ORIGINAL_MEDIA_TYPE", "DVD");
 
 						// Tag MKV with latest spec I've created
@@ -463,7 +463,7 @@
 							$queue_model->remove_episode($episode_id);
 
 							// Cleanup
-							if(!$debug)
+							if(!$debug && file_exists($episode->episode_mkv))
 								$episode->remove_queue_dir();
 
 
@@ -493,7 +493,8 @@
 
 					if(!$debug) {
 
-						$episode->remove_queue_dir();
+						if(file_exists($episode->episode_mkv))
+							$episode->remove_queue_dir();
 
 						/** Remove any old ISOs */
 						$queue_isos = array();
