@@ -13,14 +13,15 @@
 		public $isos_dir;
 		public $queue_dir;
 		public $episodes_dir;
+		public $queue_iso_symlink;
 		public $queue_handbrake_script;
 		public $queue_handbrake_output;
-		public $queue_mkmverge_script;
-		public $queue_mkmerge_output;
-		public $queue_xml;
-		public $queue_x264;
-		public $queue_mkv;
-		public $episosde_mkv;
+		public $queue_handbrake_x264;
+		public $queue_mkvmerge_script;
+		public $queue_mkvmerge_output;
+		public $queue_matroska_xml;
+		public $queue_matroska_mkv;
+		public $episode_mkv;
 
 		public function __construct($export_dir, $dvd_iso, $collection_title, $series_title, $episode_title, $episode_id) {
 
@@ -30,18 +31,19 @@
 			$this->series_title = $series_title;
 			$this->episode_title = $episode_title;
 			$this->episode_id = $episode_id;
-
 			$this->episode_title_filename = $this->get_episode_title_filename();
-
-
-
 			$this->queue_dir = $this->get_queue_dir();
 			$this->isos_dir = $this->get_isos_dir();
 			$this->episodes_dir = $this->get_episodes_dir();
-			$this->queue_iso_symlink = $this->get_queue_dir().basename($this->dvd_iso);
-
-			$this->queue_handbrake_script_filename = $this->get_queue_handbrake_script_filename();
-			$this->queue_handbrake_output_filename = $this->get_queue_handbrake_output_filename();
+			$this->queue_iso_symlink = $this->get_queue_iso_symlink();
+			$this->queue_handbrake_script = $this->get_queue_handbrake_script();
+			$this->queue_handbrake_output = $this->get_queue_handbrake_output();
+			$this->queue_handbrake_x264 = $this->get_queue_handbrake_x264();
+			$this->queue_mkvmerge_script = $this->get_queue_mkvmerge_script();
+			$this->queue_mkvmerge_output = $this->get_queue_mkvmerge_output();
+			$this->queue_matroska_xml = $this->get_queue_matroska_xml();
+			$this->queue_matroska_mkv = $this->get_queue_matroska_mkv();
+			$this->episode_mkv = $this->get_episode_mkv();
 
 		}
 
@@ -97,6 +99,15 @@
 				return mkdir($dir, 0755, true);
 			else
 				return true;
+
+		}
+
+		public function get_queue_iso_symlink() {
+
+			$filename = $this->get_episodes_dir();
+			$filename .= basename($this->dvd_iso);
+
+			return $filename;
 
 		}
 
@@ -157,7 +168,7 @@
 
 		}
 
-		public function get_queue_handbrake_script_filename() {
+		public function get_queue_handbrake_script() {
 
 			$filename = $this->get_queue_dir();
 			$filename .= "handbrake.sh";
@@ -166,10 +177,64 @@
 
 		}
 
-		public function get_queue_handbrake_output_filename() {
+		public function get_queue_handbrake_output() {
 
 			$filename = $this->get_queue_dir();
 			$filename .= "encode.out";
+
+			return $filename;
+
+		}
+
+		public function get_queue_handbrake_x264() {
+
+			$filename = $this->get_queue_dir();
+			$filename .= "x264.mkv";
+
+			return $filename;
+
+		}
+
+		public function get_queue_mkvmerge_script() {
+
+			$filename = $this->get_queue_dir();
+			$filename .= "mkvmerge.sh";
+
+			return $filename;
+
+		}
+
+		public function get_queue_mkvmerge_output() {
+
+			$filename = $this->get_queue_dir();
+			$filename .= "mkvmerge.out";
+
+			return $filename;
+
+		}
+
+		public function get_queue_matroska_xml() {
+
+			$filename = $this->get_queue_dir();
+			$filename .= "matroska.xml";
+
+			return $filename;
+
+		}
+
+		public function get_queue_matroska_mkv() {
+
+			$filename = $this->get_queue_dir();
+			$filename .= "queue_matroska.mkv";
+
+			return $filename;
+
+		}
+
+		public function get_episode_mkv() {
+
+			$filename = $this->get_episodes_dir();
+			$filename .= $this->episode_title_filename.".mkv";
 
 			return $filename;
 
