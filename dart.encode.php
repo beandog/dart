@@ -461,7 +461,7 @@
 
 							// Cleanup
 							if(!$debug)
-								$episode->remove_queue_dir;
+								$episode->remove_queue_dir();
 
 
 						} else {
@@ -490,7 +490,7 @@
 
 					if(!$debug) {
 
-						$episode->remove_queue_dir;
+						$episode->remove_queue_dir();
 
 						/** Remove any old ISOs */
 						$queue_isos = array();
