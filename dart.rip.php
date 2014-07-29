@@ -59,7 +59,6 @@
 						$queue_model->add_episode($episode_id, php_uname('n'));
 						$num_queued++;
 
-						$episode->create_queue_dir();
 						$episode->create_queue_iso_symlink();
 
 						$i++;
