@@ -95,8 +95,6 @@
 						echo "Queue:\t\t".$episode->queue_dir."\n";
 					}
 
-					die;
-
 					$handbrake = new Handbrake;
 
 					$handbrake->verbose($verbose);
