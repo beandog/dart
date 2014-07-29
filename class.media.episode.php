@@ -104,7 +104,9 @@
 
 		public function get_queue_iso_symlink() {
 
-			$filename = $this->get_episodes_dir();
+			$filename = $this->export_dir;
+			$filename .= "queue/";
+			$filename .= $this->safe_filename_title($this->series_title)."/";
 			$filename .= basename($this->dvd_iso);
 
 			return $filename;
@@ -112,6 +114,13 @@
 		}
 
 		public function create_queue_iso_symlink() {
+
+			$dir = $this->export_dir;
+			$dir .= "queue/";
+			$dir .= $this->safe_filename_title($this->series_title)."/";
+
+			if(!is_dir($dir))
+				mkdir($dir, 0755, true);
 
 			if(!file_exists($this->queue_iso_symlink))
 				symlink($this->dvd_iso, $this->queue_iso_symlink);
