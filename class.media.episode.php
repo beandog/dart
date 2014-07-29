@@ -1,6 +1,6 @@
 <?php
 
-	class MediaEpisode {
+	class MediaEpisode extends MediaFile {
 
 		public $model;
 		public $id;
@@ -14,6 +14,11 @@
 		public $volume;
 		public $display_name;
 		public $number;
+		public $iso;
+		public $series_id;
+		public $basename;
+		public $queue_x264_file;
+		public $episosde_mkv;
 
 		public function __construct($episode_id) {
 
@@ -32,6 +37,8 @@
 			$this->number = $this->model->get_number();
 			$this->iso = $this->model->get_iso();
 			$this->series_id = $this->model->get_series_id();
+
+			unset($this->model);
 
 
 		}

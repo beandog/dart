@@ -1,6 +1,8 @@
 <?php
 
-	class MediaSeries {
+	require_once 'class.media.file.php';
+
+	class MediaSeries extends MediaFile {
 
 		public $model;
 		public $id;
@@ -38,24 +40,6 @@
 			$this->isos_dir = $this->get_isos_dir();
 
 			unset($this->model);
-
-		}
-
-		public function filename_title($str = 'Title', $underlines = false) {
-
-			$str = preg_replace("/[^A-Za-z0-9 \-,.?':!_]/", '', $str);
-			if($underlines)
-				$str = str_replace(' ', '_', $str);
-			return $str;
-
-		}
-
-		public function safe_filename_title($str = 'Title', $underlines = false) {
-
-			$str = preg_replace("/[^A-Za-z0-9 _]/", '', $str);
-			if($underlines)
-				$str = str_replace(' ', '_', $str);
-			return $str;
 
 		}
 
