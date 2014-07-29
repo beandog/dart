@@ -272,7 +272,7 @@
 			if(file_exists($this->queue_matroska_mkv))
 				unlink($this->queue_matroska_mkv);
 			if(is_dir($this->queue_dir))
-				unlink($this->queue_dir);
+				rmdir($this->queue_dir);
 
 		}
 
