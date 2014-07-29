@@ -81,9 +81,8 @@
 					$episode_metadata['ending_chapter'] = $tracks_model->get_num_chapters();
 				}
 
-
 				// Check to see if file exists, if not, encode it
-				if($queue_status === 0) {
+				if($queue_status == 0) {
 
 					echo "Collection:\t".$episode->collection_title."\n";
 					echo "Series:\t\t".$episode->series_title."\n";
@@ -148,7 +147,7 @@
 
 						// Handbrake
 						$handbrake->input_filename($episode->queue_iso_symlink);
-						$handbrake->input_track($episode_metadata->track_number);
+						$handbrake->input_track($episode_metadata['track_number']);
 						$handbrake->output_filename($episode->queue_handbrake_x264);
 						// $handbrake->dvdnav($dvdnav);
 						$handbrake->add_chapters();
@@ -268,7 +267,7 @@
 						}
 
 						// Set Chapters
-						$handbrake->set_chapters($starting_chapter, $ending_chapter);
+						$handbrake->set_chapters($episode_metadata['starting_chapter'], $episode_metadata['ending_chapter']);
 
 						// Cartoons!
 						if($animation) {
@@ -328,11 +327,11 @@
 							$handbrake_success = false;
 
 						// Handbrake failed -- either by non-zero exit code, or empty file
-						if(!$dry_run && (!$handbrake_success || ($handbrake_success && !sprintf("%u", filesize($files['handbrake_x264']))))) {
+						if(!$dry_run && (!$handbrake_success || ($handbrake_success && !sprintf("%u", filesize($episode->queue_handbrake_x264))))) {
 
 							$handbrake_success = false;
 
-							echo "HandBrake failed for some reason.  See ".$episode['queue_dir']." for temporary files.\n";
+							echo "HandBrake failed for some reason.  See ".$episode->queue_dir." for temporary files.\n";
 
 							$queue_model->set_episode_status($episode_id, 2);
 
