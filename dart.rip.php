@@ -52,44 +52,15 @@
 					$tracks_model = new Tracks_Model($episodes_model->track_id);
 					$track_number = $tracks_model->ix;
 
-					$episode = array();
-					$series = array();
-					$collection = array();
+					$episode = new MediaEpisode($export_dir, $device_realpath, $series_model->get_collection_title(), $series_model->title, $episodes_model->title, $episode_id);
 
-					$series = array(
-						'id' => $series_id,
-						'title' => $series_title,
-						'queue_dir' => $export_dir."queue/".formatTitle($series_title),
-					);
-
-					$episode = array(
-						'id' => $episode_id,
-						'title' => $episodes_model->title,
-						'season' => $episodes_model->get_season(),
-						'part' => $episodes_model->part,
-						'filename' => basename(get_episode_filename($episode_id)),
-						'src_iso' => $series['queue_dir']."/".$episodes_model->get_iso(),
-						'dest_dir' => $export_dir."episodes/".formatTitle($series_title),
-						'dest_mkv' => $export_dir."episodes/".formatTitle($series_title)."/".basename(get_episode_filename($episode_id)).".mkv",
-					);
-
-					$collection = array(
-						'title' => $series_model->get_collection_title(),
-					);
-
-
-					if(!file_exists($episode['dest_mkv'])) {
+					if(!file_exists($episode->episode_mkv)) {
 
 						$queue_model->add_episode($episode_id, php_uname('n'));
 						$num_queued++;
 
-						/** Create directory to dump files to */
-						if(!is_dir($series['queue_dir']))
-							mkdir($series['queue_dir'], 0755, true);
-
-						// Create a symlink to the ISO in the queue directory
-						if(!file_exists($episode['src_iso']))
-							symlink($device_realpath, $episode['src_iso']);
+						$episode->create_queue_dir();
+						$episode->create_queue_iso_symlink();
 
 						$i++;
 
