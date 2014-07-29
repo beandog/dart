@@ -464,8 +464,8 @@
 
 			$str = $this->binary." ".implode(" ", $exec);
 
-			$str .= " --input ".escapeshellcmd($this->input);
-			$str .= " --output ".escapeshellcmd($this->output);
+			$str .= " --input ".escapeshellarg($this->input);
+			$str .= " --output ".escapeshellarg($this->output);
 
 			return $str;
 
