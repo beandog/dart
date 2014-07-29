@@ -451,14 +451,15 @@
 						$queue_mkvmerge_output = implode("\n", $mkvmerge_output_arr);
 
 						file_put_contents($episode->queue_mkvmerge_output, $queue_mkvmerge_output."\n");
-
 						assert(filesize($episode->queue_mkvmerge_output) > 0);
 
 						if($mkvmerge_exit_code == 0 || $mkvmerge_exit_code == 1) {
 
 							$mkvmerge_success = true;
 							assert(file_exists($episode->queue_matroska_mkv));
-							rename($episode->queue_matroska_mkv, $episode->episode_mkv);
+							assert(filesize($episode->queue_matroska_mkv) > 0);
+							$episode->create_episodes_dir();
+							assert(copy($episode->queue_matroska_mkv, $episode->episode_mkv));
 							$num_encoded++;
 							$queue_model->remove_episode($episode_id);
 
