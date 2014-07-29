@@ -38,8 +38,8 @@
 		// Get the target filename
 		$target_iso_dir = $export_dir."isos/";
 		if($collection_title)
-			$target_iso_dir .= formatTitle($collection_title)."/";
-		$target_iso_dir .= formatTitle($series_title)."/";
+			$target_iso_dir .= formatTitle($collection_title, false)."/";
+		$target_iso_dir .= formatTitle($series_title, false)."/";
 		if(!is_dir($target_iso_dir))
 			mkdir($target_iso_dir, 0755, true);
 		$target_iso = $target_iso_dir.str_pad($collection_id, 1, '0');
