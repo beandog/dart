@@ -2,44 +2,25 @@
 
 	class MediaEpisode extends MediaFile {
 
-		public $model;
-		public $id;
-		public $title;
-		public $track_id;
-		public $ix;
-		public $part;
-		public $starting_chapter;
-		public $ending_chapter;
-		public $season;
-		public $volume;
-		public $display_name;
-		public $number;
-		public $iso;
-		public $series_id;
-		public $basename;
-		public $queue_x264_file;
+		public $collection_title;
+		public $series_title;
+		public $episode_title;
+		public $export_dir;
+		public $isos_dir;
+		public $queue_dir;
+		public $episodes_dir;
+		public $queue_handbrake_script;
+		public $queue_handbrake_output;
+		public $queue_mkmverge_script;
+		public $queue_mkmerge_output;
+		public $queue_xml;
+		public $queue_x264;
+		public $queue_mkv;
 		public $episosde_mkv;
 
-		public function __construct($episode_id) {
+		public function __construct($collection_title, $series_title, $episode_title, $export_dir) {
 
 			$this->id = $episode_id;
-			$this->model = new Episodes_Model($episode_id);
-
-			$this->title = $this->model->title;
-			$this->track_id = $this->model->track_id;
-			$this->ix = $this->model->ix;
-			$this->part = $this->model->part;
-			$this->starting_chapter = $this->model->starting_chapter;
-			$this->ending_chapter = $this->model->ending_chapter;
-			$this->season = $this->model->get_season();
-			$this->volume = $this->model->get_volume();
-			$this->display_name = $this->model->get_display_name();
-			$this->number = $this->model->get_number();
-			$this->iso = $this->model->get_iso();
-			$this->series_id = $this->model->get_series_id();
-
-			unset($this->model);
-
 
 		}
 
