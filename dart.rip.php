@@ -54,7 +54,6 @@
 
 					$episode = new MediaEpisode($export_dir, $episodes_model->get_iso(), $series_model->get_collection_title(), $series_model->title, $episodes_model->title, $episode_id);
 
-
 					if(!file_exists($episode->episode_mkv)) {
 
 						$queue_model->add_episode($episode_id, php_uname('n'));
@@ -71,7 +70,6 @@
 					// Bump up the queue if we are accessing the drive directly
 					if($device_is_hardware)
 						$queue_model->prioritize();
-
 
 				}
 
