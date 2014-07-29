@@ -38,44 +38,6 @@
 		return $str;
 	}
 
-	function get_episode_filename($episode_id) {
-
-		// Class instatiation
-		$episodes_model = new Episodes_Model($episode_id);
-		$episode_title = $episodes_model->title;
-		$track_id = $episodes_model->track_id;
-		$episode_number = $episodes_model->get_number();
-		$display_episode_number = str_pad($episode_number, 2, 0, STR_PAD_LEFT);
-		$episode_part = $episodes_model->part;
-		$episode_season = $episodes_model->get_season();
-		$series_model = new Series_Model($episodes_model->get_series_id());
-		$episode_prefix = '';
-		$episode_suffix = '';
-
-		// FIXME Take into account 10+seasons
-		if($series_model->indexed == 't') {
-			if(!$episode_season)
-				$display_season = 1;
-			else
-				$display_season = $episode_season;
-
-			$episode_prefix = "${display_season}x${display_episode_number}._";
-		}
-
-		$series_model = new Series_Model($episodes_model->get_series_id());
-		$series_title = $series_model->title;
-		$series_dir = formatTitle($series_title)."/";
-
-		if($episode_part)
-			$episode_suffix = ", Part $episode_part";
-
-		/** Filenames **/
-		$episode_filename = $series_dir.formatTitle($episode_prefix.$episode_title.$episode_suffix);
-
-		return $episode_filename;
-
-	}
-
 	// Switch to the next device
 	function toggle_device($device) {
 		if($device == '/dev/dvd')
