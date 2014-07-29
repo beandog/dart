@@ -113,9 +113,11 @@
 
 		}
 
-		public function create_queue_iso_symlink($source) {
+		public function create_queue_iso_symlink($source = '') {
 
-			$source = realpath($source);
+
+			if(!strlen($source))
+				$source = $this->isos_dir.$this->dvd_iso;
 
 			assert(file_exists($source));
 
@@ -250,6 +252,27 @@
 			$filename .= $this->episode_title_filename.".mkv";
 
 			return $filename;
+
+		}
+
+		public function remove_queue_dir() {
+
+			if(file_exists($this->queue_handbrake_script))
+				unlink($this->queue_handbrake_script);
+			if(file_exists($this->queue_handbrake_output))
+				unlink($this->queue_handbrake_output);
+			if(file_exists($this->queue_handbrake_x264))
+				unlink($this->queue_handbrake_x264);
+			if(file_exists($this->queue_mkvmerge_script))
+				unlink($this->queue_mkvmerge_script);
+			if(file_exists($this->queue_mkvmerge_output))
+				unlink($this->queue_mkvmerge_output);
+			if(file_exists($this->queue_matroska_xml))
+				unlink($this->queue_matroska_xml);
+			if(file_exists($this->queue_matroska_mkv))
+				unlink($this->queue_matroska_mkv);
+			if(is_dir($this->queue_dir))
+				unlink($this->queue_dir);
 
 		}
 
