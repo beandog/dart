@@ -318,12 +318,12 @@
 			if($this->debug)
 				echo "! dvd->getSize($format)\n";
 
-			$device = $this->getDevice();
+			$device = realpath($this->getDevice());
 
 			if($this->is_iso()) {
-				$exec = "stat -c %s $device";
+				$exec = "stat -c %s ".escapeshellarg($device);
 			} else {
-				$exec = "blockdev --getsize64 $device 2> /dev/null";
+				$exec = "blockdev --getsize64 ".escapeshellarg($device)." 2> /dev/null";
 			}
 
 			$b_size = current(command($exec));
