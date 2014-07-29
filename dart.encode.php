@@ -53,13 +53,23 @@
 				$tracks_model = new Tracks_Model($episodes_model->track_id);
 				$dvds_model = new Dvds_Model($tracks_model->dvd_id);
 
-				$track = array(
-					'id' => $episodes_model->track_id,
-					'number' => $tracks_model->ix,
-				);
-
 				$episode->create_queue_dir();
 				$episode->create_queue_iso_symlink();
+
+				$episode_metadata = array(
+
+					'track_id' => $episodes_model->track_id,
+					'track_number' => $tracks_model->ix,
+					'starting_chapter' => $episodes_model->starting_chapter,
+					'ending_chapter' => $episodes_model->ending_chapter,
+					'production_studio' => $series_model->production_studio,
+					'production_year' => $series_model->production_year,
+					'season' => $episodes_model->season,
+					'episode_number' => $episodes_model->get_number(),
+					'episode_part' => $episodes_model->get_part(),
+
+
+				);
 
 				// Fix a rare case where the starting chapter is not null in the database,
 				// but the ending chapter is.  In situations like this, set the ending
@@ -67,11 +77,10 @@
 				// front end, but do an extra check here as well.
 				// Handbrake will need an ending chapter passed to it if a starting chapter
 				// is given, it will default to only encoding that one chapter otherwise.
-				$starting_chapter = $episodes_model->starting_chapter;
-				$ending_chapter = $episodes_model->ending_chapter;
-				if(is_null($ending_chapter) && !is_null($starting_chapter)) {
-					$ending_chapter = $tracks_model->get_num_chapters();
+				if(is_null($episodes_model->ending_chapter) && !is_null($episodes_model->starting_chapter)) {
+					$episode_metadata['ending_chapter'] = $tracks_model->get_num_chapters();
 				}
+
 
 				// Check to see if file exists, if not, encode it
 				if($queue_status === 0) {
@@ -94,7 +103,7 @@
 					$handbrake->debug($debug);
 					$handbrake->set_dry_run($dry_run);
 
-					if(!file_exists($files['handbrake_x264'])) {
+					if(!file_exists($episode->queue_handbrake_x264)) {
 
 						// Find the audio track to use
 						$best_quality_audio_streamid = $tracks_model->get_best_quality_audio_streamid();
@@ -141,7 +150,7 @@
 
 						// Handbrake
 						$handbrake->input_filename($episode->queue_iso_symlink);
-						$handbrake->input_track($track['number']);
+						$handbrake->input_track($episode_metadata->track_number);
 						$handbrake->output_filename($episode->queue_handbrake_x264);
 						// $handbrake->dvdnav($dvdnav);
 						$handbrake->add_chapters();
@@ -347,9 +356,6 @@
 
 						$queue_model->set_episode_status($episode_id, 3);
 
-						$production_studio = $series_model->production_studio;
-						$production_year = $series_model->production_year;
-
 						$matroska = new Matroska();
 
 						if($episode['title'])
@@ -359,9 +365,9 @@
 						$matroska->addTarget(70, "COLLECTION");
 						$matroska->addSimpleTag("TITLE", $episode->series_title);
 						if($production_studio)
-							$matroska->addSimpleTag("PRODUCTION_STUDIO", $production_studio);
+							$matroska->addSimpleTag("PRODUCTION_STUDIO", $episode_metadata->production_studio);
 						if($production_year)
-							$matroska->addSimpleTag("DATE_RELEASE", $production_year);
+							$matroska->addSimpleTag("DATE_RELEASE", $episode_metadata->production_year);
 						$matroska->addSimpleTag("ORIGINAL_MEDIA_TYPE", "DVD");
 
 						// Tag MKV with latest spec I've created
@@ -371,33 +377,33 @@
 						$matroska->addSimpleTag("METADATA_SPEC", "DVD-MKV-1");
 						$matroska->addSimpleTag("DVD_COLLECTION", $episode->collection_title);
 						$matroska->addSimpleTag("DVD_SERIES_TITLE", $episode->series_title);
-						if($episode['season'])
-							$matroska->addSimpleTag("DVD_SERIES_SEASON", $episodes_model->season);
+						if($episode_metadata['season'])
+							$matroska->addSimpleTag("DVD_SERIES_SEASON", $episode_metadata['season']);
 						if($series['volume'])
 							$matroska->addSimpleTag("DVD_SERIES_VOLUME", $series['volume']);
-						$matroska->addSimpleTag("DVD_TRACK_NUMBER", $track['number']);
-						if($episode['number'])
-							$matroska->addSimpleTag("DVD_EPISODE_NUMBER", $episodes_model->number);
+						$matroska->addSimpleTag("DVD_TRACK_NUMBER", $episode_metadata['track_number']);
+						if($episode_metadata['episode_number'])
+							$matroska->addSimpleTag("DVD_EPISODE_NUMBER", $episode_metadata['number']);
 						$matroska->addSimpleTag("DVD_EPISODE_TITLE", $episode->episode_title);
-						if($episode['part'])
-							$matroska->addSimpleTag("DVD_EPISODE_PART_NUMBER", $episodes_model->part);
+						if($episode_metdata['part'])
+							$matroska->addSimpleTag("DVD_EPISODE_PART_NUMBER", $episode_metadata['part']);
 						$matroska->addSimpleTag("DVD_ID", $tracks_model->dvd_id);
 						$matroska->addSimpleTag("DVD_SERIES_ID", $series['id']);
-						$matroska->addSimpleTag("DVD_TRACK_ID", $track['id']);
+						$matroska->addSimpleTag("DVD_TRACK_ID", $episode_metadata['track_id']);
 						$matroska->addSimpleTag("DVD_EPISODE_ID", $episode_id);
 
 						/** Season **/
-						if($episode['season']) {
+						if($episode_metadata['season']) {
 
 							$matroska->addTag();
 							$matroska->addTarget(60, "SEASON");
 
-							if($series_model->production_year) {
-								$year = $production_year + $episodes_model->season - 1;
-								$matroska->addSimpleTag("DATE_RELEASE", $year);
+							if($episode_metadata['production_year']) {
+								$episode_metadata['year'] = $episode_metadata['production_year'] + $episode_metadata['season'] - 1;
+								$matroska->addSimpleTag("DATE_RELEASE", $episode_metadata['year']);
 							}
 
-							$matroska->addSimpleTag("PART_NUMBER", $episodes_model->season);
+							$matroska->addSimpleTag("PART_NUMBER", $episode_metadata['season']);
 
 						}
 
@@ -406,15 +412,15 @@
 						$matroska->addTarget(50, "EPISODE");
 						if($episode->episode_title)
 							$matroska->addSimpleTag("TITLE", $episode->title);
-						if($episode['number'])
-							$matroska->addSimpleTag("PART_NUMBER", $episodes_model->number);
+						if($episode_metadata['episode_number'])
+							$matroska->addSimpleTag("PART_NUMBER", $episode_metadata['number']);
 						$matroska->addSimpleTag("DATE_TAGGED", date("Y-m-d"));
 						$matroska->addSimpleTag("PLAY_COUNTER", 0);
 
-						if($episode['part'] > 1) {
+						if($episode_metadata['episode_part'] > 1) {
 							$matroska->addTag();
 							$matroska->addTarget(40, "PART");
-							$matroska->addSimpleTag("PART_NUMBER", $episodes_model->part);
+							$matroska->addSimpleTag("PART_NUMBER", $episode_metadata['part_number']);
 						}
 
 						$str = $matroska->getXML();
