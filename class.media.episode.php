@@ -26,7 +26,7 @@
 		public function __construct($export_dir, $dvd_iso, $collection_title, $series_title, $episode_title, $episode_id) {
 
 			$this->export_dir = realpath($export_dir)."/";
-			$this->dvd_iso = $dvd_iso;
+			$this->dvd_iso = basename($dvd_iso);
 			$this->collection_title = $collection_title;
 			$this->series_title = $series_title;
 			$this->episode_title = $episode_title;
@@ -113,7 +113,11 @@
 
 		}
 
-		public function create_queue_iso_symlink() {
+		public function create_queue_iso_symlink($source) {
+
+			$source = realpath($source);
+
+			assert(file_exists($source));
 
 			$dir = $this->export_dir;
 			$dir .= "queue/";
@@ -123,7 +127,7 @@
 				mkdir($dir, 0755, true);
 
 			if(!file_exists($this->queue_iso_symlink))
-				symlink($this->dvd_iso, $this->queue_iso_symlink);
+				symlink($source, $this->queue_iso_symlink);
 
 		}
 
