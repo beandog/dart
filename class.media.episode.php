@@ -173,17 +173,6 @@
 
 		}
 
-		public function create_isos_dir() {
-
-			$dir = $this->get_isos_dir();
-
-			if(!is_dir($dir))
-				return mkdir($dir, 0755, true);
-			else
-				return true;
-
-		}
-
 		public function get_queue_handbrake_script() {
 
 			$filename = $this->get_queue_dir();
