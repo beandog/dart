@@ -36,13 +36,7 @@
 		$str = substr($str, 0, 28);
 
 		// Get the target filename
-		$target_iso_dir = $export_dir."isos/";
-		if($collection_title)
-			$target_iso_dir .= formatTitle($collection_title, false)."/";
-		$target_iso_dir .= formatTitle($series_title, false)."/";
-		if(!is_dir($target_iso_dir))
-			mkdir($target_iso_dir, 0755, true);
-		$target_iso = $target_iso_dir.str_pad($collection_id, 1, '0');
+		$target_iso = str_pad($collection_id, 1, '0');
 		$target_iso .= ".".str_pad($series_id, 3, '0', STR_PAD_LEFT);
 		$target_iso .= ".".str_pad($dvds_model->id, 4, '0', STR_PAD_LEFT);
 		if(strlen($series_title))
@@ -50,11 +44,14 @@
 		else
 			$target_iso .= ".".$dvds_model->title.".iso";
 
+		$media_iso = new MediaISO($export_dir, $target_iso, $collection_title, $series_title);
+		$media_iso->create_isos_dir();
+
+		$target_iso = $media_iso->get_isos_dir().$target_iso;
+
 		$display_iso = basename($target_iso);
-		if($verbose && !$debug)
+		if($verbose)
 			echo "* Filename: $display_iso\n";
-		if($debug)
-			echo "* Filename: $target_iso\n";
 
 		/** Filename and filesystem operations **/
 

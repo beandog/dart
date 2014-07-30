@@ -1,4 +1,4 @@
-<?
+<?php
 
 	require_once 'class.media.file.php';
 
@@ -13,9 +13,9 @@
 		public $series_title;
 		public $isos_dir;
 
-		public function __construct($export_dir, $dvd_iso, $collection_title, $series_title) {
+		public function __construct($export_dir, $dvd_iso, $collection_title = '', $series_title = '') {
 
-			$this->export_dir = realpath($export_dir);
+			$this->export_dir = realpath($export_dir)."/";
 			$this->dvd_iso = basename($dvd_iso);
 			$this->collection_title = $collection_title;
 			$this->series_title = $series_title;
@@ -27,8 +27,10 @@
 
 			$dir = $this->export_dir;
 			$dir .= "isos/";
-			$dir .= $this->safe_filename_title($this->collection_title)."/";
-			$dir .= $this->safe_filename_title($this->series_title)."/";
+			if($this->collection_title)
+				$dir .= $this->safe_filename_title($this->collection_title)."/";
+			if($this->series_title)
+				$dir .= $this->safe_filename_title($this->series_title)."/";
 
 			return $dir;
 
