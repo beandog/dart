@@ -115,9 +115,10 @@
 
 		public function create_queue_iso_symlink($source = '') {
 
-
-			if(!strlen($source))
-				$source = $this->isos_dir.$this->dvd_iso;
+			if(!strlen($source)) {
+				$dir = $this->get_isos_dir();
+				$source = $dir.$this->dvd_iso;
+			}
 
 			assert(file_exists($source));
 
