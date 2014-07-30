@@ -272,7 +272,6 @@
 	if($input_track)
 		$hb->input_track($input_track);
 	$hb->output_filename($output_filename);
-	$hb->output_format($output_format);
 	$hb->add_chapters($add_chapters);
 	if($first_chapter || $last_chapter)
 		$hb->set_chapters($first_chapter, $last_chapter);
