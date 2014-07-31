@@ -94,64 +94,17 @@
 				} else {
 					echo "* DVD extraction failed :(\n";
 				}
+
 			}
+
 		}
 
-		// Operations on filename
-		if($device_is_iso) {
-
-			if($debug) {
-				echo "* Real path: ".realpath($device)."\n";
-			}
-
-			// Move the filename to standard naming convention for the ISOs, so that it
-			// is always apparent where the device can be *accessed*.
-
-			// First, rename the existing file to the basename of the target ISO, if it
-			// is not already.
-
-			// This only changes the naming scheme of the file *in its current directory*
-			$source_dirname = dirname($device);
-			$target_rename = $source_dirname."/".basename($target_iso);
-			$target_rename_exists = file_exists($target_rename);
-
-			if($debug)
-				echo "* Checking to see if $target_rename exists ... ";
-
-			// Rename the file to its new syntax if it's not already done
-			if($target_rename_exists) {
-
-				if($debug)
-					echo "yes\n";
-
-			} else {
-
-				if($debug)
-					echo "no\n";
-
-				// Rename the file
-				if($verbose)
-					echo "* Moving $display_device to $target_rename\n";
-				if($debug)
-					echo "* Moving $device to $target_rename\n";
-
-				rename($device, $target_rename);
-
-				// Now update the filenames after they have moved
-				$device = $target_rename;
-
-			}
-
-			// Check if the file can be accessed in the export directory, either with
-			// the original file or a symlink.  If not, make a symlink.
-			if(!file_exists($target_iso) && $rip) {
-
-				if($debug)
-					echo "* Creating a symlink\n";
-				symlink(realpath($device), $target_iso);
-
-			}
-
+		// Move the ISO to the correct filesystem location
+		// *except* in cases where --info is passed
+		if(!is_link($device) && $device_is_iso && !file_exists($target_iso) && !$info) {
+			rename($device, $target_iso);
+			echo "* Moving $device to ISOs dir\n";
 		}
 
 	}
+
