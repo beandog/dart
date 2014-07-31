@@ -117,5 +117,27 @@
 
 		}
 
+		function get_x264_preset() {
+
+			$arr = array();
+
+			$sql = "SELECT presets.x264_preset FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->db->quote($this->id).";";
+			$str = $this->db->getOne($sql);
+
+			return $str;
+
+		}
+
+		function get_x264_tune() {
+
+			$arr = array();
+
+			$sql = "SELECT presets.x264_tune FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->db->quote($this->id).";";
+			$str = $this->db->getOne($sql);
+
+			return $str;
+
+		}
+
 	}
 ?>
