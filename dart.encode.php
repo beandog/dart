@@ -154,58 +154,47 @@
 						$handbrake->add_chapters();
 						$handbrake->output_format('mkv');
 
+						// DLNA-USB specs
+						$handbrake->set_video_encoder('x264');
+						$handbrake->deinterlace(false);
+						$handbrake->decomb(true);
+						$handbrake->detelecine(true);
+						$handbrake->set_h264_level('3.1');
+						$handbrake->autocrop(true);
+						$handbrake->set_h264_profile('high');
+						$arr_x264_opts = array();
+						$series_x264_opts = $series_model->get_x264opts();
+						if(strlen($series_x264_opts))
+							$arr_x264_opts[] = $series_model->get_x264opts();
+						$arr_x264_opts[] = "keyint=30";
+						$arr_x264_opts[] = "vbv-bufsize=1024:vbv-maxrate=1024";
+						$x264_opts = implode(":", $arr_x264_opts);
+						$handbrake->set_x264opts($x264_opts);
 
 						/** Video **/
-						$video_encoder = 'x264';
 						$video_quality = $series_model->get_crf();
 						$video_bitrate = $series_model->get_video_bitrate();
 						$video_two_pass = $series_model->get_two_pass();
-						$video_two_pass_turbo = $series_model->get_two_pass_turbo();
-						$deinterlace = false;
-						$decomb = true;
-						$detelecine = true;
-						$grayscale = false;
-						if($series_model->grayscale == 't')
-							$grayscale = true;
-						$autocrop = true;
-						$x264_opts = $series_model->get_x264opts();
-						// Add support for dlna-usb-4 spec
-						$h264_profile = 'high';
-						$h264_level = '3.1';
-						if($x264_opts)
-							$x264_opts .= ":keyint=30";
-						else
-							$x264_opts = "keyint=30";
-						// Added for dlna-usb-4
-						$x264_opts .= ":vbv-bufsize=1024:vbv-maxrate=1024";
-						$x264_preset = 'medium';
-						$x264_tune = 'film';
-						$animation = false;
-						if($series_model->animation == 't') {
-							$animation = true;
-							$x264_tune = 'animation';
-						}
+						$x264_preset = $series_model->get_x264_preset();
+						if(!$x264_preset)
+							$x264_preset = 'medium';
+						$x264_tune = $series_model->get_x264_tune();
+						$handbrake->set_x264_preset($x264_preset);
+						$handbrake->set_x264_tune($x264_tune);
+						$grayscale = ($series_model == 't');
+						$animation = ($x264_tune == 'animation');
+						$handbrake->grayscale($grayscale);
 
-						$handbrake->set_video_encoder($video_encoder);
 						if($video_quality)
 							$handbrake->set_video_quality($video_quality);
 						if($video_bitrate)
 							$handbrake->set_video_bitrate($video_bitrate);
-						$handbrake->set_two_pass($video_two_pass);
-						if($video_two_pass)
-							$handbrake->set_two_pass_turbo($video_two_pass_turbo);
-						$handbrake->deinterlace($deinterlace);
-						$handbrake->decomb($decomb);
-						$handbrake->detelecine($detelecine);
-						$handbrake->grayscale($grayscale);
-						$handbrake->autocrop($autocrop);
-						$handbrake->set_h264_profile($h264_profile);
-						$handbrake->set_h264_level($h264_level);
-						if($x264_opts)
-							$handbrake->set_x264opts($x264_opts);
-						$handbrake->set_x264_preset($x264_preset);
-						$handbrake->set_x264_tune($x264_tune);
-
+						if($video_two_pass) {
+							$handbrake->set_two_pass(true);
+							$handbrake->set_two_pass_turbo(true);
+						} elseif($crf) {
+							$handbrake->set_video_quality($crf);
+						}
 
 						/** Audio **/
 						// Some DVDs may report more audio streams than
