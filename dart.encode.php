@@ -163,9 +163,9 @@
 						$handbrake->autocrop(true);
 						$handbrake->set_h264_profile('high');
 						$arr_x264_opts = array();
-						$series_x264_opts = $series_model->get_x264opts();
-						if(strlen($series_x264_opts))
-							$arr_x264_opts[] = $series_model->get_x264opts();
+						$series_x264opts = $series_model->get_x264opts();
+						if(strlen($series_x264opts))
+							$arr_x264_opts[] = $series_x264opts();
 						$arr_x264_opts[] = "keyint=30";
 						$arr_x264_opts[] = "vbv-bufsize=1024:vbv-maxrate=1024";
 						$x264_opts = implode(":", $arr_x264_opts);
