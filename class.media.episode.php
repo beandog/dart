@@ -145,7 +145,7 @@
 
 			$dir = $this->export_dir;
 			$dir .= "episodes/";
-			$dir .= $this->safe_filename_title($this->series_title)."/";
+			$dir .= $this->filename_title($this->series_title)."/";
 
 			return $dir;
 
