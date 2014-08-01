@@ -43,7 +43,7 @@ if($encode) {
 			}
 
 			// Check for existing x264 encoded file
-			if($episode->queue_encoded()) {
+			if($episode->x264_passed()) {
 
 				echo "* x264 queue encoded file exists\n";
 				echo "* Jumping to Matroska muxing\n";
@@ -62,10 +62,6 @@ if($encode) {
 				echo "\n";
 				echo "[Encode ".($num_encoded + 1)."/$num_queued_episodes]\n";
 			}
-
-			$handbrake_success = false;
-			$matroska_xml_success = false;
-			$mkvmerge_success = false;
 
 			$episode->create_queue_dir();
 			$episode->create_queue_iso_symlink();
@@ -169,7 +165,8 @@ if($encode) {
 
 			$exit_code = null;
 
-			$queue_model->set_episode_status($episode_id, 1);
+			// Flag episode encoding as "in progress"
+			$queue_model->set_episode_status($episode_id, 'x264', 1);
 
 			file_put_contents($episode->queue_handbrake_script, $handbrake_command." $*\n");
 			chmod($episode->queue_handbrake_script, 0755);
@@ -186,20 +183,17 @@ if($encode) {
 			// One line break to clear out the encoding line from handbrake
 			echo "\n";
 
-			if($exit_code === 0)
-				$handbrake_success = true;
-			else
-				$handbrake_success = false;
+			// Update queue status
+			if($exit_code === 0) {
 
-			// Handbrake failed -- either by non-zero exit code, or empty file
-			if(!$handbrake_success || !$episode->queue_encoded()) {
+				// Encode succeeded
+				$queue_model->set_episode_status($episode_id, 'x264', 2);
 
-				$handbrake_success = false;
+			} else {
 
+				// Encode failed
+				$queue_model->set_episode_status($episode_id, 'x264', 3);
 				echo "HandBrake failed for some reason.  See ".$episode->queue_dir." for temporary files.\n";
-
-				$queue_model->set_episode_status($episode_id, 2);
-
 				goto goto_encode_next_episode;
 
 			}
@@ -214,7 +208,8 @@ if($encode) {
 			if($dry_run)
 				goto goto_encode_next_episode;
 
-			$queue_model->set_episode_status($episode_id, 4);
+			// Mark creating Matroska file as in progress
+			$queue_model->set_episode_status($episode_id, 'mkv', 1);
 
 			$matroska->addFile($episode->queue_handbrake_x264);
 			$matroska->addGlobalTags($episode->queue_matroska_xml);
@@ -232,7 +227,9 @@ if($encode) {
 
 			if($mkvmerge_exit_code == 0 || $mkvmerge_exit_code == 1) {
 
-				$mkvmerge_success = true;
+				// Mark episode as successfully muxed
+				$queue_model->set_episode_status($episode_id, 'mkv', 2);
+
 				assert(file_exists($episode->queue_matroska_mkv));
 				assert(filesize($episode->queue_matroska_mkv) > 0);
 				$episode->create_episodes_dir();
@@ -244,11 +241,10 @@ if($encode) {
 				if(!$debug && file_exists($episode->episode_mkv))
 					$episode->remove_queue_dir();
 
-
 			} else {
 
-				$mkvmerge_success = false;
-				$queue_model->set_episode_status($episode_id, 5);
+				// Mark episode as muxing failed
+				$queue_model->set_episode_status($episode_id, 'mkv', 3);
 
 			}
 

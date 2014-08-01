@@ -58,19 +58,23 @@
 		$matroska->addSimpleTag("PART_NUMBER", $episode->metadata['episode_part']);
 	}
 
-	if(!file_exists($episode->queue_matroska_mkv) && !file_exists($episode->queue_matroska_xml) && file_exists($episode->queue_handbrake_x264) && !$dry_run) {
+	if(!file_exists($episode->queue_matroska_xml) && !$dry_run) {
 
-		$queue_model->set_episode_status($episode_id, 3);
+		// Flag creating XML status as "in progress"
+		$queue_model->set_episode_status($episode_id, 'xml', 1);
 
 		$xml = $matroska->getXML();
 
 		if($xml) {
+
 			file_put_contents($episode->queue_matroska_xml, $xml);
-			$matroska_xml_success = true;
+			$queue_model->set_episode_status($episode_id, 'xml', 2);
+
 		} else {
+
 			// Creating the XML file failed for some reason
-			$queue_model->set_episode_status($episode_id, 4);
-			$matroska_xml_success = false;
+			$queue_model->set_episode_status($episode_id, 'xml', 3);
+
 		}
 
 	}
