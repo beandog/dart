@@ -124,7 +124,7 @@ if($encode) {
 					echo "* Handbrake command: ".$handbrake->get_executable_string()."\n";
 					echo "* Jumping to Matroska muxing\n";
 				}
-				goto goto_matroska_encode;
+				goto goto_encode_next_episode;
 
 			}
 
