@@ -66,7 +66,7 @@
 
 			// Calculate year for air date
 			if($this->metadata['season'] && $this->metadata['production_year'])
-				$this->metadata['episode_year'] = $this->metadata['season'] + $this->metadata['production_year']);
+				$this->metadata['episode_year'] = $this->metadata['season'] + $this->metadata['production_year'];
 			else
 				$this->metadata['episode_year'] = $this->metadata['production_year'];
 
