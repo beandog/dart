@@ -59,8 +59,7 @@ if($encode && $episode_id) {
 	$video_quality = $series_model->get_crf();
 	$video_bitrate = $series_model->get_video_bitrate();
 	$video_two_pass = $series_model->get_two_pass();
-	$grayscale = ($series_model == 't');
-	$animation = ($x264_tune == 'animation');
+	$grayscale = ($series_model->grayscale == 't');
 	$handbrake->grayscale($grayscale);
 
 	if($video_quality)
@@ -93,6 +92,7 @@ if($encode && $episode_id) {
 	if(!$x264_preset)
 		$x264_preset = 'medium';
 	$x264_tune = $series_model->get_x264_tune();
+	$animation = ($x264_tune == 'animation');
 	$handbrake->set_x264_preset($x264_preset);
 	$handbrake->set_x264_tune($x264_tune);
 
