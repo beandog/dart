@@ -136,11 +136,18 @@ XML;
 
 		function addSimpleTag($name, $string, $language = "eng", $tag_language = false) {
 
+			$string = trim($string);
+
+			if(!strlen($string))
+				return false;
+
 			$this->simple = $this->tag->addChild("Simple");
 			$this->simple->addChild("Name", $name);
 			$this->simple->addChild("String", $string);
 			if($tag_language)
 				$this->simple->addChild("TagLanguage", $language);
+
+			return true;
 
 		}
 
