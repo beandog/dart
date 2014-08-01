@@ -9,88 +9,56 @@ if($encode && $episode_id) {
 	 * and builds a new HandBrake object.
 	 */
 
-	$handbrake = new Handbrake;
+	/**
+	 * Encoding specification requirements
+	 * Current version: dlna-usb-5 working spec
+	 *
+	 * Handbrake 0.9.9, upstream release
+	 * mkvtoolnix 6.7.0
+	 * libebml 1.3.0
+	 * libmatroska 1.4.1
+	 * chapters
+	 * decomb
+	 * detelecine
+	 * two-pass
+	 * turbo first pass
+	 * no fixed video, audio codec bitrate
+	 * audio codec fdk_aac
+	 * fallback audio ac3,dts copy
+	 * x264 preset medium
+	 * x264 tune animation, film or grain
+	 * x264 optional grayscale
+	 * x264 options: keyint=30
+	 * H.264 profile high
+	 * H.264 level 3.1
+	 */
 
+	$handbrake = new Handbrake;
 	$handbrake->verbose($verbose);
 	$handbrake->debug($debug);
 	$handbrake->set_dry_run($dry_run);
 
-	// Find the audio track to use
-	$best_quality_audio_streamid = $tracks_model->get_best_quality_audio_streamid();
-	$first_english_streamid = $tracks_model->get_first_english_streamid();
+	/** Files **/
 
-	$audio_preference = $dvds_model->get_audio_preference();
-
-	if($audio_preference === 1)
-		$default_audio_streamid = $first_english_streamid;
-	else
-		$default_audio_streamid = $best_quality_audio_streamid;
-
-	/*
-	if($dumpvob) {
-
-		$vob = "$episode_filename.vob";
-
-		if(!file_exists($vob)) {
-
-			$tmpfname = tempnam(dirname($episode_filename), "vob.$episode_id.");
-			$dvdtrack = new DvdTrack($track_number, $iso);
-			$dvdtrack->getNumAudioTracks();
-			$dvdtrack->setVerbose($verbose);
-			$dvdtrack->setDebug($debug);
-			$dvdtrack->setBasename($tmpfname);
-			$dvdtrack->setStartingChapter($episode_starting_chapter);
-			$dvdtrack->setEndingChapter($episode_ending_chapter);
-			$dvdtrack->setAudioStreamID($default_audio_streamid);
-			unlink($tmpfname);
-			$dvdtrack->dumpStream();
-
-			rename("$tmpfname.vob", $vob);
-
-		}
-
-		$src = $vob;
-
-	} else {
-		$src = $episode['src_iso'];
-	}
-	*/
-
-	// Handbrake
+	$handbrake->output_format('mkv');
 	$handbrake->input_filename($episode->queue_iso_symlink);
 	$handbrake->input_track($episode->metadata['track_ix']);
 	$handbrake->output_filename($episode->queue_handbrake_x264);
-	// $handbrake->dvdnav($dvdnav);
-	$handbrake->add_chapters();
-	$handbrake->output_format('mkv');
 
-	// DLNA-USB specs
+	/** Encoding **/
+
 	$handbrake->set_video_encoder('x264');
 	$handbrake->deinterlace(false);
 	$handbrake->decomb(true);
 	$handbrake->detelecine(true);
-	$handbrake->set_h264_level('3.1');
 	$handbrake->autocrop(true);
-	$handbrake->set_h264_profile('high');
-	$arr_x264_opts = array();
-	$series_x264opts = $series_model->get_x264opts();
-	if(strlen($series_x264opts))
-		$arr_x264_opts[] = $series_x264opts();
-	$arr_x264_opts[] = "keyint=30";
-	$arr_x264_opts[] = "vbv-bufsize=1024:vbv-maxrate=1024";
-	$x264_opts = implode(":", $arr_x264_opts);
-	$handbrake->set_x264opts($x264_opts);
+	// $handbrake->dvdnav($dvdnav);
 
 	/** Video **/
+
 	$video_quality = $series_model->get_crf();
 	$video_bitrate = $series_model->get_video_bitrate();
 	$video_two_pass = $series_model->get_two_pass();
-	$x264_preset = $series_model->get_x264_preset();
-	if(!$x264_preset)
-		$x264_preset = 'medium';
-	$x264_tune = $series_model->get_x264_tune();
-	$handbrake->set_x264_preset($x264_preset);
-	$handbrake->set_x264_tune($x264_tune);
 	$grayscale = ($series_model == 't');
 	$animation = ($x264_tune == 'animation');
 	$handbrake->grayscale($grayscale);
@@ -106,7 +74,41 @@ if($encode && $episode_id) {
 		$handbrake->set_video_quality($crf);
 	}
 
+	/** H.264 **/
+
+	$handbrake->set_h264_level('3.1');
+	$handbrake->set_h264_profile('high');
+
+	/** x264 **/
+
+	$arr_x264_opts = array();
+	$series_x264opts = $series_model->get_x264opts();
+	if(strlen($series_x264opts))
+		$arr_x264_opts[] = $series_x264opts();
+	$arr_x264_opts[] = "keyint=30";
+	$arr_x264_opts[] = "vbv-bufsize=1024:vbv-maxrate=1024";
+	$x264_opts = implode(":", $arr_x264_opts);
+	$handbrake->set_x264opts($x264_opts);
+	$x264_preset = $series_model->get_x264_preset();
+	if(!$x264_preset)
+		$x264_preset = 'medium';
+	$x264_tune = $series_model->get_x264_tune();
+	$handbrake->set_x264_preset($x264_preset);
+	$handbrake->set_x264_tune($x264_tune);
+
 	/** Audio **/
+
+	// Find the audio track to use
+	$best_quality_audio_streamid = $tracks_model->get_best_quality_audio_streamid();
+	$first_english_streamid = $tracks_model->get_first_english_streamid();
+
+	$audio_preference = $dvds_model->get_audio_preference();
+
+	if($audio_preference === 1)
+		$default_audio_streamid = $first_english_streamid;
+	else
+		$default_audio_streamid = $best_quality_audio_streamid;
+
 	// Some DVDs may report more audio streams than
 	// Handbrake does.  If that's the case, check
 	// each one that lsdvd reports, to see if Handbrake
@@ -148,8 +150,10 @@ if($encode && $episode_id) {
 	} elseif($audio_encoder == 'copy') {
 		$handbrake->add_audio_encoder('copy');
 	} else {
-		$handbrake->set_audio_fallback('copy');
+		$handbrake->add_audio_encoder('copy');
 	}
+
+	/** Subtitles **/
 
 	// Check for a subtitle track
 	$subp_ix = $tracks_model->get_first_english_subp();
@@ -166,8 +170,37 @@ if($encode && $episode_id) {
 		$d_subtitles = "None :(";
 	}
 
-	// Set Chapters
-	$handbrake->set_chapters($episode->metadata['episode_starting_chapter'], $episode->metadata['episode_ending_chapter']);
+	/** Chapters **/
 
+	$handbrake->set_chapters($episode->metadata['episode_starting_chapter'], $episode->metadata['episode_ending_chapter']);
+	$handbrake->add_chapters();
+
+	/*
+	if($dumpvob) {
+
+		$vob = "$episode_filename.vob";
+
+		if(!file_exists($vob)) {
+
+			$tmpfname = tempnam(dirname($episode_filename), "vob.$episode_id.");
+			$dvdtrack = new DvdTrack($track_number, $iso);
+			$dvdtrack->getNumAudioTracks();
+			$dvdtrack->setVerbose($verbose);
+			$dvdtrack->setDebug($debug);
+			$dvdtrack->setBasename($tmpfname);
+			$dvdtrack->setStartingChapter($episode_starting_chapter);
+			$dvdtrack->setEndingChapter($episode_ending_chapter);
+			$dvdtrack->setAudioStreamID($default_audio_streamid);
+			unlink($tmpfname);
+			$dvdtrack->dumpStream();
+
+			rename("$tmpfname.vob", $vob);
+
+		}
+
+		$handbrake->input_filename($episode->queue_iso_symlink);
+
+	}
+	*/
 
 }
