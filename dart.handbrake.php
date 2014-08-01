@@ -21,11 +21,9 @@ if($encode && $episode_id) {
 
 	$audio_preference = $dvds_model->get_audio_preference();
 
-	if($audio_preference === "0")
-		$default_audio_streamid = $best_quality_audio_streamid;
-	elseif($audio_preference === "1")
+	if($audio_preference === 1)
 		$default_audio_streamid = $first_english_streamid;
-	elseif($audio_preference === "2")
+	else
 		$default_audio_streamid = $best_quality_audio_streamid;
 
 	/*

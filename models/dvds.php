@@ -60,6 +60,8 @@
 
 			}
 
+			$audio_preference = intval($audio_preference);
+
 			return $audio_preference;
 
 		}
