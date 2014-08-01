@@ -42,7 +42,8 @@ if($encode) {
 
 			}
 
-			// Check for existing x264 encoded file
+			// Check for existing x264 encoded file, and go straight to creating the XML
+			// file and muxing if possible.
 			if($episode->x264_passed()) {
 
 				echo "* x264 queue encoded file exists\n";
@@ -229,6 +230,20 @@ if($encode) {
 
 				// Mark episode as successfully muxed
 				$queue_model->set_episode_status($episode_id, 'mkv', 2);
+				echo "* Matroska remux passed\n";
+
+
+			} else {
+
+				// Mark episode as muxing failed
+				$queue_model->set_episode_status($episode_id, 'mkv', 3);
+
+			}
+
+			/** Final Checks **/
+			// This is where if everything passed, the episode is completely removed
+			// from the queue, the temporary files are removed
+			if($episode->x264_passed() && $episode->xml_passed() && $episode->mkv_passed()) {
 
 				assert(file_exists($episode->queue_matroska_mkv));
 				assert(filesize($episode->queue_matroska_mkv) > 0);
@@ -241,11 +256,6 @@ if($encode) {
 				if(!$debug && file_exists($episode->episode_mkv))
 					$episode->remove_queue_dir();
 
-			} else {
-
-				// Mark episode as muxing failed
-				$queue_model->set_episode_status($episode_id, 'mkv', 3);
-
 			}
 
 			if(!file_exists($episode->queue_iso_symlink) && !file_exists($episode->episode_mkv)) {
@@ -254,40 +264,18 @@ if($encode) {
 				echo "! ISO not found (".$episode->queue_iso_symlink."), MKV not found (".$episode->episode_mkv."), force removing episode from queue\n";
 				$queue_model->remove_episode($episode_id);
 
-				$queue_model->set_episode_status($episode_id, 6);
-
 			}
 
-			// Delete old files
-			if(file_exists($episode->episode_mkv) && $handbrake_success && $matroska_xml_success && $mkvmerge_success && !$dry_run) {
+			// Goto point: jump to the next episode
+			goto_encode_next_episode:
 
-				$queue_model->remove_episode($episode_id);
+			$skip++;
+			$num_encoded++;
 
-				if(!$debug) {
+			// Refresh the queue
+			$queue_episodes = $queue_model->get_episodes($hostname, $skip);
 
-					if(file_exists($episode->episode_mkv))
-						$episode->remove_queue_dir();
-
-					/** Remove any old ISOs */
-					$queue_isos = array();
-
-					// Get the dvd_ids from episodes that are in the entire queue
-					$queue_dvds = $queue_model->get_dvds(php_uname('n'));
-
-				}
-
-				// Goto point: jump to the next episode
-				goto_encode_next_episode:
-
-				$skip++;
-				$num_encoded++;
-
-				// Refresh the queue
-				$queue_episodes = $queue_model->get_episodes($hostname, $skip);
-
-				$count = count($queue_episodes);
-
-			}
+			$count = count($queue_episodes);
 
 		}
 
