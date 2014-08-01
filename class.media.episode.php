@@ -376,8 +376,6 @@
 
 			$arr = $this->get_queue_status();
 
-			var_dump($arr);
-
 			if($arr['x264'] === 2)
 				return true;
 			else
