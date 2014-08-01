@@ -29,13 +29,8 @@
 
 			foreach($queue_episodes as $episode_id) {
 
-				clearstatcache();
+				require 'dart.handbrake.php';
 
-				$episodes_model = new Episodes_Model($episode_id);
-				$series_id = $episodes_model->get_series_id();
-				$series_model = new Series_Model($series_id);
-				$series_title = $series_model->title;
-				$episode = new MediaEpisode($export_dir, $episodes_model->get_iso(), $series_model->get_collection_title(), $series_model->title, $episodes_model->title, $episode_id);
 				$queue_status = $queue_model->get_episode_status($episode_id);
 
 				if(file_exists($episode->episode_mkv))
@@ -50,44 +45,16 @@
 				$matroska_xml_success = false;
 				$mkvmerge_success = false;
 
-				$track_id = $episodes_model->track_id;
-				$tracks_model = new Tracks_Model($track_id);
-				$dvd_id = $tracks_model->dvd_id;
-				$dvds_model = new Dvds_Model($dvd_id);
-
 				$episode->create_queue_dir();
 				$episode->create_queue_iso_symlink();
 
-				$episode_metadata = array(
-
-					'track_number' => $tracks_model->ix,
-					'starting_chapter' => $episodes_model->starting_chapter,
-					'ending_chapter' => $episodes_model->ending_chapter,
-					'production_studio' => $series_model->production_studio,
-					'production_year' => $series_model->production_year,
-					'season' => $episodes_model->get_season(),
-					'volume' => $episodes_model->get_volume(),
-					'number' => $episodes_model->get_number(),
-					'part' => $episodes_model->part,
-
-				);
-
-				// Fix a rare case where the starting chapter is not null in the database,
-				// but the ending chapter is.  In situations like this, set the ending
-				// chapter to the last chapter.  Ideally, this should not happen in the
-				// front end, but do an extra check here as well.
-				// Handbrake will need an ending chapter passed to it if a starting chapter
-				// is given, it will default to only encoding that one chapter otherwise.
-				if(is_null($episodes_model->ending_chapter) && !is_null($episodes_model->starting_chapter)) {
-					$episode_metadata['ending_chapter'] = $tracks_model->get_num_chapters();
-				}
 
 				// Check to see if file exists, if not, encode it
 				if($queue_status == 0) {
 
-					echo "Collection:\t".$episode->collection_title."\n";
-					echo "Series:\t\t".$episode->series_title."\n";
-					echo "Episode:\t".$episode->episode_title."\n";
+					echo "Collection:\t".$episode->metadata['collection_title']."\n";
+					echo "Series:\t\t".$episode->metadata['series_title']."\n";
+					echo "Episode:\t".$episode->metadata['episode_title']."\n";
 					echo "Source:\t\t".$episode->dvd_iso."\n";
 					echo "Target:\t\t".basename($episode->episode_mkv)."\n";
 					if($debug || $dry_run) {
@@ -95,26 +62,8 @@
 						echo "Queue:\t\t".$episode->queue_dir."\n";
 					}
 
-					$handbrake = new Handbrake;
-
-					$handbrake->verbose($verbose);
-					$handbrake->debug($debug);
-					$handbrake->set_dry_run($dry_run);
-
 					if(!file_exists($episode->queue_handbrake_x264)) {
 
-						// Find the audio track to use
-						$best_quality_audio_streamid = $tracks_model->get_best_quality_audio_streamid();
-						$first_english_streamid = $tracks_model->get_first_english_streamid();
-
-						$audio_preference = $dvds_model->get_audio_preference();
-
-						if($audio_preference === "0")
-							$default_audio_streamid = $best_quality_audio_streamid;
-						elseif($audio_preference === "1")
-							$default_audio_streamid = $first_english_streamid;
-						elseif($audio_preference === "2")
-							$default_audio_streamid = $best_quality_audio_streamid;
 
 						/*
 						if($dumpvob) {
@@ -146,118 +95,7 @@
 						}
 						*/
 
-						// Handbrake
-						$handbrake->input_filename($episode->queue_iso_symlink);
-						$handbrake->input_track($episode_metadata['track_number']);
-						$handbrake->output_filename($episode->queue_handbrake_x264);
-						// $handbrake->dvdnav($dvdnav);
-						$handbrake->add_chapters();
-						$handbrake->output_format('mkv');
 
-						// DLNA-USB specs
-						$handbrake->set_video_encoder('x264');
-						$handbrake->deinterlace(false);
-						$handbrake->decomb(true);
-						$handbrake->detelecine(true);
-						$handbrake->set_h264_level('3.1');
-						$handbrake->autocrop(true);
-						$handbrake->set_h264_profile('high');
-						$arr_x264_opts = array();
-						$series_x264opts = $series_model->get_x264opts();
-						if(strlen($series_x264opts))
-							$arr_x264_opts[] = $series_x264opts();
-						$arr_x264_opts[] = "keyint=30";
-						$arr_x264_opts[] = "vbv-bufsize=1024:vbv-maxrate=1024";
-						$x264_opts = implode(":", $arr_x264_opts);
-						$handbrake->set_x264opts($x264_opts);
-
-						/** Video **/
-						$video_quality = $series_model->get_crf();
-						$video_bitrate = $series_model->get_video_bitrate();
-						$video_two_pass = $series_model->get_two_pass();
-						$x264_preset = $series_model->get_x264_preset();
-						if(!$x264_preset)
-							$x264_preset = 'medium';
-						$x264_tune = $series_model->get_x264_tune();
-						$handbrake->set_x264_preset($x264_preset);
-						$handbrake->set_x264_tune($x264_tune);
-						$grayscale = ($series_model == 't');
-						$animation = ($x264_tune == 'animation');
-						$handbrake->grayscale($grayscale);
-
-						if($video_quality)
-							$handbrake->set_video_quality($video_quality);
-						if($video_bitrate)
-							$handbrake->set_video_bitrate($video_bitrate);
-						if($video_two_pass) {
-							$handbrake->set_two_pass(true);
-							$handbrake->set_two_pass_turbo(true);
-						} elseif($crf) {
-							$handbrake->set_video_quality($crf);
-						}
-
-						/** Audio **/
-						// Some DVDs may report more audio streams than
-						// Handbrake does.  If that's the case, check
-						// each one that lsdvd reports, to see if Handbrake
-						// agrees, and add the first one that they both
-						// have found.
-						//
-						// By default, use the one we think is right.
-						if($handbrake->get_audio_index($default_audio_streamid))
-							$handbrake->add_audio_stream($default_audio_streamid);
-						else {
-
-							$added_audio = false;
-
-							$audio_streams = $tracks_model->get_audio_streams();
-
-							foreach($audio_streams as $arr) {
-								if($handbrake->get_audio_index($arr['streamid']) && !$added_audio) {
-									$handbrake->add_audio_stream($arr['streamid']);
-									$added_audio = true;
-								}
-							}
-
-							// If one hasn't been added by now, just use
-							// the default one.
-							if(!$added_audio)
-								$handbrake->add_audio_stream("0x80");
-							elseif(!$added_audio)
-								$handbrake->add_audio_track(1);
-
-						}
-
-						$audio_encoder = $series_model->get_audio_encoder();
-						$audio_bitrate = $series_model->get_audio_bitrate();
-						if($audio_encoder == 'aac') {
-							$handbrake->add_audio_encoder('fdk_aac');
-							$handbrake->set_audio_fallback('copy');
-							if($audio_bitrate)
-								$handbrake->set_audio_bitrate($audio_bitrate);
-						} elseif($audio_encoder == 'copy') {
-							$handbrake->add_audio_encoder('copy');
-						} else {
-							$handbrake->set_audio_fallback('copy');
-						}
-
-						// Check for a subtitle track
-						$subp_ix = $tracks_model->get_first_english_subp();
-
-						// If we have a VobSub one, add it
-						// Otherwise, check for a CC stream, and add that
-						if(!is_null($subp_ix)) {
-							$handbrake->add_subtitle_track($subp_ix);
-							echo "Subtitles:\tVOBSUB\n";
-						} elseif($handbrake->has_closed_captioning()) {
-							$handbrake->add_subtitle_track($handbrake->get_closed_captioning_ix());
-							echo "Subtitles:\tClosed Captioning\n";
-						} else {
-							echo "Subtitles:\tNone :(\n";
-						}
-
-						// Set Chapters
-						$handbrake->set_chapters($episode_metadata['starting_chapter'], $episode_metadata['ending_chapter']);
 
 						// Cartoons!
 						if($animation) {
