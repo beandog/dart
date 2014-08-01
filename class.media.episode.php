@@ -86,18 +86,6 @@
 			$this->queue_matroska_mkv = $this->get_queue_matroska_mkv();
 			$this->episode_mkv = $this->get_episode_mkv();
 
-			$this->arr_queue_status = array(
-
-				'enqueue',
-				'encoding',
-				'encoding failed',
-				'matroska xml',
-				'matroska xml failed',
-				'matroska muxing',
-				'matroska muxing failed',
-
-			);
-
 		}
 
 		public function get_episode_title_filename() {
@@ -346,8 +334,20 @@
 
 		}
 
-		// Added to queue, ready to encode
+		// In the queue, at any stage
 		public function in_queue() {
+
+			$status = $this->get_queue_status();
+
+			if(is_null($status))
+				return false;
+			else
+				return true;
+
+		}
+
+		// Added to queue, ready to encode
+		public function queue_pending() {
 
 			$status = $this->get_queue_status();
 
