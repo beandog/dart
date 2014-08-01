@@ -328,107 +328,150 @@
 
 			$queue_model = new Queue_Model;
 
-			$status = $queue_model->get_episode_status($this->episode_id);
+			$arr = $queue_model->get_episode_status($this->episode_id);
 
-			return $status;
+			return $arr;
 
 		}
 
 		// In the queue, at any stage
 		public function in_queue() {
 
-			$status = $this->get_queue_status();
+			$arr = $this->get_queue_status();
 
-			if(is_null($status))
-				return false;
-			else
-				return true;
-
-		}
-
-		// Added to queue, ready to encode
-		public function queue_pending() {
-
-			$status = $this->get_queue_status();
-
-			if($status === 0)
+			if(count($arr))
 				return true;
 			else
 				return false;
 
 		}
 
-		public function queue_encoding() {
+		public function x264_ready() {
 
-			$status = $this->get_queue_status();
+			$arr = $this->get_queue_status();
 
-			if($status === 1)
+			if($arr['x264'] === 0)
 				return true;
 			else
 				return false;
 
 		}
 
-		public function queue_encoding_failed() {
+		public function x264_running() {
 
-			$status = $this->get_queue_status();
+			$arr = $this->get_queue_status();
 
-			if($status === 1)
+			if($arr['x264'] === 1)
 				return true;
 			else
 				return false;
 
 		}
 
-		public function queue_encoded() {
+		public function x264_passed() {
 
-			$status = $this->get_queue_status();
+			$arr = $this->get_queue_status();
 
-			if($status === 1 && file_exists($this->queue_handbrake_x264) && sprintf("%u", filesize($this->queue_handbrake_x264)))
+			if($arr['x264'] === 2)
 				return true;
 			else
 				return false;
 
 		}
 
-		public function creating_xml() {
+		public function x264_failed() {
 
-			$status = $this->get_queue_status();
+			$arr = $this->get_queue_status();
 
-			if($status == 3)
+			if($arr['x264'] === 3)
 				return true;
 			else
 				return false;
 
 		}
 
-		public function creating_xml_failed() {
+		public function xml_ready() {
 
-			$status = $this->get_queue_status();
+			$arr = $this->get_queue_status();
 
-			if($status == 4)
+			if($arr['xml'] === 0)
 				return true;
 			else
 				return false;
 
 		}
 
-		public function muxing() {
+		public function xml_running() {
 
-			$status = $this->get_queue_status();
+			$arr = $this->get_queue_status();
 
-			if($status == 5)
+			if($arr['xml'] === 1)
 				return true;
 			else
 				return false;
 
 		}
 
-		public function muxing_failed() {
+		public function xml_passed() {
 
-			$status = $this->get_queue_status();
+			$arr = $this->get_queue_status();
 
-			if($status == 6)
+			if($arr['xml'] === 2)
+				return true;
+			else
+				return false;
+
+		}
+
+		public function xml_failed() {
+
+			$arr = $this->get_queue_status();
+
+			if($arr['xml'] === 3)
+				return true;
+			else
+				return false;
+
+		}
+
+		public function mkv_ready() {
+
+			$arr = $this->get_queue_status();
+
+			if($arr['mkv'] === 0)
+				return true;
+			else
+				return false;
+
+		}
+
+		public function mkv_running() {
+
+			$arr = $this->get_queue_status();
+
+			if($arr['mkv'] === 1)
+				return true;
+			else
+				return false;
+
+		}
+
+		public function mkv_passed() {
+
+			$arr = $this->get_queue_status();
+
+			if($arr['mkv'] === 2)
+				return true;
+			else
+				return false;
+
+		}
+
+		public function mkv_failed() {
+
+			$arr = $this->get_queue_status();
+
+			if($arr['mkv'] === 3)
 				return true;
 			else
 				return false;
