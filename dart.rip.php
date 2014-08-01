@@ -46,13 +46,7 @@
 
 					clearstatcache();
 
-					$series_id = $episodes_model->get_series_id();
-					$series_model = new Series_Model($series_id);
-					$series_title = $series_model->title;
-					$tracks_model = new Tracks_Model($episodes_model->track_id);
-					$track_number = $tracks_model->ix;
-
-					$episode = new MediaEpisode($export_dir, $episodes_model->get_iso(), $series_model->get_collection_title(), $series_model->title, $episodes_model->title, $episode_id);
+					$episode = new MediaEpisode($episode_id, $export_dir);
 
 					if(!file_exists($episode->episode_mkv)) {
 
