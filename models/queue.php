@@ -58,18 +58,24 @@
 
 		}
 
-		/*
-		public function set_episode_status($episode_id, $status) {
+		public function set_episode_status($episode_id, $stage, $status) {
 
 			$episode_id = abs(intval($episode_id));
+			$stage = trim($stage);
 			$status = abs(intval($status));
 
-			$sql = "UPDATE queue SET status = $status WHERE episode_id = $episode_id;";
+			$arr_stages = array('x264', 'xml', 'mkv');
+
+			if(!in_array($stage, $arr_stages))
+				return false;
+
+			$sql = "UPDATE queue SET $stage = $status WHERE episode_id = $episode_id;";
 
 			$this->db->query($sql);
 
+			return true;
+
 		}
-		*/
 
 		public function get_dvds($hostname) {
 
