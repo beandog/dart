@@ -42,21 +42,12 @@ if($encode) {
 
 			}
 
-			// Check for existing x264 encoded file, and go straight to creating the XML
-			// file and muxing if possible.
-			if($episode->x264_passed()) {
-
-				echo "* x264 queue encoded file exists\n";
-				echo "* Jumping to Matroska muxing\n";
-				goto goto_matroska_encode;
-
-			}
-
 			$episodes_model = new Episodes_Model($episode_id);
 			$tracks_model = new Tracks_Model($episode->metadata['track_id']);
 			$series_model = new Series_Model($episode->metadata['series_id']);
 			$dvds_model = new Dvds_Model($episode->metadata['dvd_id']);
 
+			// Build the Handbrake object
 			require 'dart.encode.handbrake.php';
 
 			if($num_queued_episodes > 1) {
@@ -164,38 +155,62 @@ if($encode) {
 				echo "Cartoons!! :D\n";
 			}
 
-			$exit_code = null;
+			// Check for existing x264 encoded file, and go straight to creating the XML
+			// file and muxing if possible.
+			if($episode->x264_passed()) {
 
-			// Flag episode encoding as "in progress"
-			$queue_model->set_episode_status($episode_id, 'x264', 1);
+				echo "* x264 queue encoded file exists\n";
+				echo "* Jumping to Matroska muxing\n";
+				goto goto_matroska_encode;
 
-			file_put_contents($episode->queue_handbrake_script, $handbrake_command." $*\n");
-			chmod($episode->queue_handbrake_script, 0755);
-
-			if($debug) {
-				$exec = escapeshellcmd($handbrake_command);
-				echo "Executing: $exec\n";
-			} else {
-				$exec = escapeshellcmd($handbrake_command)." 2> ".escapeshellarg($episode->queue_handbrake_output);
 			}
 
-			passthru($exec, $exit_code);
+			// If an episode is in the queue, either failed or running, skip it and go to the next one,
+			// but do *not* remove it from the queue.  This means that if an encode failed, it
+			// will always loop over it, skipping it for now, until manually reset or removed
+			// from the queue.
+			if($episode->x264_running() || $episode->x264_failed()) {
 
-			// One line break to clear out the encoding line from handbrake
-			echo "\n";
-
-			// Update queue status
-			if($exit_code === 0) {
-
-				// Encode succeeded
-				$queue_model->set_episode_status($episode_id, 'x264', 2);
-
-			} else {
-
-				// Encode failed
-				$queue_model->set_episode_status($episode_id, 'x264', 3);
-				echo "HandBrake failed for some reason.  See ".$episode->queue_dir." for temporary files.\n";
 				goto goto_encode_next_episode;
+
+			}
+
+			// Begin the encode if everything is good to go
+			if($episode->x264_ready()) {
+
+				// Flag episode encoding as "in progress"
+				$queue_model->set_episode_status($episode_id, 'x264', 1);
+
+				file_put_contents($episode->queue_handbrake_script, $handbrake_command." $*\n");
+				chmod($episode->queue_handbrake_script, 0755);
+
+				if($debug) {
+					$exec = escapeshellcmd($handbrake_command);
+					echo "Executing: $exec\n";
+				} else {
+					$exec = escapeshellcmd($handbrake_command)." 2> ".escapeshellarg($episode->queue_handbrake_output);
+				}
+
+				$exit_code = null;
+				passthru($exec, $exit_code);
+
+				// One line break to clear out the encoding line from handbrake
+				echo "\n";
+
+				// Update queue status
+				if($exit_code === 0) {
+
+					// Encode succeeded
+					$queue_model->set_episode_status($episode_id, 'x264', 2);
+
+				} else {
+
+					// Encode failed
+					$queue_model->set_episode_status($episode_id, 'x264', 3);
+					echo "HandBrake failed for some reason.  See ".$episode->queue_dir." for temporary files.\n";
+					goto goto_encode_next_episode;
+
+				}
 
 			}
 
