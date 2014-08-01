@@ -8,15 +8,15 @@
 		$matroska->setTitle($episode->metadata['episode_title']);
 
 	$episode_metadata = array(
-		'track_number' => $tracks_model->ix,
-		'starting_chapter' => $episodes_model->starting_chapter,
-		'ending_chapter' => $episodes_model->ending_chapter,
-		'production_studio' => $series_model->production_studio,
-		'production_year' => $series_model->production_year,
-		'season' => $episodes_model->get_season(),
-		'volume' => $episodes_model->get_volume(),
-		'number' => $episodes_model->get_number(),
-		'part' => $episodes_model->part,
+		'track_number' => $episode->metadata['track_ix'],
+		'starting_chapter' => $episode->metadata['episode_starting_chapter'],
+		'ending_chapter' => $episode->metadata['episode_ending_chapter'],
+		'production_studio' => $episode->metadata['production_studio'],
+		'production_year' => $episode->metadata['production_year'],
+		'season' => $episode->metadata['episode_season'],
+		'volume' => $episode->metadata['series_dvds_season'],
+		'number' => $episode->metadata['episode_number'],
+		'part' => $episode->metadata['episode_part'],
 	);
 
 	$matroska->addTag();
