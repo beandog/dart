@@ -61,6 +61,7 @@ if($encode) {
 					echo "Episode ID:\t".$episode_id."\n";
 					echo "Queue:\t\t".$episode->queue_dir."\n";
 				}
+				echo "Subtitles:\t$d_subtitles\n";
 
 				if(!file_exists($episode->queue_handbrake_x264)) {
 

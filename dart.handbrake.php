@@ -166,12 +166,12 @@ if($encode && $episode_id) {
 	// Otherwise, check for a CC stream, and add that
 	if(!is_null($subp_ix)) {
 		$handbrake->add_subtitle_track($subp_ix);
-		echo "Subtitles:\tVOBSUB\n";
+		$d_subtitles = "VOBSUB";
 	} elseif($handbrake->has_closed_captioning()) {
 		$handbrake->add_subtitle_track($handbrake->get_closed_captioning_ix());
-		echo "Subtitles:\tClosed Captioning\n";
+		$d_subtitles = "Closed Captioning";
 	} else {
-		echo "Subtitles:\tNone :(\n";
+		$d_subtitles = "None :(";
 	}
 
 	// Set Chapters
