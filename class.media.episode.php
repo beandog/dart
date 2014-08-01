@@ -290,4 +290,47 @@
 
 		}
 
+
+		/**
+		 * Get encoding status
+		 *
+		 * If value is NULL, then it is either not in the queue or has been encoded
+		 */
+		public function get_queue_status() {
+
+			$queue_model = new Queue_Model;
+
+			$status = $queue_model->get_episode_status($this->episode_id);
+
+			return $status;
+
+		}
+
+		public function encoding() {
+
+			$status = $this->get_queue_status();
+
+			if($status === 1)
+				return true;
+			else
+				return false;
+
+		}
+
+		/**
+		 * Check if an episode file has been encoded *and* the file exists
+		 *
+		 * Queue status codes: 1 for encoding, 2 for encoding failed
+		 */
+		public function encoded() {
+
+			$status = $this->get_queue_status();
+
+			if(($status > 2 || is_null($status)) && file_exists($this->episode_mkv))
+				return true;
+			else
+				return false;
+
+		}
+
 	}
