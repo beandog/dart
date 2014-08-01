@@ -122,10 +122,12 @@ if($encode) {
 
 			$handbrake_command = $handbrake->get_executable_string();
 
-			if($dry_run && $verbose) {
+			if($dry_run) {
 
-				echo "* Handbrake command: ".$handbrake->get_executable_string()."\n";
-				echo "* Jumping to Matroska muxing\n";
+				if($verbose) {
+					echo "* Handbrake command: ".$handbrake->get_executable_string()."\n";
+					echo "* Jumping to Matroska muxing\n";
+				}
 				goto goto_matroska_encode;
 
 			}
