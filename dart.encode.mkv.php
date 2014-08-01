@@ -27,5 +27,6 @@
 
 		// Mark episode as muxing failed
 		$queue_model->set_episode_status($episode_id, 'mkv', 3);
+		echo "* Matroska remux failed :(\n";
 
 	}
