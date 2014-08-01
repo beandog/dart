@@ -36,7 +36,7 @@ if($encode) {
 			$series_model = new Series_Model($episode->metadata['series_id']);
 			$dvds_model = new Dvds_Model($episode->metadata['dvd_id']);
 
-			require 'dart.handbrake.php';
+			require 'dart.encode.handbrake.php';
 
 			$queue_status = $queue_model->get_episode_status($episode_id);
 
@@ -187,7 +187,7 @@ if($encode) {
 
 			// Run through the Matroska functionality *if the x264 file exists, but not the target MKV files*,
 			// allowing resume-encoding
-			require 'dart.matroska.php';
+			require 'dart.encode.matroska.php';
 
 			// Only re-mux if it's not a dry run
 			if(!$dry_run && $handbrake_success && $matroska_xml_success) {
