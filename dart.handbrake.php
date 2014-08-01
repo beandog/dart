@@ -9,12 +9,6 @@ if($encode && $episode_id) {
 	 * and builds a new HandBrake object.
 	 */
 
-	$episode = new MediaEpisode($episode_id, $export_dir);
-
-	$tracks_model = new Tracks_Model($episode->metadata['track_id']);
-	$series_model = new Series_Model($episode->metadata['series_id']);
-	$dvds_model = new Dvds_Model($episode->metadata['dvd_id']);
-
 	$handbrake = new Handbrake;
 
 	$handbrake->verbose($verbose);

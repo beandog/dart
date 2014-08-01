@@ -29,6 +29,13 @@ if($encode) {
 
 		foreach($queue_episodes as $episode_id) {
 
+			$episode = new MediaEpisode($episode_id, $export_dir);
+
+			$episodes_model = new Episodes_Model($episode_id);
+			$tracks_model = new Tracks_Model($episode->metadata['track_id']);
+			$series_model = new Series_Model($episode->metadata['series_id']);
+			$dvds_model = new Dvds_Model($episode->metadata['dvd_id']);
+
 			require 'dart.handbrake.php';
 
 			$queue_status = $queue_model->get_episode_status($episode_id);
@@ -47,7 +54,6 @@ if($encode) {
 
 			$episode->create_queue_dir();
 			$episode->create_queue_iso_symlink();
-
 
 			// Check to see if file exists, if not, encode it
 			if($queue_status == 0) {
@@ -175,54 +181,58 @@ if($encode) {
 
 					}
 
-					require 'dart.matroska.php';
+				}
+
+			}
+
+			// Run through the Matroska functionality *if the x264 file exists, but not the target MKV files*,
+			// allowing resume-encoding
+			require 'dart.matroska.php';
+
+			// Only re-mux if it's not a dry run
+			if(!$dry_run && $handbrake_success && $matroska_xml_success) {
+
+				$queue_model->set_episode_status($episode_id, 4);
+
+				$matroska->addFile($episode->queue_handbrake_x264);
+				$matroska->addGlobalTags($episode->queue_matroska_xml);
+				$matroska->setFilename($episode->queue_matroska_mkv);
+
+				file_put_contents($episode->queue_mkvmerge_script, $matroska->getCommandString()." $*\n");
+				chmod($episode->queue_mkvmerge_script, 0755);
+
+				exec($matroska->getCommandString()." 2>&1", $mkvmerge_output_arr, $mkvmerge_exit_code);
+
+				$queue_mkvmerge_output = implode("\n", $mkvmerge_output_arr);
+
+				file_put_contents($episode->queue_mkvmerge_output, $queue_mkvmerge_output."\n");
+				assert(filesize($episode->queue_mkvmerge_output) > 0);
+
+				if($mkvmerge_exit_code == 0 || $mkvmerge_exit_code == 1) {
+
+					$mkvmerge_success = true;
+					assert(file_exists($episode->queue_matroska_mkv));
+					assert(filesize($episode->queue_matroska_mkv) > 0);
+					$episode->create_episodes_dir();
+					assert(copy($episode->queue_matroska_mkv, $episode->episode_mkv));
+					$num_encoded++;
+					$queue_model->remove_episode($episode_id);
+
+					// Cleanup
+					if(!$debug && file_exists($episode->episode_mkv))
+						$episode->remove_queue_dir();
+
+
+				} else {
+
+					$mkvmerge_success = false;
+					$queue_model->set_episode_status($episode_id, 5);
 
 				}
 
-				// Only re-mux if it's not a dry run
-				if(!$dry_run && $handbrake_success && $matroska_xml_success) {
+			}
 
-					$queue_model->set_episode_status($episode_id, 4);
-
-					$matroska->addFile($episode->queue_handbrake_x264);
-					$matroska->addGlobalTags($episode->queue_matroska_xml);
-					$matroska->setFilename($episode->queue_matroska_mkv);
-
-					file_put_contents($episode->queue_mkvmerge_script, $matroska->getCommandString()." $*\n");
-					chmod($episode->queue_mkvmerge_script, 0755);
-
-					exec($matroska->getCommandString()." 2>&1", $mkvmerge_output_arr, $mkvmerge_exit_code);
-
-					$queue_mkvmerge_output = implode("\n", $mkvmerge_output_arr);
-
-					file_put_contents($episode->queue_mkvmerge_output, $queue_mkvmerge_output."\n");
-					assert(filesize($episode->queue_mkvmerge_output) > 0);
-
-					if($mkvmerge_exit_code == 0 || $mkvmerge_exit_code == 1) {
-
-						$mkvmerge_success = true;
-						assert(file_exists($episode->queue_matroska_mkv));
-						assert(filesize($episode->queue_matroska_mkv) > 0);
-						$episode->create_episodes_dir();
-						assert(copy($episode->queue_matroska_mkv, $episode->episode_mkv));
-						$num_encoded++;
-						$queue_model->remove_episode($episode_id);
-
-						// Cleanup
-						if(!$debug && file_exists($episode->episode_mkv))
-							$episode->remove_queue_dir();
-
-
-					} else {
-
-						$mkvmerge_success = false;
-						$queue_model->set_episode_status($episode_id, 5);
-
-					}
-
-				}
-
-			} elseif (!file_exists($episode->queue_iso_symlink) && !file_exists($episode->episode_mkv)) {
+			if(!file_exists($episode->queue_iso_symlink) && !file_exists($episode->episode_mkv)) {
 
 				// At this point, it shouldn't be in the queue.
 				echo "! ISO not found (".$episode->queue_iso_symlink."), MKV not found (".$episode->episode_mkv."), force removing episode from queue\n";

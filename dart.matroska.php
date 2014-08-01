@@ -2,13 +2,6 @@
 
 	/** Matroska Metadata */
 
-	$episode = new MediaEpisode($episode_id, $export_dir);
-	$episodes_model = new Episodes_Model($episode_id);
-	$tracks_model = new Tracks_Model($episode->metadata['track_id']);
-	$series_model = new Series_Model($episode->metadata['series_id']);
-	$dvds_model = new Dvds_Model($episode->metadata['dvd_id']);
-	$queue_model->set_episode_status($episode_id, 3);
-
 	$matroska = new Matroska();
 
 	if($episode->metadata['episode_title'])
@@ -88,12 +81,14 @@
 		$matroska->addSimpleTag("PART_NUMBER", $episode_metadata['part']);
 	}
 
-	if(!file_exists($episode->queue_matroska_mkv) && !file_exists($episode->queue_matroska_xml) && !$dry_run && $handbrake_success) {
+	if(!file_exists($episode->queue_matroska_mkv) && !file_exists($episode->queue_matroska_xml) && file_exists($episode->queue_handbrake_x264) && !$dry_run) {
 
-		$str = $matroska->getXML();
+		$queue_model->set_episode_status($episode_id, 3);
 
-		if($str) {
-			file_put_contents($episode->queue_matroska_xml, $str);
+		$xml = $matroska->getXML();
+
+		if($xml) {
+			file_put_contents($episode->queue_matroska_xml, $xml);
 			$matroska_xml_success = true;
 		} else {
 			// Creating the XML file failed for some reason
