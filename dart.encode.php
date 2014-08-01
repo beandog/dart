@@ -55,58 +55,6 @@ if($encode) {
 				echo "[Encode ".($num_encoded + 1)."/$num_queued_episodes]\n";
 			}
 
-			$arr_video = array();
-			$arr_h264 = array();
-			$arr_x264 = array();
-			$arr_audio = array();
-
-			if($autocrop)
-				$arr_video[] = "autocrop";
-			if($deinterlace)
-				$arr_video[] = "deinterlace";
-			if($decomb)
-				$arr_video[] = "decomb";
-			if($detelecine)
-				$arr_video[] = "detelecine";
-			$arr_h264[] = "profile $h264_profile";
-			$arr_h264[] = "level $h264_level";
-			if($video_quality)
-				$arr_x264[] = "crf $video_quality";
-			if($video_bitrate) {
-				$str = "${video_bitrate}k";
-				if($video_two_pass)
-					$str .= " two pass";
-				$arr_x264[] = $str;
-			}
-			$arr_x264[] = "$x264_preset preset";
-			$arr_x264[] = "$x264_tune";
-			if($grayscale)
-				$arr_x264[] = "grayscale";
-			if($audio_encoder == "copy")
-				$arr_audio[] = "passthrough";
-			else
-				$arr_audio[] = strtoupper($audio_encoder)." ${audio_bitrate}k";
-
-			$d_video = implode(", ", $arr_video);
-			$d_h264 = implode(", ", $arr_h264);
-			$d_x264 = implode(", ", $arr_x264);
-			$d_audio = implode(", ", $arr_audio);
-
-			echo "Collection:\t".$episode->metadata['collection_title']."\n";
-			echo "Series:\t\t".$episode->metadata['series_title']."\n";
-			echo "Episode:\t".$episode->metadata['episode_title']."\n";
-			echo "Source:\t\t".$episode->dvd_iso."\n";
-			echo "Target:\t\t".basename($episode->episode_mkv)."\n";
-			if($debug || $dry_run) {
-				echo "Episode ID:\t".$episode_id."\n";
-			}
-			echo "Handbrake:\t$d_video\n";
-			echo "Video:\t\t$d_x264\n";
-			echo "Audio:\t\t$d_audio\n";
-			echo "Subtitles:\t$d_subtitles\n";
-
-			$handbrake_command = $handbrake->get_executable_string();
-
 			if($dry_run) {
 
 				if($verbose) {
