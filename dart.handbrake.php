@@ -56,21 +56,19 @@ if($encode && $episode_id) {
 
 	/** Video **/
 
-	$video_quality = $series_model->get_crf();
 	$video_bitrate = $series_model->get_video_bitrate();
+	$video_quality = $series_model->get_crf();
 	$video_two_pass = $series_model->get_two_pass();
 	$grayscale = ($series_model->grayscale == 't');
 	$handbrake->grayscale($grayscale);
 
-	if($video_quality)
-		$handbrake->set_video_quality($video_quality);
 	if($video_bitrate)
 		$handbrake->set_video_bitrate($video_bitrate);
+	if($video_quality)
+		$handbrake->set_video_quality($video_quality);
 	if($video_two_pass) {
 		$handbrake->set_two_pass(true);
 		$handbrake->set_two_pass_turbo(true);
-	} elseif($crf) {
-		$handbrake->set_video_quality($crf);
 	}
 
 	/** H.264 **/
