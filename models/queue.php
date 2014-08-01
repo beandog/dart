@@ -40,7 +40,7 @@
 
 			// FIXME This order comes out kind of random.  I realize
 			// its simply ordering by insert date, generally, but still .. it's odd.
-			$sql = "SELECT episode_id FROM ".$this->table." WHERE hostname = ".$this->db->quote($hostname)." AND status = 0 ORDER BY priority, insert_date $sql;";
+			$sql = "SELECT episode_id FROM ".$this->table." WHERE hostname = ".$this->db->quote($hostname)." ORDER BY priority, insert_date $sql;";
 
  			$arr = $this->db->getCol($sql);
 
@@ -50,14 +50,15 @@
 
 		public function get_episode_status($episode_id) {
 
-			$sql = "SELECT status FROM queue WHERE episode_id = ".$this->db->quote($episode_id).";";
+			$sql = "SELECT x264, xml, mkv FROM queue WHERE episode_id = ".$this->db->quote($episode_id).";";
 
-			$var = $this->db->getOne($sql);
+			$arr = $this->db->getRow($sql);
 
-			return $var;
+			return $arr;
 
 		}
 
+		/*
 		public function set_episode_status($episode_id, $status) {
 
 			$episode_id = abs(intval($episode_id));
@@ -68,6 +69,7 @@
 			$this->db->query($sql);
 
 		}
+		*/
 
 		public function get_dvds($hostname) {
 
@@ -91,7 +93,7 @@
 
 		public function reset($hostname) {
 
-			$sql = "DELETE FROM queue WHERE status = 0 AND hostname = ".$this->db->quote($hostname).";";
+			$sql = "DELETE FROM queue WHERE hostname = ".$this->db->quote($hostname).";";
 
 			$this->db->query($sql);
 
