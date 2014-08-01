@@ -45,6 +45,10 @@
 			$this->queue_matroska_mkv = $this->get_queue_matroska_mkv();
 			$this->episode_mkv = $this->get_episode_mkv();
 
+			$episodes_model = new Episodes_Model($episode_id);
+
+			$this->metadata = $episodes_model->get_metadata();
+
 		}
 
 		public function get_episode_title_filename() {
