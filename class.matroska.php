@@ -89,7 +89,7 @@
 		/** Metadata **/
 		public function setTitle($str) {
 			$str = trim($str);
-			if(is_string($str) && !empty($str)) {
+			if(is_string($str) && strlen($str)) {
 				$this->title = $str;
 			}
 		}
@@ -100,7 +100,7 @@
 
 		public function setAspectRatio($str) {
 			$str = trim($str);
-			if(is_string($str) && !empty($str)) {
+			if(is_string($str) && strlen($str)) {
 				$this->aspect_ratio = $str;
 			}
 		}
