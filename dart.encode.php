@@ -252,46 +252,46 @@ if($encode) {
 
 			}
 
-		}
+			if(!file_exists($episode->queue_iso_symlink) && !file_exists($episode->episode_mkv)) {
 
-		if(!file_exists($episode->queue_iso_symlink) && !file_exists($episode->episode_mkv)) {
+				// At this point, it shouldn't be in the queue.
+				echo "! ISO not found (".$episode->queue_iso_symlink."), MKV not found (".$episode->episode_mkv."), force removing episode from queue\n";
+				$queue_model->remove_episode($episode_id);
 
-			// At this point, it shouldn't be in the queue.
-			echo "! ISO not found (".$episode->queue_iso_symlink."), MKV not found (".$episode->episode_mkv."), force removing episode from queue\n";
-			$queue_model->remove_episode($episode_id);
-
-			$queue_model->set_episode_status($episode_id, 6);
-
-		}
-
-		// Delete old files
-		if(file_exists($episode->episode_mkv) && $handbrake_success && $matroska_xml_success && $mkvmerge_success && !$dry_run) {
-
-			$queue_model->remove_episode($episode_id);
-
-			if(!$debug) {
-
-				if(file_exists($episode->episode_mkv))
-					$episode->remove_queue_dir();
-
-				/** Remove any old ISOs */
-				$queue_isos = array();
-
-				// Get the dvd_ids from episodes that are in the entire queue
-				$queue_dvds = $queue_model->get_dvds(php_uname('n'));
+				$queue_model->set_episode_status($episode_id, 6);
 
 			}
 
-			// Goto point: jump to the next episode
-			goto_encode_next_episode:
+			// Delete old files
+			if(file_exists($episode->episode_mkv) && $handbrake_success && $matroska_xml_success && $mkvmerge_success && !$dry_run) {
 
-			$skip++;
-			$num_encoded++;
+				$queue_model->remove_episode($episode_id);
 
-			// Refresh the queue
-			$queue_episodes = $queue_model->get_episodes($hostname, $skip);
+				if(!$debug) {
 
-			$count = count($queue_episodes);
+					if(file_exists($episode->episode_mkv))
+						$episode->remove_queue_dir();
+
+					/** Remove any old ISOs */
+					$queue_isos = array();
+
+					// Get the dvd_ids from episodes that are in the entire queue
+					$queue_dvds = $queue_model->get_dvds(php_uname('n'));
+
+				}
+
+				// Goto point: jump to the next episode
+				goto_encode_next_episode:
+
+				$skip++;
+				$num_encoded++;
+
+				// Refresh the queue
+				$queue_episodes = $queue_model->get_episodes($hostname, $skip);
+
+				$count = count($queue_episodes);
+
+			}
 
 		}
 
