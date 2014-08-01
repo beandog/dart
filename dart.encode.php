@@ -31,17 +31,25 @@ if($encode) {
 
 			$episode = new MediaEpisode($episode_id, $export_dir);
 
+			// Check if episode already exists
+			if($episode->encoded())
+				break;
+
+			// Check for existing x264 encoded file
+			if($episode->queue_encoded()) {
+
+				echo "* x264 queue encoded file exists\n";
+				echo "* Jumping to Matroska muxing\n";
+				goto goto_matroska_encode;
+
+			}
+
 			$episodes_model = new Episodes_Model($episode_id);
 			$tracks_model = new Tracks_Model($episode->metadata['track_id']);
 			$series_model = new Series_Model($episode->metadata['series_id']);
 			$dvds_model = new Dvds_Model($episode->metadata['dvd_id']);
 
 			require 'dart.encode.handbrake.php';
-
-			$queue_status = $queue_model->get_episode_status($episode_id);
-
-			if(file_exists($episode->episode_mkv))
-				break;
 
 			if($num_queued_episodes > 1) {
 				echo "\n";
@@ -55,135 +63,138 @@ if($encode) {
 			$episode->create_queue_dir();
 			$episode->create_queue_iso_symlink();
 
-			// Check to see if file exists, if not, encode it
-			if($queue_status == 0) {
+			$arr_video = array();
+			$arr_h264 = array();
+			$arr_x264 = array();
+			$arr_audio = array();
 
-				echo "Collection:\t".$episode->metadata['collection_title']."\n";
-				echo "Series:\t\t".$episode->metadata['series_title']."\n";
-				echo "Episode:\t".$episode->metadata['episode_title']."\n";
-				echo "Source:\t\t".$episode->dvd_iso."\n";
-				echo "Target:\t\t".basename($episode->episode_mkv)."\n";
-				if($debug || $dry_run) {
-					echo "Episode ID:\t".$episode_id."\n";
-					echo "Queue:\t\t".$episode->queue_dir."\n";
-				}
-				echo "Subtitles:\t$d_subtitles\n";
+			if($autocrop)
+				$arr_video[] = "autocrop";
+			if($deinterlace)
+				$arr_video[] = "deinterlace";
+			if($decomb)
+				$arr_video[] = "decomb";
+			if($detelecine)
+				$arr_video[] = "detelecine";
+			$arr_h264[] = "profile $h264_profile";
+			$arr_h264[] = "level $h264_level";
+			if($video_quality)
+				$arr_x264[] = "crf $video_quality";
+			if($video_bitrate) {
+				$str = "${video_bitrate}k";
+				if($video_two_pass)
+					$str .= " two pass";
+				$arr_x264[] = $str;
+			}
+			$arr_x264[] = "$x264_preset preset";
+			$arr_x264[] = "$x264_tune";
+			if($grayscale)
+				$arr_x264[] = "grayscale";
+			if($audio_encoder == "copy")
+				$arr_audio[] = "passthrough";
+			else
+				$arr_audio[] = strtoupper($audio_encoder)." ${audio_bitrate}k";
 
-				if(!file_exists($episode->queue_handbrake_x264)) {
+			$d_video = implode(", ", $arr_video);
+			$d_h264 = implode(", ", $arr_h264);
+			$d_x264 = implode(", ", $arr_x264);
+			$d_audio = implode(", ", $arr_audio);
 
+			echo "Collection:\t".$episode->metadata['collection_title']."\n";
+			echo "Series:\t\t".$episode->metadata['series_title']."\n";
+			echo "Episode:\t".$episode->metadata['episode_title']."\n";
+			echo "Source:\t\t".$episode->dvd_iso."\n";
+			echo "Target:\t\t".basename($episode->episode_mkv)."\n";
+			if($debug || $dry_run) {
+				echo "Episode ID:\t".$episode_id."\n";
+			}
+			echo "Handbrake:\t$d_video\n";
+			echo "Video:\t\t$d_x264\n";
+			echo "Audio:\t\t$d_audio\n";
+			echo "Subtitles:\t$d_subtitles\n";
 
-					/*
-					if($dumpvob) {
+			$handbrake_command = $handbrake->get_executable_string();
 
-						$vob = "$episode_filename.vob";
+			if($dry_run && $verbose) {
 
-						if(!file_exists($vob)) {
-
-							$tmpfname = tempnam(dirname($episode_filename), "vob.$episode_id.");
-							$dvdtrack = new DvdTrack($track_number, $iso);
-							$dvdtrack->getNumAudioTracks();
-							$dvdtrack->setVerbose($verbose);
-							$dvdtrack->setDebug($debug);
-							$dvdtrack->setBasename($tmpfname);
-							$dvdtrack->setStartingChapter($episode_starting_chapter);
-							$dvdtrack->setEndingChapter($episode_ending_chapter);
-							$dvdtrack->setAudioStreamID($default_audio_streamid);
-							unlink($tmpfname);
-							$dvdtrack->dumpStream();
-
-							rename("$tmpfname.vob", $vob);
-
-						}
-
-						$src = $vob;
-
-					} else {
-						$src = $episode['src_iso'];
-					}
-					*/
-
-
-
-					// Cartoons!
-					if($animation) {
-						echo "Cartoons!! :D\n";
-					}
-
-					if($verbose > 1) {
-						echo "// Handbrake Video //\n";
-						if($video_quality)
-							echo "* CRF: $video_quality\n";
-						if($video_bitrate)
-							echo "* Bitrate: ${video_bitrate}k\n";
-						echo "* Deinterlace: ".d_yes_no(intval($deinterlace))."\n";
-						echo "* Decomb: ".d_yes_no(intval($decomb))."\n";
-						echo "* Detelecine: ".d_yes_no(intval($detelecine))."\n";
-						echo "* Grayscale: ".d_yes_no(intval($grayscale))."\n";
-						echo "* Animation: ".d_yes_no(intval($animation))."\n";
-						echo "* Autocrop: ".d_yes_no(intval($autocrop))."\n";
-						echo "* H.264 profile: $h264_profile\n";
-						echo "* H.264 level: $h264_level\n";
-						echo "* x264 preset: $x264_preset\n";
-						echo "* x264 tune: $x264_tune\n";
-					}
-
-					$exit_code = null;
-					if(!$dry_run) {
-
-						$queue_model->set_episode_status($episode_id, 1);
-
-						$handbrake_command = $handbrake->get_executable_string();
-						file_put_contents($episode->queue_handbrake_script, $handbrake_command." $*\n");
-						chmod($episode->queue_handbrake_script, 0755);
-
-						// Handbrake class will output encoding status
-						// $exit_code = $handbrake->encode();
-
-						if($debug) {
-							$exec = escapeshellcmd($handbrake_command);
-							echo "Executing: $exec\n";
-							passthru($exec, $exit_code);
-						} else {
-							$exec = escapeshellcmd($handbrake_command)." 2> ".escapeshellarg($episode->queue_handbrake_output);
-							passthru($exec, $exit_code);
-						}
-
-						// One line break to clear out the encoding line from handbrake
-						echo "\n";
-					} elseif ($dry_run && $verbose) {
-
-						echo "* Handbrake command: ".$handbrake->get_executable_string()."\n";
-
-					}
-
-					if($exit_code === 0 && !$dry_run)
-						$handbrake_success = true;
-					else
-						$handbrake_success = false;
-
-					// Handbrake failed -- either by non-zero exit code, or empty file
-					if(!$dry_run && (!$handbrake_success || ($handbrake_success && !sprintf("%u", filesize($episode->queue_handbrake_x264))))) {
-
-						$handbrake_success = false;
-
-						echo "HandBrake failed for some reason.  See ".$episode->queue_dir." for temporary files.\n";
-
-						$queue_model->set_episode_status($episode_id, 2);
-
-					} else {
-
-						// Post-encode checks
-
-						/*
-						if(!$debug && $dumpvob && file_exists($vob))
-							unlink($vob);
-						*/
-
-					}
-
-				}
+				echo "* Handbrake command: ".$handbrake->get_executable_string()."\n";
+				echo "* Jumping to Matroska muxing\n";
+				goto goto_matroska_encode;
 
 			}
+
+			/*
+			if($dumpvob) {
+
+				$vob = "$episode_filename.vob";
+
+				if(!file_exists($vob)) {
+
+					$tmpfname = tempnam(dirname($episode_filename), "vob.$episode_id.");
+					$dvdtrack = new DvdTrack($track_number, $iso);
+					$dvdtrack->getNumAudioTracks();
+					$dvdtrack->setVerbose($verbose);
+					$dvdtrack->setDebug($debug);
+					$dvdtrack->setBasename($tmpfname);
+					$dvdtrack->setStartingChapter($episode_starting_chapter);
+					$dvdtrack->setEndingChapter($episode_ending_chapter);
+					$dvdtrack->setAudioStreamID($default_audio_streamid);
+					unlink($tmpfname);
+					$dvdtrack->dumpStream();
+
+					rename("$tmpfname.vob", $vob);
+
+				}
+
+				$src = $vob;
+
+			} else {
+				$src = $episode['src_iso'];
+			}
+			*/
+
+			// Cartoons!
+			if($animation) {
+				echo "Cartoons!! :D\n";
+			}
+
+			$exit_code = null;
+
+			$queue_model->set_episode_status($episode_id, 1);
+
+			file_put_contents($episode->queue_handbrake_script, $handbrake_command." $*\n");
+			chmod($episode->queue_handbrake_script, 0755);
+
+			if($debug) {
+				$exec = escapeshellcmd($handbrake_command);
+				echo "Executing: $exec\n";
+			} else {
+				$exec = escapeshellcmd($handbrake_command)." 2> ".escapeshellarg($episode->queue_handbrake_output);
+			}
+
+			passthru($exec, $exit_code);
+
+			// One line break to clear out the encoding line from handbrake
+			echo "\n";
+
+			if($exit_code === 0)
+				$handbrake_success = true;
+			else
+				$handbrake_success = false;
+
+			// Handbrake failed -- either by non-zero exit code, or empty file
+			if(!$handbrake_success || !$episode->queue_encoded()) {
+
+				$handbrake_success = false;
+
+				echo "HandBrake failed for some reason.  See ".$episode->queue_dir." for temporary files.\n";
+
+				$queue_model->set_episode_status($episode_id, 2);
+
+			}
+
+			// Goto point for dry runs: Matroska functionality
+			goto_matroska_encode:
 
 			// Run through the Matroska functionality *if the x264 file exists, but not the target MKV files*,
 			// allowing resume-encoding
@@ -266,6 +277,9 @@ if($encode) {
 				$skip++;
 				$num_encoded++;
 			}
+
+			// Goto point: jump to the next episode
+			goto_encode_next_episode:
 
 			// Refresh the queue
 			$queue_episodes = $queue_model->get_episodes($hostname, $skip);

@@ -21,13 +21,13 @@
 	$matroska->addSimpleTag("DVD_COLLECTION", $episode->metadata['collection_title']);
 	$matroska->addSimpleTag("DVD_SERIES_SEASON", $episode->metadata['episode_season']);
 	$matroska->addSimpleTag("DVD_SERIES_VOLUME", $episode->metadata['series_dvds_volume']);
-	$matroska->addSimpleTag("DVD_TRACK_NUMBER", $episode->metadata['track_number']);
+	$matroska->addSimpleTag("DVD_TRACK_NUMBER", $episode->metadata['track_ix']);
 	$matroska->addSimpleTag("DVD_EPISODE_NUMBER", $episode->metadata['episode_number']);
 	$matroska->addSimpleTag("DVD_EPISODE_TITLE", $episode->metadata['episode_title']);
 	$matroska->addSimpleTag("DVD_EPISODE_PART_NUMBER", $episode->metadata['episode_part']);
-	$matroska->addSimpleTag("DVD_ID", $dvd_id);
-	$matroska->addSimpleTag("DVD_SERIES_ID", $series_id);
-	$matroska->addSimpleTag("DVD_TRACK_ID", $track_id);
+	$matroska->addSimpleTag("DVD_ID", $episode->metadata['dvd_id']);
+	$matroska->addSimpleTag("DVD_SERIES_ID", $episode->metadata['series_id']);
+	$matroska->addSimpleTag("DVD_TRACK_ID", $episode->metadata['track_id']);
 	$matroska->addSimpleTag("DVD_EPISODE_ID", $episode_id);
 
 	/** Season **/
