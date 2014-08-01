@@ -74,13 +74,13 @@
 
 			file_put_contents($episode->queue_matroska_xml, $xml);
 			$queue_model->set_episode_status($episode_id, 'xml', 2);
-			echo "Matroska XML metadata:\tpassed\n";
+			echo "Metadata:\tpassed\n";
 
 		} else {
 
 			// Creating the XML file failed for some reason
 			$queue_model->set_episode_status($episode_id, 'xml', 3);
-			echo "Matroska XML metadata:\tfailed\n";
+			echo "Metadata:\tfailed\n";
 
 		}
 

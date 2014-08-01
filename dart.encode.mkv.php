@@ -21,12 +21,12 @@
 
 		// Mark episode as successfully muxed
 		$queue_model->set_episode_status($episode_id, 'mkv', 2);
-		echo "Matroska remux:\tpassed\n";
+		echo "Matroska:\tpassed\n";
 
 	} else {
 
 		// Mark episode as muxing failed
 		$queue_model->set_episode_status($episode_id, 'mkv', 3);
-		echo "Matroska remux:\t failed\n";
+		echo "Matroska:\t failed\n";
 
 	}

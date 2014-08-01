@@ -112,21 +112,18 @@ if($encode) {
 				$exit_code = null;
 				passthru($exec, $exit_code);
 
-				// One line break to clear out the encoding line from handbrake
-				echo "\n";
-
 				// Update queue status
 				if($exit_code === 0) {
 
 					// Encode succeeded
 					$queue_model->set_episode_status($episode_id, 'x264', 2);
-					echo "Encoding:\tpassed\n";
+					echo "Handbrake:\tpassed\n";
 
 				} else {
 
 					// Encode failed
 					$queue_model->set_episode_status($episode_id, 'x264', 3);
-					echo "Encoding:\tfailed\n";
+					echo "Handbrake:\tfailed\n";
 					echo "See ".$episode->queue_dir." for temporary files.\n";
 					goto goto_encode_next_episode;
 
@@ -183,6 +180,9 @@ if($encode) {
 			$queue_episodes = $queue_model->get_episodes($hostname, $skip);
 
 			$count = count($queue_episodes);
+
+			if($count)
+				echo "\n";
 
 		}
 

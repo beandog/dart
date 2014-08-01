@@ -242,6 +242,7 @@ if($encode && $episode_id) {
 	$d_h264 = implode(", ", $arr_h264);
 	$d_x264 = implode(", ", $arr_x264);
 	$d_audio = implode(", ", $arr_audio);
+	$d_preset = $series_model->get_preset_name();
 
 	echo "Collection:\t".$episode->metadata['collection_title']."\n";
 	echo "Series:\t\t".$episode->metadata['series_title']."\n";
@@ -251,6 +252,7 @@ if($encode && $episode_id) {
 	if($debug || $dry_run) {
 		echo "Episode ID:\t".$episode_id."\n";
 	}
+	echo "Preset:\t\t$d_preset\n";
 	echo "Handbrake:\t$d_video\n";
 	echo "Video:\t\t$d_x264\n";
 	echo "Audio:\t\t$d_audio\n";
