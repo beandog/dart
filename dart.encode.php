@@ -120,12 +120,14 @@ if($encode) {
 
 					// Encode succeeded
 					$queue_model->set_episode_status($episode_id, 'x264', 2);
+					echo "Encoding:\tpassed\n";
 
 				} else {
 
 					// Encode failed
 					$queue_model->set_episode_status($episode_id, 'x264', 3);
-					echo "HandBrake failed for some reason.  See ".$episode->queue_dir." for temporary files.\n";
+					echo "Encoding:\tfailed\n";
+					echo "See ".$episode->queue_dir." for temporary files.\n";
 					goto goto_encode_next_episode;
 
 				}
