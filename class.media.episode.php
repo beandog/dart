@@ -367,4 +367,15 @@
 
 		}
 
+		public function queue_encoded() {
+
+			$status = $this->get_queue_status();
+
+			if(($status === 1 || is_null($status)) && file_exists($this->queue_handbrake_x264))
+				return true;
+			else
+				return false;
+
+		}
+
 	}
