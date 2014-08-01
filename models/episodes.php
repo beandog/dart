@@ -88,7 +88,6 @@
 
 		}
 
-
 		public function get_number() {
 
 			/**
@@ -191,6 +190,15 @@
  			$count = $count1 + $count2 + 1;
 
 			return $count;
+
+		}
+
+		public function get_metadata() {
+
+			$sql = "SELECT * FROM view_episodes WHERE episode_id = ".$this->db->quote($this->id).";";
+			$arr = $this->db->getRow($sql);
+
+			return $arr;
 
 		}
 
