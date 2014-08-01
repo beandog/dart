@@ -179,12 +179,26 @@ if($encode) {
 				/** Matroska Metadata */
 				if(!file_exists($episode->queue_matroska_mkv) && !file_exists($episode->queue_matroska_xml) && !$dry_run && $handbrake_success) {
 
+					$episodes_model = new Episodes_Model($episode_id);
+					$tracks_model = new Tracks_Model($episode->metadata['track_id']);
 					$queue_model->set_episode_status($episode_id, 3);
 
 					$matroska = new Matroska();
 
-					if($episode->episode_title)
-						$matroska->setTitle($episode->episode_title);
+					if($episode->metadata['episode_title'])
+						$matroska->setTitle($episode->metadata['episode_title']);
+
+					$episode_metadata = array(
+						'track_number' => $tracks_model->ix,
+						'starting_chapter' => $episodes_model->starting_chapter,
+						'ending_chapter' => $episodes_model->ending_chapter,
+						'production_studio' => $series_model->production_studio,
+						'production_year' => $series_model->production_year,
+						'season' => $episodes_model->get_season(),
+						'volume' => $episodes_model->get_volume(),
+						'number' => $episodes_model->get_number(),
+						'part' => $episodes_model->part,
+					);
 
 					$matroska->addTag();
 					$matroska->addTarget(70, "COLLECTION");
