@@ -58,7 +58,9 @@
 		$matroska->addSimpleTag("PART_NUMBER", $episode->metadata['episode_part']);
 	}
 
-	if(!file_exists($episode->queue_matroska_xml) && !$dry_run) {
+	// Create the Matroska XML file if we are ready on the first run,
+	// or if it failed on a previous one.
+	if($episode->xml_ready() || $episode->xml_failed()) {
 
 		// Flag creating XML status as "in progress"
 		$queue_model->set_episode_status($episode_id, 'xml', 1);
@@ -69,11 +71,13 @@
 
 			file_put_contents($episode->queue_matroska_xml, $xml);
 			$queue_model->set_episode_status($episode_id, 'xml', 2);
+			echo "* Created Matroska XML\n";
 
 		} else {
 
 			// Creating the XML file failed for some reason
 			$queue_model->set_episode_status($episode_id, 'xml', 3);
+			echo "* Creating Matroska XML file failed. :(\n";
 
 		}
 
