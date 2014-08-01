@@ -48,7 +48,7 @@ if($encode) {
 			$dvds_model = new Dvds_Model($episode->metadata['dvd_id']);
 
 			// Build the Handbrake object
-			require 'dart.encode.handbrake.php';
+			require 'dart.encode.x264.php';
 
 			if($num_queued_episodes > 1) {
 				echo "\n";
@@ -219,7 +219,7 @@ if($encode) {
 
 			// Run through the Matroska functionality *if the x264 file exists, but not the target MKV files*,
 			// allowing resume-encoding
-			require 'dart.encode.matroska.php';
+			require 'dart.encode.xml.php';
 
 			if($dry_run)
 				goto goto_encode_next_episode;
