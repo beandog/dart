@@ -55,9 +55,6 @@ if($encode) {
 				echo "[Encode ".($num_encoded + 1)."/$num_queued_episodes]\n";
 			}
 
-			$episode->create_queue_dir();
-			$episode->create_queue_iso_symlink();
-
 			$arr_video = array();
 			$arr_h264 = array();
 			$arr_x264 = array();
@@ -178,6 +175,9 @@ if($encode) {
 			// Begin the encode if everything is good to go
 			if($episode->x264_ready()) {
 
+				$episode->create_queue_dir();
+				$episode->create_queue_iso_symlink();
+
 				// Flag episode encoding as "in progress"
 				$queue_model->set_episode_status($episode_id, 'x264', 1);
 
@@ -246,7 +246,6 @@ if($encode) {
 				// Mark episode as successfully muxed
 				$queue_model->set_episode_status($episode_id, 'mkv', 2);
 				echo "* Matroska remux passed\n";
-
 
 			} else {
 

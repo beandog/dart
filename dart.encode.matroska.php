@@ -62,6 +62,9 @@
 	// or if it failed on a previous one.
 	if($episode->xml_ready() || $episode->xml_failed()) {
 
+		// Create queue directory if not already there
+		$episode->create_queue_dir();
+
 		// Flag creating XML status as "in progress"
 		$queue_model->set_episode_status($episode_id, 'xml', 1);
 
