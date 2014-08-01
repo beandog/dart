@@ -330,6 +330,10 @@
 
 			$arr = $queue_model->get_episode_status($this->episode_id);
 
+			// Stupid model function sets values to strings, fix it here
+			foreach($arr as $key => $value)
+				$arr[$key] = intval($value);
+
 			return $arr;
 
 		}
@@ -371,6 +375,8 @@
 		public function x264_passed() {
 
 			$arr = $this->get_queue_status();
+
+			var_dump($arr);
 
 			if($arr['x264'] === 2)
 				return true;
