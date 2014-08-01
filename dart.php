@@ -87,15 +87,7 @@
 	// General boolean for various items
 	$first_run = true;
 
-	$arr_queue_status = array(
-		'enqueue',
-		'encoding',
-		'encoding failed',
-		'matroska xml',
-		'matroska xml failed',
-		'matroska muxing',
-		'matroska muxing failed',
-	);
+	$arr_queue_status = array('ready', 'in progress', 'passed', 'failed');
 
 	foreach($devices as $device) {
 
