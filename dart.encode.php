@@ -31,9 +31,16 @@ if($encode) {
 
 			$episode = new MediaEpisode($episode_id, $export_dir);
 
-			// Check if episode already exists
-			if($episode->encoded())
-				break;
+			// If episode already exists, remove it from the queue, and move
+			// onto the next.  Change the num_encoded value so that it doesn't
+			// include a false positive.
+			if($episode->encoded()) {
+
+				$queue_model->remove_episode($episode_id);
+				$num_encoded--;
+				goto goto_encode_next_episode;
+
+			}
 
 			// Check for existing x264 encoded file
 			if($episode->queue_encoded()) {
