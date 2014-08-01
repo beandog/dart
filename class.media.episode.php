@@ -62,7 +62,7 @@
 			// Add metadata not in the view
 			$this->metadata['production_studio'] = $series_model->production_studio;
 			$this->metadata['production_year'] = $series_model->production_year;
-			$this->metadata['episode_number'] = $series_model->get_number();
+			$this->metadata['episode_number'] = $episodes_model->get_number();
 
 			// Calculate year for air date
 			if($this->metadata['season'] && $this->metadata['production_year'])
