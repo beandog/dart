@@ -6,13 +6,11 @@
 
 		public $export_dir;
 		public $dvd_iso;
-		public $collection_title;
-		public $series_title;
-		public $episode_title;
 		public $episode_id;
 		public $isos_dir;
 		public $queue_dir;
 		public $episodes_dir;
+		public $episode_title_filename;
 		public $queue_iso_symlink;
 		public $queue_handbrake_script;
 		public $queue_handbrake_output;
@@ -22,15 +20,45 @@
 		public $queue_matroska_xml;
 		public $queue_matroska_mkv;
 		public $episode_mkv;
+		public $metadata;
 
-		public function __construct($export_dir, $dvd_iso, $collection_title, $series_title, $episode_title, $episode_id) {
+		public function __construct($episode_id, $export_dir) {
 
-			$this->export_dir = realpath($export_dir)."/";
-			$this->dvd_iso = basename($dvd_iso);
-			$this->collection_title = $collection_title;
-			$this->series_title = $series_title;
-			$this->episode_title = $episode_title;
+			clearstatcache();
+
 			$this->episode_id = $episode_id;
+			$this->export_dir = $export_dir;
+			$episodes_model = new Episodes_Model($episode_id);
+			$this->metadata = $episodes_model->get_metadata();
+			$tracks_model = new Tracks_Model($this->metadata['track_id']);
+
+			// The view uses the full title name, including parts, which is what is
+			// used in the final filename for the title.  Reset it in the array
+			// so that we have the original source.
+			$this->metadata['episode_title'] = $episodes_model->title;
+
+			// Clarify the season -- the model uses this one from the view
+			unset($this->metadata['series_dvds_season']);
+
+			// The episodes model handles the heavy lifting perfectly :)
+			$this->metadata['episode_number'] = $episodes_model->get_number();
+
+			// Use the view to find the ISO filename
+			$this->dvd_iso = basename($episodes_model->get_iso());
+
+			// Query the series model to get the collection title, since it's not
+			// a part of the view (FIXME)
+			$series_model = new Series_Model($this->metadata['series_id']);
+			$this->metadata['collection_title'] = $series_model->get_collection_title();
+
+			// Handbrake needs a fixed ending chapter given, otherwise it will
+			// only encode the first chapter passed to it.  Update it in the
+			// metadata here to match the first chapter if an ending one is null.
+			if(!is_null($this->metadata['episode_starting_chapter']) && is_null($this->metadata['episode_ending_chapter'])) {
+				$this->metadata['episode_ending_chapter'] = $tracks_model->get_num_chapters();
+			}
+
+			// Get all the filenames
 			$this->episode_title_filename = $this->get_episode_title_filename();
 			$this->queue_dir = $this->get_queue_dir();
 			$this->isos_dir = $this->get_isos_dir();
@@ -45,40 +73,32 @@
 			$this->queue_matroska_mkv = $this->get_queue_matroska_mkv();
 			$this->episode_mkv = $this->get_episode_mkv();
 
-			$episodes_model = new Episodes_Model($episode_id);
-
-			$this->metadata = $episodes_model->get_metadata();
-
 		}
 
 		public function get_episode_title_filename() {
 
 			$episodes_model = new Episodes_Model($this->episode_id);
-			$track_id = $episodes_model->track_id;
-			$episode_number = $episodes_model->get_number();
-			$display_episode_number = str_pad($episode_number, 2, 0, STR_PAD_LEFT);
-			$episode_part = $episodes_model->part;
-			$episode_season = $episodes_model->get_season();
-			$series_model = new Series_Model($episodes_model->get_series_id());
+			$display_episode_number = str_pad($this->metadata['episode_number'], 2, 0, STR_PAD_LEFT);
+			$series_model = new Series_Model($this->metadata['series_id']);
 
 			$episode_prefix = '';
 			$episode_suffix = '';
 
 			// FIXME Take into account 10+seasons
 			if($series_model->indexed == 't') {
-				if(!$episode_season)
+				if(!$this->metadata['episode_season'])
 					$display_season = 1;
 				else
-					$display_season = $episode_season;
+					$display_season = $this->metadata['episode_season'];
 
 				$episode_prefix = "${display_season}.${display_episode_number}. ";
 			}
 
-			if($episode_part)
-				$episode_suffix = ", Part $episode_part";
+			if($this->metadata['episode_part'])
+				$episode_suffix = ", Part ".$this->metadata['episode_part'];
 
 			/** Filenames **/
-			$filename = $episode_prefix.$this->episode_title.$episode_suffix;
+			$filename = $episode_prefix.$this->metadata['episode_title'].$episode_suffix;
 
 			return $filename;
 
@@ -88,7 +108,7 @@
 
 			$dir = $this->export_dir;
 			$dir .= "queue/";
-			$dir .= $this->safe_filename_title($this->series_title)."/";
+			$dir .= $this->safe_filename_title($this->metadata['series_title'])."/";
 			$dir .= $this->safe_filename_title($this->episode_title_filename)."/";
 
 			return $dir;
@@ -110,7 +130,7 @@
 
 			$filename = $this->export_dir;
 			$filename .= "queue/";
-			$filename .= $this->safe_filename_title($this->series_title)."/";
+			$filename .= $this->safe_filename_title($this->metadata['series_title'])."/";
 			$filename .= basename($this->dvd_iso);
 
 			return $filename;
@@ -128,7 +148,7 @@
 
 			$dir = $this->export_dir;
 			$dir .= "queue/";
-			$dir .= $this->safe_filename_title($this->series_title)."/";
+			$dir .= $this->safe_filename_title($this->metadata['series_title'])."/";
 
 			if(!is_dir($dir))
 				mkdir($dir, 0755, true);
@@ -149,7 +169,7 @@
 
 			$dir = $this->export_dir;
 			$dir .= "episodes/";
-			$dir .= $this->filename_title($this->series_title)."/";
+			$dir .= $this->filename_title($this->metadata['series_title'])."/";
 
 			return $dir;
 
@@ -170,8 +190,8 @@
 
 			$dir = $this->export_dir;
 			$dir .= "isos/";
-			$dir .= $this->safe_filename_title($this->collection_title)."/";
-			$dir .= $this->safe_filename_title($this->series_title)."/";
+			$dir .= $this->safe_filename_title($this->metadata['collection_title'])."/";
+			$dir .= $this->safe_filename_title($this->metadata['series_title'])."/";
 
 			return $dir;
 
