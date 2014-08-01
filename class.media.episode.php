@@ -31,6 +31,7 @@
 			$episodes_model = new Episodes_Model($episode_id);
 			$this->metadata = $episodes_model->get_metadata();
 			$tracks_model = new Tracks_Model($this->metadata['track_id']);
+			$series_model = new Series_Model($this->metadata['series_id']);
 
 			// The view uses the full title name, including parts, which is what is
 			// used in the final filename for the title.  Reset it in the array
@@ -57,6 +58,11 @@
 			if(!is_null($this->metadata['episode_starting_chapter']) && is_null($this->metadata['episode_ending_chapter'])) {
 				$this->metadata['episode_ending_chapter'] = $tracks_model->get_num_chapters();
 			}
+
+			// Add metadata not in the view
+			$this->metadata['production_studio'] = $series_model->production_studio;
+			$this->metadata['production_year'] = $series_model->production_year;
+			$this->metadata['episode_number'] = $series_model->get_number();
 
 			// Get all the filenames
 			$this->episode_title_filename = $this->get_episode_title_filename();
