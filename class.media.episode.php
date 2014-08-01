@@ -64,6 +64,12 @@
 			$this->metadata['production_year'] = $series_model->production_year;
 			$this->metadata['episode_number'] = $series_model->get_number();
 
+			// Calculate year for air date
+			if($this->metadata['season'] && $this->metadata['production_year'])
+				$this->metadata['episode_year'] = $this->metadata['season'] + $this->metadata['production_year']);
+			else
+				$this->metadata['episode_year'] = $this->metadata['production_year'];
+
 			// Get all the filenames
 			$this->episode_title_filename = $this->get_episode_title_filename();
 			$this->queue_dir = $this->get_queue_dir();
