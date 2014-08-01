@@ -306,6 +306,17 @@
 
 		}
 
+		public function in_queue() {
+
+			$status = $this->get_queue_status();
+
+			if($status === 0)
+				return true;
+			else
+				return false;
+
+		}
+
 		public function encoding() {
 
 			$status = $this->get_queue_status();
@@ -327,6 +338,17 @@
 			$status = $this->get_queue_status();
 
 			if(($status > 2 || is_null($status)) && file_exists($this->episode_mkv))
+				return true;
+			else
+				return false;
+
+		}
+
+		public function encoding_failed() {
+
+			$status = $this->get_queue_status();
+
+			if($status === 1)
 				return true;
 			else
 				return false;
