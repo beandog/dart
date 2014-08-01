@@ -371,7 +371,7 @@
 
 			$status = $this->get_queue_status();
 
-			if(($status === 1 || is_null($status)) && file_exists($this->queue_handbrake_x264))
+			if($status === 1 && file_exists($this->queue_handbrake_x264) && sprintf("%u", filesize($this->queue_handbrake_x264)))
 				return true;
 			else
 				return false;
