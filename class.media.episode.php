@@ -21,6 +21,7 @@
 		public $queue_matroska_mkv;
 		public $episode_mkv;
 		public $metadata;
+		public $arr_queue_status;
 
 		public function __construct($episode_id, $export_dir) {
 
@@ -84,6 +85,18 @@
 			$this->queue_matroska_xml = $this->get_queue_matroska_xml();
 			$this->queue_matroska_mkv = $this->get_queue_matroska_mkv();
 			$this->episode_mkv = $this->get_episode_mkv();
+
+			$this->arr_queue_status = array(
+
+				'enqueue',
+				'encoding',
+				'encoding failed',
+				'matroska xml',
+				'matroska xml failed',
+				'matroska muxing',
+				'matroska muxing failed',
+
+			);
 
 		}
 
@@ -302,44 +315,6 @@
 
 		}
 
-
-		/**
-		 * Get encoding status
-		 *
-		 * If value is NULL, then it is either not in the queue or has been encoded
-		 */
-		public function get_queue_status() {
-
-			$queue_model = new Queue_Model;
-
-			$status = $queue_model->get_episode_status($this->episode_id);
-
-			return $status;
-
-		}
-
-		public function in_queue() {
-
-			$status = $this->get_queue_status();
-
-			if($status === 0)
-				return true;
-			else
-				return false;
-
-		}
-
-		public function encoding() {
-
-			$status = $this->get_queue_status();
-
-			if($status === 1)
-				return true;
-			else
-				return false;
-
-		}
-
 		/**
 		 * Check if an episode file has been encoded *and* the file exists
 		 *
@@ -356,7 +331,45 @@
 
 		}
 
-		public function encoding_failed() {
+		/**
+		 * Get encoding status
+		 *
+		 * If value is NULL, then it is either not in the queue or has been encoded
+		 */
+		public function get_queue_status() {
+
+			$queue_model = new Queue_Model;
+
+			$status = $queue_model->get_episode_status($this->episode_id);
+
+			return $status;
+
+		}
+
+		// Added to queue, ready to encode
+		public function in_queue() {
+
+			$status = $this->get_queue_status();
+
+			if($status === 0)
+				return true;
+			else
+				return false;
+
+		}
+
+		public function queue_encoding() {
+
+			$status = $this->get_queue_status();
+
+			if($status === 1)
+				return true;
+			else
+				return false;
+
+		}
+
+		public function queue_encoding_failed() {
 
 			$status = $this->get_queue_status();
 
@@ -372,6 +385,50 @@
 			$status = $this->get_queue_status();
 
 			if($status === 1 && file_exists($this->queue_handbrake_x264) && sprintf("%u", filesize($this->queue_handbrake_x264)))
+				return true;
+			else
+				return false;
+
+		}
+
+		public function creating_xml() {
+
+			$status = $this->get_queue_status();
+
+			if($status == 3)
+				return true;
+			else
+				return false;
+
+		}
+
+		public function creating_xml_failed() {
+
+			$status = $this->get_queue_status();
+
+			if($status == 4)
+				return true;
+			else
+				return false;
+
+		}
+
+		public function muxing() {
+
+			$status = $this->get_queue_status();
+
+			if($status == 5)
+				return true;
+			else
+				return false;
+
+		}
+
+		public function muxing_failed() {
+
+			$status = $this->get_queue_status();
+
+			if($status == 6)
 				return true;
 			else
 				return false;
