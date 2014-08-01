@@ -33,6 +33,11 @@ if($encode && $episode_id) {
 	 * H.264 level 3.1
 	 */
 
+	$deinterlace = false;
+	$decomb = $detelecine = $autocrop = true;
+	$h264_level = "3.1";
+	$h264_profile = "high";
+
 	$handbrake = new Handbrake;
 	$handbrake->verbose($verbose);
 	$handbrake->debug($debug);
@@ -48,10 +53,10 @@ if($encode && $episode_id) {
 	/** Encoding **/
 
 	$handbrake->set_video_encoder('x264');
-	$handbrake->deinterlace(false);
-	$handbrake->decomb(true);
-	$handbrake->detelecine(true);
-	$handbrake->autocrop(true);
+	$handbrake->deinterlace($deinterlace);
+	$handbrake->decomb($decomb);
+	$handbrake->detelecine($detelecine);
+	$handbrake->autocrop($autocrop);
 	// $handbrake->dvdnav($dvdnav);
 
 	/** Video **/
