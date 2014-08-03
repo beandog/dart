@@ -171,6 +171,7 @@
 		if($device_is_hardware && $access_device) {
 
 			echo "[Device Hardware]\n";
+			echo "* Drive $device\n";
 
 			$drive = new DVDDrive($device);
 			$drive->set_debug($debug);
