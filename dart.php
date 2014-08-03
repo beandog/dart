@@ -174,6 +174,13 @@
 			$drive = new DVDDrive($device);
 			$drive->set_debug($debug);
 
+			// If waiting and the drive is closed and has no media, go to the next device
+			if($wait && $drive->is_closed() && !$drive->has_media()) {
+				$drive->open();
+				$device = toggle_device($devices, $device);
+				goto start;
+			}
+
 			if(!$wait || ($wait && $drive->is_closed())) {
 
 				// Close the tray if not waiting (i.e., --import, --info, etc. is passed)
