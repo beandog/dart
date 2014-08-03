@@ -286,7 +286,7 @@
 			// Otherwise, if there is only one device, then wait until
 			// the tray is closed manually.
 			if(count($devices) > 1) {
-				$device = toggle_device($device);
+				$device = toggle_device($devices, $device);
 			}
 
 			if($debug)

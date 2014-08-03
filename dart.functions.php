@@ -40,13 +40,14 @@
 	}
 
 	// Switch to the next device
-	function toggle_device($device) {
-		if($device == '/dev/dvd')
-			return '/dev/dvd1';
-		if($device == '/dev/dvd1')
-			return '/dev/dvd2';
-		if($device == '/dev/dvd2')
-			return '/dev/dvd';
+	function toggle_device($all, $current) {
+
+		$current_key = array_search($current, $all);
+		if(array_key_exists($current_key + 1, $all))
+			return $all[$current_key + 1];
+		else
+			return $all[0];
+
 	}
 
 	// Human-friendly output

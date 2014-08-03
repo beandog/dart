@@ -181,9 +181,6 @@ if($encode) {
 
 			$count = count($queue_episodes);
 
-			if($count)
-				echo "\n";
-
 		}
 
 	} while(count($queue_episodes) && $encode && (!$max || ($num_encoded < $max)));
