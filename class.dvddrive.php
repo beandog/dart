@@ -178,7 +178,7 @@
 				$exec = "dvd_eject ".$this->getDevice()." &";
 				exec($exec);
 
-				$this->wait_until_closed();
+				$this->wait_until_open();
 
 				return true;
 			}
