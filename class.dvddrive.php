@@ -4,11 +4,14 @@
 
 		private $device;
 		private $debug;
+		private $arr_drive_status;
 
 		function __construct($device = "/dev/dvd") {
 
 			$this->setDevice($device);
 			$this->debug = false;
+
+			$this->arr_drive_status = array("", "CDS_NO_DISC", "CDS_TRAY_OPEN", "CDS_DRIVE_NOT_READY", "CDS_DISK_OK");
 
 		}
 
@@ -41,8 +44,39 @@
 			if($this->debug)
 				echo "! drive::wait_until_ready(".$this->device.")\n";
 
-			while(!$this->is_ready())
-				usleep(10000);
+			do {
+				sleep(1);
+			} while($this->is_ready() === false);
+
+			return true;
+
+		}
+
+		/**
+		 * Sleep until the drive is closed
+		 */
+		function wait_until_closed() {
+
+			echo "! drive::wait_until_closed(".$this->device.")\n";
+
+			do {
+				$this->wait_until_ready();
+			} while(!$this->is_closed());
+
+			return true;
+
+		}
+
+		/**
+		 * Sleep until the drive is open
+		 */
+		function wait_until_open() {
+
+			echo "! drive::wait_until_open(".$this->device.")\n";
+
+			do {
+				$this->wait_until_ready();
+			} while(!$this->is_open());
 
 			return true;
 
@@ -58,6 +92,9 @@
 
 			$command = "dvd_drive_status ".$this->getDevice();
 			exec($command, $arr, $return);
+
+			if($this->debug)
+				echo "! drive status: ".$this->arr_drive_status[$return]."\n";
 
 			return $return;
 		}
@@ -141,7 +178,7 @@
 				$exec = "dvd_eject ".$this->getDevice()." &";
 				exec($exec);
 
-				$this->wait_until_ready();
+				$this->wait_until_closed();
 
 				return true;
 			}
@@ -171,7 +208,7 @@
 				system($command);
 			}
 
-			$this->wait_until_ready();
+			$this->wait_until_closed();
 
 			return true;
 
