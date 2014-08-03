@@ -165,32 +165,42 @@
 			}
 		}
 
-		// Determine whether we need physical access to a disc.
-		// Note that since the next steps are so dependent upon
-		// whether 'wait' is true or not, it's easier to just
-		// create a whole new block
+		// Look for any conditions where we there is access to the device, but
+		// we need to skip over it because there is no media.  Also open the tray
+		// based on the wait switch that's passed.
 		if($device_is_hardware && $access_device) {
+
+			echo "[Device Hardware]\n";
 
 			$drive = new DVDDrive($device);
 			$drive->set_debug($debug);
 
+			if($wait)
+				echo "* Wait for media requested by user\n";
+			else
+				echo "* No waiting requested\n";
+
 			// If waiting and the drive is closed and has no media, go to the next device
 			if($wait && $drive->is_closed() && !$drive->has_media()) {
+				echo "* Drive is closed, without media\n";
+				echo "* No media, so out we go!\n";
 				$drive->open();
-				$device = toggle_device($devices, $device);
-				goto start;
+				$access_device = false;
 			}
 
-			if(!$wait || ($wait && $drive->is_closed())) {
+			// If waiting, and the drive is open, move along to the next device
+			if($wait && $drive->is_open()) {
+				echo "* Drive is open, skipping device\n";
+				$access_device = false;
+			}
 
-				// Close the tray if not waiting (i.e., --import, --info, etc. is passed)
-				if(!$wait && $drive->is_open()) {
-					$drive->close();
-				}
+			// Close the tray if not waiting
+			if(!$wait && $drive->is_open() && !$open_trays) {
 
-				$has_media = $drive->has_media();
+				echo "* Drive is open, closing tray\n";
+				$drive->close();
 
-				if($has_media) {
+				if($drive->has_media()) {
 					$access_drive = true;
 					echo "* Found a DVD, ready to nom!\n";
 				} else {
@@ -198,11 +208,9 @@
 					$drive->open();
 					$access_device = false;
 				}
-			} else {
-				// Disable access to the device since the
-				// above conditions are not met.
-				$access_device = false;
+
 			}
+
 		}
 
 		if($access_device) {
