@@ -309,16 +309,16 @@
 		require 'dart.iso.php';
 		require 'dart.rip.php';
 
+		// If archiving, everything would have happened by now,
+		// so eject the drive.
+		if($archive && $device_is_hardware && $drive->is_closed()) {
+			echo "* Ready to archive next disc, opening tray!\n";
+			$drive->open();
+		}
+
 		// If polling for a new disc, check to see if one is in the
 		// drive.  If there is, start over.
 		if($wait && ($rip || $import || $archive || $dump_iso || $dump_ifo) && $device_is_hardware) {
-
-			// If waiting and archiving, everything would have happened by now,
-			// so eject the drive and wait for another.
-			if($wait && $archive && $drive->is_closed()) {
-				echo "* Ready to archive next disc, opening tray!\n";
-				$drive->open();
-			}
 
 			// Only toggle devices if passed more than one
 			// Otherwise, just re-poll the original.
