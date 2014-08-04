@@ -44,7 +44,7 @@
 			$dvds_model->dvdread_id = $dvdread_id;
 		}
 		if(!$dvds_model->title) {
-			$dvd_title = $dvd-getTitle();
+			$dvd_title = $dvd->getTitle();
 			echo "* title: $dvd_title\n";
 			$dvds_model->title = $dvd_title;
 		}
