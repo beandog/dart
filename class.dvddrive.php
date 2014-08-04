@@ -45,7 +45,7 @@
 				echo "! drive::wait_until_ready(".$this->device.")\n";
 
 			do {
-				sleep(1);
+				sleep(2);
 			} while($this->is_ready() === false);
 
 			return true;
@@ -168,92 +168,39 @@
 
 		/**
 		 * Open the DVD tray
-		 * If it is already opened, return false
+		 *
+		 * Pass *all* control / decss / check of the drive to dvd_eject
 		 */
 		function open() {
 
-			$this->wait_until_ready();
+			if($this->debug)
+				echo "! drive::open(".$this->device.")\n";
 
-			if($this->is_closed()) {
-				$exec = "dvd_eject ".$this->getDevice()." &";
-				exec($exec);
+			$cmd = "dvd_eject ".$this->getDevice();
+			passthru($cmd, $retval);
 
-				$this->wait_until_open();
+			return $retval;
 
-				return true;
-			}
-			return false;
 		}
 
 		/**
 		 * Close the tray
 		 *
-		 * README.devices: Running `ejcct -t` on my Memorex DVD drive sometimes
-		 * throws "Buffer I/O error on device sr0, logical block 512", so just
-		 * ignore it.
-		 *
-		 * README.eject I think there *may* be a bug where, after manually closing
-		 * a tray and the device is polling, and then running 'eject -t', the
-		 * drive opens up and then closes.
+		 * If the tray is closed and has media, dvd_eject will
+		 * return a status of 2.
 		 */
 		function close() {
 
 			if($this->debug)
 				echo "! drive::close(".$this->device.")\n";
 
-			$this->wait_until_ready();
+			$cmd = "dvd_eject -t ".$this->getDevice();
+			passthru($cmd, $retval);
 
-			if($this->is_open()) {
-				$command = "dvd_eject -t ".$this->getDevice()." 2>&1 > /dev/null";
-				system($command);
-			}
-
-			$this->wait_until_closed();
-
-			return true;
-
-		}
-
-		function mount() {
-
-			$this->wait_until_ready();
-
-			if($this->is_open())
-				$this->close_tray();
-
-			if($this->has_media()) {
-				command("mount ".$this->getDevice(), true, true, false, array(0, 32, 64));
-				$this->wait_until_ready();
-				return true;
-			} else
-				return false;
-		}
-
-		function unmount() {
-			$this->wait_until_ready();
-			command("umount ".$this->getDevice());
-			$this->wait_until_ready();
-		}
-
-		// Use Handbrake to access the device and scan for media
-		// Handbrake seems to be much more patient regarding
-		// polling a tray and waiting to see if it is loaded.
-		function load_css() {
-
-			if($this->debug)
-				echo "! drive::load_css(".$this->device.")\n";
-
-			$this->wait_until_ready();
-
-			if(!$this->is_closed())
-				$this->close_tray();
-
-			$command = "handbrake --scan -i ".$this->getDevice()." 2>&1 > /dev/null";
-			exec($command, $arr, $return);
-
-			return $return;
+			return $retval;
 
 		}
 
 	}
+
 ?>
