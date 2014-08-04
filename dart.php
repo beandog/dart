@@ -195,13 +195,13 @@
 			}
 
 			// If waiting, and the drive is open, move along to the next device
-			if($wait && $drive->is_open()) {
+			if($wait && $drive->is_open() && $access_device) {
 				echo "* Drive is open, skipping device\n";
 				$access_device = false;
 			}
 
 			// Close the tray if not waiting
-			if(!$wait && $drive->is_open() && !$open_trays) {
+			if(!$wait && $drive->is_open() && !$open_trays && $access_device) {
 
 				echo "* Drive is open, closing tray\n";
 				$drive->close();
@@ -295,6 +295,14 @@
 		// If polling for a new disc, check to see if one is in the
 		// drive.  If there is, start over.
 		if($wait && ($rip || $import || $archive || $dump_iso || $dump_ifo) && $device_is_hardware) {
+
+			// If waiting and archiving, everything would have happened by now,
+			// so eject the drive and wait for another.
+			if($wait && $archive && $access_device && $drive->is_closed()) {
+				echo "* Ready to archive next disc, opening tray!\n";
+				$drive->open();
+			}
+
 			// Only toggle devices if passed more than one
 			// Otherwise, just re-poll the original.
 			// This is useful in cases where --wait is called
