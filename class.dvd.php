@@ -131,33 +131,6 @@
 
 		}
 
-		/**
-		 * Play one frame of the DVD device
-		 *
-		 * This is so the DVD drive doesn't lock up when trying
-		 * to access the disc.  By decoding the CSS once,
-		 * it should prevent problems. :)
-		 */
-		public function load_css($program = 'mplayer') {
-
-			if($this->debug)
-				echo "! dvd->load_css()\n";
-
-			if($program == 'lsdvd') {
-				$this->lsdvd(true);
-				return true;
-			}
-
-			if($program == 'mplayer') {
-				$exec = "mplayer dvd:// -dvd-device ".escapeshellarg($this->getDevice())." -frames 60 -nosound -vo null -noconfig all 2>&1 > /dev/null";
-				exec($exec, $arr, $return);
-				return $return;
-			}
-
-			return $false;
-
-		}
-
 		public function dump_iso($dest, $method = 'ddrescue') {
 
 			if($this->debug)
