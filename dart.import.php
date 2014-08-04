@@ -359,7 +359,3 @@
 		$dvds_model->metadata_spec = 1;
 	}
 
-	// Eject the disc if we are polling, and nothing else
-	if(($import || $archive) && $wait && !$rip) {
-		$drive->open();
-	}
