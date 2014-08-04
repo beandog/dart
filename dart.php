@@ -329,12 +329,6 @@
 			// the tray is closed manually.
 			if(count($devices) > 1) {
 				$device = toggle_device($devices, $device);
-
-				// If told to wait for media, take a small nap to avoid
-				// hitting the device so much.
-				if($wait) {
-					sleep(30);
-				}
 			}
 
 			if($debug)
