@@ -175,7 +175,10 @@
 			$cmd = "dvd_eject ".$this->device;
 			passthru($cmd, $retval);
 
-			return $retval;
+			if($retval === 0 || $retval === 2)
+				return true;
+			else
+				return false;
 
 		}
 
@@ -193,7 +196,10 @@
 			$cmd = "dvd_eject -t ".$this->device;
 			passthru($cmd, $retval);
 
-			return $retval;
+			if($retval === 0)
+				return true;
+			else
+				return false;
 
 		}
 
