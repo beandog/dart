@@ -29,6 +29,11 @@ if($encode) {
 
 		foreach($queue_episodes as $episode_id) {
 
+			if($num_queued_episodes > 1) {
+				echo "\n";
+				echo "[Encode ".($num_encoded + 1)."/$num_queued_episodes]\n";
+			}
+
 			$episode = new MediaEpisode($episode_id, $export_dir);
 
 			// If episode already exists, remove it from the queue, and move
@@ -49,11 +54,6 @@ if($encode) {
 
 			// Build the Handbrake object
 			require 'dart.encode.x264.php';
-
-			if($num_queued_episodes > 1) {
-				echo "\n";
-				echo "[Encode ".($num_encoded + 1)."/$num_queued_episodes]\n";
-			}
 
 			if($dry_run) {
 
