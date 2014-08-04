@@ -8,8 +8,12 @@
 
 	$missing_dvd_metadata = $dvds_model->missing_metadata();
 
+	if($archive && !$missing_dvd_metadata) {
+		echo "* Archive:\tNo legacy metadata! :D\n";
+	}
+
 	// Start import
-	if($access_device && ($archive || $import || !$disc_indexed || $missing_dvd_metadata)) {
+	if($access_device && ($import || !$disc_indexed || $missing_dvd_metadata)) {
 
 		$dvdread_id = $dvd->getID();
 
