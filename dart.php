@@ -309,9 +309,6 @@
 		require 'dart.iso.php';
 		require 'dart.rip.php';
 
-		// Starting goto point for next DVD
-		next_device:
-
 		// If archiving, everything would have happened by now,
 		// so eject the drive.
 		if($archive && $device_is_hardware && $drive->is_closed()) {

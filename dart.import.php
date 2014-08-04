@@ -71,10 +71,16 @@
 
 		$dvd_num_tracks = $dvd->getNumTracks();
 
-		// FIXME jump to the next DVD
+		// If it comes to this point, there's probably an issue reading the DVD
+		// directly.  Either way, the import will still work, so it's debatable
+		// whether this should die here now and kill the progress of the script
+		// or not.  A FIXME is in order in the sense that I don't have error
+		// handling for *extreme* breakage.  This is something where the
+		// dvd_debug program would come into play -- ideally, that would run first
+		// and flag anomalies for me directly.
 		if(!count($dvd_num_tracks)) {
-			echo "? No tracks? No good. Exiting\n";
-			goto next_device;
+			echo "? No tracks? No good!!!!\n";
+			exit(1);
 		}
 
 		if($verbose) {
