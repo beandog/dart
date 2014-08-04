@@ -22,16 +22,6 @@
 				$this->device = $str;
 		}
 
-		function getDevice($escape = false) {
-
-			$str = $this->device;
-
-			if($escape)
-				$str = escapeshellarg($str);
-
-			return $str;
-		}
-
 		function set_debug($bool = true) {
 			$this->debug = $bool;
 		}
@@ -90,7 +80,7 @@
 			if($this->debug)
 				echo "! drive::get_status(".$this->device.")\n";
 
-			$command = "dvd_drive_status ".$this->getDevice();
+			$command = "dvd_drive_status ".$this->device;
 			exec($command, $arr, $return);
 
 			if($this->debug)
@@ -176,7 +166,7 @@
 			if($this->debug)
 				echo "! drive::open(".$this->device.")\n";
 
-			$cmd = "dvd_eject ".$this->getDevice();
+			$cmd = "dvd_eject ".$this->device;
 			passthru($cmd, $retval);
 
 			return $retval;
@@ -194,7 +184,7 @@
 			if($this->debug)
 				echo "! drive::close(".$this->device.")\n";
 
-			$cmd = "dvd_eject -t ".$this->getDevice();
+			$cmd = "dvd_eject -t ".$this->device;
 			passthru($cmd, $retval);
 
 			return $retval;
