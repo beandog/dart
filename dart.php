@@ -165,6 +165,7 @@
 			}
 		}
 
+
 		// Look for any conditions where we there is access to the device, but
 		// we need to skip over it because there is no media.  Also open the tray
 		// based on the wait switch that's passed.
@@ -176,42 +177,53 @@
 			$drive = new DVDDrive($device);
 			$drive->set_debug($debug);
 
+			// Poll the devices as few times as necessary to avoid hardware kernel
+			// complaints.  Set defaults.
+			$tray_open = false;
+			$tray_has_media = false;
+
+			// Check if drive is open.
+			$tray_open = $drive->is_open();
+
+			// Check if drive has media if it's closed
+			if(!$tray_open) {
+				$tray_has_media = $drive->has_media();
+			}
+
 			if($wait)
 				echo "* Wait for media requested by user\n";
 			else
 				echo "* No waiting requested\n";
 
-			// dvd_eject will decrypt the drive using libdvdcss.  Go ahead and do it here
-			// if the drive is already closed, to avoid hardware access issues.
-			if($drive->is_closed() && $drive->has_media())
-				$drive->close();
-
 			// If waiting and the drive is closed and has no media, go to the next device
-			if($wait && $drive->is_closed() && !$drive->has_media()) {
+			if($wait && !$tray_open && !$tray_has_media) {
 				echo "* Drive is closed, without media\n";
 				echo "* No media, so out we go!\n";
-				$drive->open();
+				$tray_open = $drive->open();
 				$access_device = false;
 			}
 
 			// If waiting, and the drive is open, move along to the next device
-			if($wait && $drive->is_open() && $access_device) {
+			if($wait && $tray_open && $access_device) {
 				echo "* Drive is open, skipping device\n";
 				$access_device = false;
 			}
 
 			// Close the tray if not waiting
-			if(!$wait && $drive->is_open() && !$open_trays && $access_device) {
+			if(!$wait && $tray_open && !$open_trays && $access_device) {
 
 				echo "* Drive is open, closing tray\n";
-				$drive->close();
+				if($drive->close())
+					$tray_open = false;
 
-				if($drive->has_media()) {
+				$tray_has_media = $drive->has_media();
+
+				if($tray_has_media) {
 					$access_drive = true;
 					echo "* Found a DVD, ready to nom!\n";
 				} else {
 					echo "* No media, so out we go!\n";
-					$drive->open();
+					$tray_open = $drive->open();
 					$access_device = false;
 				}
 
@@ -298,7 +310,7 @@
 
 			// If waiting and archiving, everything would have happened by now,
 			// so eject the drive and wait for another.
-			if($wait && $archive && $access_device && $drive->is_closed()) {
+			if($wait && $archive && $drive->is_closed()) {
 				echo "* Ready to archive next disc, opening tray!\n";
 				$drive->open();
 			}
