@@ -2,9 +2,9 @@
 
 	class DVDDrive {
 
-		private $device;
-		private $debug;
-		private $arr_drive_status;
+		public $device;
+		public $debug;
+		public $arr_drive_status;
 
 		function __construct($device = "/dev/dvd") {
 
@@ -20,6 +20,12 @@
 			$str = trim($str);
 			if(is_string($str))
 				$this->device = $str;
+		}
+
+		function getDevice() {
+
+			return $this->device;
+
 		}
 
 		function set_debug($bool = true) {
