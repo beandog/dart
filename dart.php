@@ -181,6 +181,11 @@
 			else
 				echo "* No waiting requested\n";
 
+			// dvd_eject will decrypt the drive using libdvdcss.  Go ahead and do it here
+			// if the drive is already closed, to avoid hardware access issues.
+			if($drive->is_closed() && $drive->has_media())
+				$drive->close();
+
 			// If waiting and the drive is closed and has no media, go to the next device
 			if($wait && $drive->is_closed() && !$drive->has_media()) {
 				echo "* Drive is closed, without media\n";
@@ -215,10 +220,6 @@
 		}
 
 		if($access_device) {
-
-			// Decrypt the CSS to avoid disc access errors
-			if($device_is_hardware)
-				$dvd->load_css();
 
 			echo "[DVD]\n";
 
