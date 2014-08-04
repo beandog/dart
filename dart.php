@@ -171,8 +171,10 @@
 		// based on the wait switch that's passed.
 		if($device_is_hardware && $access_device) {
 
-			echo "[Device Hardware]\n";
-			echo "* Drive $device\n";
+			if($debug) {
+				echo "[Device Hardware]\n";
+				echo "* Drive $device\n";
+			}
 
 			$drive = new DVDDrive($device);
 			$drive->set_debug($debug);
@@ -190,10 +192,12 @@
 				$tray_has_media = $drive->has_media();
 			}
 
-			if($wait)
-				echo "* Wait for media requested by user\n";
-			else
-				echo "* No waiting requested\n";
+			if($debug) {
+				if($wait)
+					echo "* Wait for media requested by user\n";
+				else
+					echo "* No waiting requested\n";
+			}
 
 			// If waiting and the drive is closed and has no media, go to the next device
 			if($wait && !$tray_open && !$tray_has_media) {
@@ -205,7 +209,8 @@
 
 			// If waiting, and the drive is open, move along to the next device
 			if($wait && $tray_open && $access_device) {
-				echo "* Drive is open, skipping device\n";
+				if($debug)
+					echo "* Drive is open, skipping device\n";
 				$access_device = false;
 			}
 
@@ -324,6 +329,12 @@
 			// the tray is closed manually.
 			if(count($devices) > 1) {
 				$device = toggle_device($devices, $device);
+
+				// If told to wait for media, take a small nap to avoid
+				// hitting the device so much.
+				if($wait) {
+					sleep(30);
+				}
 			}
 
 			if($debug)
