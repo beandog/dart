@@ -55,12 +55,14 @@ if($encode) {
 			// Build the Handbrake object
 			require 'dart.encode.x264.php';
 
+			$str = $handbrake->get_executable_string();
+			$tmpfile = tempnam(sys_get_temp_dir(), "encode");
+			file_put_contents($tmpfile, "$str\n");
+			echo "Command:\t$tmpfile\n";
+
 			if($dry_run) {
 
-				$str = $handbrake->get_executable_string();
-				$tmpfile = tempnam(sys_get_temp_dir(), "encode");
-				file_put_contents($tmpfile, "$str\n");
-				echo "Command:\t$tmpfile\n";
+				echo "\n$str\n";
 
 				goto goto_encode_next_episode;
 
