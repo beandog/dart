@@ -57,10 +57,11 @@ if($encode) {
 
 			if($dry_run) {
 
-				if($verbose) {
-					echo "* Handbrake command: ".$handbrake->get_executable_string()."\n";
-					echo "* Jumping to Matroska muxing\n";
-				}
+				$str = $handbrake->get_executable_string();
+				$tmpfile = tempnam(sys_get_temp_dir(), "encode");
+				file_put_contents($tmpfile, "$str\n");
+				echo "Command:\t$tmpfile\n";
+
 				goto goto_encode_next_episode;
 
 			}
