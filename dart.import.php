@@ -72,8 +72,10 @@
 		$dvd_num_tracks = $dvd->getNumTracks();
 
 		// FIXME jump to the next DVD
-		if(!count($dvd_num_tracks))
-			die("? No tracks? No good. Exiting\n");
+		if(!count($dvd_num_tracks)) {
+			echo "? No tracks? No good. Exiting\n";
+			goto next_device;
+		}
 
 		if($verbose) {
 			if($missing_dvd_metadata && !$import)
