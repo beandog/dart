@@ -281,10 +281,7 @@
 		}
 
 		/**
-		 * Get the disc file size using blockdev
-		 * The command returns the size in MB
-		 *
-		 * TODO: look at using PHP stat() instead of blockdev
+		 * Get the size of the filesystem on the device
 		 */
 		public function getSize($format = 'MB') {
 
@@ -294,12 +291,18 @@
 			$device = realpath($this->getDevice());
 
 			if($this->is_iso()) {
-				$exec = "stat -c %s ".escapeshellarg($device);
+				$stat = stat($device);
+				$b_size = $stat['size'];
 			} else {
-				$exec = "blockdev --getsize64 ".escapeshellarg($device)." 2> /dev/null";
+
+				$block_device = basename($device, "/dev/");
+				$num_sectors = file_get_contents("/sys/block/$block_device/size");
+				$b_size = $num_sectors * 512;
+
 			}
 
-			$b_size = current(command($exec));
+			if(!$b_size)
+				return 0;
 
 			$kb_size = $b_size / 1024;
 			$mb_size = intval($kb_size / 1024);
