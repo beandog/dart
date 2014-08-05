@@ -245,7 +245,8 @@
 			$display_filesize = number_format($device_filesize);
 			if(!$device_filesize) {
 				echo "* DVD size reported as zero! Aborting\n";
-				exit(1);
+				$access_device = false;
+				goto next_device;
 			}
 
 			echo "* Filesize:\t$display_filesize MB\n";
@@ -290,6 +291,10 @@
 		require 'dart.ifo.php';
 		require 'dart.iso.php';
 		require 'dart.rip.php';
+
+		// goto point for next device -- skip here for any reason that the initial
+		// dart calls failed to acess the DVD or device, and it needs to move on.
+		next_device:
 
 		// If archiving, everything would have happened by now,
 		// so eject the drive.
