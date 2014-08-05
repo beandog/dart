@@ -271,6 +271,10 @@
 			if(!$device_filesize) {
 				echo "* DVD size reported as zero! Aborting\n";
 				$access_device = false;
+
+				// This is a interruption to the workflow, so annoy the user
+				beep_error();
+
 				goto next_device;
 			}
 
