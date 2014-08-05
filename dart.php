@@ -253,9 +253,16 @@
 					$access_drive = true;
 					echo "* Found a DVD, ready to nom!\n";
 				} else {
-					echo "* No media, so out we go!\n";
+					echo "* Expected media, didn't find any!?\n";
 					$tray_open = $drive->open();
 					$access_device = false;
+
+					// This is *possibly* a case where the DVD drive is closed,
+					// with media physically present, but the drive doesn't see
+					// it for whatever reason.  If that's the case, alert the
+					// user to the anomaly.
+					beep_error();
+
 				}
 
 			}
