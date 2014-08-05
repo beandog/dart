@@ -255,32 +255,13 @@
 			echo "* Title:\t".$dvd->getTitle()."\n";
 			echo "* Disc ID:\t$dvdread_id\n";
 
-			// Get the serial ID for the disc
-			$serial_id = $dvd->getSerialID();
-			echo "* Serial ID:\t$serial_id\n";
-
 			// Lookup the database dvds.id
 			echo "[Database]\n";
 			$dvds_model_id = $dvds_model->find_id('dvdread_id', $dvdread_id);
 
-			// Use the serial ID as a unique identifer as well
-			if($device_is_iso && !$dvds_model_id) {
-
-				echo "* Lookup on serial ID and disc title: ";
-
-				$tmp_dvds_model = new Dvds_Model;
-				$find_serial_id = $tmp_dvds_model->find_id('serial_id', $serial_id);
-
-				if(!$find_serial_id)
-					echo "none found; marking as new disc\n";
-				else {
-					$dvds_model->load($find_serial_id);
-					if($dvd->getTitle() == $tmp_dvds_model->title) {
-						echo "match found\n";
-						$dvds_model_id = $find_serial_id;
-						unset($tmp_dvds_model);
-					}
-				}
+			// Found a new disc if it's not in the database!
+			if(!$dvds_model_id) {
+				echo "* DVD not found, ready to import!";
 			}
 
 			if($dvds_model_id) {
