@@ -55,7 +55,7 @@
 		}
 		if($missing_dvd_metadata || !$disc_indexed) {
 			$dvd_filesize = $dvd->getSize();
-			echo "* DVD filesize: $dvd_filesize\n";
+			echo "* DVD filesize: ".number_format($dvd_filesize)." MB\n";
 			$dvds_model->filesize = $dvd_filesize;
 		}
 		if(!$dvds_model->serial_id) {
