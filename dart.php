@@ -89,6 +89,8 @@
 
 	$arr_queue_status = array('ready', 'in progress', 'passed', 'failed');
 
+	$num_encoded = 0;
+
 	foreach($devices as $device) {
 
 		start:
@@ -164,7 +166,6 @@
 					echo "* Reading $device_realpath\n";
 			}
 		}
-
 
 		// Look for any conditions where we there is access to the device, but
 		// we need to skip over it because there is no media.  Also open the tray

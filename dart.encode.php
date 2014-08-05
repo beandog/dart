@@ -10,8 +10,6 @@ if($encode) {
 
 	$queue_model = new Queue_Model;
 
-	$num_encoded = 0;
-
 	echo "[Encode]\n";
 
 	$queue_episodes = $queue_model->get_episodes($hostname, $skip, $max);
@@ -173,16 +171,15 @@ if($encode) {
 
 			}
 
+
 			// Goto point: jump to the next episode
 			goto_encode_next_episode:
 
-			$skip++;
 			$num_encoded++;
+			$skip++;
 
 			// Refresh the queue
 			$queue_episodes = $queue_model->get_episodes($hostname, $skip);
-
-			$count = count($queue_episodes);
 
 		}
 
