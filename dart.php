@@ -200,8 +200,33 @@
 					echo "* No waiting requested\n";
 			}
 
+			/**
+			 * Writing all these logic checks independently makes it so my head
+			 * doesn't hurt while trying to parse multiple conditions.  However, each
+			 * conditional check needs to see if access to the device is disabled at
+			 * that point, since it's the one variable that is changed by the previous
+			 * checks.
+			 */
+
+			// What happens in a scenario where the user passes a command (rip, info,
+			// iso, etc. but there is no media in the tray.  Should the program assume
+			// that the user wants to put something in there, and so it opens up?  Or
+			// should it only quietly continue and ignore the device?  I'm going to go
+			// with the assumption for now that if dart is specifically told to access
+			// *this device*, then it is intended to have media in it.  If there's none
+			// in there, do the courtesy of opening the tray so that the user doesn't
+			// have to eject it manually.  A possible option is also to check for the
+			// --open option given, and only eject the tray in that case.
+			if(!$wait && !$tray_open && !$tray_has_media && $access_device) {
+
+				// The device was included in the main program call, so eject
+				// the tray if there is no media in there.
+				$drive->open();
+				$access_device = false;
+			}
+
 			// If waiting and the drive is closed and has no media, go to the next device
-			if($wait && !$tray_open && !$tray_has_media) {
+			if($wait && !$tray_open && !$tray_has_media && $access_device) {
 				echo "* Drive is closed, without media\n";
 				echo "* No media, so out we go!\n";
 				$tray_open = $drive->open();
