@@ -12,8 +12,22 @@
 		echo "* Archive:\tNo legacy metadata! :D\n";
 	}
 
+	// Some conditions apply where importing may be skipped.
+
+	// Set this to say if we *can* import it, if requested
+	$allow_import = false;
+
+	if($import || !$disc_indexed || $missing_dvd_metadata)
+		$allow_import = true;
+
+	// If only creating the ISO is requested, then skip import.  This is
+	// common when there are problems accessing the DVD, and import is
+	// expected to fail.
+	if($dump_iso && (!$import && !$archive))
+		$allow_import = false;
+
 	// Start import
-	if($access_device && ($import || !$disc_indexed || $missing_dvd_metadata)) {
+	if($access_device && $allow_import) {
 
 		$dvdread_id = $dvd->getID();
 
