@@ -175,7 +175,6 @@
 
 			$audio_streams = $dvd_track->getAudioStreams();
 
-			// FIXME do something if there are no audio streams
 			if($debug)
 				echo "! Track $track_number has ".count($audio_streams)." audio streams\n";
 
