@@ -89,7 +89,7 @@
 
 		public function get_tags() {
 
-			$sql = "SELECT tg.name FROM tracks INNER JOIN tags_tracks tt ON t.id = tt.track_id INNER JOIN tags tg ON tt.tag_id WHERE t.id = ".$this->db->quote($this->id).";";
+			$sql = "SELECT tg.name FROM tracks t INNER JOIN tags_tracks tt ON t.id = tt.track_id INNER JOIN tags tg ON tt.tag_id = tg.id WHERE t.id = ".$this->db->quote($this->id).";";
 			$arr = $this->db->getCol($sql);
 
 			return $arr;
