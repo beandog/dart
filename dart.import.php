@@ -115,6 +115,9 @@
 
 			}
 
+			// Check the database to see if any tags / anomalies are reported
+			$arr_tags = $tracks_model->get_tags();
+
 			// Track length has been through a lot of revisions, always update
 			// it if the missing DVD metadata flag is set.
 			if($missing_dvd_metadata || $import || is_null($tracks_model->length))
@@ -150,17 +153,24 @@
 			if(is_null($tracks_model->angles))
 				$tracks_model->angles = $dvd_track->getAngles();
 
-			if(is_null($tracks_model->closed_captioning)) {
+			// Handbrake (0.9.9) sometimes fails to scan DVDs with certain tracks.
+			// If that's the case, skip over them.
+			if(in_array('track_no_handbrake_scan', $arr_tags)) {
+				// Default to false, so we don't depend on it.
+				$tracks_model->closed_captioning = 'f';
+			} else {
+				if(is_null($tracks_model->closed_captioning)) {
 
-				$handbrake = new Handbrake;
-				$handbrake->input_filename($device);
-				$handbrake->input_track($track_number);
+					$handbrake = new Handbrake;
+					$handbrake->input_filename($device);
+					$handbrake->input_track($track_number);
 
-				if($handbrake->has_closed_captioning())
-					$tracks_model->closed_captioning = 't';
-				else
-					$tracks_model->closed_captioning = 'f';
+					if($handbrake->has_closed_captioning())
+						$tracks_model->closed_captioning = 't';
+					else
+						$tracks_model->closed_captioning = 'f';
 
+				}
 			}
 
 			// Get lsdvd XML to pass to sub-classes
