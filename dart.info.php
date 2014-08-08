@@ -3,8 +3,7 @@
 	// Display info about disc
 	if($info) {
 
-		if($verbose)
-			echo "[Info]\n";
+		echo "[Info]\n";
 
 		$dvd_episodes = $dvds_model->get_episodes();
 

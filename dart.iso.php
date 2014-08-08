@@ -10,8 +10,7 @@
 	if($access_device && $dvds_model_id && $dump_iso) {
 
 		/** ISO Information **/
-		if($verbose)
-			echo "[ISO]\n";
+		echo "[ISO]\n";
 
 		// Get the collection ID to prefix the filename
 		// of the ISO, for easy indexing by cartoons, movies, etc.
@@ -50,8 +49,7 @@
 		$target_iso = $media_iso->get_isos_dir().$target_iso;
 
 		$display_iso = basename($target_iso);
-		if($verbose)
-			echo "* Filename: $display_iso\n";
+		echo "* Filename: $display_iso\n";
 
 		/** Filename and filesystem operations **/
 
@@ -67,8 +65,7 @@
 			// are trying to dump it, and the output filename
 			// already exists, just eject the drive.
 			if($target_iso_exists && $dump_iso && $access_drive) {
-				if($verbose)
-					echo "* File exists, ejecting drive\n";
+				echo "* File exists, ejecting drive\n";
 				$drive->open();
 			}
 
@@ -77,9 +74,7 @@
 
 				$tmpfname = $target_iso.".dd";
 
-				if($verbose) {
-					echo "* Dumping $device to ISO ... ";
-				}
+				echo "* Dumping $device to ISO ... ";
 				$success = $dvd->dump_iso($tmpfname);
 
 				if(filesize($tmpfname)) {

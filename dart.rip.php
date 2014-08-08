@@ -11,8 +11,7 @@
 
 		$queue_model = new Queue_Model;
 
-		if($verbose)
-			echo "[Rip]\n";
+		echo "[Rip]\n";
 
 		$dvd_episodes = $dvds_model->get_episodes();
 

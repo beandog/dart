@@ -10,7 +10,6 @@
 					$tmpfname = tempnam(dirname($episode_filename), "vob.$episode_id.");
 					$dvdtrack = new DvdTrack($track_number, $iso);
 					$dvdtrack->getNumAudioTracks();
-					$dvdtrack->setVerbose($verbose);
 					$dvdtrack->setDebug($debug);
 					$dvdtrack->setBasename($tmpfname);
 					$dvdtrack->setStartingChapter($episode_starting_chapter);

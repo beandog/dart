@@ -22,8 +22,7 @@
 		// Create a new database record for the DVD
 		if(!$disc_indexed) {
 
-			if($verbose)
-				echo "[Import]\n";
+			echo "[Import]\n";
 
 			$dvds_model_id = $dvds_model->create_new();
 
@@ -34,9 +33,8 @@
 
 		} elseif($disc_indexed && $missing_dvd_metadata) {
 
-			if($verbose)
-				echo "[Metadata]\n";
-				echo "* Updating legacy metadata\n";
+			echo "[Metadata]\n";
+			echo "* Updating legacy metadata\n";
 		}
 
 		if(!$dvds_model->dvdread_id) {
@@ -83,19 +81,16 @@
 			exit(1);
 		}
 
-		if($verbose) {
-			if($missing_dvd_metadata && !$import)
-				echo "* Updating DVD track metadata: ";
-			elseif($archive)
-				echo "* Checking tracks for full archival: ";
-			elseif($import)
-				echo "* Importing $dvd_num_tracks tracks: ";
-		}
+		if($missing_dvd_metadata && !$import)
+			echo "* Updating DVD track metadata: ";
+		elseif($archive)
+			echo "* Checking tracks for full archival: ";
+		elseif($import)
+			echo "* Importing $dvd_num_tracks tracks: ";
 
 		for($track_number = 1; $track_number <= $dvd_num_tracks; $track_number++) {
 
-			if($verbose)
-				echo "$track_number ";
+			echo "$track_number ";
 
 			$dvd_track = new DVDTrack($track_number, $device);
 
@@ -355,10 +350,9 @@
 		}
 
 		// Close off the newline that the track count was displaying
-		if($verbose)
-			echo "\n";
+		echo "\n";
 
-		if($verbose && $import) {
+		if($import) {
 			echo "* New DVD imported! Yay! :D\n";
 		}
 

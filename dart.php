@@ -46,13 +46,6 @@
 
 	// Parser allows multiple levels of verbosity
 
-	// FIXME setting verbose to 1 here because I'm
-	// used to the code spitting out the output as normal.
-	// Need to review all the code and change verbosity checks
-	// if they are too much.
-	if(!$verbose)
-		$verbose = 1;
-
 	if($debug)
 		$verbose = 10;
 

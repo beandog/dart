@@ -10,8 +10,7 @@
 	if($dump_ifo && $access_device && $dvds_model_id) {
 
 		/** IFO Information **/
-		if($verbose)
-			echo "[IFO]\n";
+		echo "[IFO]\n";
 
 		// Get the collection ID to prefix the directory filename
 		// of the DVD, for easy indexing by cartoons, movies, etc.
@@ -43,10 +42,10 @@
 			$target_ifo_dir .= ".".$dvds_model->title;
 
 		$display_ifo = basename($target_ifo_dir);
-		if($verbose && !$debug)
-			echo "* Directory: $display_ifo\n";
 		if($debug)
 			echo "* Directory: $target_ifo_dir\n";
+		else
+			echo "* Directory: $display_ifo\n";
 
 		$target_video_ts_dir = $target_ifo_dir.'/VIDEO_TS';
 
@@ -62,17 +61,14 @@
 				mkdir($target_ifo_dir);
 			$success = $dvd->dump_ifo($target_ifo_dir);
 
-			if($verbose) {
-				if($success)
-					echo "* Backed up IFOs\n";
-				else
-					echo "* Failed :(\n";
-			}
+			if($success)
+				echo "* Backed up IFOs\n";
+			else
+				echo "* Failed :(\n";
 
 		} else  {
 
-			if($verbose)
-				echo "* IFO directory exists, skipping backup\n";
+			echo "* IFO directory exists, skipping backup\n";
 
 		}
 
