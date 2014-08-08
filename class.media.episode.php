@@ -298,8 +298,11 @@
 				unlink($this->queue_matroska_xml);
 			if(file_exists($this->queue_matroska_mkv))
 				unlink($this->queue_matroska_mkv);
-			if(is_dir($this->queue_dir))
-				rmdir($this->queue_dir);
+			if(is_dir($this->queue_dir)) {
+				// Only remove directory if it's empty
+				if(count(scandir($this->queue_dir)) == 2)
+					rmdir($this->queue_dir);
+			}
 
 		}
 
