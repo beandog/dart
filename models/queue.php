@@ -38,9 +38,7 @@
 			if($max > 0)
 				$sql .= " LIMIT $max";
 
-			// FIXME This order comes out kind of random.  I realize
-			// its simply ordering by insert date, generally, but still .. it's odd.
-			$sql = "SELECT episode_id FROM ".$this->table." WHERE hostname = ".$this->db->quote($hostname)." ORDER BY priority, insert_date $sql;";
+			$sql = "SELECT episode_id FROM ".$this->table." WHERE hostname = ".$this->db->quote($hostname)." ORDER BY priority, id;";
 
  			$arr = $this->db->getCol($sql);
 
