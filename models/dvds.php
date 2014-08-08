@@ -100,5 +100,21 @@
 			return $var;
 		}
 
+		public function find_dvdread_id($dvdread_id) {
+
+			$dvdread_id = trim($dvdread_id);
+
+			$sql = "SELECT id FROM dvds WHERE dvdread_id = ".$this->db->quote($dvdread_id).";";
+			$var = $this->db->getOne($sql);
+
+			if($var)
+				$var = intval($var);
+			else
+				$var = null;
+
+			return $var;
+
+		}
+
 	}
 ?>
