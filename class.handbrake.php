@@ -372,27 +372,12 @@
 			// Add audio tracks
 			if($this->audio) {
 
+				// Select audio streams to encode.  If none are specified,
+				// just use the first one.
 				if(count($this->audio_tracks)) {
 					$str = implode(",", $this->audio_tracks);
 					$args['--audio'] = $str;
 				} elseif(count($this->audio_streams)) {
-
-					// FIXME temporary?
-					// Hit a bug on a DVD where lsdvd reported
-					// 8 English audio tracks, but Handbrake
-					// correctly said there is only one.
-					// So, in this case, there are audio streams
-					// so encoding the first one will work, it's
-					// just that none were passed in.
-
-					// This is an obvious workaround to the lsdvd
-					// bug.  The correct approach would be to sync
-					// up the output of lsdvd's report and handbrake's
-					// scan.
-					$args['--audio'] = 1;
-				} else {
-					// If there's no audio tracks or streams, use the first one, and
-					// let Handbrake
 					$args['--audio'] = 1;
 				}
 
