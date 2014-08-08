@@ -53,21 +53,8 @@
 
 			}
 
-			// See if you can find it
-			// Cheap hack that should never be used outside of the home
-			// FIXME
-			elseif($function_call === "find" && strlen($function_value) && count($args)) {
-
-				$orderby = 'id';
-
-				if(!empty($args[2]))
-					$orderby = $args[2];
-
-				$sql = "SELECT id FROM ".$this->table." WHERE ".$args[0]." = ".$this->db->quote($args[1])." ORDER BY $orderby;";
-
-				return $this->id = $this->db->getOne($sql);
-
-			}
+			else
+				return null;
 
 		}
 
