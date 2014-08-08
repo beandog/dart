@@ -287,7 +287,7 @@
 
 			// Lookup the database dvds.id
 			echo "[Database]\n";
-			$dvds_model_id = $dvds_model->find_dvdread_id('dvdread_id', $dvdread_id);
+			$dvds_model_id = $dvds_model->find_dvdread_id($dvdread_id);
 
 			// Found a new disc if it's not in the database!
 			if(!$dvds_model_id) {
