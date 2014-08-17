@@ -361,6 +361,8 @@
 			}
 
 			// Set x264 encoding options
+			// This should always be set last, since it can
+			// override both the preset and tune options.
 			if(count($this->x264)) {
 				$args['--encopts'] = $this->get_x264opts();
 			}
