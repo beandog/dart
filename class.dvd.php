@@ -135,12 +135,6 @@
 			return $str;
 		}
 
-		public function getID() {
-			if(!$this->id)
-				$this->disc_id();
-			return $this->id;
-		}
-
 		public function getSerialID() {
 			if(!$this->serial_id)
 				$this->serial_id();

@@ -281,9 +281,9 @@
 			echo "* Filesize:\t$display_filesize MB\n";
 
 			// Get the uniq ID for the disc
-			$dvdread_id = $dvd->getID();
+			$dvdread_id = $dvd->dvdread_id();
 			echo "* Title:\t".$dvd->getTitle()."\n";
-			echo "* Disc ID:\t$dvdread_id\n";
+			echo "* dvdread id:\t$dvdread_id\n";
 
 			// Lookup the database dvds.id
 			echo "[Database]\n";

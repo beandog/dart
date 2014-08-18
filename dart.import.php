@@ -29,7 +29,7 @@
 	// Start import
 	if($access_device && $allow_import) {
 
-		$dvdread_id = $dvd->getID();
+		$dvdread_id = $dvd->dvdread_id();
 
 		echo "* Title: ".$dvd->getTitle()."\n";
 
