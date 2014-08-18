@@ -313,7 +313,7 @@
 
 		public function getProviderID() {
 
-			$provider_id = $this->dvd_info['dvd']['provider id'];
+			$provider_id = $this->dvd_info_json['dvd']['provider id'];
 
 			$provider_id = trim($provider_id);
 
