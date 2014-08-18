@@ -7,12 +7,10 @@
 		private $lsdvd;
 		private $id;
 		private $serial_id;
-		private $provider_id;
 		private $is_iso;
 		private $sxe;
 		private $debug;
 		private $num_tracks = 0;
-
 
 		function __construct($device = "/dev/dvd") {
 
@@ -165,8 +163,6 @@
 
 				$this->setLongestTrack((int)$this->sxe->longest_track);
 
-				$this->provider_id = (string)$this->sxe->provider_id;
-
 				foreach($this->sxe->track as $track) {
 					$this->num_tracks++;
 				}
@@ -317,10 +313,11 @@
 
 		public function getProviderID() {
 
-			if(!$this->sxe)
-				$this->lsdvd();
+			$provider_id = $this->dvd_info['dvd']['provider id'];
 
-			return $this->provider_id;
+			$provider_id = trim($provider_id);
+
+			return $provider_id;
 
 		}
 
