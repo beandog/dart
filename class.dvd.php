@@ -3,6 +3,7 @@
 	class DVD {
 
 		private $device;
+		private $dvd_info_json;
 		private $lsdvd;
 		private $id;
 		private $serial_id;
@@ -12,9 +13,15 @@
 		private $debug;
 		private $num_tracks = 0;
 
+
 		function __construct($device = "/dev/dvd") {
 
 			$this->setDevice($device);
+
+			// Run dvd_info first and return if it passes or not
+			$bool = $this->dvd_info();
+
+			return $bool;
 
 		}
 
@@ -53,6 +60,34 @@
 			return $this->is_iso;
 		}
 
+		private function dvd_info() {
+
+			$command = "dvd_info --json ".escapeshellarg($this->getDevice());
+
+			if($this->debug)
+				echo "! dvd_info(): $command\n";
+
+			exec("dvd_info --json ".escapeshellarg($this->getDevice()), $arr, $retval);
+			$output = implode('', $arr);
+
+			if($retval !== 0 || !count($arr))
+				return false;
+
+			// Create an assoc. array
+			$json = json_decode($output, true);
+
+			if(is_null($json)) {
+				if($this->debug)
+					echo "! dvd_info(): json_decode() failed\n";
+				return false;
+			}
+
+			$this->dvd_info_json = $json;
+
+			return true;
+
+		}
+
 		/** Metadata **/
 
 		// Use disc_id binary from libdvdread
@@ -65,6 +100,21 @@
 			$var = current($arr);
 			if(strlen($var) == 32)
 				$this->id = $var;
+		}
+
+		// Use dvd_info to get dvdread id
+		public function dvdread_id() {
+
+			if($this->debug)
+				echo "! dvd->dvdread_id()\n";
+
+			$dvdread_id = $this->dvd_info_json['dvd']['dvdread id'];
+
+			if(strlen($dvdread_id) != 32)
+				return false;
+
+			return $dvdread_id;
+
 		}
 
 		// Use serial number from HandBrake 0.9.9
