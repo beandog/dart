@@ -776,12 +776,21 @@
 				$flags[] = "-chapter $starting_chapter-$ending_chapter";
 			}
 
-			$str = "mencoder ".implode(' ', $flags);
+			$command = "mencoder ".implode(' ', $flags);
 
 			if($this->debug)
-				echo "Executing: $str\n";
+				echo "! dumpSubtitles(): $command\n";
 
- 			command($str, !$this->debug);
+			exec($command, $output, $retval);
+
+			if($retval !== 0) {
+				if($this->debug)
+					echo "! dumpSubtitles() FAILED\n";
+				return false;
+			}
+
+			return true;
+
 		}
 
 		function dumpChapters() {
