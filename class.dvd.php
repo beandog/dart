@@ -51,23 +51,25 @@
 
 		private function dvd_info() {
 
-			$command = "dvd_info --json ".escapeshellarg($this->device);
+			$cmd = "dvd_info --json ".escapeshellarg($this->device)." 2> /dev/null";
 
 			if($this->debug)
-				echo "! dvd_info(): $command\n";
+				echo "! dvd_info(): $cmd\n";
 
-			exec("dvd_info --json ".escapeshellarg($this->device), $arr, $retval);
-			$output = implode('', $arr);
+			exec($cmd, $output, $retval);
 
-			if($retval !== 0 || !count($arr))
+			if($retval !== 0 || !count($output)) {
+				echo "! dvd_info(): FAILED\n";
 				return false;
+			}
+
+			$str = implode('', $output);
 
 			// Create an assoc. array
-			$json = json_decode($output, true);
+			$json = json_decode($str, true);
 
 			if(is_null($json)) {
-				if($this->debug)
-					echo "! dvd_info(): json_decode() failed\n";
+				echo "! dvd_info(): json_decode() failed\n";
 				return false;
 			}
 
@@ -140,9 +142,20 @@
 				echo "! dvd->lsdvd()\n";
 
 			if(empty($this->lsdvd['output']) || $force) {
-				$str = "lsdvd -Ox -v -a -s -c ".escapeshellarg($this->device);
-				$arr = command($str);
-				$str = implode("\n", $arr);
+
+				$cmd = "lsdvd -Ox -v -a -s -c ".escapeshellarg($this->device)." 2> /dev/null";
+
+				if($this->debug)
+					echo "! lsdvd(): $cmd\n";
+
+				exec($cmd, $output, $retval);
+
+				if($retval !== 0) {
+					echo "! lsdvd() FAILED\n";
+					return false;
+				}
+
+				$str = implode("\n", $output);
 
 				// Fix broken encoding on langcodes, standardize output
 				$str = str_replace('Pan&Scan', 'Pan&amp;Scan', $str);
@@ -154,9 +167,7 @@
 				$this->sxe = simplexml_load_string($str);
 
 				if($this->sxe === false) {
- 					if($this->debug) {
-						echo "! lsdvd(): Couldn't parse lsdvd XML output\n";
-					}
+					echo "! lsdvd(): Couldn't parse lsdvd XML output\n";
 					return false;
 				}
 
@@ -187,8 +198,8 @@
 				if(file_exists($logfile))
 					unlink($logfile);
 
-				$command = "ddrescue -b 2048 -n ".escapeshellarg($this->device)." ".escapeshellarg($dest)." ".escapeshellarg($logfile);
-				passthru($command, $return);
+				$cmd = "ddrescue -b 2048 -n ".escapeshellarg($this->device)." ".escapeshellarg($dest)." ".escapeshellarg($logfile);
+				passthru($cmd, $return);
 
 				$return = intval($return);
 
