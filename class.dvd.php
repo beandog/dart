@@ -174,12 +174,12 @@
 			// arguments for DVDs.
 			if($method == 'ddrescue') {
 
-				$logfile = getenv('HOME')."/.ddrescue/".$this->getID().".log";
+				$logfile = getenv('HOME')."/.ddrescue/".$this->dvdread_id().".log";
 
 				if(file_exists($logfile))
 					unlink($logfile);
 
-				$command = "ddrescue -b 2048 -n ".escapeshellarg($this->device)." $dest $logfile";
+				$command = "ddrescue -b 2048 -n ".escapeshellarg($this->device)." ".escapeshellarg($dest)." ".escapeshellarg($logfile);
 				passthru($command, $return);
 
 				$return = intval($return);
@@ -191,7 +191,7 @@
 				}
 
 			} elseif($method == 'pv') {
-				$exec = "pv -pter -w 80 ".escapeshellarg($this->device)." | dd of=$dest 2> /dev/null";
+				$exec = "pv -pter -w 80 ".escapeshellarg($this->device)." | dd of=".escapeshellarg($dest)." 2> /dev/null";
 				$exec .= '; echo ${PIPESTATUS[*]}';
 
 				exec($exec, $arr);
