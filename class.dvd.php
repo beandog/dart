@@ -151,10 +151,18 @@
 
 				$this->xml = $str;
 
-				$this->sxe = simplexml_load_string($str) or die("Couldn't parse lsdvd XML output");
+				$this->sxe = simplexml_load_string($str);
 
+				if($this->sxe === false) {
+ 					if($this->debug) {
+						echo "! lsdvd(): Couldn't parse lsdvd XML output\n";
+					}
+					return false;
+				}
 
 			}
+
+			return true;
 
 		}
 
