@@ -195,7 +195,6 @@
 				$startcell = (int)$obj->startcell;
 				$this->chapters[$chapter_number] = array(
 					'length' => $length,
-// 						'name' => "",
 					'ix' => $ix,
 					'startcell' => $startcell,
 				);
