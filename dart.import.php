@@ -72,11 +72,6 @@
 			echo "* DVD filesize: $d_dvd_filesize MB\n";
 			$dvds_model->filesize = $dvd_filesize;
 		}
-		if(!$dvds_model->serial_id) {
-			$dvd_serial_id = $dvd->getSerialID();
-			echo "* serial id: $dvd_serial_id\n";
-			$dvds_model->serial_id = $dvd_serial_id;
-		}
 
 		// Flag it as indexed
 		$disc_indexed = true;
