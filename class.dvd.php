@@ -42,10 +42,6 @@
 
 		/** Hardware **/
 
-		function is_iso() {
-			return $this->is_iso;
-		}
-
 		private function dvd_info() {
 
 			$cmd = "dvd_info --json ".escapeshellarg($this->device)." 2> /dev/null";
@@ -342,7 +338,7 @@
 			if($this->debug)
 				echo "! dvd->getSize($format)\n";
 
-			if($this->is_iso()) {
+			if($this->is_iso) {
 				$stat = stat($this->device);
 				$b_size = $stat['size'];
 			} else {
