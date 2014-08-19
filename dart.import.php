@@ -106,12 +106,6 @@
 			echo "$track_number ";
 
 			$dvd_track = new DVDTrack($device, $track_number);
-			if(!$dvd_track->opened) {
-				echo "\n";
-				echo "! Opening $device track number $track_number FAILED\n";
-				$track_number++;
-				goto next_track;
-			}
 
 			// Lookup the database tracks.id
 			$tracks_model = new Tracks_Model;
@@ -132,6 +126,18 @@
 
 				$tracks_model->load($tracks_model_id);
 
+			}
+
+			// Handle broken tracks! :D
+			if(!$dvd_track->opened) {
+				echo "\n";
+				echo "! Opening $device track number $track_number FAILED\n";
+				$track_number++;
+
+				// Tag the track as broken in the database
+				$tracks_model->tag_track('track_open_fail');
+
+				goto next_track;
 			}
 
 			// Check the database to see if any tags / anomalies are reported
