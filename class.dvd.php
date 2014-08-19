@@ -161,8 +161,6 @@
 				// Use fread() instead
 				// $this->setTitle((string)$this->sxe->title);
 
-				$this->setLongestTrack((int)$this->sxe->longest_track);
-
 				foreach($this->sxe->track as $track) {
 					$this->num_tracks++;
 				}
@@ -300,15 +298,42 @@
 			return $this->num_tracks;
 		}
 
-		private function setLongestTrack($int) {
-			$this->longest_track = $int;
-		}
-
 		public function getLongestTrack() {
-			if(!$this->sxe)
-				$this->lsdvd();
 
-			return $this->longest_track;
+			// First make sure we can get tracks
+			if(!array_key_exists('tracks', $this->dvd_info_json)) {
+
+				if($this->debug) {
+					echo "! getLongestTrack(): DVD has no tracks!!!  This is bad.\n";
+				}
+
+				return null;
+
+			}
+
+			// Loop through all the lengths of the tracks, and set the one
+			// with the longest amount of msecs to the longest.  If a following
+			// one has equal length than an earlier one, then default to the first
+			// one with that maximum length.
+
+			$tracks =& $this->dvd_info_json['tracks'];
+
+			$longest_track = 1;
+			$longest_track_msecs = 0;
+
+			foreach($tracks as $arr) {
+
+				if($arr['msecs'] > $longest_track_msecs) {
+
+					$longest_track = $arr['ix'];
+					$longest_track_msecs = $arr['msecs'];
+
+				}
+
+			}
+
+			return $longest_track;
+
 		}
 
 		public function getProviderID() {
