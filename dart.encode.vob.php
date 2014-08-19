@@ -8,9 +8,8 @@
 				if(!file_exists($vob)) {
 
 					$tmpfname = tempnam(dirname($episode_filename), "vob.$episode_id.");
-					$dvdtrack = new DvdTrack($track_number, $iso);
+					$dvdtrack = new DvdTrack($track_number, $iso, $debug);
 					$dvdtrack->getNumAudioTracks();
-					$dvdtrack->setDebug($debug);
 					$dvdtrack->setBasename($tmpfname);
 					$dvdtrack->setStartingChapter($episode_starting_chapter);
 					$dvdtrack->setEndingChapter($episode_ending_chapter);
