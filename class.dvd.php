@@ -42,12 +42,9 @@
 
 		}
 
-		function getDevice($escape = false) {
+		function getDevice() {
 
 			$str = $this->device;
-
-			if($escape)
-				$str = escapeshellarg($str);
 
 			return $str;
 		}
@@ -159,7 +156,7 @@
 				echo "! dvd->lsdvd()\n";
 
 			if(empty($this->lsdvd['output']) || $force) {
-				$str = "lsdvd -Ox -v -a -s -c ".$this->getDevice(true);
+				$str = "lsdvd -Ox -v -a -s -c ".escapeshellarg($this->getDevice());
 				$arr = command($str);
 				$str = implode("\n", $arr);
 
