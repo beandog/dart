@@ -104,129 +104,129 @@
 		/** Metadata **/
 		private function lsdvd() {
 
-			if(is_null($this->xml)) {
+			$command = "lsdvd -Ox -v -a -s -c -x -t ".$this->track." ".escapeshellarg($this->device)." 2> /dev/null";
 
-				$command = "lsdvd -Ox -v -a -s -c -x -t ".$this->track." ".escapeshellarg($this->device)." 2> /dev/null";
+			if($this->debug)
+				echo "! lsdvd(): $command\n";
 
+			exec($command, $output, $retval);
+
+			if($retval !== 0) {
 				if($this->debug)
-					echo "! lsdvd(): $command\n";
-
-				exec($command, $output, $retval);
-
-				if($retval !== 0) {
-					if($this->debug)
-						echo "! lsdvd() FAILED\n";
-					return false;
-				}
-
-				$str = implode("\n", $output);
-
-				// Fix broken encoding on langcodes, standardize output
-				$str = str_replace('Pan&Scan', 'Pan&amp;Scan', $str);
-				$str = str_replace('P&S', 'P&amp;S', $str);
-				$str = preg_replace("/\<langcode\>\W+\<\/langcode\>/", "<langcode>und</langcode>", $str);
-
-				$this->xml = $str;
+					echo "! lsdvd() FAILED\n";
+				return false;
 			}
 
-			if(is_null($this->sxe)) {
+			$str = implode("\n", $output);
 
-				$this->sxe = simplexml_load_string($str) or die("Couldn't parse lsdvd XML output");
+			// Fix broken encoding on langcodes, standardize output
+			$str = str_replace('Pan&Scan', 'Pan&amp;Scan', $str);
+			$str = str_replace('P&S', 'P&amp;S', $str);
+			$str = preg_replace("/\<langcode\>\W+\<\/langcode\>/", "<langcode>und</langcode>", $str);
 
-				$this->ix = (int)$this->sxe->track->ix;
-				$this->length = (float)$this->sxe->track->length;
-				$this->vts_id = (string)$this->sxe->track->vts_id;
-				$this->vts = (int)$this->sxe->track->vts;
-				$this->ttn = (int)$this->sxe->track->ttn;
-				$this->fps = (float)$this->sxe->track->fps;
-				$this->format = $this->video_format = (string)$this->sxe->track->format;
-				$this->aspect = $this->aspect_ratio = (string)$this->sxe->track->aspect;
-				$this->width = (int)$this->sxe->track->width;
-				$this->height = (int)$this->sxe->track->height;
-				$this->df = (string)$this->sxe->track->df;
-				$this->angles = (int)$this->sxe->track->angles;
+			$this->xml = $str;
 
-				// Audio Tracks
-				$this->audio_streams = array();
+			$this->sxe = simplexml_load_string($str);
 
-				foreach($this->sxe->track->audio as $audio) {
-					$this->num_audio_tracks++;
-
-					$this->audio_streams[] = (string)$audio->streamid;
-
-					// Get the AID
- 					$aid = end(explode("x", (string)$audio->streamid)) + 48;
-
-					$this->audio[(int)$audio->ix] = array(
-						'langcode' => (string)$audio->langcode,
-						'language' => (string)$audio->language,
-						'format' => (string)$audio->format,
-						'channels' => (int)$audio->channels,
-						'stream_id' => (string)$audio->streamid,
-						'aid' => $aid,
-					);
+			if($this->sxe === false) {
+				if($this->debug) {
+					echo "! lsdvd(): Creating a SimpleXML object FAILED\n";
 				}
+				return false;
+			}
 
-				// Subtitles
-				$this->subtitle_streams = array();
+			$this->ix = (int)$this->sxe->track->ix;
+			$this->length = (float)$this->sxe->track->length;
+			$this->vts_id = (string)$this->sxe->track->vts_id;
+			$this->vts = (int)$this->sxe->track->vts;
+			$this->ttn = (int)$this->sxe->track->ttn;
+			$this->fps = (float)$this->sxe->track->fps;
+			$this->format = $this->video_format = (string)$this->sxe->track->format;
+			$this->aspect = $this->aspect_ratio = (string)$this->sxe->track->aspect;
+			$this->width = (int)$this->sxe->track->width;
+			$this->height = (int)$this->sxe->track->height;
+			$this->df = (string)$this->sxe->track->df;
+			$this->angles = (int)$this->sxe->track->angles;
 
-				foreach($this->sxe->track->subp as $subp) {
+			// Audio Tracks
+			$this->audio_streams = array();
 
-					$this->num_subtitles++;
+			foreach($this->sxe->track->audio as $audio) {
+				$this->num_audio_tracks++;
 
-					$this->subtitle_streams[] = (string)$subp->streamid;
+				$this->audio_streams[] = (string)$audio->streamid;
 
-					$this->subtitles[(int)$subp->ix] = array(
-						'langcode' => (string)$subp->langcode,
-						'language' => (string)$subp->language,
-						'stream_id' => (string)$subp->streamid,
-					);
-				}
+				// Get the AID
+				$aid = end(explode("x", (string)$audio->streamid)) + 48;
 
-				// Chapters
+				$this->audio[(int)$audio->ix] = array(
+					'langcode' => (string)$audio->langcode,
+					'language' => (string)$audio->language,
+					'format' => (string)$audio->format,
+					'channels' => (int)$audio->channels,
+					'stream_id' => (string)$audio->streamid,
+					'aid' => $aid,
+				);
+			}
 
-				$chapter_number = 1;
+			// Subtitles
+			$this->subtitle_streams = array();
 
-				foreach($this->sxe->track->chapter as $obj) {
-					$length = (float)$obj->length;
-					$ix = (int)$obj->ix;
-					$startcell = (int)$obj->startcell;
-					$this->chapters[$chapter_number] = array(
-						'length' => $length,
+			foreach($this->sxe->track->subp as $subp) {
+
+				$this->num_subtitles++;
+
+				$this->subtitle_streams[] = (string)$subp->streamid;
+
+				$this->subtitles[(int)$subp->ix] = array(
+					'langcode' => (string)$subp->langcode,
+					'language' => (string)$subp->language,
+					'stream_id' => (string)$subp->streamid,
+				);
+			}
+
+			// Chapters
+
+			$chapter_number = 1;
+
+			foreach($this->sxe->track->chapter as $obj) {
+				$length = (float)$obj->length;
+				$ix = (int)$obj->ix;
+				$startcell = (int)$obj->startcell;
+				$this->chapters[$chapter_number] = array(
+					'length' => $length,
 // 						'name' => "",
-						'ix' => $ix,
-						'startcell' => $startcell,
-					);
+					'ix' => $ix,
+					'startcell' => $startcell,
+				);
 
-					$chapter_number++;
+				$chapter_number++;
 
-					$last_chapter_length = $length;
-				}
-
-				// Cells
-
-				foreach($this->sxe->track->cell as $obj) {
-					$ix = (int)$obj->ix;
-					$length = (float)$obj->length;
-					$this->cells[$ix] = $length;
-				}
-
-				// I've seen this regularly on some sources, especially
-				// cartoons where the last chapter is really short.  It
-				// makes navigation annoying, because you want to skip
-				// to the next entry in a playlist, and instead it
-				// jumps to the last second or two of the episode.
-				// So, I'm going to specify a hard limit, and if the
-				// length of the last one is less than that, don't
-				// add the chapter.
-
-				// Current fixed length: two seconds
- 				if($last_chapter_length < 2)
-  					array_pop($this->chapters);
-
-				$this->num_chapters = count($this->chapters);
-
+				$last_chapter_length = $length;
 			}
+
+			// Cells
+
+			foreach($this->sxe->track->cell as $obj) {
+				$ix = (int)$obj->ix;
+				$length = (float)$obj->length;
+				$this->cells[$ix] = $length;
+			}
+
+			// I've seen this regularly on some sources, especially
+			// cartoons where the last chapter is really short.  It
+			// makes navigation annoying, because you want to skip
+			// to the next entry in a playlist, and instead it
+			// jumps to the last second or two of the episode.
+			// So, I'm going to specify a hard limit, and if the
+			// length of the last one is less than that, don't
+			// add the chapter.
+
+			// Current fixed length: two seconds
+			if($last_chapter_length < 2)
+				array_pop($this->chapters);
+
+			$this->num_chapters = count($this->chapters);
 
 			return true;
 
