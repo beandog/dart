@@ -60,6 +60,7 @@
 			echo "* title: $dvd_title\n";
 			$dvds_model->title = $dvd_title;
 		}
+		// FIXME check for null value
 		if(is_null($dvds_model->longest_track)) {
 			$dvd_longest_track = $dvd->getLongestTrack();
 			echo "* longest track: $dvd_longest_track\n";
