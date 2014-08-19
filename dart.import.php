@@ -91,7 +91,7 @@
 		// handling for *extreme* breakage.  This is something where the
 		// dvd_debug program would come into play -- ideally, that would run first
 		// and flag anomalies for me directly.
-		if(!count($dvd_num_tracks)) {
+		if(!$dvd_num_tracks) {
 			echo "? No tracks? No good!!!!\n";
 			exit(1);
 		}
