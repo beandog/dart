@@ -8,7 +8,8 @@
 
 		function __construct($device = "/dev/dvd") {
 
-			$this->setDevice($device);
+			$this->device = realpath($device);
+
 			$this->debug = false;
 
 			$this->arr_drive_status = array("", "CDS_NO_DISC", "CDS_TRAY_OPEN", "CDS_DRIVE_NOT_READY", "CDS_DISK_OK");
@@ -16,17 +17,6 @@
 		}
 
 		/** Hardware **/
-		function setDevice($str) {
-			$str = trim($str);
-			if(is_string($str))
-				$this->device = $str;
-		}
-
-		function getDevice() {
-
-			return $this->device;
-
-		}
 
 		function set_debug($bool = true) {
 			$this->debug = $bool;
