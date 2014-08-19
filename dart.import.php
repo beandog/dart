@@ -30,8 +30,9 @@
 	if($access_device && $allow_import) {
 
 		$dvdread_id = $dvd->dvdread_id();
+		$dvd_title = $dvd->getTitle();
 
-		echo "* Title: ".$dvd->getTitle()."\n";
+		echo "* Title: $dvd_title\n";
 
 		// Create a new database record for the DVD
 		if(!$disc_indexed) {
@@ -56,7 +57,6 @@
 			$dvds_model->dvdread_id = $dvdread_id;
 		}
 		if(!$dvds_model->title) {
-			$dvd_title = $dvd->getTitle();
 			echo "* title: $dvd_title\n";
 			$dvds_model->title = $dvd_title;
 		}
