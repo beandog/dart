@@ -103,7 +103,7 @@
 
 			echo "$track_number ";
 
-			$dvd_track = new DVDTrack($track_number, $device);
+			$dvd_track = new DVDTrack($device, $track_number);
 
 			// Lookup the database tracks.id
 			$tracks_model = new Tracks_Model;

@@ -56,7 +56,7 @@
 		public $chapters;
 		public $cells;
 
-		function __construct($track = 1, $device = "/dev/dvd") {
+		function __construct($device = "/dev/dvd", $track = 1) {
 
 			$this->setTrack($track);
 
