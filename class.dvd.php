@@ -6,7 +6,6 @@
 		private $dvd_info_json;
 		private $lsdvd;
 		private $id;
-		private $serial_id;
 		private $is_iso;
 		private $sxe;
 		private $debug;
@@ -120,10 +119,32 @@
 			if($this->debug)
 				echo "! dvd->serial_id()\n";
 
-			$exec = "handbrake --scan -i ".escapeshellarg($this->getDevice())." 2>&1";
+			$exec = "HandBrakeCLI --scan -i ".escapeshellarg($this->getDevice())." 2>&1";
 			exec($exec, $arr, $return);
-			$match = preg_grep("/.*Serial.*/", $arr);
+
+			if($return !== 0) {
+				if($this->debug)
+					echo "! getSerialID(): HandBrakeCLI quit with exit code $return\n";
+				return null;
+			}
+
+			$pattern = "/.*Serial.*/";
+			$match = preg_grep($pattern, $arr);
+
+			if(!count($match)) {
+				if($this->debug)
+					echo "! getSerialID(): HandBrakeCLI did not have a line matching pattern $pattern\n";
+				return null;
+			}
+
 			$explode = explode(' ', current($match));
+
+			if(!count($explode)) {
+				if($this->debug)
+					echo "! getSerialID(): Couldn't find a string\n";
+				return null;
+			}
+
 			$serial_id = end($explode);
 
 			$serial_id = trim($serial_id);
