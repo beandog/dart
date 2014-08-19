@@ -3,8 +3,6 @@
 	require_once 'PEAR.php';
 	require_once 'MDB2.php';
 
-	$dsn = "pgsql://steve@localhost/dvds";
-
 	$options = array(
 		'debug'       => 2,
 		'portability' => MDB2_PORTABILITY_ALL ^ MDB2_PORTABILITY_EMPTY_TO_NULL,

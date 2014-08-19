@@ -1,13 +1,13 @@
 #!/usr/bin/php
 <?php
 
+	require_once 'config.local.php';
+	require_once 'inc.mdb2.php';
 	require_once 'dart.functions.php';
 
 	ini_set('include_path', ini_get('include_path').":/home/steve/git/dart");
 
 	require_once 'Console/ProgressBar.php';
-
-	require_once 'includes/mdb2.php';
 
 	require_once 'class.dvd.php';
 	require_once 'class.dvddrive.php';
@@ -42,7 +42,6 @@
 	$ifo_export_dir = $export_dir.'ifos/';
 	$hostname = php_uname('n');
 
-	require_once 'includes/prefs.php';
 
 	// Parser allows multiple levels of verbosity
 
