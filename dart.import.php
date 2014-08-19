@@ -99,11 +99,19 @@
 		elseif($import)
 			echo "* Importing $dvd_num_tracks tracks: ";
 
+		next_track:
+
 		for($track_number = 1; $track_number <= $dvd_num_tracks; $track_number++) {
 
 			echo "$track_number ";
 
 			$dvd_track = new DVDTrack($device, $track_number);
+			if(!$dvd_track->opened) {
+				echo "\n";
+				echo "! Opening $device track number $track_number FAILED\n";
+				$track_number++;
+				goto next_track;
+			}
 
 			// Lookup the database tracks.id
 			$tracks_model = new Tracks_Model;
