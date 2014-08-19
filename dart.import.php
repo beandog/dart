@@ -88,8 +88,15 @@
 		// dvd_debug program would come into play -- ideally, that would run first
 		// and flag anomalies for me directly.
 		if(!$dvd_num_tracks) {
+
+			$dvd_broken = true;
 			echo "? No tracks? No good!!!!\n";
-			exit(1);
+
+			echo "! Flagging DVD as broken in database\n";
+			$dvds_model->tag_dvd('dvd_no_tracks');
+
+			goto broken_dvd;
+
 		}
 
 		if($missing_dvd_metadata && !$import)
@@ -399,3 +406,5 @@
 		$dvds_model->metadata_spec = 1;
 	}
 
+	// Moving right along ...
+	broken_dvd:
