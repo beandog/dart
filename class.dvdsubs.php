@@ -27,7 +27,12 @@
 		/** Metadata **/
 		private function parse_xml($str, $stream_id) {
 
-			$sxe = simplexml_load_string($str) or die("Couldn't parse lsdvd XML output");
+			$sxe = simplexml_load_string($str);
+
+			if($sxe === false) {
+				echo "! parse_xml(): parsing lsdvd XML output FAILED\n";
+				return false;
+			}
 
 			// Subtitles
 			foreach($sxe->track->subp as $subp) {
@@ -44,6 +49,8 @@
 				}
 
 			}
+
+			return true;
 
 		}
 
