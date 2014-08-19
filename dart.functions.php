@@ -10,19 +10,6 @@
 	}
 	pcntl_signal(SIGINT, 'master_crash');
 
-	/**
-	 * Format a title for saving to filesystem
-	 *
-	 * @param string original title
-	 * @return new title
-	 */
-	function formatTitle($str = 'Title', $underlines = false) {
-		$str = preg_replace("/[^A-Za-z0-9 \-,.?':!_]/", '', $str);
-		if($underlines)
-			$str = str_replace(' ', '_', $str);
-		return $str;
-	}
-
 	// Switch to the next device
 	function toggle_device($all, $current) {
 
