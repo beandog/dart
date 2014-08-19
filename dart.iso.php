@@ -7,7 +7,7 @@
 
 	// Continue if we can access the device (source file)
 	// and it has a database record.
-	if($access_device && $dvds_model_id && $dump_iso) {
+	if($access_device && $dvds_model_id && $dump_iso && !$broken_dvd) {
 
 		/** ISO Information **/
 		echo "[ISO]\n";

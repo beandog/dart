@@ -7,7 +7,7 @@
 	 *
 	 */
 
-	if($rip && $disc_indexed) {
+	if($rip && $disc_indexed && !$broken_dvd) {
 
 		$queue_model = new Queue_Model;
 

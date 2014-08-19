@@ -7,7 +7,7 @@
 
 	// Continue if we can access the device (source file)
 	// and it has a database reord.
-	if($dump_ifo && $access_device && $dvds_model_id) {
+	if($dump_ifo && $access_device && $dvds_model_id && !$broken_dvd) {
 
 		/** IFO Information **/
 		echo "[IFO]\n";

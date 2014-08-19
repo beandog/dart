@@ -89,7 +89,7 @@
 		// and flag anomalies for me directly.
 		if(!$dvd_num_tracks) {
 
-			$dvd_broken = true;
+			$broken_dvd = true;
 			echo "? No tracks? No good!!!!\n";
 
 			echo "! Flagging DVD as broken in database\n";

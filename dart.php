@@ -106,7 +106,7 @@
 		$dvd_episodes = array();
 
 		// Internal flags if there are issues impossible to circumvent
-		$dvd_broken = false;
+		$broken_dvd = false;
 
 		// If disc has an entry in the database
 		$disc_indexed = false;
