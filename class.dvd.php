@@ -115,27 +115,21 @@
 		}
 
 		// Use serial number from HandBrake 0.9.9
-		private function serial_id() {
+		public function getSerialID() {
 
 			if($this->debug)
 				echo "! dvd->serial_id()\n";
 
-			$exec = "handbrake --scan -i ".$this->getDevice(true)." 2>&1";
+			$exec = "handbrake --scan -i ".escapeshellarg($this->getDevice())." 2>&1";
 			exec($exec, $arr, $return);
 			$match = preg_grep("/.*Serial.*/", $arr);
 			$explode = explode(' ', current($match));
-			$str = end($explode);
-			$str = strtolower($str);
+			$serial_id = end($explode);
 
-			$this->serial_id = $str;
+			$serial_id = trim($serial_id);
 
-			return $str;
-		}
+			return $serial_id;
 
-		public function getSerialID() {
-			if(!$this->serial_id)
-				$this->serial_id();
-			return $this->serial_id;
 		}
 
 		private function lsdvd($force = false) {
