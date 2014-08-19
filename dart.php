@@ -5,8 +5,6 @@
 	require_once 'inc.mdb2.php';
 	require_once 'dart.functions.php';
 
-	ini_set('include_path', ini_get('include_path').":/home/steve/git/dart");
-
 	require_once 'Console/ProgressBar.php';
 
 	require_once 'class.dvd.php';
