@@ -58,12 +58,11 @@
 
 		function __construct($device = "/dev/dvd", $track = 1) {
 
-			$this->setTrack($track);
+			$this->device = realpath($device);
 
-			if(!is_null($device))
-				$this->setDevice($device);
-			else
-				$this->setDevice("");
+			$this->track = abs(intval($track));
+			if($this->track === 0)
+				$this->track = 1;
 
 			$this->setBasename();
 
@@ -98,23 +97,9 @@
 		}
 
 		/** Hardware **/
-		function setDevice($str) {
-			$str = trim($str);
-			if(is_string($str))
-				$this->device = $str;
-		}
 
 		function getDevice() {
 			return escapeshellarg($this->device);
-		}
-
-		private function setTrack($track) {
-			$track = abs(intval($track));
-			if($track) {
-				$this->track = $track;
-			} else {
-				$this->track = 1;
-			}
 		}
 
 		function getTrack() {
