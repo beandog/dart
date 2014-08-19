@@ -97,11 +97,6 @@
 		}
 
 		/** Hardware **/
-
-		function getDevice() {
-			return escapeshellarg($this->device);
-		}
-
 		function getTrack() {
 			return $this->track;
 		}
@@ -117,7 +112,7 @@
 		private function lsdvd() {
 
 			if(is_null($this->xml)) {
-				$exec = "lsdvd -Ox -v -a -s -c -x -t ".$this->getTrack()." ".$this->getDevice();
+				$exec = "lsdvd -Ox -v -a -s -c -x -t ".$this->getTrack()." ".escapeshellarg($this->device);
 				$arr = command($exec);
 				$str = implode("\n", $arr);
 
@@ -727,16 +722,15 @@
 		function dumpStream() {
 
 			$track = $this->getTrack();
-			$device = $this->getDevice();
 			$starting_chapter = $this->getStartingChapter();
 			$ending_chapter = $this->getEndingChapter();
 			$vob = $this->getBasename().".vob";
 			$aid = $this->getAudioAID();
 
 			$flags[] = $this->getProtocol().$track;
-			$flags[] = "-dvd-device $device";
+			$flags[] = "-dvd-device ".escapeshellarg($this->device);
 			$flags[] = "-aid $aid";
-			$flags[] = "-dumpstream -dumpfile \"$vob\"";
+			$flags[] = "-dumpstream -dumpfile ".escapeshellarg($vob);
 			if($starting_chapter > 1 || $ending_chapter) {
 				$flags[] = "-chapter $starting_chapter-$ending_chapter";
 			}
@@ -748,22 +742,22 @@
 				echo "Executing: $str\n";
 
  			command($str);
+
 		}
 
 		function dumpSubtitles() {
 
 			$track_number = $this->getTrack();
-			$device = $this->getDevice();
 			$basename = $this->getBasename();
 			$slang = $this->getLangCode();
 			$starting_chapter = $this->getStartingChapter();
 			$ending_chapter = $this->getEndingChapter();
 
 			$flags[] = $this->getProtocol().$track_number;
-			$flags[] = "-dvd-device $device";
+			$flags[] = "-dvd-device ".escapeshellarg($this->device);
 			$flags[] = "-ovc copy";
 			$flags[] = "-nosound";
-			$flags[] = "-vobsubout \"$basename\"";
+			$flags[] = "-vobsubout ".escapeshellarg($basename);
 			$flags[] = "-o /dev/null";
 			$flags[] = "-slang $slang";
 			$flags[] = "-quiet";
