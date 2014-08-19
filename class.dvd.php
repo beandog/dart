@@ -313,9 +313,13 @@
 
 		public function getProviderID() {
 
-			$provider_id = $this->dvd_info_json['dvd']['provider id'];
+			$dvd =& $this->dvd_info_json;
 
-			$provider_id = trim($provider_id);
+			if(array_key_exists('provider id', $dvd['dvd'])) {
+				$provider_id = $dvd['dvd']['provider id'];
+				$provider_id = trim($provider_id);
+			} else
+				$provider_id = '';
 
 			return $provider_id;
 
