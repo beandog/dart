@@ -10,7 +10,6 @@
 		private $is_iso;
 		private $sxe;
 		private $debug;
-		private $num_tracks = 0;
 
 		function __construct($device = "/dev/dvd") {
 
@@ -161,10 +160,6 @@
 				// Use fread() instead
 				// $this->setTitle((string)$this->sxe->title);
 
-				foreach($this->sxe->track as $track) {
-					$this->num_tracks++;
-				}
-
 			}
 
 		}
@@ -293,9 +288,22 @@
 
 		/** Tracks **/
 		public function getNumTracks() {
-			if(!$this->sxe)
-				$this->lsdvd();
-			return $this->num_tracks;
+
+			// First make sure we can get tracks
+			if(!array_key_exists('tracks', $this->dvd_info_json)) {
+
+				if($this->debug) {
+					echo "! getNumTracks(): DVD has no tracks!!!  This is bad.\n";
+				}
+
+				return null;
+
+			}
+
+			$num_tracks = count($this->dvd_info_json['tracks']);
+
+			return $num_tracks;
+
 		}
 
 		public function getLongestTrack() {
