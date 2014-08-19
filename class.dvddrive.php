@@ -76,7 +76,7 @@
 			if($this->debug)
 				echo "! drive::get_status(".$this->device.")\n";
 
-			$command = "dvd_drive_status ".$this->device;
+			$command = "dvd_drive_status ".escapeshellarg($this->device);
 			exec($command, $arr, $return);
 
 			if($this->debug)
@@ -162,7 +162,7 @@
 			if($this->debug)
 				echo "! drive::open(".$this->device.")\n";
 
-			$cmd = "dvd_eject ".$this->device;
+			$cmd = "dvd_eject ".escapeshellarg($this->device);
 			passthru($cmd, $retval);
 
 			if($retval === 0 || $retval === 2)
@@ -183,7 +183,7 @@
 			if($this->debug)
 				echo "! drive::close(".$this->device.")\n";
 
-			$cmd = "dvd_eject -t ".$this->device;
+			$cmd = "dvd_eject -t ".escapeshellarg($this->device);
 			passthru($cmd, $retval);
 
 			if($retval === 0)
