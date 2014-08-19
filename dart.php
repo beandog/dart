@@ -105,6 +105,9 @@
 		$dvds_model = new Dvds_Model;
 		$dvd_episodes = array();
 
+		// Internal flags if there are issues impossible to circumvent
+		$dvd_broken = false;
+
 		// If disc has an entry in the database
 		$disc_indexed = false;
 
