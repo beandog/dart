@@ -96,6 +96,12 @@
 		clearstatcache();
 
 		$dvd = new DVD($device, $debug);
+
+		if(!$dvd->opened) {
+			echo "! Opening $device FAILED\n";
+			goto next_device;
+		}
+
 		$dvds_model = new Dvds_Model;
 		$dvd_episodes = array();
 
