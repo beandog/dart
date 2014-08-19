@@ -287,13 +287,45 @@ XML;
 			$mkv = escapeshellarg($mkv);
 			$xml = escapeshellarg($xml);
 
-			$str = "mkvpropedit -s title=$title $mkv";
+			$cmd = "mkvpropedit -s title=$title $mkv";
 
-			command($str, !$this->verbose, false, $this->debug, array(0,1));
+			if($this->debug)
+				echo "! mkvpropedit(): Executing: $cmd";
 
-			$str = "mkvpropedit -t global:$xml $mkv";
+			if($debug)
+				$cmd .= " 2>&1";
+			else
+				$cmd .= " 2> /dev/null";
 
-			command($str, !$this->verbose, false, $this->debug, array(0,1));
+			exec($cmd, $output, $retval);
+
+			// mkvpropedit succeeds on exit codes of 0 or 1
+			if($retval === 1) {
+				echo "! mkvpropedit(): mkvpropedit succeeded, but with warnings\n";
+			} else {
+				return false;
+			}
+
+			$cmd = "mkvpropedit -t global:$xml $mkv";
+
+			if($this->debug)
+				echo "! mkvpropedit(): Executing: $cmd";
+
+			if($debug)
+				$cmd .= " 2>&1";
+			else
+				$cmd .= " 2> /dev/null";
+
+			exec($cmd, $output, $retval);
+
+			// mkvpropedit succeeds on exit codes of 0 or 1
+			if($retval === 1) {
+				echo "! mkvpropedit(): mkvpropedit succeeded, but with warnings\n";
+			} else {
+				return false;
+			}
+
+			return true;
 
 		}
 
