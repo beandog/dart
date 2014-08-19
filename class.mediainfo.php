@@ -1,38 +1,43 @@
 <?php
 
-	require_once 'class.shell.php';
-
 	class MediaInfo {
 
 		private $filename;
 		private $xml;
 		private $sxe;
-		private $debug;
+		public $opened;
 
 		function __construct($filename) {
 
-			$this->setFilename($filename);
-			$this->debug = false;
+			$filename = realpath($filename);
 
-		}
+			if(!file_exists($filename)) {
 
-		function setFilename($filename) {
-			$this->filename = $filename;
+				echo "! construct(): opening $filename FAILED\n";
+				$this->opened = false;
+				return false;
+
+			}
 
 			// Get XML
 
-			$exec = "mediainfo --output=XML \"".$this->filename."\"";
+			$cmd = "mediainfo --output=XML ".escapeshellarg($this->filename)." 2> /dev/null";
 
- 			$arr = command($exec);
- 			$this->xml = implode("\n", $arr);
+			exec($cmd, $output, $retval);
+
+			if($retval !== 0) {
+				echo "! setFilename(): $cmd FAILED\n";
+				$this->opened = false;
+				return false;
+			}
+
+ 			$this->xml = implode("\n", $output);
  			$this->sxe = simplexml_load_string($this->xml);
 
-		}
+			$this->opened = true;
+			return true;
 
-		function getFilename() {
-			return $this->filename;
 		}
-
 
 		/**
 		 * Determine if a file has closed captioning
