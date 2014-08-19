@@ -12,9 +12,10 @@
 
 		public $opened;
 
-		function __construct($device = "/dev/dvd") {
+		function __construct($device = "/dev/dvd", $debug = false) {
 
 			$this->device = realpath($device);
+			$this->debug = (bool)$debug;
 
 			if(!file_exists($this->device)) {
 				$this->opened = false;
@@ -37,10 +38,6 @@
 
 			return $bool;
 
-		}
-
-		function setDebug($bool = true) {
-			$this->debug = (bool)$bool;
 		}
 
 		/** Hardware **/
