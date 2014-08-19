@@ -95,8 +95,7 @@
 
 		clearstatcache();
 
-		$dvd = new DVD($device);
-		$dvd->setDebug($debug);
+		$dvd = new DVD($device, $debug);
 		$dvds_model = new Dvds_Model;
 		$dvd_episodes = array();
 
