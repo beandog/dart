@@ -1,5 +1,7 @@
 <?php
 
+	require_once(dirname(__FILE__)."/dbtable.php");
+
 	class Chapters_Model extends DBTable {
 
 		function __construct($id = null) {
