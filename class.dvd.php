@@ -296,7 +296,7 @@
 					echo "! getNumTracks(): DVD has no tracks!!!  This is bad.\n";
 				}
 
-				return null;
+				return 0;
 
 			}
 
