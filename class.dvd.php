@@ -157,8 +157,6 @@
 
 				$this->sxe = simplexml_load_string($str) or die("Couldn't parse lsdvd XML output");
 
-				// Use fread() instead
-				// $this->setTitle((string)$this->sxe->title);
 
 			}
 
@@ -236,46 +234,14 @@
 
 		}
 
-		private function setTitle($str) {
-			$this->title = $str;
-		}
-
 		/**
 		 * Get the DVD title
-		 *
-		 * This reads directly from the device to get the title
-		 * instead of using lsdvd(), which should in some cases
-		 * save a call to the hardware device.
-		 *
-		 * Also, this is much faster :)
 		 */
 		public function getTitle() {
 
-			$dvd = fopen($this->getDevice(), 'rb');
-			if($dvd === false)
-				die("Could not open device ".$this->getDevice()." for reading");
+			$title = $this->dvd_info_json['dvd']['title'];
 
-			stream_set_blocking($dvd, 0);
-
-			$fseek = fseek($dvd, 32808, SEEK_SET);
-
-			if($fseek === -1) {
-				fclose($dvd);
-				die("Could not seek on device ".$this->getDevice());
-			}
-
-			$str = fread($dvd, 32);
-
-			if(strlen($str) != 32) {
-				fclose($dvd);
-				die("Empty string length for title on ".$this->getDevice());
-			}
-
-			fclose($dvd);
-
-			$title = rtrim($str);
-
-			$this->setTitle($title);
+			$title = trim($title);
 
 			return $title;
 		}
