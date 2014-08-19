@@ -75,7 +75,7 @@
 		if(!$dvds_model->serial_id) {
 			$dvd_serial_id = $dvd->getSerialID();
 			echo "* serial id: $dvd_serial_id\n";
-			$dvds_model->serial_id = $dvd->getSerialID();
+			$dvds_model->serial_id = $dvd_serial_id;
 		}
 
 		// Flag it as indexed
