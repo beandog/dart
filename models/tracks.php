@@ -1,5 +1,7 @@
 <?php
 
+	require_once(dirname(__FILE__)."/dbtable.php");
+
 	class Tracks_Model extends DBTable {
 
 		function __construct($id = null) {
@@ -93,6 +95,29 @@
 			$arr = $this->db->getCol($sql);
 
 			return $arr;
+
+		}
+
+		public function tag_track($tag_name) {
+
+			$track_id = intval($this->id);
+
+			if(!$track_id)
+				return false;
+
+			$sql = "SELECT id FROM tags WHERE name = ".$this->db->quote($tag_name).";";
+			$tag_id = intval($this->db->getOne($sql));
+
+			if(!$tag_id)
+				return false;
+
+			$sql = "DELETE FROM tags_tracks WHERE tag_id = $tag_id AND track_id = $track_id;";
+			$this->db->query($sql);
+
+			$sql = "INSERT INTO tags_tracks (tag_id, track_id) VALUES ($tag_id, $track_id);";
+			$this->db->query($sql);
+
+			return true;
 
 		}
 
