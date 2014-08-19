@@ -105,9 +105,21 @@
 		private function lsdvd() {
 
 			if(is_null($this->xml)) {
-				$exec = "lsdvd -Ox -v -a -s -c -x -t ".$this->track." ".escapeshellarg($this->device);
-				$arr = command($exec);
-				$str = implode("\n", $arr);
+
+				$command = "lsdvd -Ox -v -a -s -c -x -t ".$this->track." ".escapeshellarg($this->device)." 2> /dev/null";
+
+				if($this->debug)
+					echo "! lsdvd(): $command\n";
+
+				exec($command, $output, $retval);
+
+				if($retval !== 0) {
+					if($this->debug)
+						echo "! lsdvd() FAILED\n";
+					return false;
+				}
+
+				$str = implode("\n", $output);
 
 				// Fix broken encoding on langcodes, standardize output
 				$str = str_replace('Pan&Scan', 'Pan&amp;Scan', $str);
@@ -730,10 +742,17 @@
 
 			$str = "mplayer ".implode(' ', $flags);
 
+			$str .= " 2>&1";
+
 			if($this->verbose || $this->debug)
 				echo "Executing: $str\n";
 
- 			command($str);
+			exec($str, $output, $retval);
+
+			if($retval === 0)
+				return true;
+			else
+				return false;
 
 		}
 
