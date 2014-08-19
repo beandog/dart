@@ -58,39 +58,6 @@
 			return "no";
 	}
 
-	/** imported from class.shell.php **/
-
-	/**
-	* Execute shell scripts
-	*
-	* @param string execution string
-	* @param boolean drop stderr to /dev/null
-	* @param boolean ignore exit codes
-	* @param array exit codes that indicate success
-	* @return output array
-	*/
-	function command($str, $stderr_to_null = true, $ignore_exit_code = false, $passthru = false, $arr_successful_exit_codes = array(0)) {
-
-		$arr = array();
-
-		if($stderr_to_null)
-			$exec = "$str 2> /dev/null";
-		else
-			$exec =& $str;
-
-		if($passthru)
-			passthru($exec, $return);
-		else
-			exec($exec, $arr, $return);
-
-		if(!in_array($return, $arr_successful_exit_codes) && !$ignore_exit_code) {
-			echo "execution died: $str\n";
-			die($return);
-		} else
-			return $arr;
-
-	}
-
 	function beep_error() {
 
 		system("beep -f 1000 -n -f 2000 -n -f 1500 -n -f 1750 -n f 1750 -n -f 1750");
