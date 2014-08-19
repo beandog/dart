@@ -10,12 +10,30 @@
 		private $sxe;
 		private $debug;
 
+		public $opened;
+
 		function __construct($device = "/dev/dvd") {
 
-			$this->setDevice($device);
+			$this->device = realpath($device);
+
+			if(!file_exists($this->device)) {
+				$this->opened = false;
+				return null;
+			}
+
+			$dirname = dirname($this->device);
+			if($dirname != "/dev")
+				$this->is_iso = true;
+			else
+				$this->is_iso = false;
 
 			// Run dvd_info first and return if it passes or not
 			$bool = $this->dvd_info();
+
+			if($bool === false)
+				$this->opened = false;
+			else
+				$this->opened = true;
 
 			return $bool;
 
@@ -27,40 +45,18 @@
 
 		/** Hardware **/
 
-		function setDevice($str) {
-			$str = trim($str);
-			if(is_string($str)) {
-				$str = realpath($str);
-				$this->device = $str;
-			}
-
-			$dirname = dirname(realpath($str));
-			if($dirname != "/dev")
-				$this->is_iso = true;
-			else
-				$this->is_iso = false;
-
-		}
-
-		function getDevice() {
-
-			$str = $this->device;
-
-			return $str;
-		}
-
 		function is_iso() {
 			return $this->is_iso;
 		}
 
 		private function dvd_info() {
 
-			$command = "dvd_info --json ".escapeshellarg($this->getDevice());
+			$command = "dvd_info --json ".escapeshellarg($this->device);
 
 			if($this->debug)
 				echo "! dvd_info(): $command\n";
 
-			exec("dvd_info --json ".escapeshellarg($this->getDevice()), $arr, $retval);
+			exec("dvd_info --json ".escapeshellarg($this->device), $arr, $retval);
 			$output = implode('', $arr);
 
 			if($retval !== 0 || !count($arr))
@@ -89,7 +85,7 @@
 			if($this->debug)
 				echo "! dvd->disc_id()\n";
 
-			$arr = command("dvd_id ".$this->getDevice(true));
+			$arr = command("dvd_id ".escapeshellarg($this->device));
 			$var = current($arr);
 			if(strlen($var) == 32)
 				$this->id = $var;
@@ -116,7 +112,7 @@
 			if($this->debug)
 				echo "! dvd->serial_id()\n";
 
-			$exec = "HandBrakeCLI --scan -i ".escapeshellarg($this->getDevice())." 2>&1";
+			$exec = "HandBrakeCLI --scan -i ".escapeshellarg($this->device)." 2>&1";
 			exec($exec, $arr, $return);
 
 			if($return !== 0) {
@@ -156,7 +152,7 @@
 				echo "! dvd->lsdvd()\n";
 
 			if(empty($this->lsdvd['output']) || $force) {
-				$str = "lsdvd -Ox -v -a -s -c ".escapeshellarg($this->getDevice());
+				$str = "lsdvd -Ox -v -a -s -c ".escapeshellarg($this->device);
 				$arr = command($str);
 				$str = implode("\n", $arr);
 
@@ -180,7 +176,6 @@
 				echo "! dvd->dump_iso($dest, $method)\n";
 
 			$dest = escapeshellarg($dest);
-			$device = $this->getDevice();
 
 			// ddrescue README
 			// Since I've used dd in the past, ddrescue seems like a good
@@ -196,7 +191,7 @@
 				if(file_exists($logfile))
 					unlink($logfile);
 
-				$command = "ddrescue -b 2048 -n $device $dest $logfile";
+				$command = "ddrescue -b 2048 -n ".escapeshellarg($this->device)." $dest $logfile";
 				passthru($command, $return);
 
 				$return = intval($return);
@@ -208,7 +203,7 @@
 				}
 
 			} elseif($method == 'pv') {
-				$exec = "pv -pter -w 80 ".$this->getDevice()." | dd of=$dest 2> /dev/null";
+				$exec = "pv -pter -w 80 ".escapeshellarg($this->device)." | dd of=$dest 2> /dev/null";
 				$exec .= '; echo ${PIPESTATUS[*]}';
 
 				exec($exec, $arr);
@@ -228,9 +223,8 @@
 				echo "! dvd->dump_ifo($dest)\n";
 
 			chdir($dest);
-			$device = $this->getDevice();
 
-			$exec = "dvd_backup_ifo $device &> /dev/null";
+			$exec = "dvd_backup_ifo ".escapeshellarg($this->device)." &> /dev/null";
 
 			$arr = array();
 
@@ -267,6 +261,9 @@
 		/** Tracks **/
 		public function getNumTracks() {
 
+			if(!$this->opened)
+				return null;
+
 			// First make sure we can get tracks
 			if(!array_key_exists('tracks', $this->dvd_info_json)) {
 
@@ -285,6 +282,9 @@
 		}
 
 		public function getLongestTrack() {
+
+			if(!$this->opened)
+				return null;
 
 			// First make sure we can get tracks
 			if(!array_key_exists('tracks', $this->dvd_info_json)) {
@@ -324,6 +324,9 @@
 
 		public function getProviderID() {
 
+			if(!$this->opened)
+				return null;
+
 			$dvd =& $this->dvd_info_json;
 
 			if(array_key_exists('provider id', $dvd['dvd'])) {
@@ -344,14 +347,12 @@
 			if($this->debug)
 				echo "! dvd->getSize($format)\n";
 
-			$device = realpath($this->getDevice());
-
 			if($this->is_iso()) {
-				$stat = stat($device);
+				$stat = stat($this->device);
 				$b_size = $stat['size'];
 			} else {
 
-				$block_device = basename($device, "/dev/");
+				$block_device = basename($this->device, "/dev/");
 				$num_sectors = file_get_contents("/sys/block/$block_device/size");
 				$b_size = $num_sectors * 512;
 
