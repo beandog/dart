@@ -100,11 +100,10 @@
 				echo "! dvd->serial_id()\n";
 
 			$exec = "HandBrakeCLI --scan -i ".escapeshellarg($this->device)." 2>&1";
-			exec($exec, $arr, $return);
+			exec($exec, $arr, $retval);
 
-			if($return !== 0) {
-				if($this->debug)
-					echo "! getSerialID(): HandBrakeCLI quit with exit code $return\n";
+			if($retval !== 0) {
+				echo "! getSerialID(): HandBrakeCLI quit with exit code $retval\n";
 				return null;
 			}
 
@@ -179,8 +178,6 @@
 			if($this->debug)
 				echo "! dvd->dump_iso($dest, $method)\n";
 
-			$dest = escapeshellarg($dest);
-
 			// ddrescue README
 			// Since I've used dd in the past, ddrescue seems like a good
 			// alternative that can work around broken sectors, which was
@@ -196,15 +193,12 @@
 					unlink($logfile);
 
 				$cmd = "ddrescue -b 2048 -n ".escapeshellarg($this->device)." ".escapeshellarg($dest)." ".escapeshellarg($logfile);
-				passthru($cmd, $return);
+				passthru($cmd, $retval);
 
-				$return = intval($return);
-
-				if($return) {
+				if($retval !== 0)
 					return false;
-				} else {
+				else
 					return true;
-				}
 
 			} elseif($method == 'pv') {
 				$exec = "pv -pter -w 80 ".escapeshellarg($this->device)." | dd of=".escapeshellarg($dest)." 2> /dev/null";
@@ -232,15 +226,12 @@
 
 			$arr = array();
 
-			exec($exec, $arr, $return);
+			exec($exec, $arr, $retval);
 
-			$return = intval($return);
-
-			if($return) {
+			if($retval !== 0)
 				return false;
-			} else {
+			else
 				return true;
-			}
 
 		}
 
