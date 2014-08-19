@@ -82,15 +82,12 @@
 		}
 
 		/** Helper output **/
-		function setVerbose($bool) {
-			if($bool === true)
-				$this->verbose = true;
-			else
-				$this->verbose = false;
+		function setVerbose($bool = true) {
+			$this->verbose = (bool)$bool;
 		}
 
-		function setDebug($bool) {
-			if($bool === true)
+		function setDebug($bool = true) {
+			if($bool)
 				$this->debug = $this->verbose = true;
 			else
 				$this->debug = false;
