@@ -14,10 +14,6 @@
 			$this->filename = $vob;
 		}
 
-		function getFilename() {
-			return $this->filename;
-		}
-
 		function setAID($int = 128) {
 			$int = abs(intval($int));
 			$this->aid = $int;
@@ -38,21 +34,28 @@
 		*/
 		function rawvideo($dest) {
 
-			$flags = array('"'.$this->getFilename().'"', "-ovc copy", "-of rawvideo", "-nosound", "-quiet", "-o \"$dest\"");
+			$flags = array(escapeshellarg($this->filename), "-ovc copy", "-of rawvideo", "-nosound", "-quiet", "-o ".escapeshellarg($dest));
 
-			$str = "mencoder ".implode(' ', $flags);
+			$cmd = "mencoder ".implode(' ', $flags);
 
 			if($this->debug)
 				echo "Executing: $str\n";
 
 			$start = time();
-			command($str, !$this->debug);
+
+			//FIXME needs return value checking
+			exec($cmd, $output, $retval);
+
 			$finish = time();
 
+			/*
 			if($this->debug) {
 				$exec_time = shell::executionTime($start, $finish);
 				echo "Execution time: ".$exec_time['minutes']."m ".$exec_time['seconds']."s";
 			}
+			*/
+
+			return $retval;
 
 		}
 
@@ -63,14 +66,17 @@
 		*/
 		function rawaudio($dest) {
 
-			$flags = array('"'.$this->getFilename().'"', "-oac copy", "-of rawaudio", "-ovc frameno", "-quiet", "-aid ".$this->getAID(), "-o \"$dest\"");
+			$flags = array(escapeshellarg($this->filename), "-oac copy", "-of rawaudio", "-ovc frameno", "-quiet", "-aid ".$this->getAID(), "-o ".escapeshellarg($dest));
 
-			$str = "mencoder ".implode(' ', $flags);
+			$cmd = "mencoder ".implode(' ', $flags);
 
 			if($this->debug)
 				echo "Executing: $str";
 
-			command($str, !$this->debug);
+			// FIXME check return values
+			exec($cmd, $output, $retval);
+
+			return $retval;
 
 		}
 
@@ -81,12 +87,15 @@
 		 */
 		 function dumpSRT() {
 
-		 	$str = "ccextractor -unicode -nomyth -ps \"".$this->getFilename()."\"";
+		 	$cmd = "ccextractor -unicode -nomyth -ps ".escapeshellarg($this->filename);
 
 		 	if($this->debug)
 				echo "Executing: $str\n";
 
-			command($str, !$this->debug);
+			// FIXME check return values
+			exec($cmd, $output, $retval);
+
+			return $retval;
 
 		 }
 	}
