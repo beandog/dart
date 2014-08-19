@@ -79,18 +79,6 @@
 
 		/** Metadata **/
 
-		// Use disc_id binary from libdvdread
-		private function disc_id() {
-
-			if($this->debug)
-				echo "! dvd->disc_id()\n";
-
-			$arr = command("dvd_id ".escapeshellarg($this->device));
-			$var = current($arr);
-			if(strlen($var) == 32)
-				$this->id = $var;
-		}
-
 		// Use dvd_info to get dvdread id
 		public function dvdread_id() {
 
