@@ -257,13 +257,27 @@ XML;
 
 		public function mux() {
 
-			if(is_null($this->exec))
-				$str = $this->getCommandString();
+			$cmd = $this->getCommandString();
 
 			if($this->debug)
-				echo "Executing: $str";
+				echo "! mux(): Executing: $cmd";
 
-			command($str, !$this->verbose, false, $this->debug, array(0,1));
+			if($debug)
+				$cmd .= " 2>&1";
+			else
+				$cmd .= " 2> /dev/null";
+
+			exec($cmd, $output, $retval);
+
+			// mkvmerge succeeds on exit codes of 0 or 1
+			if($retval === 0) {
+				return true;
+			} elseif($retval === 1) {
+				echo "! mux(): mkvmerge succeeded, but with warnings\n";
+				return true;
+			} else {
+				return false;
+			}
 
 		}
 
