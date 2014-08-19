@@ -48,7 +48,6 @@
 		private $audio_streams;
 		private $subtitle_streams;
 
-		private $verbose = false;
 		private $debug = false;
 
 		private $dvdnav = false;
@@ -56,7 +55,9 @@
 		public $chapters;
 		public $cells;
 
-		function __construct($device = "/dev/dvd", $track = 1) {
+		public $opened;
+
+		function __construct($device = "/dev/dvd", $track = 1, $debug = false) {
 
 			$this->device = realpath($device);
 
@@ -79,18 +80,10 @@
 
 			bcscale(3);
 
-		}
+			$bool = $this->lsdvd();
 
-		/** Helper output **/
-		function setVerbose($bool = true) {
-			$this->verbose = (bool)$bool;
-		}
+			$this->opened = $bool;
 
-		function setDebug($bool = true) {
-			if($bool)
-				$this->debug = $this->verbose = true;
-			else
-				$this->debug = false;
 		}
 
 		/** Hardware **/
@@ -745,8 +738,8 @@
 
 			$str .= " 2>&1";
 
-			if($this->verbose || $this->debug)
-				echo "Executing: $str\n";
+			if($this->debug)
+				echo "! dumpStream(): $str\n";
 
 			exec($str, $output, $retval);
 
