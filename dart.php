@@ -149,7 +149,7 @@
 		// Verify file exists
 		if(!file_exists($device)) {
 			echo "* Couldn't find $device\n";
-			exit(1);
+			goto next_device;
 		}
 
 		// Device name to display to stdout
