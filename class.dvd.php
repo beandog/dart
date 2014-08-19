@@ -39,7 +39,7 @@
 
 		}
 
-		function setDebug($bool = false) {
+		function setDebug($bool = true) {
 			$this->debug = (bool)$bool;
 		}
 
