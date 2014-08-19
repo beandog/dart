@@ -95,6 +95,9 @@
 			echo "! Flagging DVD as broken in database\n";
 			$dvds_model->tag_dvd('dvd_no_tracks');
 
+			// BEEP!
+			beep_error();
+
 			goto broken_dvd;
 
 		}
@@ -143,6 +146,9 @@
 
 				// Tag the track as broken in the database
 				$tracks_model->tag_track('track_open_fail');
+
+				// BOOP!
+				beep_error();
 
 				goto next_track;
 			}
