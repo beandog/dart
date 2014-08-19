@@ -228,6 +228,8 @@
 
 			}
 
+			return true;
+
 		}
 
 		public function getXML() {
