@@ -44,8 +44,6 @@
 			if($debug)
 				echo "! Created new DVD id: $dvds_model_id\n";
 
-			$dvds_model->provider_id = $dvd->getProviderID();
-
 		} elseif($disc_indexed && $missing_dvd_metadata) {
 
 			echo "[Metadata]\n";
@@ -59,12 +57,6 @@
 		if(!$dvds_model->title) {
 			echo "* title: $dvd_title\n";
 			$dvds_model->title = $dvd_title;
-		}
-		// FIXME check for null value
-		if(is_null($dvds_model->longest_track)) {
-			$dvd_longest_track = $dvd->getLongestTrack();
-			echo "* longest track: $dvd_longest_track\n";
-			$dvds_model->longest_track = $dvd_longest_track;
 		}
 		if($missing_dvd_metadata || !$disc_indexed) {
 			$dvd_filesize = $dvd->getSize();
@@ -159,15 +151,6 @@
 			if($missing_dvd_metadata || $import || is_null($tracks_model->length))
 				$tracks_model->length = $dvd_track->getLength();
 
-			if(!$tracks_model->vts_id)
-				$tracks_model->vts_id = $dvd_track->getVTSID();
-
-			if(is_null($tracks_model->vts))
-				$tracks_model->vts = $dvd_track->getVTS();
-
-			if(is_null($tracks_model->ttn))
-				$tracks_model->ttn = $dvd_track->getTTN();
-
 			if(is_null($tracks_model->fps))
 				$tracks_model->fps = $dvd_track->getFPS();
 
@@ -182,12 +165,6 @@
 
 			if(is_null($tracks_model->height))
 				$tracks_model->height = $dvd_track->getHeight();
-
-			if(!$tracks_model->df)
-				$tracks_model->df = $dvd_track->getDF();
-
-			if(is_null($tracks_model->angles))
-				$tracks_model->angles = $dvd_track->getAngles();
 
 			// Handbrake (0.9.9) sometimes fails to scan DVDs with certain tracks.
 			// If that's the case, skip over them.
@@ -249,23 +226,11 @@
 				if(!$audio_model->langcode)
 					$audio_model->langcode = $dvd_audio->getLangcode();
 
-				if(!$audio_model->language)
-					$audio_model->language = $dvd_audio->getLanguage();
-
 				if(!$audio_model->format)
 					$audio_model->format = $dvd_audio->getFormat();
 
-				if(is_null($audio_model->frequency))
-					$audio_model->frequency = $dvd_audio->getFrequency();
-
-				if(!$audio_model->quantization)
-					$audio_model->quantization = $dvd_audio->getQuantization();
-
 				if(is_null($audio_model->channels))
 					$audio_model->channels = $dvd_audio->getChannels();
-
-				if(is_null($audio_model->ap_mode))
-					$audio_model->ap_mode = $dvd_audio->getAPMode();
 
 				if(!$audio_model->streamid)
 					$audio_model->streamid = $streamid;
