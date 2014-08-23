@@ -26,7 +26,7 @@
 		public $title_track_chapters;
 		public $title_track_cells;
 		public $title_track_audio_tracks;
-		public $title_track_subtitles;
+		public $title_track_subtitle_tracks;
 
 		// DVD Video
 		public $video_codec;
@@ -396,7 +396,7 @@
 			$this->title_track_chapters = $this->title_track_chapters();
 			$this->title_track_cells = $this->title_track_cells();
 			$this->title_track_audio_tracks = $this->title_track_audio_tracks();
-			$this->title_track_subtitles = $this->title_track_subtitles();
+			$this->title_track_subtitle_tracks = $this->title_track_subtitle_tracks();
 
 			$this->video_codec = $this->video_codec();
 			$this->video_format = $this->video_format();
@@ -445,7 +445,7 @@
 
 		}
 
-		private function title_track_subtitles() {
+		private function title_track_subtitle_tracks() {
 
 			if(!array_key_exists('subtitles', $this->title_track_info))
 				return 0;
@@ -542,5 +542,36 @@
 			return $this->dvd_info_string($this->audio_track_info, 'stream id');
 		}
 
+		/** DVD Subtitle Track **/
+
+		public function load_subtitle_track($title_track, $subtitle_track) {
+
+			$title_track = abs(intval($title_track));
+			$subtitle_track = abs(intval($subtitle_track));
+
+			$title_track_loaded = $this->load_title_track($title_track);
+
+			if(!$title_track_loaded || $subtitle_track === 0 || $subtitle_track > $this->title_track_subtitle_tracks) {
+
+				return false;
+			}
+
+			$this->subtitle_track = $subtitle_track;
+			$this->subtitle_track_info = $this->dvd_info['tracks'][$this->title_track - 1]['subtitles'][$this->subtitle_track - 1];
+
+			$this->subtitle_track_lang_code = $this->subtitle_track_lang_code();
+
+			return true;
+
+		}
+
+		private function subtitle_track_lang_code() {
+			return $this->dvd_info_string($this->subtitle_track_info, 'lang code');
+		}
+
+		private function subtitle_track_stream_id() {
+			return $this->dvd_info_string($this->subtitle_track_info, 'stream id');
+		}
+
 	}
-?>
+
