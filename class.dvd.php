@@ -3,9 +3,9 @@
 	class DVD {
 
 		private $device;
-		private $dvd_info;
+		protected $dvd_info;
 		private $is_iso;
-		private $debug;
+		protected $debug;
 
 		public $opened;
 
@@ -80,6 +80,24 @@
 			$this->dvd_info = $json;
 
 			return true;
+
+		}
+
+		protected function dvd_info_string($arr, $key) {
+
+			if(!array_key_exists($key, $arr))
+				return "";
+			else
+				return $arr[$key];
+
+		}
+
+		protected function dvd_info_number($arr, $key) {
+
+			if(!array_key_exists($key, $arr))
+				return 0;
+			else
+				return $arr[$key];
 
 		}
 
