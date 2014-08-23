@@ -261,12 +261,6 @@
 			return $this->xml;
 		}
 
-		public function getIX() {
-			if(!$this->xml)
-				$this->lsdvd();
-			return $this->ix;
-		}
-
 		public function getVTSID() {
 			if(!$this->xml)
 				$this->lsdvd();
