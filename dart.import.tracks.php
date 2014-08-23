@@ -37,7 +37,7 @@
 
 		echo "$title_track ";
 
-		$track_opened = $dvd->load_title_track($title_track);
+		$title_track_loaded = $dvd->load_title_track($title_track);
 
 		// Lookup the database tracks.id
 		$tracks_model = new Tracks_Model;
@@ -61,7 +61,7 @@
 		}
 
 		// Handle broken tracks! :D
-		if(!$track->opened) {
+		if(!$title_track_loaded) {
 			echo "\n";
 			echo "! Opening $device track number $title_track FAILED\n";
 			$title_track++;
@@ -81,7 +81,7 @@
 		// Track length has been through a lot of revisions, always update
 		// it if the missing DVD metadata flag is set.
 		if($missing_dvd_metadata || $import || is_null($tracks_model->length))
-			$tracks_model->length = $dvd->title_track_length;
+			$tracks_model->length = $dvd->title_track_msecs;
 
 		if(!$tracks_model->format)
 			$tracks_model->format = $dvd->video_format;

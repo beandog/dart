@@ -36,8 +36,8 @@
 		if($dvd->audio_track_lang_code && !$audio_model->langcode)
 			$audio_model->langcode = $dvd->audio_track_lang_code;
 
-		if($dvd->audio_track_format && !$audio_model->format)
-			$audio_model->format = $dvd->audio_track_format;
+		if($dvd->audio_track_codec && !$audio_model->format)
+			$audio_model->format = $dvd->audio_track_codec;
 
 		if($dvd->audio_track_channels && is_null($audio_model->channels))
 			$audio_model->channels = $dvd->audio_track_channels;
