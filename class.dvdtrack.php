@@ -20,6 +20,7 @@
 	class DVDTrack {
 
 		private $device;
+		private $dvd_info;
 		private $lsdvd;
 		private $id;
 		private $xml;
@@ -80,7 +81,7 @@
 
 			bcscale(3);
 
-			$bool = $this->lsdvd();
+			$bool = $this->dvd_info();
 
 			$this->opened = $bool;
 
@@ -92,6 +93,36 @@
 				return "dvdnav://";
 			else
 				return "dvd://";
+		}
+
+		private function dvd_info() {
+
+			$cmd = "dvd_info --json ".escapeshellarg($this->device)." -t ".$this->track." 2> /dev/null";
+
+			if($this->debug)
+				echo "! dvd_info(): $cmd\n";
+
+			exec($cmd, $output, $retval);
+
+			if($retval !== 0 || !count($output)) {
+				echo "! dvd_info(): FAILED\n";
+				return false;
+			}
+
+			$str = implode('', $output);
+
+			// Create an assoc. array
+			$json = json_decode($str, true);
+
+			if(is_null($json)) {
+				echo "! dvd_info(): json_decode() failed\n";
+				return false;
+			}
+
+			$this->dvd_info = $json;
+
+			return true;
+
 		}
 
 		/** Metadata **/
