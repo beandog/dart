@@ -23,6 +23,7 @@
 			if($debug)
 				echo "! Created new audio id: $audio_model_id\n";
 			$audio_model->track_id = $tracks_model_id;
+			$audio_model->ix = $audio_track;
 
 		} else {
 
@@ -30,19 +31,28 @@
 
 		}
 
-		if(is_null($audio_model->ix))
-			$audio_model->ix = $audio_track;
-
-		if($dvd->audio_track_lang_code && !$audio_model->langcode)
+		if($audio_model->langcode != $dvd->audio_track_lang_code) {
 			$audio_model->langcode = $dvd->audio_track_lang_code;
+			if($this->debug)
+				echo "* Updating audio lang code: ".$audio_model->langcode." -> ".$dvd->audio_track_lang_code."\n";
+		}
 
-		if($dvd->audio_track_codec && !$audio_model->format)
+		if($audio_model->format != $dvd->audio_track_codec) {
 			$audio_model->format = $dvd->audio_track_codec;
+			if($this->debug)
+				echo "* Updating audio codec: ".$audio_model->format." -> ".$dvd->audio_track_codec."\n";
+		}
 
-		if($dvd->audio_track_channels && is_null($audio_model->channels))
+		if($audio_model->channels != $dvd->audio_track_channels) {
 			$audio_model->channels = $dvd->audio_track_channels;
+			if($this->debug)
+				echo "* Updating audio channels: ".$audio_model->channels." -> ".$dvd->audio_track_channels."\n";
+		}
 
-		if($dvd->audio_track_stream_id && !$audio_model->streamid)
+		if($audio_model->streamid != $dvd->audio_track_stream_id) {
 			$audio_model->streamid = $dvd->audio_track_stream_id;
+			if($this->debug)
+				echo "* Updating audio channels: ".$audio_model->channels." -> ".$dvd->audio_track_channels."\n";
+		}
 
 	}
