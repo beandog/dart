@@ -80,8 +80,6 @@
 			else
 				$this->opened = true;
 
-			bcscale(3);
-
 			$this->dvdread_id = $this->dvdread_id();
 			$this->title = $this->title();
 			$this->title_tracks = $this->title_tracks();
@@ -433,14 +431,12 @@
 
 		private function title_track_seconds() {
 
-			bcscale(3);
 			$msecs = abs(intval($this->title_track_msecs()));
+			$seconds = 0;
 			if($msecs)
-				$seconds = bcdiv($msecs, 1000);
-			else
-				$seconds = 0;
+				$seconds = floatval(bcdiv($msecs, 1000, 3));
 
-			return (float)$seconds;
+			return $seconds;
 
 		}
 
@@ -625,14 +621,12 @@
 
 		private function chapter_seconds() {
 
-			bcscale(3);
 			$msecs = abs(intval($this->chapter_msecs()));
+			$seconds = 0;
 			if($msecs)
-				$seconds = bcdiv($msecs, 1000);
-			else
-				$seconds = 0;
+				$seconds = floatval(bcdiv($msecs, 1000, 3));
 
-			return (float)$seconds;
+			return $seconds;
 
 		}
 
@@ -675,14 +669,12 @@
 
 		private function cell_seconds() {
 
-			bcscale(3);
 			$msecs = abs(intval($this->cell_msecs()));
+			$seconds = 0;
 			if($msecs)
-				$seconds = bcdiv($msecs, 1000);
-			else
-				$seconds = 0;
+				$seconds = floatval(bcdiv($msecs, 1000, 3));
 
-			return (float)$seconds;
+			return $seconds;
 
 		}
 
