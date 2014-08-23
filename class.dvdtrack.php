@@ -5,14 +5,9 @@
 	class DVDTrack extends DVD {
 
 		private $device;
-		private $track;
 
-		private $dvdnav = false;
-
-		public $chapters;
-		public $cells;
-
-		public $opened;
+		protected $title_track;
+		protected $title_track_info;
 
 		function __construct($device = "/dev/dvd", $track = 1, $debug = false) {
 
@@ -55,13 +50,6 @@
 
 		}
 
-		/** Hardware **/
-		private function getProtocol() {
-			if($this->dvdnav)
-				return "dvdnav://";
-			else
-				return "dvd://";
-		}
 
 		/** Metadata **/
 
