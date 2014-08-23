@@ -52,11 +52,16 @@
 		$dvds_model->metadata_spec = 3;
 
 		echo "* DVD model now meets latest database spec!!\n";
-		echo "* New title tracks: $new_title_tracks\n";
-		echo "* New audio tracks: $new_audio_tracks\n";
-		echo "* New subtitle tracks: $new_subtitle_tracks\n";
-		echo "* New chapters: $new_chapters\n";
-		echo "* New cells: $new_cells\n";
+		if($new_title_tracks)
+			echo "* New title tracks: $new_title_tracks\n";
+		if($new_audio_tracks)
+			echo "* New audio tracks: $new_audio_tracks\n";
+		if($new_subtitle_tracks)
+			echo "* New subtitle tracks: $new_subtitle_tracks\n";
+		if($new_chapters)
+			echo "* New chapters: $new_chapters\n";
+		if($new_cells)
+			echo "* New cells: $new_cells\n";
 
 	}
 
