@@ -3,7 +3,7 @@
 	class DVD {
 
 		private $device;
-		private $dvd_info_json;
+		private $dvd_info;
 		private $lsdvd;
 		private $id;
 		private $is_iso;
@@ -66,7 +66,7 @@
 				return false;
 			}
 
-			$this->dvd_info_json = $json;
+			$this->dvd_info = $json;
 
 			return true;
 
@@ -80,7 +80,7 @@
 			if($this->debug)
 				echo "! dvd->dvdread_id()\n";
 
-			$dvdread_id = $this->dvd_info_json['dvd']['dvdread id'];
+			$dvdread_id = $this->dvd_info['dvd']['dvdread id'];
 
 			if(strlen($dvdread_id) != 32)
 				return false;
@@ -236,7 +236,7 @@
 		 */
 		public function getTitle() {
 
-			$title = $this->dvd_info_json['dvd']['title'];
+			$title = $this->dvd_info['dvd']['title'];
 
 			$title = trim($title);
 
@@ -256,7 +256,7 @@
 				return null;
 
 			// First make sure we can get tracks
-			if(!array_key_exists('tracks', $this->dvd_info_json)) {
+			if(!array_key_exists('tracks', $this->dvd_info)) {
 
 				if($this->debug) {
 					echo "! getNumTracks(): DVD has no tracks!!!  This is bad.\n";
@@ -266,7 +266,7 @@
 
 			}
 
-			$num_tracks = count($this->dvd_info_json['tracks']);
+			$num_tracks = count($this->dvd_info['tracks']);
 
 			return $num_tracks;
 
@@ -278,7 +278,7 @@
 				return null;
 
 			// First make sure we can get tracks
-			if(!array_key_exists('tracks', $this->dvd_info_json)) {
+			if(!array_key_exists('tracks', $this->dvd_info)) {
 
 				if($this->debug) {
 					echo "! getLongestTrack(): DVD has no tracks!!!  This is bad.\n";
@@ -293,7 +293,7 @@
 			// one has equal length than an earlier one, then default to the first
 			// one with that maximum length.
 
-			$tracks =& $this->dvd_info_json['tracks'];
+			$tracks =& $this->dvd_info['tracks'];
 
 			$longest_track = 1;
 			$longest_track_msecs = 0;
@@ -318,7 +318,7 @@
 			if(!$this->opened)
 				return null;
 
-			$dvd =& $this->dvd_info_json;
+			$dvd =& $this->dvd_info;
 
 			if(array_key_exists('provider id', $dvd['dvd'])) {
 				$provider_id = $dvd['dvd']['provider id'];
