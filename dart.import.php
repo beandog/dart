@@ -105,7 +105,7 @@
 
 			echo "$track_number ";
 
-			$dvd_track = new DVDTrack($device, $track_number);
+			$dvd_track = new DVDTrack($device, $track_number, $debug);
 
 			// Lookup the database tracks.id
 			$tracks_model = new Tracks_Model;
@@ -149,13 +149,13 @@
 			// Track length has been through a lot of revisions, always update
 			// it if the missing DVD metadata flag is set.
 			if($missing_dvd_metadata || $import || is_null($tracks_model->length))
-				$tracks_model->length = $dvd_track->getLength();
+				$tracks_model->length = $dvd_track->length;
 
 			if(!$tracks_model->format)
-				$tracks_model->format = $dvd_track->getVideoFormat();
+				$tracks_model->format = $dvd_track->video_format;
 
 			if(!$tracks_model->aspect)
-				$tracks_model->aspect = $dvd_track->getAspectRatio();
+				$tracks_model->aspect = $dvd_track->aspect_ratio;
 
 			// Handbrake (0.9.9) sometimes fails to scan DVDs with certain tracks.
 			// If that's the case, skip over them.
@@ -176,9 +176,6 @@
 
 				}
 			}
-
-			// Get lsdvd XML to pass to sub-classes
-			$xml = $dvd_track->getXML();
 
 			/** Audio Streams **/
 
