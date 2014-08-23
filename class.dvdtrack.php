@@ -23,8 +23,10 @@
 			if($track === 0)
 				$track = 1;
 
-			if($track > $this->tracks)
+			if($track > $this->tracks) {
 				$this->opened = false;
+				return null;
+			}
 
 			bcscale(3);
 
@@ -48,8 +50,6 @@
 			$this->video_height = $this->video_height();
 			$this->video_angles = $this->video_angles();
 			$this->video_fps = $this->video_fps();
-
-			print_r($this);
 
 			return true;
 
