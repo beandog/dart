@@ -78,6 +78,15 @@
 
 		}
 
+		public function title_track_subtitles() {
+
+			if(!array_key_exists('subtitles', $this->title_track_info))
+				return 0;
+
+			return count($this->title_track_info['subtitles']);
+
+		}
+
 		public function title_track_chapters() {
 
 			if(!array_key_exists('chapters', $this->title_track_info))
