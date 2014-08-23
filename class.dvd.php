@@ -43,6 +43,13 @@
 		public $audio_track_channels;
 		public $audio_track_stream_id;
 
+		// DVD Chapter
+		public $chapter;
+		public $chapter_length;
+		public $chapter_seconds;
+		public $chapter_msecs;
+		public $chapter_startcell;
+
 		function __construct($device = "/dev/dvd", $debug = false) {
 
 			$this->device = realpath($device);
@@ -571,6 +578,54 @@
 
 		private function subtitle_track_stream_id() {
 			return $this->dvd_info_string($this->subtitle_track_info, 'stream id');
+		}
+
+		/** DVD Chapter **/
+
+		public function load_chapter($title_track, $chapter) {
+
+			$title_track = abs(intval($title_track));
+			$chapter = abs(intval($chapter));
+
+			$title_track_loaded = $this->load_title_track($title_track);
+
+			if(!$title_track_loaded || $chapter === 0 || $chapter > $this->title_track_chapters) {
+
+				return false;
+			}
+
+			$this->chapter = $chapter;
+			$this->chapter_info = $this->dvd_info['tracks'][$this->title_track - 1]['chapters'][$this->chapter - 1];
+
+			$this->chapter_length = $this->chapter_length();
+			$this->chapter_msecs = $this->chapter_msecs();
+			$this->chapter_seconds = $this->chapter_seconds();
+			$this->chapter_startcell = $this->chapter_startcell();
+
+			return true;
+
+		}
+
+		private function chapter_length() {
+			return $this->dvd_info_string($this->chapter_info, 'length');
+		}
+
+		private function chapter_msecs() {
+			return $this->dvd_info_number($this->chapter_info, 'msecs');
+		}
+
+		private function chapter_seconds() {
+
+			bcscale(3);
+			$msecs = $this->chapter_msecs();
+			$seconds = bcdiv($msecs, 1000);
+
+			return $seconds;
+
+		}
+
+		private function chapter_startcell() {
+			return $this->dvd_info_number($this->chapter_info, 'startcell');
 		}
 
 	}
