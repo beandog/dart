@@ -35,11 +35,6 @@
 		$cell_seconds = $dvd->cell_seconds;
 		if($cells_model->length != $cell_seconds) {
 
-			var_dump($cell_seconds);
-			var_dump($cells_model->length);
-
-			die;
-
 			$cells_model->length = $cell_seconds;
 			if($debug)
 				echo "Updating cell length: ".$cells_model->length." -> $cell_seconds\n";
