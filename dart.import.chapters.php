@@ -2,14 +2,17 @@
 
 	/** Chapters **/
 
-	$dvd_chapters = $dvd_track->getChapters();
+	for($chapter = 1; $chapter < $dvd->title_track_chapters + 1; $chapter++) {
 
-	foreach($dvd_chapters as $chapter_number => $chapter_data) {
+		$chapter_loaded = $dvd->load_chapter($title_track, $chapter);
 
-		// Lookup the database chapters.id
+		if(!$chapter_loaded) {
+			echo "! Could not load chapter $chapter on title track $title_track.  Skipping\n";
+			break;
+		}
+
 		$chapters_model = new Chapters_Model;
-		$chapters_ix = $chapter_data['ix'];
-		$chapters_model_id = $chapters_model->find_chapters_id($tracks_model_id, $chapters_ix);
+		$chapters_model_id = $chapters_model->find_chapters_id($tracks_model_id, $chapter);
 
 		// Create a new record
 		if(!$chapters_model_id) {
@@ -20,7 +23,7 @@
 				echo "! Created new chapters id: $chapters_model_id\n";
 
 			$chapters_model->track_id = $tracks_model_id;
-			$chapters_model->ix = $chapters_ix;
+			$chapters_model->ix = $chapter;
 
 		} else {
 
@@ -28,12 +31,19 @@
 
 		}
 
-		if(is_null($chapters_model->length))
-			$chapters_model->length = $chapter_data['length'];
+		if($chapters_model->length != $dvd->chapter_seconds) {
+			$chapters_model->length = $dvd->chapter_seconds;
+			if($debug) {
+				echo "* Updating chapter length: ".$chapters_model->length." -> ".$dvd->chapter_seconds."\n";
+			}
+		}
 
-		if(is_null($chapters_model->startcell))
-			$chapters_model->startcell = $chapter_data['startcell'];
+		if($chapters_model->startcell != $dvd->chapter_startcell) {
+			$chapters_model->startcell = $dvd->chapter_startcell;
+			if($debug) {
+				echo "* Updating starting cell: ".$chapters_model->startcell." ".$dvd->chapter_startcell."\n";
+			}
+		}
 
 	}
-
 
