@@ -313,7 +313,7 @@
 		public function size() {
 
 			if($this->debug)
-				echo "! dvd->size($format)\n";
+				echo "! dvd->size()\n";
 
 			if($this->is_iso) {
 				$stat = stat($this->device);
