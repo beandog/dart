@@ -179,19 +179,18 @@
 
 			/** Audio Streams **/
 
-			$audio_streams = $dvd->title_track_audio_tracks();
+			$audio_tracks = $dvd->title_track_audio_track;
 
 			if($debug)
 				echo "! Title track $track_number has ".$dvd->title_track_audio_tracks()." audio tracks\n";
 
-			foreach($audio_streams as $streamid) {
+			for($audio_track = 1; $audio_track < $audio_tracks + 1; $audio_track++) {
 
-				$dvd_audio = new DVDAudio($xml, $streamid);
+				$dvd->load_audio_track($track_number, $audio_track);
 
 				// Lookup the database audio.id
 				$audio_model = new Audio_Model;
-				$audio_ix = $dvd_audio->getXMLIX();
-				$audio_model_id = $audio_model->find_audio_id($tracks_model_id, $audio_ix);
+				$audio_model_id = $audio_model->find_audio_id($tracks_model_id, $audio_track);
 
 				// Create a new record
 				if(!$audio_model_id) {
@@ -209,19 +208,19 @@
 				}
 
 				if(is_null($audio_model->ix))
-					$audio_model->ix = $audio_ix;
+					$audio_model->ix = $audio_track;
 
-				if(!$audio_model->langcode)
-					$audio_model->langcode = $dvd_audio->getLangcode();
+				if($dvd->audio_track_lang_code && !$audio_model->langcode)
+					$audio_model->langcode = $dvd->audio_track_lang_code;
 
-				if(!$audio_model->format)
-					$audio_model->format = $dvd_audio->getFormat();
+				if($dvd->audio_track_format && !$audio_model->format)
+					$audio_model->format = $dvd->audio_track_format;
 
-				if(is_null($audio_model->channels))
-					$audio_model->channels = $dvd_audio->getChannels();
+				if($dvd->audio_track_channels && is_null($audio_model->channels))
+					$audio_model->channels = $dvd->audio_track_channels;
 
-				if(!$audio_model->streamid)
-					$audio_model->streamid = $streamid;
+				if($dvd->audio_track_stream_id && !$audio_model->streamid)
+					$audio_model->streamid = $dvd->audio_track_stream_id;
 
 			}
 
