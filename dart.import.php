@@ -29,8 +29,8 @@
 	// Start import
 	if($access_device && $allow_import) {
 
-		$dvdread_id = $dvd->dvdread_id();
-		$dvd_title = $dvd->getTitle();
+		$dvdread_id = $dvd->dvdread_id;
+		$dvd_title = $dvd->title;
 
 		echo "* Title: $dvd_title\n";
 
@@ -59,7 +59,7 @@
 			$dvds_model->title = $dvd_title;
 		}
 		if($missing_dvd_metadata || !$disc_indexed) {
-			$dvd_filesize = $dvd->getSize();
+			$dvd_filesize = $dvd->size();
 			$d_dvd_filesize = number_format($dvd_filesize);
 			echo "* DVD filesize: $d_dvd_filesize MB\n";
 			$dvds_model->filesize = $dvd_filesize;
