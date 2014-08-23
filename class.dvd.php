@@ -302,7 +302,7 @@
 
 				if($arr['msecs'] > $longest_track_msecs) {
 
-					$longest_track = $arr['ix'];
+					$longest_track = $arr['track'];
 					$longest_track_msecs = $arr['msecs'];
 
 				}
