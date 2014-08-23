@@ -268,7 +268,7 @@
 		/**
 		 * Get the size of the filesystem on the device
 		 */
-		public function size($format = 'MB') {
+		public function size() {
 
 			if($this->debug)
 				echo "! dvd->size($format)\n";
@@ -289,13 +289,8 @@
 
 			$kb_size = $b_size / 1024;
 			$mb_size = intval($kb_size / 1024);
-			$gb_size = intval($mb_size / 1024);
 
-			if($format == 'MB')
-				return $mb_size;
-
-			if($format == 'GB')
-				return $gb_size;
+			return $mb_size;
 
 		}
 
