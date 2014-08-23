@@ -390,6 +390,7 @@
 
 			$this->title_track_length = $this->title_track_length();
 			$this->title_track_msecs = $this->title_track_msecs();
+			$this->title_track_seconds = $this->title_track_seconds();
 			$this->title_track_vts = $this->title_track_vts();
 			$this->title_track_ttn = $this->title_track_ttn();
 			$this->title_track_chapters = $this->title_track_chapters();
@@ -415,6 +416,16 @@
 
 		private function title_track_msecs() {
 			return $this->dvd_info_number($this->title_track_info, 'msecs');
+		}
+
+		private function title_track_seconds() {
+
+			bcscale(3);
+			$msecs = $this->title_track_msecs();
+			$seconds = bcdiv($msecs, 1000);
+
+			return $seconds;
+
 		}
 
 		private function title_track_vts() {
