@@ -268,7 +268,7 @@
 
 			echo "[DVD]\n";
 
-			$device_filesize = $dvd->getSize();
+			$device_filesize = $dvd->size;
 			$display_filesize = number_format($device_filesize);
 			if(!$device_filesize) {
 				echo "* DVD size reported as zero! Aborting\n";
@@ -283,8 +283,9 @@
 			echo "* Filesize:\t$display_filesize MB\n";
 
 			// Get the uniq ID for the disc
-			$dvdread_id = $dvd->dvdread_id();
-			echo "* Title:\t".$dvd->getTitle()."\n";
+			$dvdread_id = $dvd->dvdread_id;
+			$dvd_title = $dvd->title;
+			echo "* Title:\t$dvd_title\n";
 			echo "* dvdread id:\t$dvdread_id\n";
 
 			// Lookup the database dvds.id
