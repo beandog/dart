@@ -301,14 +301,14 @@
 
 			if($dvds_model_id) {
 
+				$dvds_model->load($dvds_model_id);
+
 				$series_title = $dvds_model->get_series_title();
 
 				echo "* DVD ID:\t$dvds_model_id\n";
 				echo "* Series:\t$series_title\n";
 
 				$disc_indexed = true;
-
-				$dvds_model->load($dvds_model_id);
 
 			}
 
