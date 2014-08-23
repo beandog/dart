@@ -37,6 +37,12 @@
 		public $video_angles;
 		public $video_fps;
 
+		// DVD Audio
+		public $audio_track;
+		public $audio_track_codec;
+		public $audio_track_channels;
+		public $audio_track_stream_id;
+
 		function __construct($device = "/dev/dvd", $debug = false) {
 
 			$this->device = realpath($device);
@@ -483,6 +489,48 @@
 
 		public function video_fps() {
 			return $this->dvd_info_number($this->title_track_info['video'], 'fps');
+		}
+
+		/** DVD Audio Track **/
+
+		public function load_audio_track($title_track, $audio_track) {
+
+			$title_track = abs(intval($title_track));
+			$audio_track = abs(intval($audio_track));
+
+			$title_track_loaded = $this->load_title_track($title_track);
+
+			if(!$title_track_loaded || $audio_track === 0 || $audio_track > $this->title_track_audio_tracks) {
+
+				return false;
+			}
+
+			$this->audio_track = $audio_track;
+			$this->audio_track_info = $this->dvd_info['tracks'][$this->title_track - 1]['audio'][$this->audio_track - 1];
+
+			$this->audio_track_lang_code = $this->audio_track_lang_code();
+			$this->audio_track_codec = $this->audio_track_codec();
+			$this->audio_track_channels = $this->audio_track_channels();
+			$this->audio_track_stream_id = $this->audio_track_stream_id();
+
+			return true;
+
+		}
+
+		public function audio_track_lang_code() {
+			return $this->dvd_info_string($this->audio_track_info, 'lang code');
+		}
+
+		public function audio_track_codec() {
+			return $this->dvd_info_string($this->audio_track_info, 'codec');
+		}
+
+		public function audio_track_channels() {
+			return $this->dvd_info_number($this->audio_track_info, 'channels');
+		}
+
+		public function audio_track_stream_id() {
+			return $this->dvd_info_string($this->audio_track_info, 'stream id');
 		}
 
 	}
