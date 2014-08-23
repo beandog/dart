@@ -38,9 +38,9 @@
 
 	}
 
-	// FIXME needs a function
+	// Metadata meets spec v3: dvd_info database
 	if($missing_dvd_metadata) {
 		$missing_dvd_metadata = false;
-		$dvds_model->metadata_spec = 1;
+		$dvds_model->metadata_spec = 3;
 	}
 
