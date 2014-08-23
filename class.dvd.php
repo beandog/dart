@@ -221,7 +221,7 @@
 		/**
 		 * Get the DVD title
 		 */
-		public function title() {
+		private function title() {
 
 			if(!$this->opened)
 				return null;
@@ -234,7 +234,7 @@
 		}
 
 		/** Tracks **/
-		public function title_tracks() {
+		private function title_tracks() {
 
 			// First make sure we can get tracks
 			if(!array_key_exists('tracks', $this->dvd_info)) {
@@ -411,23 +411,23 @@
 
 		}
 
-		public function title_track_length() {
+		private function title_track_length() {
 			return $this->dvd_info_string($this->title_track_info, 'length');
 		}
 
-		public function title_track_msecs() {
+		private function title_track_msecs() {
 			return $this->dvd_info_number($this->title_track_info, 'msecs');
 		}
 
-		public function title_track_vts() {
+		private function title_track_vts() {
 			return $this->dvd_info_number($this->title_track_info, 'vts');
 		}
 
-		public function title_track_ttn() {
+		private function title_track_ttn() {
 			return $this->dvd_info_number($this->title_track_info, 'vts');
 		}
 
-		public function title_track_audio_tracks() {
+		private function title_track_audio_tracks() {
 
 			if(!array_key_exists('audio', $this->title_track_info))
 				return 0;
@@ -436,7 +436,7 @@
 
 		}
 
-		public function title_track_subtitles() {
+		private function title_track_subtitles() {
 
 			if(!array_key_exists('subtitles', $this->title_track_info))
 				return 0;
@@ -445,7 +445,7 @@
 
 		}
 
-		public function title_track_chapters() {
+		private function title_track_chapters() {
 
 			if(!array_key_exists('chapters', $this->title_track_info))
 				return 0;
@@ -454,7 +454,7 @@
 
 		}
 
-		public function title_track_cells() {
+		private function title_track_cells() {
 
 			if(!array_key_exists('cells', $this->title_track_info))
 				return 0;
@@ -463,31 +463,31 @@
 
 		}
 
-		public function video_codec() {
+		private function video_codec() {
 			return $this->dvd_info_string($this->title_track_info['video'], 'codec');
 		}
 
-		public function video_format() {
+		private function video_format() {
 			return $this->dvd_info_string($this->title_track_info['video'], 'format');
 		}
 
-		public function video_aspect_ratio() {
+		private function video_aspect_ratio() {
 			return $this->dvd_info_string($this->title_track_info['video'], 'aspect ratio');
 		}
 
-		public function video_width() {
+		private function video_width() {
 			return $this->dvd_info_number($this->title_track_info['video'], 'width');
 		}
 
-		public function video_height() {
+		private function video_height() {
 			return $this->dvd_info_number($this->title_track_info['video'], 'height');
 		}
 
-		public function video_angles() {
+		private function video_angles() {
 			return $this->dvd_info_number($this->title_track_info['video'], 'angles');
 		}
 
-		public function video_fps() {
+		private function video_fps() {
 			return $this->dvd_info_number($this->title_track_info['video'], 'fps');
 		}
 
@@ -517,19 +517,19 @@
 
 		}
 
-		public function audio_track_lang_code() {
+		private function audio_track_lang_code() {
 			return $this->dvd_info_string($this->audio_track_info, 'lang code');
 		}
 
-		public function audio_track_codec() {
+		private function audio_track_codec() {
 			return $this->dvd_info_string($this->audio_track_info, 'codec');
 		}
 
-		public function audio_track_channels() {
+		private function audio_track_channels() {
 			return $this->dvd_info_number($this->audio_track_info, 'channels');
 		}
 
-		public function audio_track_stream_id() {
+		private function audio_track_stream_id() {
 			return $this->dvd_info_string($this->audio_track_info, 'stream id');
 		}
 
