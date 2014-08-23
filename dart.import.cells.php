@@ -33,11 +33,15 @@
 		}
 
 		$cell_seconds = $dvd->cell_seconds;
-		if($cells_model->length != $cell_seconds) {
+
+		// Database model returns a string
+		$cells_model_length = floatval($cells_model->length);
+
+		if($cells_model_length != $cell_seconds) {
 
 			$cells_model->length = $cell_seconds;
 			if($debug)
-				echo "Updating cell length: ".$cells_model->length." -> $cell_seconds\n";
+				echo "* Updating cell length: $cells_model_length -> $cell_seconds\n";
 		}
 
 	}

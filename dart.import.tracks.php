@@ -78,10 +78,13 @@
 		// Check the database to see if any tags / anomalies are reported
 		$arr_tags = $tracks_model->get_tags();
 
-		if($tracks_model->length != $dvd->title_track_seconds) {
+		// Database model returns a string
+		$tracks_model_length = floatval($tracks_model->length);
+
+		if($tracks_model_length != $dvd->title_track_seconds) {
 			$tracks_model->length = $dvd->title_track_seconds;
 			if($debug)
-				echo "* Updating track length (msecs): ".$dvd->title_track_seconds."\n";
+				echo "* Updating track length (msecs): $tracks_model_length -> ".$dvd->title_track_seconds."\n";
 		}
 
 		if($tracks_model->format != $dvd->video_format) {
