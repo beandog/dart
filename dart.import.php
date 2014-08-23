@@ -151,20 +151,11 @@
 			if($missing_dvd_metadata || $import || is_null($tracks_model->length))
 				$tracks_model->length = $dvd_track->getLength();
 
-			if(is_null($tracks_model->fps))
-				$tracks_model->fps = $dvd_track->getFPS();
-
 			if(!$tracks_model->format)
 				$tracks_model->format = $dvd_track->getVideoFormat();
 
 			if(!$tracks_model->aspect)
 				$tracks_model->aspect = $dvd_track->getAspectRatio();
-
-			if(is_null($tracks_model->width))
-				$tracks_model->width = $dvd_track->getWidth();
-
-			if(is_null($tracks_model->height))
-				$tracks_model->height = $dvd_track->getHeight();
 
 			// Handbrake (0.9.9) sometimes fails to scan DVDs with certain tracks.
 			// If that's the case, skip over them.
