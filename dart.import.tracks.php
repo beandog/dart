@@ -78,16 +78,23 @@
 		// Check the database to see if any tags / anomalies are reported
 		$arr_tags = $tracks_model->get_tags();
 
-		// Track length has been through a lot of revisions, always update
-		// it if the missing DVD metadata flag is set.
-		if($missing_dvd_metadata || $import || is_null($tracks_model->length))
-			$tracks_model->length = $dvd->title_track_msecs;
+		if($tracks_model->length != $dvd->title_track_seconds) {
+			$tracks_model->length = $dvd->title_track_seconds;
+			if($debug)
+				echo "* Updating track length (msecs): ".$dvd->title_track_seconds."\n";
+		}
 
-		if(!$tracks_model->format)
+		if($tracks_model->format != $dvd->video_format) {
 			$tracks_model->format = $dvd->video_format;
+			if($debug)
+				echo "* Updating track format: ".$dvd->video_format."\n";
+		}
 
-		if(!$tracks_model->aspect)
-			$tracks_model->aspect = $dvd->aspect_ratio;
+		if($tracks_model->aspect != $dvd->video_aspect_ratio) {
+			$tracks_model->aspect = $dvd->video_aspect_ratio;
+			if($debug)
+				echo "* Updating aspect ratio: ".$dvd->video_aspect_ratio."\n";
+		}
 
 		// Handbrake (0.9.9) sometimes fails to scan DVDs with certain tracks.
 		// If that's the case, skip over them.
