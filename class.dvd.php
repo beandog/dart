@@ -377,16 +377,11 @@
 
 			$title_track = abs(intval($title_track));
 
-			if($title_track === 0)
-				$title_track = 1;
-
-			if($title_track > $this->title_tracks) {
-				$this->opened = false;
-				return null;
+			if($title_track === 0 || $title_track > $this->title_tracks) {
+				return false;
 			}
 
 			$this->title_track = $title_track;
-
 			$this->title_track_info = $this->dvd_info['tracks'][$this->title_track - 1];
 
 			$this->title_track_length = $this->title_track_length();
@@ -405,6 +400,8 @@
 			$this->video_height = $this->video_height();
 			$this->video_angles = $this->video_angles();
 			$this->video_fps = $this->video_fps();
+
+			return true;
 
 		}
 

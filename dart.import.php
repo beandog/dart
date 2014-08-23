@@ -105,7 +105,7 @@
 
 			echo "$track_number ";
 
-			$dvd_track = new DVDTrack($device, $track_number, $debug);
+			$track_opened = $dvd->load_title_track($track_number);
 
 			// Lookup the database tracks.id
 			$tracks_model = new Tracks_Model;
@@ -129,7 +129,7 @@
 			}
 
 			// Handle broken tracks! :D
-			if(!$dvd_track->opened) {
+			if(!$track->opened) {
 				echo "\n";
 				echo "! Opening $device track number $track_number FAILED\n";
 				$track_number++;
@@ -149,13 +149,13 @@
 			// Track length has been through a lot of revisions, always update
 			// it if the missing DVD metadata flag is set.
 			if($missing_dvd_metadata || $import || is_null($tracks_model->length))
-				$tracks_model->length = $dvd_track->length;
+				$tracks_model->length = $dvd->title_track_length;
 
 			if(!$tracks_model->format)
-				$tracks_model->format = $dvd_track->video_format;
+				$tracks_model->format = $dvd->video_format;
 
 			if(!$tracks_model->aspect)
-				$tracks_model->aspect = $dvd_track->aspect_ratio;
+				$tracks_model->aspect = $dvd->aspect_ratio;
 
 			// Handbrake (0.9.9) sometimes fails to scan DVDs with certain tracks.
 			// If that's the case, skip over them.
@@ -179,10 +179,10 @@
 
 			/** Audio Streams **/
 
-			$audio_streams = $dvd_track->getAudioStreams();
+			$audio_streams = $dvd->title_track_audio_tracks();
 
 			if($debug)
-				echo "! Track $track_number has ".count($audio_streams)." audio streams\n";
+				echo "! Title track $track_number has ".$dvd->title_track_audio_tracks()." audio tracks\n";
 
 			foreach($audio_streams as $streamid) {
 
