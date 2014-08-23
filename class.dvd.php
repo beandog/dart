@@ -434,10 +434,13 @@
 		private function title_track_seconds() {
 
 			bcscale(3);
-			$msecs = $this->title_track_msecs();
-			$seconds = bcdiv($msecs, 1000);
+			$msecs = abs(intval($this->title_track_msecs()));
+			if($msecs)
+				$seconds = bcdiv($msecs, 1000);
+			else
+				$seconds = 0;
 
-			return $seconds;
+			return (float)$seconds;
 
 		}
 
@@ -623,10 +626,13 @@
 		private function chapter_seconds() {
 
 			bcscale(3);
-			$msecs = $this->chapter_msecs();
-			$seconds = bcdiv($msecs, 1000);
+			$msecs = abs(intval($this->chapter_msecs()));
+			if($msecs)
+				$seconds = bcdiv($msecs, 1000);
+			else
+				$seconds = 0;
 
-			return $seconds;
+			return (float)$seconds;
 
 		}
 
@@ -670,10 +676,13 @@
 		private function cell_seconds() {
 
 			bcscale(3);
-			$msecs = $this->cell_msecs();
-			$seconds = bcdiv($msecs, 1000);
+			$msecs = abs(intval($this->cell_msecs()));
+			if($msecs)
+				$seconds = bcdiv($msecs, 1000);
+			else
+				$seconds = 0;
 
-			return $seconds;
+			return (float)$seconds;
 
 		}
 
