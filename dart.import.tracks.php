@@ -51,6 +51,8 @@
 			if($debug)
 				echo "! Created new track id: $tracks_model_id\n";
 
+			$new_title_tracks++;
+
 			$tracks_model->dvd_id = $dvds_model_id;
 			$tracks_model->ix = $title_track;
 

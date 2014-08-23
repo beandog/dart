@@ -18,6 +18,8 @@
 			if($debug)
 				echo "! Created new subp id: $subp_model_id\n";
 
+			$new_subtitle_tracks++;
+
 			$subp_model->track_id = $tracks_model_id;
 			$subp_model->ix = $subtitle_track;
 

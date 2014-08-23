@@ -22,6 +22,9 @@
 
 			if($debug)
 				echo "! Created new audio id: $audio_model_id\n";
+
+			$new_audio_tracks++;
+
 			$audio_model->track_id = $tracks_model_id;
 			$audio_model->ix = $audio_track;
 

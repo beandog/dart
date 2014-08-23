@@ -22,6 +22,8 @@
 			if($debug)
 				echo "! Created new chapters id: $chapters_model_id\n";
 
+			$new_chapters++;
+
 			$chapters_model->track_id = $tracks_model_id;
 			$chapters_model->ix = $chapter;
 

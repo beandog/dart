@@ -23,6 +23,8 @@
 			if($debug)
 				echo "! Created new cells id: $cells_model_id\n";
 
+			$new_cells++;
+
 			$cells_model->track_id = $tracks_model_id;
 			$cells_model->ix = $cell;
 
