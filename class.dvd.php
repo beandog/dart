@@ -50,6 +50,12 @@
 		public $chapter_msecs;
 		public $chapter_startcell;
 
+		// DVD Cell
+		public $cell;
+		public $cell_length;
+		public $cell_seconds;
+		public $cell_msecs;
+
 		function __construct($device = "/dev/dvd", $debug = false) {
 
 			$this->device = realpath($device);
@@ -626,6 +632,49 @@
 
 		private function chapter_startcell() {
 			return $this->dvd_info_number($this->chapter_info, 'startcell');
+		}
+
+		/** DVD Cell **/
+
+		public function load_cell($title_track, $cell) {
+
+			$title_track = abs(intval($title_track));
+			$cell = abs(intval($cell));
+
+			$title_track_loaded = $this->load_title_track($title_track);
+
+			if(!$title_track_loaded || $cell === 0 || $cell > $this->title_track_cells) {
+
+				return false;
+			}
+
+			$this->cell = $cell;
+			$this->cell_info = $this->dvd_info['tracks'][$this->title_track - 1]['cells'][$this->cell - 1];
+
+			$this->cell_length = $this->cell_length();
+			$this->cell_msecs = $this->cell_msecs();
+			$this->cell_seconds = $this->cell_seconds();
+
+			return true;
+
+		}
+
+		private function cell_length() {
+			return $this->dvd_info_string($this->cell_info, 'length');
+		}
+
+		private function cell_msecs() {
+			return $this->dvd_info_number($this->cell_info, 'msecs');
+		}
+
+		private function cell_seconds() {
+
+			bcscale(3);
+			$msecs = $this->cell_msecs();
+			$seconds = bcdiv($msecs, 1000);
+
+			return $seconds;
+
 		}
 
 	}
