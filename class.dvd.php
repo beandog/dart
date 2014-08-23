@@ -12,7 +12,7 @@
 		// DVD
 		public $dvdread_id;
 		public $title;
-		public $tracks;
+		public $title_tracks;
 		public $longest_track;
 		public $provider_id;
 		public $size;
@@ -247,9 +247,7 @@
 
 			}
 
-			$num_tracks = count($this->dvd_info['tracks']);
-
-			return $num_tracks;
+			return count($this->dvd_info['tracks']);
 
 		}
 
