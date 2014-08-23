@@ -4,13 +4,17 @@
 
 		private $device;
 		private $dvd_info;
-		private $lsdvd;
-		private $id;
 		private $is_iso;
-		private $sxe;
 		private $debug;
 
 		public $opened;
+
+		public $dvdread_id;
+		public $title;
+		public $tracks;
+		public $longest_track;
+		public $provider_id;
+		public $size;
 
 		function __construct($device = "/dev/dvd", $debug = false) {
 
@@ -35,6 +39,13 @@
 				$this->opened = false;
 			else
 				$this->opened = true;
+
+			$this->dvdread_id = $this->dvdread_id();
+			$this->title = $this->title();
+			$this->tracks = $this->tracks();
+			$this->longest_track = $this->longest_track();
+			$this->provider_id = $this->provider_id();
+			$this->size = $this->size();
 
 			return $bool;
 
@@ -77,6 +88,9 @@
 		// Use dvd_info to get dvdread id
 		public function dvdread_id() {
 
+			if(!$this->opened)
+				return null;
+
 			if($this->debug)
 				echo "! dvd->dvdread_id()\n";
 
@@ -89,87 +103,10 @@
 
 		}
 
-		// Use serial number from HandBrake 0.9.9
-		public function getSerialID() {
-
-			if($this->debug)
-				echo "! dvd->serial_id()\n";
-
-			$exec = "HandBrakeCLI --scan -i ".escapeshellarg($this->device)." 2>&1";
-			exec($exec, $arr, $retval);
-
-			if($retval !== 0) {
-				echo "! getSerialID(): HandBrakeCLI quit with exit code $retval\n";
-				return null;
-			}
-
-			$pattern = "/.*Serial.*/";
-			$match = preg_grep($pattern, $arr);
-
-			if(!count($match)) {
-				if($this->debug)
-					echo "! getSerialID(): HandBrakeCLI did not have a line matching pattern $pattern\n";
-				return null;
-			}
-
-			$explode = explode(' ', current($match));
-
-			if(!count($explode)) {
-				if($this->debug)
-					echo "! getSerialID(): Couldn't find a string\n";
-				return null;
-			}
-
-			$serial_id = end($explode);
-
-			$serial_id = trim($serial_id);
-
-			return $serial_id;
-
-		}
-
-		private function lsdvd($force = false) {
-
-			if($this->debug)
-				echo "! dvd->lsdvd()\n";
-
-			if(empty($this->lsdvd['output']) || $force) {
-
-				$cmd = "lsdvd -Ox -v -a -s -c ".escapeshellarg($this->device)." 2> /dev/null";
-
-				if($this->debug)
-					echo "! lsdvd(): $cmd\n";
-
-				exec($cmd, $output, $retval);
-
-				if($retval !== 0) {
-					echo "! lsdvd() FAILED\n";
-					return false;
-				}
-
-				$str = implode("\n", $output);
-
-				// Fix broken encoding on langcodes, standardize output
-				$str = str_replace('Pan&Scan', 'Pan&amp;Scan', $str);
-				$str = str_replace('P&S', 'P&amp;S', $str);
-				$str = preg_replace("/\<langcode\>\W+\<\/langcode\>/", "<langcode>und</langcode>", $str);
-
-				$this->xml = $str;
-
-				$this->sxe = simplexml_load_string($str);
-
-				if($this->sxe === false) {
-					echo "! lsdvd(): Couldn't parse lsdvd XML output\n";
-					return false;
-				}
-
-			}
-
-			return true;
-
-		}
-
 		public function dump_iso($dest, $method = 'ddrescue') {
+
+			if(!$this->opened)
+				return null;
 
 			if($this->debug)
 				echo "! dvd->dump_iso($dest, $method)\n";
@@ -213,6 +150,9 @@
 
 		public function dump_ifo($dest) {
 
+			if(!$this->opened)
+				return null;
+
 			if($this->debug)
 				echo "! dvd->dump_ifo($dest)\n";
 
@@ -234,7 +174,10 @@
 		/**
 		 * Get the DVD title
 		 */
-		public function getTitle() {
+		public function title() {
+
+			if(!$this->opened)
+				return null;
 
 			$title = $this->dvd_info['dvd']['title'];
 
@@ -243,14 +186,8 @@
 			return $title;
 		}
 
-		public function getXML() {
-			if(!$this->xml)
-				$this->lsdvd();
-			return $this->xml;
-		}
-
 		/** Tracks **/
-		public function getNumTracks() {
+		public function tracks() {
 
 			if(!$this->opened)
 				return null;
@@ -272,7 +209,7 @@
 
 		}
 
-		public function getLongestTrack() {
+		public function longest_track() {
 
 			if(!$this->opened)
 				return null;
@@ -281,7 +218,7 @@
 			if(!array_key_exists('tracks', $this->dvd_info)) {
 
 				if($this->debug) {
-					echo "! getLongestTrack(): DVD has no tracks!!!  This is bad.\n";
+					echo "! longest_track(): DVD has no tracks!!!  This is bad.\n";
 				}
 
 				return null;
@@ -293,12 +230,10 @@
 			// one has equal length than an earlier one, then default to the first
 			// one with that maximum length.
 
-			$tracks =& $this->dvd_info['tracks'];
-
 			$longest_track = 1;
 			$longest_track_msecs = 0;
 
-			foreach($tracks as $arr) {
+			foreach($this->dvd_info['tracks'] as $arr) {
 
 				if($arr['msecs'] > $longest_track_msecs) {
 
@@ -313,7 +248,7 @@
 
 		}
 
-		public function getProviderID() {
+		public function provider_id() {
 
 			if(!$this->opened)
 				return null;
@@ -333,10 +268,10 @@
 		/**
 		 * Get the size of the filesystem on the device
 		 */
-		public function getSize($format = 'MB') {
+		public function size($format = 'MB') {
 
 			if($this->debug)
-				echo "! dvd->getSize($format)\n";
+				echo "! dvd->size($format)\n";
 
 			if($this->is_iso) {
 				$stat = stat($this->device);
@@ -361,6 +296,45 @@
 
 			if($format == 'GB')
 				return $gb_size;
+
+		}
+
+		// Use serial number from HandBrake 0.9.9
+		public function serial_id() {
+
+			if($this->debug)
+				echo "! dvd->serial_id()\n";
+
+			$exec = "HandBrakeCLI --scan -i ".escapeshellarg($this->device)." 2>&1";
+			exec($exec, $arr, $retval);
+
+			if($retval !== 0) {
+				echo "! getSerialID(): HandBrakeCLI quit with exit code $retval\n";
+				return null;
+			}
+
+			$pattern = "/.*Serial.*/";
+			$match = preg_grep($pattern, $arr);
+
+			if(!count($match)) {
+				if($this->debug)
+					echo "! getSerialID(): HandBrakeCLI did not have a line matching pattern $pattern\n";
+				return null;
+			}
+
+			$explode = explode(' ', current($match));
+
+			if(!count($explode)) {
+				if($this->debug)
+					echo "! getSerialID(): Couldn't find a string\n";
+				return null;
+			}
+
+			$serial_id = end($explode);
+
+			$serial_id = trim($serial_id);
+
+			return $serial_id;
 
 		}
 
