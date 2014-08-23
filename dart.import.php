@@ -70,14 +70,14 @@
 
 		/** Tracks **/
 
-		$dvd_num_tracks = $dvd->getNumTracks();
+		$dvd_title_tracks = $dvd->title_tracks;
 
 		// If it comes to this point, there's probably an issue reading the DVD
 		// directly.  Either way, the import will still work, so it's debatable
 		// whether this should die here now and kill the progress of the script
 		// or not. This is something where the dvd_debug program could come into play.
 		// Ideally, that would run first and flag anomalies for me directly.
-		if(!$dvd_num_tracks) {
+		if(!$dvd_title_tracks) {
 
 			$broken_dvd = true;
 			echo "? No tracks? No good!!!!\n";
@@ -97,19 +97,19 @@
 		elseif($archive)
 			echo "* Checking tracks for full archival: ";
 		elseif($import)
-			echo "* Importing $dvd_num_tracks tracks: ";
+			echo "* Importing $dvd_title_tracks tracks: ";
 
 		next_track:
 
-		for($track_number = 1; $track_number <= $dvd_num_tracks; $track_number++) {
+		for($title_track = 1; $title_track < $dvd_title_tracks + 1; $title_track++) {
 
-			echo "$track_number ";
+			echo "$title_track ";
 
-			$track_opened = $dvd->load_title_track($track_number);
+			$track_opened = $dvd->load_title_track($title_track);
 
 			// Lookup the database tracks.id
 			$tracks_model = new Tracks_Model;
-			$tracks_model_id = $tracks_model->find_track_id($dvds_model_id, $track_number);
+			$tracks_model_id = $tracks_model->find_track_id($dvds_model_id, $title_track);
 
 			// Create new database entry
 			if(!$tracks_model_id) {
@@ -120,7 +120,7 @@
 					echo "! Created new track id: $tracks_model_id\n";
 
 				$tracks_model->dvd_id = $dvds_model_id;
-				$tracks_model->ix = $track_number;
+				$tracks_model->ix = $title_track;
 
 			} else {
 
@@ -131,8 +131,8 @@
 			// Handle broken tracks! :D
 			if(!$track->opened) {
 				echo "\n";
-				echo "! Opening $device track number $track_number FAILED\n";
-				$track_number++;
+				echo "! Opening $device track number $title_track FAILED\n";
+				$title_track++;
 
 				// Tag the track as broken in the database
 				$tracks_model->tag_track('track_open_fail');
@@ -167,7 +167,7 @@
 
 					$handbrake = new Handbrake;
 					$handbrake->input_filename($device);
-					$handbrake->input_track($track_number);
+					$handbrake->input_track($title_track);
 
 					if($handbrake->has_closed_captioning())
 						$tracks_model->closed_captioning = 't';
@@ -182,11 +182,11 @@
 			$audio_tracks = $dvd->title_track_audio_track;
 
 			if($debug)
-				echo "! Title track $track_number has ".$dvd->title_track_audio_tracks()." audio tracks\n";
+				echo "! Title track $title_track has ".$dvd->title_track_audio_tracks." audio tracks\n";
 
 			for($audio_track = 1; $audio_track < $audio_tracks + 1; $audio_track++) {
 
-				$dvd->load_audio_track($track_number, $audio_track);
+				$dvd->load_audio_track($title_track, $audio_track);
 
 				// Lookup the database audio.id
 				$audio_model = new Audio_Model;
