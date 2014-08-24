@@ -21,16 +21,7 @@ if($encode) {
 
 	do {
 
-		$num_queued_episodes = count($queue_episodes);
-		if($num_queued_episodes > 1)
-			echo "* $num_queued_episodes episodes queued up!\n";
-
 		foreach($queue_episodes as $episode_id) {
-
-			if($num_queued_episodes > 1) {
-				echo "\n";
-				echo "[Encode ".($num_encoded + 1)."/$num_queued_episodes]\n";
-			}
 
 			$episode = new MediaEpisode($episode_id, $export_dir);
 
@@ -170,7 +161,6 @@ if($encode) {
 				$queue_model->remove_episode($episode_id);
 
 			}
-
 
 			// Goto point: jump to the next episode
 			goto_encode_next_episode:
