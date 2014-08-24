@@ -294,6 +294,8 @@
 
 			clearstatcache();
 
+			if(file_exists($this->queue_iso_symlink))
+				unlink($this->queue_iso_symlink);
 			if(file_exists($this->queue_handbrake_script))
 				unlink($this->queue_handbrake_script);
 			if(file_exists($this->queue_handbrake_output))
