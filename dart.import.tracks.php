@@ -107,18 +107,32 @@
 			// Default to false, so we don't depend on it.
 			$tracks_model->closed_captioning = 'f';
 		} else {
+
 			if(is_null($tracks_model->closed_captioning)) {
 
 				$handbrake = new Handbrake;
 				$handbrake->input_filename($device);
 				$handbrake->input_track($title_track);
 
-				if($handbrake->has_closed_captioning())
-					$tracks_model->closed_captioning = 't';
-				else
-					$tracks_model->closed_captioning = 'f';
+				$scan = $handbrake->scan();
+
+				if(!$scan) {
+					if($debug) {
+						echo "* Handbrake scan failed\n";
+						echo "* Tagging track\n";
+					}
+					$tracks_model->tag_track('track_no_handbrake_scan');
+				} else {
+
+					if($handbrake->has_closed_captioning())
+						$tracks_model->closed_captioning = 't';
+					else
+						$tracks_model->closed_captioning = 'f';
+
+				}
 
 			}
+
 		}
 
 		require 'dart.import.audio.php';
