@@ -56,6 +56,7 @@
 		// See if the target filename exists.  This
 		// is for the source regardless of whether it is
 		// a block device or an ISO.
+		clearstatcache();
 		$target_iso_exists = file_exists($target_iso);
 
 		// Operations on a block device

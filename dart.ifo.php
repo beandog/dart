@@ -52,6 +52,7 @@
 		/** Filename and filesystem operations **/
 
 		// See if the target directory exists.
+		clearstatcache();
 		$target_dir_exists = file_exists($target_ifo_dir);
 		$target_video_ts_dir_exists = file_exists($target_video_ts_dir);
 

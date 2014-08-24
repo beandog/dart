@@ -146,6 +146,8 @@ if($encode) {
 			// from the queue, the temporary files are removed
 			if($episode->x264_passed() && $episode->xml_passed() && $episode->mkv_passed()) {
 
+				clearstatcache();
+
 				assert(file_exists($episode->queue_matroska_mkv));
 				assert(filesize($episode->queue_matroska_mkv) > 0);
 				$episode->create_episodes_dir();
@@ -158,6 +160,8 @@ if($encode) {
 					$episode->remove_queue_dir();
 
 			}
+
+			clearstatcache();
 
 			if(!file_exists($episode->queue_iso_symlink) && !file_exists($episode->episode_mkv)) {
 

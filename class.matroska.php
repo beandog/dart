@@ -51,36 +51,54 @@
 		}
 
 		public function addFile($filename) {
+
+			clearstatcache();
+
 			if(file_exists($filename)) {
 				$this->add($filename);
 			}
 		}
 
 		public function addVideo($filename) {
+
+			clearstatcache();
+
 			if(file_exists($filename)) {
 				$this->add($filename, 'video');
 			}
 		}
 
 		public function addAudio($filename) {
+
+			clearstatcache();
+
 			if(file_exists($filename)) {
 				$this->add($filename, 'audio');
 			}
 		}
 
 		public function addSubtitles($filename) {
+
+			clearstatcache();
+
 			if(file_exists($filename)) {
 				$this->add($filename, 'subtitles');
 			}
 		}
 
 		public function addChapters($filename) {
+
+			clearstatcache();
+
 			if(file_exists($filename)) {
 				$this->add($filename, 'chapters');
 			}
 		}
 
 		public function addGlobalTags($filename) {
+
+			clearstatcache();
+
 			if(file_exists($filename)) {
 				$this->add($filename, 'global_tags');
 			}
