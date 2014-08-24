@@ -14,7 +14,7 @@
 		$broken_dvd = true;
 		echo "? No tracks? No good!!!!\n";
 
-		echo "! Flagging DVD as broken in database\n";
+		echo "* Flagging DVD as broken in database\n";
 		$dvds_model->tag_dvd('dvd_no_tracks');
 
 		// BEEP!
@@ -49,7 +49,7 @@
 			$tracks_model_id = $tracks_model->create_new();
 
 			if($debug)
-				echo "! Created new track id: $tracks_model_id\n";
+				echo "* Created new track id: $tracks_model_id\n";
 
 			$new_title_tracks++;
 
@@ -65,7 +65,7 @@
 		// Handle broken tracks! :D
 		if(!$title_track_loaded) {
 			echo "\n";
-			echo "! Opening $device track number $title_track FAILED\n";
+			echo "* Opening $device track number $title_track FAILED\n";
 			$title_track++;
 
 			// Tag the track as broken in the database

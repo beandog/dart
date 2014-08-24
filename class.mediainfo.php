@@ -13,7 +13,7 @@
 
 			if(!file_exists($filename)) {
 
-				echo "! construct(): opening $filename FAILED\n";
+				echo "* construct(): opening $filename FAILED\n";
 				$this->opened = false;
 				return false;
 
@@ -26,7 +26,7 @@
 			exec($cmd, $output, $retval);
 
 			if($retval !== 0) {
-				echo "! setFilename(): $cmd FAILED\n";
+				echo "* setFilename(): $cmd FAILED\n";
 				$this->opened = false;
 				return false;
 			}

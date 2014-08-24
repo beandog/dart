@@ -166,7 +166,7 @@ if($encode) {
 			if(!file_exists($episode->queue_iso_symlink) && !file_exists($episode->episode_mkv)) {
 
 				// At this point, it shouldn't be in the queue.
-				echo "! ISO not found (".$episode->queue_iso_symlink."), MKV not found (".$episode->episode_mkv."), force removing episode from queue\n";
+				echo "* ISO not found (".$episode->queue_iso_symlink."), MKV not found (".$episode->episode_mkv."), force removing episode from queue\n";
 				$queue_model->remove_episode($episode_id);
 
 			}

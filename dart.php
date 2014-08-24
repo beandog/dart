@@ -92,7 +92,7 @@
 		$dvd = new DVD($device, $debug);
 
 		if(!$dvd->opened) {
-			echo "! Opening $device FAILED\n";
+			echo "* Opening $device FAILED\n";
 			goto next_device;
 		}
 
@@ -351,7 +351,7 @@
 			}
 
 			if($debug)
-				echo "! Going to start position\n";
+				echo "* Going to start position\n";
 
 			goto start;
 		}

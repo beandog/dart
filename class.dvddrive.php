@@ -28,7 +28,7 @@
 		function wait_until_ready() {
 
 			if($this->debug)
-				echo "! drive::wait_until_ready(".$this->device.")\n";
+				echo "* drive::wait_until_ready(".$this->device.")\n";
 
 			do {
 				sleep(2);
@@ -43,7 +43,7 @@
 		 */
 		function wait_until_closed() {
 
-			echo "! drive::wait_until_closed(".$this->device.")\n";
+			echo "* drive::wait_until_closed(".$this->device.")\n";
 
 			do {
 				$this->wait_until_ready();
@@ -58,7 +58,7 @@
 		 */
 		function wait_until_open() {
 
-			echo "! drive::wait_until_open(".$this->device.")\n";
+			echo "* drive::wait_until_open(".$this->device.")\n";
 
 			do {
 				$this->wait_until_ready();
@@ -74,13 +74,13 @@
 		function get_status() {
 
 			if($this->debug)
-				echo "! drive::get_status(".$this->device.")\n";
+				echo "* drive::get_status(".$this->device.")\n";
 
 			$command = "dvd_drive_status ".escapeshellarg($this->device);
 			exec($command, $arr, $return);
 
 			if($this->debug)
-				echo "! drive status: ".$this->arr_drive_status[$return]."\n";
+				echo "* drive status: ".$this->arr_drive_status[$return]."\n";
 
 			return $return;
 		}
@@ -91,7 +91,7 @@
 		function has_media() {
 
 			if($this->debug)
-				echo "! drive::has_media(".$this->device.")\n";
+				echo "* drive::has_media(".$this->device.")\n";
 
 			$this->wait_until_ready();
 
@@ -109,7 +109,7 @@
 		function is_open() {
 
 			if($this->debug)
-				echo "! drive::is_open(".$this->device.")\n";
+				echo "* drive::is_open(".$this->device.")\n";
 
 			$this->wait_until_ready();
 
@@ -127,7 +127,7 @@
 		function is_closed() {
 
 			if($this->debug)
-				echo "! drive::is_closed(".$this->device.")\n";
+				echo "* drive::is_closed(".$this->device.")\n";
 
 			$this->wait_until_ready();
 
@@ -143,7 +143,7 @@
 		 */
 		function is_ready() {
 			if($this->debug)
-				echo "! drive::is_ready(".$this->device.")\n";
+				echo "* drive::is_ready(".$this->device.")\n";
 
 			$status = $this->get_status();
 			if($status != 3)
@@ -160,7 +160,7 @@
 		function open() {
 
 			if($this->debug)
-				echo "! drive::open(".$this->device.")\n";
+				echo "* drive::open(".$this->device.")\n";
 
 			$cmd = "dvd_eject ".escapeshellarg($this->device);
 			passthru($cmd, $retval);
@@ -181,7 +181,7 @@
 		function close() {
 
 			if($this->debug)
-				echo "! drive::close(".$this->device.")\n";
+				echo "* drive::close(".$this->device.")\n";
 
 			$cmd = "dvd_eject -t ".escapeshellarg($this->device);
 			passthru($cmd, $retval);

@@ -260,7 +260,7 @@ XML;
 			$cmd = $this->getCommandString();
 
 			if($this->debug)
-				echo "! mux(): Executing: $cmd";
+				echo "* mux(): Executing: $cmd";
 
 			if($debug)
 				$cmd .= " 2>&1";
@@ -273,7 +273,7 @@ XML;
 			if($retval === 0) {
 				return true;
 			} elseif($retval === 1) {
-				echo "! mux(): mkvmerge succeeded, but with warnings\n";
+				echo "* mux(): mkvmerge succeeded, but with warnings\n";
 				return true;
 			} else {
 				return false;
@@ -290,7 +290,7 @@ XML;
 			$cmd = "mkvpropedit -s title=$title $mkv";
 
 			if($this->debug)
-				echo "! mkvpropedit(): Executing: $cmd";
+				echo "* mkvpropedit(): Executing: $cmd";
 
 			if($debug)
 				$cmd .= " 2>&1";
@@ -301,7 +301,7 @@ XML;
 
 			// mkvpropedit succeeds on exit codes of 0 or 1
 			if($retval === 1) {
-				echo "! mkvpropedit(): mkvpropedit succeeded, but with warnings\n";
+				echo "* mkvpropedit(): mkvpropedit succeeded, but with warnings\n";
 			} else {
 				return false;
 			}
@@ -309,7 +309,7 @@ XML;
 			$cmd = "mkvpropedit -t global:$xml $mkv";
 
 			if($this->debug)
-				echo "! mkvpropedit(): Executing: $cmd";
+				echo "* mkvpropedit(): Executing: $cmd";
 
 			if($debug)
 				$cmd .= " 2>&1";
@@ -320,7 +320,7 @@ XML;
 
 			// mkvpropedit succeeds on exit codes of 0 or 1
 			if($retval === 1) {
-				echo "! mkvpropedit(): mkvpropedit succeeded, but with warnings\n";
+				echo "* mkvpropedit(): mkvpropedit succeeded, but with warnings\n";
 			} else {
 				return false;
 			}

@@ -16,7 +16,7 @@
 			$subp_model_id = $subp_model->create_new();
 
 			if($debug)
-				echo "! Created new subp id: $subp_model_id\n";
+				echo "* Created new subp id: $subp_model_id\n";
 
 			$new_subtitle_tracks++;
 

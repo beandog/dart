@@ -15,7 +15,7 @@
 		$dvds_model_id = $dvds_model->create_new();
 
 		if($debug)
-			echo "! Created new DVD id: $dvds_model_id\n";
+			echo "* Created new DVD id: $dvds_model_id\n";
 
 	} elseif($disc_indexed && $missing_dvd_metadata) {
 

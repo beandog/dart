@@ -11,7 +11,7 @@
 		$cell_loaded = $dvd->load_cell($title_track, $cell);
 
 		if(!$cell_loaded) {
-			echo "! Could not load cell $cell on track $title_track\n";
+			echo "* Could not load cell $cell on track $title_track\n";
 			break;
 		}
 
@@ -21,7 +21,7 @@
 			$cells_model_id = $cells_model->create_new();
 
 			if($debug)
-				echo "! Created new cells id: $cells_model_id\n";
+				echo "* Created new cells id: $cells_model_id\n";
 
 			$new_cells++;
 

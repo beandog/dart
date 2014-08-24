@@ -18,7 +18,7 @@
 			$audio_model_id = $audio_model->create_new();
 
 			if($debug)
-				echo "! Created new audio id: $audio_model_id\n";
+				echo "* Created new audio id: $audio_model_id\n";
 
 			$new_audio_tracks++;
 

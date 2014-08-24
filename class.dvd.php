@@ -164,7 +164,7 @@
 				return null;
 
 			if($this->debug)
-				echo "! dvd->dump_iso($dest, $method)\n";
+				echo "* dvd->dump_iso($dest, $method)\n";
 
 			// ddrescue README
 			// Since I've used dd in the past, ddrescue seems like a good
@@ -209,7 +209,7 @@
 				return null;
 
 			if($this->debug)
-				echo "! dvd->dump_ifo($dest)\n";
+				echo "* dvd->dump_ifo($dest)\n";
 
 			chdir($dest);
 
@@ -348,7 +348,7 @@
 			exec($exec, $arr, $retval);
 
 			if($retval !== 0) {
-				echo "! getSerialID(): HandBrakeCLI quit with exit code $retval\n";
+				echo "* getSerialID(): HandBrakeCLI quit with exit code $retval\n";
 				return null;
 			}
 
