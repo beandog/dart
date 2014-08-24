@@ -130,6 +130,8 @@
 
 		public function create_queue_dir() {
 
+			clearstatcache();
+
 			$dir = $this->get_queue_dir();
 
 			if(!is_dir($dir))
@@ -152,6 +154,8 @@
 
 		public function create_queue_iso_symlink($source = '') {
 
+			clearstatcache();
+
 			if(!strlen($source)) {
 				$dir = $this->get_isos_dir();
 				$source = $dir.$this->dvd_iso;
@@ -173,6 +177,8 @@
 
 		public function remove_queue_iso_symlink() {
 
+			clearstatcache();
+
 			if(file_exists($this->queue_iso_symlink) && is_symlink($this->queue_iso_symlink))
 				unlink($this->queue_iso_symlink);
 
@@ -189,6 +195,8 @@
 		}
 
 		public function create_episodes_dir() {
+
+			clearstatcache();
 
 			$dir = $this->get_episodes_dir();
 
@@ -284,6 +292,8 @@
 
 		public function remove_queue_dir() {
 
+			clearstatcache();
+
 			if(file_exists($this->queue_handbrake_script))
 				unlink($this->queue_handbrake_script);
 			if(file_exists($this->queue_handbrake_output))
@@ -312,6 +322,8 @@
 		 * Queue status codes: 1 for encoding, 2 for encoding failed
 		 */
 		public function encoded() {
+
+			clearstatcache();
 
 			$status = $this->get_queue_status();
 
