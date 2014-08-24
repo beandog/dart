@@ -15,6 +15,8 @@
 
 		public function __construct($export_dir, $dvd_iso, $collection_title = '', $series_title = '') {
 
+			clearstatcache();
+
 			$this->export_dir = realpath($export_dir)."/";
 			$this->dvd_iso = basename($dvd_iso);
 			$this->collection_title = $collection_title;
