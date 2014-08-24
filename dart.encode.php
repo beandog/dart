@@ -143,8 +143,9 @@ if($encode) {
 				goto goto_encode_next_episode;
 			};
 
-			if($episode->x264_passed() && $episode->xml_passed() && $episode->mkv_ready())
+			if($episode->x264_passed() && $episode->xml_passed() && $episode->mkv_ready()) {
 				require 'dart.encode.mkv.php';
+			}
 
 			/** Final Checks **/
 			// This is where if everything passed, the episode is completely removed
