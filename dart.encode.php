@@ -19,6 +19,9 @@ if($encode) {
 	if($max)
 		echo "* Limiting encoding to $max episodes\n";
 
+	if($dry_run && !$max)
+		$max = count($queue_episodes);
+
 	do {
 
 		foreach($queue_episodes as $episode_id) {
@@ -50,6 +53,8 @@ if($encode) {
 			echo "Command:\t$tmpfile\n";
 
 			if($dry_run) {
+
+				$num_encoded++;
 
 				echo "\n$str\n";
 
