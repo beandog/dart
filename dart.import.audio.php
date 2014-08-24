@@ -4,9 +4,6 @@
 
 	$audio_tracks = $dvd->title_track_audio_tracks;
 
-	if($debug)
-		echo "! Title track $title_track has ".$dvd->title_track_audio_tracks." audio tracks\n";
-
 	for($audio_track = 1; $audio_track < $audio_tracks + 1; $audio_track++) {
 
 		$dvd->load_audio_track($title_track, $audio_track);
