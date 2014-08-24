@@ -14,6 +14,9 @@ if($encode) {
 
 	$queue_episodes = $queue_model->get_episodes($hostname, $skip, $max);
 
+	if(count($queue_episodes) == 0)
+		echo "* No episodes in queue to encode\n";
+
 	if($skip)
 		echo "* Skipping $skip episodes\n";
 	if($max)
