@@ -135,8 +135,10 @@ if($encode) {
 			// allowing resume-encoding
 			require 'dart.encode.xml.php';
 
-			if($dry_run)
+			if($dry_run) {
+				$num_encoded--;
 				goto goto_encode_next_episode;
+			};
 
 			if($episode->x264_passed() && $episode->xml_passed() && $episode->mkv_ready())
 				require 'dart.encode.mkv.php';
