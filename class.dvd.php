@@ -98,12 +98,12 @@
 			$cmd = "dvd_info --json ".escapeshellarg($this->device)." 2> /dev/null";
 
 			if($this->debug)
-				echo "! dvd_info(): $cmd\n";
+				echo "* Executing: $cmd\n";
 
 			exec($cmd, $output, $retval);
 
 			if($retval !== 0 || !count($output)) {
-				echo "! dvd_info(): FAILED\n";
+				echo "* dvd_info(): FAILED\n";
 				return false;
 			}
 
@@ -113,7 +113,7 @@
 			$json = json_decode($str, true);
 
 			if(is_null($json)) {
-				echo "! dvd_info(): json_decode() failed\n";
+				echo "* dvd_info(): json_decode() FAILED\n";
 				return false;
 			}
 
@@ -148,9 +148,6 @@
 
 			if(!$this->opened)
 				return null;
-
-			if($this->debug)
-				echo "! dvd->dvdread_id()\n";
 
 			$dvdread_id = $this->dvd_info['dvd']['dvdread id'];
 
@@ -251,7 +248,7 @@
 			if(!array_key_exists('tracks', $this->dvd_info)) {
 
 				if($this->debug) {
-					echo "! title_tracks(): DVD has no tracks!!!  This is bad.\n";
+					echo "* DVD has no tracks!!!  This is bad.\n";
 				}
 
 				return 0;
@@ -271,7 +268,7 @@
 			if(!array_key_exists('tracks', $this->dvd_info)) {
 
 				if($this->debug) {
-					echo "! longest_track(): DVD has no tracks!!!  This is bad.\n";
+					echo "* DVD has no tracks!!!  This is bad.\n";
 				}
 
 				return null;
@@ -323,9 +320,6 @@
 		 */
 		public function size() {
 
-			if($this->debug)
-				echo "! dvd->size()\n";
-
 			if($this->is_iso) {
 				$stat = stat($this->device);
 				$b_size = $stat['size'];
@@ -350,9 +344,6 @@
 		// Use serial number from HandBrake 0.9.9
 		public function serial_id() {
 
-			if($this->debug)
-				echo "! dvd->serial_id()\n";
-
 			$exec = "HandBrakeCLI --scan -i ".escapeshellarg($this->device)." 2>&1";
 			exec($exec, $arr, $retval);
 
@@ -366,7 +357,7 @@
 
 			if(!count($match)) {
 				if($this->debug)
-					echo "! getSerialID(): HandBrakeCLI did not have a line matching pattern $pattern\n";
+					echo "* Couldn't find serial id.  HandBrakeCLI did not have a line matching pattern $pattern\n";
 				return null;
 			}
 
@@ -374,7 +365,7 @@
 
 			if(!count($explode)) {
 				if($this->debug)
-					echo "! getSerialID(): Couldn't find a string\n";
+					echo "* Couldn't find a serial id\n";
 				return null;
 			}
 
