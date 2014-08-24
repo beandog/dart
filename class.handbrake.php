@@ -437,19 +437,19 @@
 
 		public function get_executable_string() {
 
-			$exec = "";
+			$cmd = "";
 
 			$options = $this->get_options();
 
 			foreach($options as $str)
-				$exec[] = escapeshellarg($str);
+				$cmd[] = escapeshellarg($str);
 
 			$args = $this->get_arguments();
 
 			foreach($args as $key => $value)
-				$exec[] = "$key ".escapeshellarg($value);
+				$cmd[] = "$key ".escapeshellarg($value);
 
-			$str = $this->binary." ".implode(" ", $exec);
+			$str = $this->binary." ".implode(" ", $cmd);
 
 			$str .= " --input ".escapeshellarg($this->input);
 			$str .= " --output ".escapeshellarg($this->output);
@@ -506,12 +506,12 @@
 			if($this->track)
 				$options = "--title ".$this->track;
 
-			$exec = $this->binary." --scan --verbose $options --input ".escapeshellarg($this->input)." 2>&1";
+			$cmd = $this->binary." --scan --verbose $options --input ".escapeshellarg($this->input)." 2>&1";
 
 			if($this->debug)
-				echo "Executing: $exec\n";
+				echo "Executing: $cmd\n";
 
-			exec($exec, $arr, $return);
+			exec($cmd, $arr, $return);
 
 			$audio = preg_grep("/.*(scan: id=8).*/", $arr);
 
@@ -595,11 +595,11 @@
 			$return_var = null;
 
 			if($this->debug) {
-				$exec = escapeshellcmd($str);
-				passthru($exec, $return_var);
+				$cmd = escapeshellcmd($str);
+				passthru($cmd, $return_var);
 			} else {
-				$exec = escapeshellcmd($str)." 2> /dev/null";
-				passthru($exec, $return_var);
+				$cmd = escapeshellcmd($str)." 2> /dev/null";
+				passthru($cmd, $return_var);
 			}
 
 			return $return_var;
