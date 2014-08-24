@@ -38,6 +38,8 @@
 
 		public function create_isos_dir() {
 
+			clearstatcache();
+
 			$dir = $this->get_isos_dir();
 
 			if(!is_dir($dir))
