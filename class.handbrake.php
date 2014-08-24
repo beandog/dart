@@ -13,6 +13,7 @@
 		private $flags = array();
 		private $args = array();
 		private $scan_complete = false;
+		private $do_not_scan = false;
 		private $dry_run = false;
 
 		// Video
@@ -499,7 +500,15 @@
 
 		}
 
-		public function scan() {
+		/**
+		 * There are cases where HandBrakeCLI will fail on scanning a title for
+		 * some reason or another.  This uses proc_open() to cleanly run the
+		 * process, monitor it for timing out, and kill it if necessary.
+		 *
+		 * Default to 10 seconds, which is a generous amount of time.
+		 *
+		 */
+		public function scan($max_wait_time = 10) {
 
 			$options = '';
 
@@ -508,10 +517,55 @@
 
 			$cmd = $this->binary." --scan --verbose $options --input ".escapeshellarg($this->input)." 2>&1";
 
-			if($this->debug)
-				echo "Executing: $cmd\n";
+			$output_file = tempnam(sys_get_temp_dir(), "handbrake-scan");
 
-			exec($cmd, $arr, $return);
+			$descriptor = array(
+				0 => array('pipe', 'r'),
+				1 => array('file', $output_file, 'w'),
+				2 => array('file', '/dev/null', 'a')
+			);
+
+			if($this->debug) {
+				echo "* Executing: $cmd\n";
+				echo "* Saving output to $output_file\n";
+			}
+
+			$resource = proc_open($cmd, $descriptor, $pipes);
+
+			$wait_time = 0;
+
+			while($wait_time < $max_wait_time + 1) {
+
+				sleep(1);
+				$wait_time++;
+
+				$proc_status = proc_get_status($resource);
+
+				if($proc_status['running'] === false) {
+					break;
+				}
+
+			}
+
+			$proc_status = proc_get_status($resource);
+
+			if($proc_status['running']) {
+
+				$killed = posix_kill($proc_status['pid'] + 1, SIGKILL);
+				if(!$killed) {
+					echo "\n!!! Could not kill HandBrakeCLI, please manually kill PID ".$proc_status['pid']."\n";
+				}
+
+				$this->do_not_scan = true;
+				proc_close($resource);
+
+				return false;
+
+			}
+
+			$arr = file($output_file);
+
+			unlink($output_file);
 
 			$audio = preg_grep("/.*(scan: id=8).*/", $arr);
 
@@ -541,7 +595,7 @@
 
 			$this->scan_complete = true;
 
-			// FIXME return error code of Handbrake binary
+			return true;
 
 		}
 
