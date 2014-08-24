@@ -40,7 +40,7 @@
 			if($max > 0)
 				$sql .= " LIMIT $max";
 
-			$sql = "SELECT episode_id FROM ".$this->table." WHERE hostname = ".$this->db->quote($hostname)." ORDER BY priority, id;";
+			$sql = "SELECT episode_id FROM ".$this->table." WHERE hostname = ".$this->db->quote($hostname)." ORDER BY priority, id $sql;";
 
  			$arr = $this->db->getCol($sql);
 
