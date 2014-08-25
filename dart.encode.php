@@ -29,10 +29,10 @@ if($encode) {
 
 		foreach($queue_episodes as $episode_id) {
 
-			if($num_encoded)
+			if($num_encoded) {
 				echo "\n";
-
-			echo "[Episode]\n";
+				echo "[Episode]\n";
+			}
 
 			$episode = new MediaEpisode($episode_id, $export_dir);
 
