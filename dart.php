@@ -89,13 +89,6 @@
 
 		clearstatcache();
 
-		$dvd = new DVD($device, $debug);
-
-		if(!$dvd->opened) {
-			echo "* Opening $device FAILED\n";
-			goto next_device;
-		}
-
 		$dvds_model = new Dvds_Model;
 		$dvd_episodes = array();
 
@@ -267,6 +260,13 @@
 		if($access_device) {
 
 			echo "[DVD]\n";
+
+			$dvd = new DVD($device, $debug);
+
+			if(!$dvd->opened) {
+				echo "* Opening $device FAILED\n";
+				goto next_device;
+			}
 
 			$device_filesize = $dvd->size;
 			$display_filesize = number_format($device_filesize);
