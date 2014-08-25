@@ -99,7 +99,7 @@
 
 		public function reset($hostname) {
 
-			$sql = "DELETE FROM queue WHERE hostname = ".$this->db->quote($hostname).";";
+			$sql = "DELETE FROM queue WHERE hostname = ".$this->db->quote($hostname)." AND x264 = 0 AND xml = 0 AND mkv = 0;";
 
 			$this->db->query($sql);
 
