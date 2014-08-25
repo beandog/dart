@@ -30,9 +30,10 @@
 
 		}
 
-		public function get_episodes($hostname, $skip = 0, $max = 0) {
+		public function get_episodes($hostname, $skip = 0, $max = 0, $random = false) {
 
 			$sql = '';
+			$order_by = '';
 
 			if($skip > 0)
 				$sql = " OFFSET $skip";
@@ -40,7 +41,11 @@
 			if($max > 0)
 				$sql .= " LIMIT $max";
 
-			$sql = "SELECT episode_id FROM ".$this->table." WHERE hostname = ".$this->db->quote($hostname)." ORDER BY priority, id $sql;";
+			if($random)
+				$order_by = "RANDOM(), ";
+
+
+			$sql = "SELECT episode_id FROM ".$this->table." WHERE hostname = ".$this->db->quote($hostname)." ORDER BY priority, $order_by id $sql;";
 
  			$arr = $this->db->getCol($sql);
 

@@ -47,6 +47,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('random', array(
+		'long_name' => '--encode',
+		'description' => 'Choose encoding order randomly',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('dry_run', array(
 		'short_name' => '-n',
 		'long_name' => '--dry-run',
