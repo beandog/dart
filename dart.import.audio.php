@@ -33,25 +33,25 @@
 
 		if($audio_model->langcode != $dvd->audio_track_lang_code) {
 			$audio_model->langcode = $dvd->audio_track_lang_code;
-			if($this->debug)
+			if($debug)
 				echo "* Updating audio lang code: ".$audio_model->langcode." -> ".$dvd->audio_track_lang_code."\n";
 		}
 
 		if($audio_model->format != $dvd->audio_track_codec) {
 			$audio_model->format = $dvd->audio_track_codec;
-			if($this->debug)
+			if($debug)
 				echo "* Updating audio codec: ".$audio_model->format." -> ".$dvd->audio_track_codec."\n";
 		}
 
 		if($audio_model->channels != $dvd->audio_track_channels) {
 			$audio_model->channels = $dvd->audio_track_channels;
-			if($this->debug)
+			if($debug)
 				echo "* Updating audio channels: ".$audio_model->channels." -> ".$dvd->audio_track_channels."\n";
 		}
 
 		if($audio_model->streamid != $dvd->audio_track_stream_id) {
 			$audio_model->streamid = $dvd->audio_track_stream_id;
-			if($this->debug)
+			if($debug)
 				echo "* Updating audio channels: ".$audio_model->channels." -> ".$dvd->audio_track_channels."\n";
 		}
 

@@ -48,7 +48,7 @@
 		'default' => false,
 	));
 	$parser->addOption('random', array(
-		'long_name' => '--encode',
+		'long_name' => '--random',
 		'description' => 'Choose encoding order randomly',
 		'action' => 'StoreTrue',
 		'default' => false,
