@@ -536,14 +536,14 @@
 
 			while($wait_time < $max_wait_time + 1) {
 
-				sleep(1);
-				$wait_time++;
-
 				$proc_status = proc_get_status($resource);
 
 				if($proc_status['running'] === false) {
 					break;
 				}
+
+				sleep(1);
+				$wait_time++;
 
 			}
 
