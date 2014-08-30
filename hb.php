@@ -96,7 +96,7 @@
 		'long_name' => '--st',
 		'description' => 'Subtitle track',
 		'action' => 'StoreInt',
-		'default' => 1,
+		'default' => 0,
 	));
 	$parser->addOption('x264_preset', array(
 		'short_name' => '-p',
@@ -271,6 +271,12 @@
 	$hb->input_filename($input_filename);
 	if($input_track)
 		$hb->input_track($input_track);
+	$scan = $hb->scan();
+	if(!$scan) {
+		echo "* Scanning $input_track FAILED\n";
+		exit(1);
+	}
+	$has_closed_captioning = $hb->has_closed_captioning();
 	$hb->output_filename($output_filename);
 	$hb->add_chapters($add_chapters);
 	if($first_chapter || $last_chapter)
@@ -291,8 +297,10 @@
 		if($audio_encoder != $audio_fallback)
 			$hb->set_audio_fallback($audio_fallback);
 	}
-	if($subtitles)
+	if($subtitles && $subtitle_track)
 		$hb->add_subtitle_track($subtitle_track);
+	elseif($subtitles && $has_closed_captioning)
+		$hb->add_subtitle_track($hb->get_closed_captioning_ix());
 	$hb->autocrop($autocrop);
 	$hb->decomb($decomb);
 	$hb->detelecine($detelecine);
@@ -358,7 +366,10 @@
 	}
 	if($subtitles) {
 		echo "// Subtitles //\n";
-		echo "* Track: $d_subtitle_track\n";
+		if($subtitle_track)
+			echo "* Track: $d_subtitle_track\n";
+		if($subtitles && !$subtitle_track && $has_closed_captioning)
+			echo "* Closed Captioning\n";
 	}
 
 	$command = $hb->get_executable_string();
