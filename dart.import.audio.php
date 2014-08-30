@@ -51,7 +51,7 @@
 
 		if($audio_model->streamid != $dvd->audio_track_stream_id) {
 			if($debug)
-				echo "* Updating audio channels: ".$audio_model->channels." -> ".$dvd->audio_track_channels."\n";
+				echo "* Updating audio stream id: ".$audio_model->streamid." -> ".$dvd->audio_stream_id."\n";
 			$audio_model->streamid = $dvd->audio_track_stream_id;
 		}
 
