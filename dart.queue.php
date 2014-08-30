@@ -9,6 +9,8 @@
 	$queue_model->set_hostname(php_uname('n'));
 	$queue_model->skip($skip);
 	$queue_model->set_max($max);
+	if($queue_episode_id)
+		$queue_model->set_episode_id($queue_episode_id);
 	$queue_episodes = $queue_model->get_episodes();
 
 	if($queue) {

@@ -70,6 +70,8 @@
 	if($reset_queue) {
 		$queue_model->reset($hostname);
 	}
+	if($queue_episode_id)
+		$queue_episode_id = abs(intval($queue_episode_id));
 
 	// General boolean for various items
 	$first_run = true;

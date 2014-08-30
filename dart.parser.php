@@ -112,6 +112,13 @@
 		'action' => 'StoreInt',
 		'default' => 0,
 	));
+	$parser->addOption('queue_episode_id', array(
+		'short_name' => '-p',
+		'long_name' => '--episode',
+		'description' => 'Limit queue to episode id',
+		'action' => 'StoreInt',
+		'default' => 0,
+	));
 	$parser->addOption('open_trays', array(
 		'long_name' => '--open',
 		'description' => 'Open all DVD trays',
