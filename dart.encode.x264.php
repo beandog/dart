@@ -109,8 +109,10 @@ if($encode && $episode_id) {
 	// which can take some time.
 	if(!$dry_run) {
 
-		if($handbrake->get_audio_index($default_audio_streamid))
-			$handbrake->add_audio_stream($default_audio_streamid);
+		if($handbrake->get_audio_index($best_quality_audio_streamid))
+			$handbrake->add_audio_stream($best_quality_audio_streamid);
+		elseif($handbrake->get_audio_index($first_english_streamid))
+			$handbrake->add_audio_stream($first_english_streamid);
 		else {
 
 			$added_audio = false;
