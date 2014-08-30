@@ -55,7 +55,7 @@
 			$audio_model->streamid = $dvd->audio_track_stream_id;
 		}
 
-		if($audio_model->active != $dvd->audio_track_active) {
+		if(is_null($audio_model->active) || $audio_model->active != $dvd->audio_track_active) {
 			if($debug)
 				echo "* Updating audio track active: ".(is_null($audio_model->active) ? "unset" : "false")." -> ".($dvd->audio_track_active ? "true" : "false")."\n";
 			$audio_model->active = $dvd->audio_track_active;
