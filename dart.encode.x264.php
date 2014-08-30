@@ -141,10 +141,10 @@ if($encode && $episode_id) {
 
 			// If one hasn't been added by now, just use
 			// the default one.
-			if(!$added_audio)
-				$handbrake->add_audio_stream("0x80");
-			elseif(!$added_audio)
-				$handbrake->add_audio_track(1);
+			if(!$added_audio) {
+				$bool = $handbrake->add_audio_stream("0x80");
+				$added_audio = true;
+			}
 
 		}
 
