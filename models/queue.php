@@ -155,9 +155,16 @@
 
 		}
 
-		public function reset($hostname) {
+		public function reset() {
 
-			$sql = "DELETE FROM queue WHERE hostname = ".$this->db->quote($hostname)." AND x264 = 0 AND xml = 0 AND mkv = 0;";
+			$sql = '';
+
+			if($this->hostname)
+				$sql .= " AND hostname = ".$this->db->quote($this->hostname);
+			if($this->episode_id)
+				$sql .= " AND episode_id = ".$this->db->quote($this->episode_id);
+
+			$sql = "DELETE FROM queue WHERE x264 = 0 AND xml = 0 AND mkv = 0 $sql;";
 
 			$this->db->query($sql);
 
