@@ -41,4 +41,10 @@
 				echo "* Updating subtitle stream id: ".$dvd->subtitle_track_stream_id."\n";
 		}
 
+		if(is_null($subp_model->active) || $subp_model->active != $dvd->subtitle_track_active) {
+			if($debug)
+				echo "* Updating subtitle track active: ".(is_null($subp_model->active) ? "unset" : "false")." -> ".($dvd->subtitle_track_active ? "true" : "false")."\n";
+			$subp_model->active = $dvd->subtitle_track_active;
+		}
+
 	}
