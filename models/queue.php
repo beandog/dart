@@ -98,7 +98,7 @@
 			if(count($where))
 				$str_where = "WHERE ".implode(" AND ", $where);
 
-			$sql = "SELECT episode_id FROM ".$this->table." $str_where ORDER BY priority, $order_by id $sql;";
+			$sql = "SELECT episode_id FROM ".$this->table." $str_where ORDER BY $order_by id $sql;";
 
  			$arr = $this->db->getCol($sql);
 
@@ -142,16 +142,6 @@
 			$arr = $this->db->getCol($sql);
 
  			return $arr;
-
-		}
-
-		public function prioritize() {
-
-			$arr_update = array(
-				'priority' => 0
-			);
-
-			$this->db->autoExecute('queue', $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->id);
 
 		}
 
