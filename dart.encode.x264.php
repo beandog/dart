@@ -105,37 +105,20 @@ if($encode && $episode_id) {
 	$best_quality_audio_streamid = $tracks_model->get_best_quality_audio_streamid();
 	$first_english_streamid = $tracks_model->get_first_english_streamid();
 
+	$audio_stream_id = "0x80";
+
 	// Do a a check for a dry run here, because HandBrake scans the source directly
 	// which can take some time.
 	if(!$dry_run) {
 
-		if($handbrake->get_audio_index($best_quality_audio_streamid))
+		if($handbrake->get_audio_index($best_quality_audio_streamid)) {
 			$handbrake->add_audio_stream($best_quality_audio_streamid);
-		elseif($handbrake->get_audio_index($first_english_streamid))
+			$audio_stream_id = $best_quality_audio_streamid;
+		} elseif($handbrake->get_audio_index($first_english_streamid)) {
 			$handbrake->add_audio_stream($first_english_streamid);
-		else {
-
-			$added_audio = false;
-
-			$audio_streams = $tracks_model->get_audio_streams();
-
-			foreach($audio_streams as $arr) {
-				if($handbrake->get_audio_index($arr['streamid']) && !$added_audio) {
-					$handbrake->add_audio_stream($arr['streamid']);
-					$added_audio = true;
-				}
-			}
-
-			// If one hasn't been added by now, just use
-			// the default one.
-			if(!$added_audio) {
-				$bool = $handbrake->add_audio_stream("0x80");
-
-				// If for some reason that failed, add the first track directly
-				if(!$bool)
-					$handbrake->add_audio_track(1);
-			}
-
+			$audio_stream_id = $first_english_streamid;
+		} else {
+			$handbrake->add_audio_stream("0x80");
 		}
 
 	}
