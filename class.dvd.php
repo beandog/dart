@@ -46,7 +46,7 @@
 		public $audio_track_stream_id;
 
 		// DVD Subtitle
-		public $subtitle_track
+		public $subtitle_track;
 		public $subtitle_track_lang_code;
 		public $subtitle_track_stream_id;
 
@@ -575,6 +575,7 @@
 			$this->subtitle_track_info = $this->dvd_info['tracks'][$this->title_track - 1]['subtitles'][$this->subtitle_track - 1];
 
 			$this->subtitle_track_lang_code = $this->subtitle_track_lang_code();
+			$this->subtitle_track_lang_stream_id = $this->subtitle_track_stream_id();
 
 			return true;
 
