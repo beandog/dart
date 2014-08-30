@@ -32,34 +32,33 @@
 		}
 
 		if($audio_model->langcode != $dvd->audio_track_lang_code) {
-			$audio_model->langcode = $dvd->audio_track_lang_code;
 			if($debug)
 				echo "* Updating audio lang code: ".$audio_model->langcode." -> ".$dvd->audio_track_lang_code."\n";
+			$audio_model->langcode = $dvd->audio_track_lang_code;
 		}
 
 		if($audio_model->format != $dvd->audio_track_codec) {
-			$audio_model->format = $dvd->audio_track_codec;
 			if($debug)
 				echo "* Updating audio codec: ".$audio_model->format." -> ".$dvd->audio_track_codec."\n";
+			$audio_model->format = $dvd->audio_track_codec;
 		}
 
 		if($audio_model->channels != $dvd->audio_track_channels) {
-			$audio_model->channels = $dvd->audio_track_channels;
 			if($debug)
 				echo "* Updating audio channels: ".$audio_model->channels." -> ".$dvd->audio_track_channels."\n";
+			$audio_model->channels = $dvd->audio_track_channels;
 		}
 
 		if($audio_model->streamid != $dvd->audio_track_stream_id) {
-			$audio_model->streamid = $dvd->audio_track_stream_id;
 			if($debug)
 				echo "* Updating audio channels: ".$audio_model->channels." -> ".$dvd->audio_track_channels."\n";
+			$audio_model->streamid = $dvd->audio_track_stream_id;
 		}
 
 		if($audio_model->active != $dvd->audio_track_active) {
-			$audio_model->active = $dvd->audio_track_active;
 			if($debug)
 				echo "* Updating audio track active: ".(is_null($audio_model->active) ? "unset" : "false")." -> ".($dvd->audio_track_active ? "true" : "false")."\n";
+			$audio_model->active = $dvd->audio_track_active;
 		}
-		var_dump($audio_model->active); die;
 
 	}
