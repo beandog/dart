@@ -170,7 +170,7 @@ if($encode && $episode_id) {
 
 	// If we have a VobSub one, add it
 	// Otherwise, check for a CC stream, and add that
-	if(!is_null($subp_ix)) {
+	if($subp_ix) {
 		$handbrake->add_subtitle_track($subp_ix);
 		$d_subtitles = "VOBSUB";
 	} elseif($handbrake->has_closed_captioning()) {
