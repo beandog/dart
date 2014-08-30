@@ -105,13 +105,6 @@ if($encode && $episode_id) {
 	$best_quality_audio_streamid = $tracks_model->get_best_quality_audio_streamid();
 	$first_english_streamid = $tracks_model->get_first_english_streamid();
 
-	$audio_preference = $dvds_model->get_audio_preference();
-
-	if($audio_preference === 1)
-		$default_audio_streamid = $first_english_streamid;
-	else
-		$default_audio_streamid = $best_quality_audio_streamid;
-
 	// Do a a check for a dry run here, because HandBrake scans the source directly
 	// which can take some time.
 	if(!$dry_run) {

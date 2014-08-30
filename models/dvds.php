@@ -56,25 +56,6 @@
 
 		}
 
-		public function get_audio_preference() {
-
-			$sql = "SELECT audio_preference FROM series_dvds WHERE dvd_id = ".$this->db->quote($this->id).";";
-			$audio_preference = $this->db->getOne($sql);
-
-			if($audio_preference === "0") {
-
-				$sql = "SELECT c.default_audio_preference FROM collections c INNER JOIN series s ON s.collection_id = c.id INNER JOIN series_dvds sd ON sd.series_id = s.id AND sd.dvd_id = ".$this->db->quote($this->id).";";
-
-				$audio_preference = $this->db->getOne($sql);
-
-			}
-
-			$audio_preference = intval($audio_preference);
-
-			return $audio_preference;
-
-		}
-
 		/*
 		public function get_no_dvdnav() {
 
