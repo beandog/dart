@@ -33,9 +33,9 @@
 	}
 	if($missing_dvd_metadata || !$disc_indexed) {
 		$dvd_filesize = $dvd->size();
-		$d_dvd_filesize = number_format($dvd_filesize);
-		echo "* DVD filesize: $d_dvd_filesize MB\n";
-		$dvds_model->filesize = $dvd_filesize;
+		if($dvds_model->filesize != $dvd_filesize) {
+			$dvds_model->filesize = $dvd_filesize;
+		}
 	}
 
 	// Flag it as indexed
