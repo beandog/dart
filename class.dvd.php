@@ -40,9 +40,15 @@
 		// DVD Audio
 		public $audio_track;
 		public $audio_active;
+		public $audio_track_lang_code;
 		public $audio_track_codec;
 		public $audio_track_channels;
 		public $audio_track_stream_id;
+
+		// DVD Subtitle
+		public $subtitle_track
+		public $subtitle_track_lang_code;
+		public $subtitle_track_stream_id;
 
 		// DVD Chapter
 		public $chapter;
