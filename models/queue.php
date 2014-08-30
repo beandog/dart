@@ -4,11 +4,23 @@
 
 	class Queue_Model extends DBTable {
 
+		private $skip;
+		private $max;
+		private $random;
+		private $episode_id;
+		private $hostname;
+
 		function __construct($id = null) {
 
 			$this->table = "queue";
 
 			$this->id = parent::__construct($this->table, $id);
+
+			$this->skip = 0;
+			$this->max = 0;
+			$this->random = false;
+			$this->episode_id = 0;
+			$this->hostname = '';
 
 		}
 
@@ -30,22 +42,63 @@
 
 		}
 
-		public function get_episodes($hostname, $skip = 0, $max = 0, $random = false) {
+		public function skip_episodes($num_episodes) {
+
+			$this->skip = abs(intval($num_episodes));
+
+		}
+
+		public function set_max_episodes($num_episodes) {
+
+			$this->max = abs(intval($num_episodes));
+
+		}
+
+		public function set_episode_id($episode_id) {
+
+			$this->episode_id = abs(intval($episode_id));
+			$this->skip = 0;
+			$this->max = 1;
+
+		}
+
+		public function set_random($random) {
+
+			$this->random = (bool)$random;
+
+		}
+
+		public function set_hostname($hostname) {
+
+			$this->hostname = trim($hostname);
+
+		}
+
+		public function get_episodes() {
 
 			$sql = '';
+			$where = array();
 			$order_by = '';
 
-			if($skip > 0)
+			if($this->skip)
 				$sql = " OFFSET $skip";
 
-			if($max > 0)
+			if($this->max > 0)
 				$sql .= " LIMIT $max";
 
-			if($random)
+			if($this->random)
 				$order_by = "RANDOM(), ";
 
+			if($this->hostname)
+				$where[] = "hostname = ".$this->db->quote($hostname);
 
-			$sql = "SELECT episode_id FROM ".$this->table." WHERE hostname = ".$this->db->quote($hostname)." ORDER BY priority, $order_by id $sql;";
+			if($this->episode_id)
+				$where[] = "episode_id = ".abs(intval($this->episode_id));
+
+			if(count($where))
+				$str_where = "WHERE".implode(" AND ", $where);
+
+			$sql = "SELECT episode_id FROM ".$this->table." $str_where ORDER BY priority, $order_by id $sql;";
 
  			$arr = $this->db->getCol($sql);
 
