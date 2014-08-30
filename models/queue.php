@@ -81,22 +81,22 @@
 			$order_by = '';
 
 			if($this->skip)
-				$sql = " OFFSET $skip";
+				$sql = " OFFSET ".$this->skip;
 
 			if($this->max > 0)
-				$sql .= " LIMIT $max";
+				$sql .= " LIMIT ".$this->max;
 
 			if($this->random)
 				$order_by = "RANDOM(), ";
 
 			if($this->hostname)
-				$where[] = "hostname = ".$this->db->quote($hostname);
+				$where[] = "hostname = ".$this->db->quote($this->hostname);
 
 			if($this->episode_id)
 				$where[] = "episode_id = ".abs(intval($this->episode_id));
 
 			if(count($where))
-				$str_where = "WHERE".implode(" AND ", $where);
+				$str_where = "WHERE ".implode(" AND ", $where);
 
 			$sql = "SELECT episode_id FROM ".$this->table." $str_where ORDER BY priority, $order_by id $sql;";
 
