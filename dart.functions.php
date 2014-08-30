@@ -54,9 +54,12 @@
 				$str .= "Stereo 2.1";
 				break;
 			case 4:
-				$str .= "Surround Sound";
+				$str .= "Surround Sound 4.0";
 				break;
 			case 5:
+				$str .= "Surround Sound 5.0";
+				break;
+			case 6:
 				$str .= "Surround Sound 5.1";
 				break;
 		}
