@@ -123,6 +123,9 @@ if($encode && $episode_id) {
 
 	}
 
+	$audio_details = $tracks_model->get_audio_details($audio_stream_id);
+	$display_audio_passthrough = display_audio($audio_details['format'], $audio_details['channels']);
+
 	$audio_encoder = $series_model->get_audio_encoder();
 	$audio_bitrate = $series_model->get_audio_bitrate();
 	if($audio_encoder == 'aac') {
@@ -213,7 +216,7 @@ if($encode && $episode_id) {
 	if($grayscale)
 		$arr_x264[] = "grayscale";
 	if($audio_encoder == "copy")
-		$arr_audio[] = "passthrough";
+		$arr_audio[] = $display_audio_passthrough;
 	else
 		$arr_audio[] = strtoupper($audio_encoder)." ${audio_bitrate}k";
 

@@ -134,5 +134,17 @@
 
 		}
 
+		function get_audio_details($audio_stream_id) {
+
+			$track_id = intval($this->id);
+			$q_audio_stream_id = $this->db->quote($audio_stream_id);
+
+			$sql = "SELECT format, channels FROM audio WHERE track_id = $track_id AND streamid = $q_audio_stream_id;";
+			$arr = $this->db->getRow($sql);
+
+			return $arr;
+
+		}
+
 	}
 ?>
