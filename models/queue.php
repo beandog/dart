@@ -155,7 +155,7 @@
 
 		}
 
-		public function reset() {
+		public function remove() {
 
 			$sql = '';
 
@@ -165,6 +165,21 @@
 				$sql .= " AND episode_id = ".$this->db->quote($this->episode_id);
 
 			$sql = "DELETE FROM queue WHERE x264 = 0 AND xml = 0 AND mkv = 0 $sql;";
+
+			$this->db->query($sql);
+
+		}
+
+		public function reset() {
+
+			$sql = '';
+
+			if($this->hostname)
+				$sql .= " AND hostname = ".$this->db->quote($this->hostname);
+			if($this->episode_id)
+				$sql .= " AND episode_id = ".$this->db->quote($this->episode_id);
+
+			$sql = "UPDATE queue SET x264 = 0, xml = 0, mkv = 0 WHERE (x264 > 0 OR xml > 0 OR mkv > 0) $sql;";
 
 			$this->db->query($sql);
 

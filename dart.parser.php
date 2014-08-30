@@ -99,9 +99,15 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('remove_queue', array(
+		'long_name' => '--remove',
+		'description' => 'Remove all episodes from the queue',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('reset_queue', array(
 		'long_name' => '--reset',
-		'description' => 'Remove all episodes from the queue',
+		'description' => 'Reset queue status for episodes',
 		'action' => 'StoreTrue',
 		'default' => false,
 	));

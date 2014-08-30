@@ -74,9 +74,10 @@
 		$queue_model->set_max_episodes($max);
 	if($queue_episode_id)
 		$queue_model->set_episode_id($queue_episode_id);
-	if($reset_queue) {
+	if($remove_queue)
+		$queue_model->remove();
+	if($reset_queue)
 		$queue_model->reset();
-	}
 	if($queue_episode_id)
 		$queue_episode_id = abs(intval($queue_episode_id));
 
