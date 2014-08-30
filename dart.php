@@ -66,8 +66,8 @@
 		$devices = $all_devices;
 
 	// Process request to reset the queue
+	$queue_model = new Queue_Model;
 	if($reset_queue) {
-		$queue_model = new Queue_Model;
 		$queue_model->reset($hostname);
 	}
 

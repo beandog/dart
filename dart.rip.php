@@ -9,8 +9,6 @@
 
 	if($rip && $disc_indexed && !$broken_dvd) {
 
-		$queue_model = new Queue_Model;
-
 		echo "[Rip]\n";
 
 		$dvd_episodes = $dvds_model->get_episodes();

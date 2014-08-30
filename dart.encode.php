@@ -8,8 +8,6 @@
 	 */
 if($encode) {
 
-	$queue_model = new Queue_Model;
-
 	echo "[Encode]\n";
 
 	$queue_episodes = $queue_model->get_episodes($hostname, $skip, $max, $random);
