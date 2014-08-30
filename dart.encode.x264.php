@@ -112,14 +112,6 @@ if($encode && $episode_id) {
 	else
 		$default_audio_streamid = $best_quality_audio_streamid;
 
-	// Some DVDs may report more audio streams than
-	// Handbrake does.  If that's the case, check
-	// each one that lsdvd reports, to see if Handbrake
-	// agrees, and add the first one that they both
-	// have found.
-	//
-	// By default, use the one we think is right.
-
 	// Do a a check for a dry run here, because HandBrake scans the source directly
 	// which can take some time.
 	if(!$dry_run) {
