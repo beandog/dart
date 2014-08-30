@@ -39,6 +39,7 @@
 
 		// DVD Audio
 		public $audio_track;
+		public $audio_active;
 		public $audio_track_codec;
 		public $audio_track_channels;
 		public $audio_track_stream_id;
@@ -520,6 +521,7 @@
 			$this->audio_track = $audio_track;
 			$this->audio_track_info = $this->dvd_info['tracks'][$this->title_track - 1]['audio'][$this->audio_track - 1];
 
+			$this->audio_track_active = $this->audio_track_active();
 			$this->audio_track_lang_code = $this->audio_track_lang_code();
 			$this->audio_track_codec = $this->audio_track_codec();
 			$this->audio_track_channels = $this->audio_track_channels();
@@ -527,6 +529,10 @@
 
 			return true;
 
+		}
+
+		private function audio_track_active() {
+			return $this->dvd_info_string($this->audio_track_info, 'active');
 		}
 
 		private function audio_track_lang_code() {
