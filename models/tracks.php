@@ -81,11 +81,26 @@
 		// metadata somewhere.
 		public function missing_metadata() {
 
-			$sql = "SELECT 1 FROM tracks WHERE (angles IS NULL OR cc IS NULL) AND id = ".$this->db->quote($this->id).";";
+			$track_id = abs(intval($this->id));
+
+			$sql = "SELECT 1 FROM tracks WHERE (angles IS NULL OR cc IS NULL) AND id = $track_id;";
 			$var = $this->db->getOne($sql);
 			$bool = (bool)$var;
 
-			return $bool;
+			if($bool)
+				return true;
+
+			$sql = "SELECT COUNT(1) FROM audio WHERE track_id = $track_id AND active IS NULL;";
+			$var = $this->db->getOne($sql);
+			if($var)
+				return true;
+
+			$sql = "SELECT COUNT(1) FROM subp WHERE track_id = $track_id AND active IS NULL;";
+			$var = $this->db->getOne($sql);
+			if($var)
+				return true;
+
+			return false;
 
 		}
 
