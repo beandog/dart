@@ -16,17 +16,24 @@
 		// metadata somewhere.
 		public function missing_metadata() {
 
+			$dvd_id = abs(intval($this->id));
 
 			$sql = "SELECT MAX(version) FROM specs WHERE metadata = 'database';";
-			$version = $this->db->getOne($sql);
+			$version = abs(intval($this->db->getOne($sql)));
 
-			$sql = "SELECT COUNT(1) FROM dvds d WHERE id = ".$this->db->quote($this->id)." AND metadata_spec = $version;";
-			$count = $this->db->getOne($sql);
+			$sql = "SELECT COUNT(1) FROM dvds d WHERE id = $dvd_id AND metadata_spec = $version;";
+			$count = abs(intval($this->db->getOne($sql)));
+
+			if(!$count)
+				return true;
+
+			$sql = "SELECT COUNT(1) FROM tracks t JOIN dvds d ON d.id = t.dvd_id JOIN audio a ON a.track_id = t.id JOIN subp s ON s.track_id = t.id WHERE d.id = $dvd_id AND (s.active IS NULL OR a.active IS NULL);";
+			$count = abs(intval($this->db->getOne($sql)));
 
 			if($count)
-				return false;
-			else
 				return true;
+
+			return false;
 
 		}
 
