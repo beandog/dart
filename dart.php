@@ -65,10 +65,17 @@
 	if(!count($devices) && ($rip || $info || $dump_iso || $dump_ifo || $import || $archive))
 		$devices = $all_devices;
 
-	// Process request to reset the queue
+	// Manage queue
 	$queue_model = new Queue_Model;
+	$queue_model->set_hostname($hostname);
+	if($skip)
+		$queue_model->skip_episodes($skip);
+	if($max)
+		$queue_model->set_max_episodes($max);
+	if($queue_episode_id)
+		$queue_model->set_episode_id($queue_episode_id);
 	if($reset_queue) {
-		$queue_model->reset($hostname);
+		$queue_model->reset();
 	}
 	if($queue_episode_id)
 		$queue_episode_id = abs(intval($queue_episode_id));
