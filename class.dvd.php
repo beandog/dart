@@ -47,6 +47,7 @@
 
 		// DVD Subtitle
 		public $subtitle_track;
+		public $subtitle_active;
 		public $subtitle_track_lang_code;
 		public $subtitle_track_stream_id;
 
@@ -574,11 +575,16 @@
 			$this->subtitle_track = $subtitle_track;
 			$this->subtitle_track_info = $this->dvd_info['tracks'][$this->title_track - 1]['subtitles'][$this->subtitle_track - 1];
 
+			$this->subtitle_track_active = $this->subtitle_track_active();
 			$this->subtitle_track_lang_code = $this->subtitle_track_lang_code();
 			$this->subtitle_track_lang_stream_id = $this->subtitle_track_stream_id();
 
 			return true;
 
+		}
+
+		private function subtitle_track_active() {
+			return $this->dvd_info_string($this->subtitle_track_info, 'active');
 		}
 
 		private function subtitle_track_lang_code() {

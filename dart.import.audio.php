@@ -55,4 +55,11 @@
 				echo "* Updating audio channels: ".$audio_model->channels." -> ".$dvd->audio_track_channels."\n";
 		}
 
+		if($audio_model->active != $dvd->audio_track_active) {
+			$audio_model->active = $dvd->audio_track_active;
+			if($debug)
+				echo "* Updating audio track active: ".(is_null($audio_model->active) ? "unset" : "false")." -> ".($dvd->audio_track_active ? "true" : "false")."\n";
+		}
+		var_dump($audio_model->active); die;
+
 	}
