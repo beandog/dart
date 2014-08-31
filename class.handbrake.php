@@ -3,18 +3,18 @@
 	class Handbrake {
 
 		// Handbrake
-		private $binary = "HandBrakeCLI";
-		private $verbose = false;
-		private $debug = false;
-		private $dvdnav = true;
-		private $preset;
-		private $track;
-		private $http_optimize;
-		private $flags = array();
-		private $args = array();
-		private $scan_complete = false;
-		private $do_not_scan = false;
-		private $dry_run = false;
+		public $binary = "HandBrakeCLI";
+		public $verbose = false;
+		public $debug = false;
+		public $dvdnav = true;
+		public $preset;
+		public $track;
+		public $http_optimize;
+		public $flags = array();
+		public $args = array();
+		public $scan_complete = false;
+		public $do_not_scan = false;
+		public $dry_run = false;
 
 		// DVD source
 		public $dvd;
@@ -22,46 +22,46 @@
 		public $dvd_num_subtitles;
 
 		// Video
-		private $video_bitrate;
-		private $video_encoder;
-		private $video_encoders = array('x264', 'ffmpeg4', 'ffmpeg2', 'theora');
-		private $video_quality;
-		private $crop;
-		private $deinterlace;
-		private $decomb;
-		private $detelecine;
-		private $grayscale;
-		private $two_pass;
-		private $two_pass_turbo;
-		private $h264_profile;
-		private $h264_profiles = array('auto', 'high', 'main', 'baseline');
-		private $h264_level;
-		private $h264_levels = array('auto', '1.0', '1.b', '1.1', '1.2', '1.3', '2.0', '2.1', '2.2', '3.0', '3.1', '3.2', '4.0', '4.1', '4.2', '5.0', '5.1', '5.2');
-		private $x264_preset;
-		private $x264_presets = array('ultrafast', 'superfast', 'veryfast', 'faster', 'fast', 'medium', 'slow', 'slower', 'veryslow', 'placebo');
-		private $x264_tune;
-		private $x264_tuning_options = array('film', 'animation', 'grain', 'stillimage', 'psnr', 'ssim', 'fastdecode', 'zerolatency');
-		private $x264 = array();
+		public $video_bitrate;
+		public $video_encoder;
+		public $video_encoders = array('x264', 'ffmpeg4', 'ffmpeg2', 'theora');
+		public $video_quality;
+		public $crop;
+		public $deinterlace;
+		public $decomb;
+		public $detelecine;
+		public $grayscale;
+		public $two_pass;
+		public $two_pass_turbo;
+		public $h264_profile;
+		public $h264_profiles = array('auto', 'high', 'main', 'baseline');
+		public $h264_level;
+		public $h264_levels = array('auto', '1.0', '1.b', '1.1', '1.2', '1.3', '2.0', '2.1', '2.2', '3.0', '3.1', '3.2', '4.0', '4.1', '4.2', '5.0', '5.1', '5.2');
+		public $x264_preset;
+		public $x264_presets = array('ultrafast', 'superfast', 'veryfast', 'faster', 'fast', 'medium', 'slow', 'slower', 'veryslow', 'placebo');
+		public $x264_tune;
+		public $x264_tuning_options = array('film', 'animation', 'grain', 'stillimage', 'psnr', 'ssim', 'fastdecode', 'zerolatency');
+		public $x264 = array();
 
 		// Audio
-		private $audio = true;
-		private $audio_encoders = array();
-		private $audio_tracks = array();
-		private $audio_streams = array();
-		private $audio_bitrate;
-		private $audio_fallback;
+		public $audio = true;
+		public $audio_encoders = array();
+		public $audio_tracks = array();
+		public $audio_streams = array();
+		public $audio_bitrate;
+		public $audio_fallback;
 
 		// Container
-		private $add_chapters;
-		private $format;
-		private $starting_chapter;
-		private $ending_chapter;
+		public $add_chapters;
+		public $format;
+		public $starting_chapter;
+		public $ending_chapter;
 
 		// Subtitles
-		private $subtitle_tracks = array();
-		private $srt_language = 'eng';
-		private $closed_captioning = false;
-		private $closed_captioning_ix;
+		public $subtitle_tracks = array();
+		public $srt_language = 'eng';
+		public $closed_captioning = false;
+		public $closed_captioning_ix;
 
 		function debug($bool = true) {
 			$this->debug = $this->verbose = (boolean)$bool;
