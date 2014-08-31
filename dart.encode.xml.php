@@ -9,7 +9,6 @@
 	$matroska->addTag();
 	$matroska->addTarget(70, "COLLECTION");
 	$matroska->addSimpleTag("TITLE", $episode->metadata['series_title']);
-	$matroska->addSimpleTag("PRODUCTION_STUDIO", $episode->metadata['production_studio']);
 	$matroska->addSimpleTag("DATE_RELEASE", $episode->metadata['production_year']);
 	$matroska->addSimpleTag("ORIGINAL_MEDIA_TYPE", "DVD");
 

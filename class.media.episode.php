@@ -61,7 +61,6 @@
 			}
 
 			// Add metadata not in the view
-			$this->metadata['production_studio'] = $series_model->production_studio;
 			$this->metadata['production_year'] = $series_model->production_year;
 			$this->metadata['episode_number'] = $episodes_model->get_number();
 
