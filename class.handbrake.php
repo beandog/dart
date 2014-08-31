@@ -402,7 +402,6 @@
 					$args['--audio'] = $str;
 				} else
 					$args['--audio'] = 1;
-				}
 
 				// Add audio encoders
 				if(count($this->audio_encoders)) {
