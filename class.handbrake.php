@@ -157,18 +157,34 @@
 			$this->audio_tracks[] = $int;
 		}
 
+		/**
+		 * Add an audio stream id to be encoded.
+		 *
+		 * @param string audio track stream id
+		 * @return boolean success
+		 */
 		public function add_audio_stream($stream_id) {
 
 			if(!$this->scan_complete)
 				$this->scan();
 
-			// Add the audio track only if the stream ID is available from scan
-			if(array_key_exists($stream_id, $this->audio_streams)) {
-				$this->add_audio_track($this->audio_streams[$stream_id]);
+			if($this->dvd_has_audio_stream_id($stream_id)) {
+
+				// 0x80 = 128
+				$audio_stream_idx = $stream_id - 128;
+
+				// Check to make sure the stream exists
+				if(!array_key_exists($audio_stream_idx, $this->dvd['streams']['audio']))
+					return false;
+
+				$audio_track = $this->dvd['streams']['audio'][$audio_stream_idx]['track'];
+				$this->add_audio_track($audio_track);
 				return true;
-			} else {
-				return false;
+
 			}
+
+			return false;
+
 		}
 
 		// FIXME limit to set audio encoders
