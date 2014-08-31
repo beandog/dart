@@ -624,6 +624,33 @@
 
 		}
 
+		/**
+		 * Scan all the audio streams to see if it has one matching the
+		 * argument.
+		 *
+		 * Example stream id: '0x80' for first audio track stream id
+		 *
+		 * @param string DVD stream id
+		 * @return boolean
+		 */
+		public function dvd_has_audio_stream_id($dvd_stream_id) {
+
+			if(!$this->scan_complete)
+				$this->scan();
+
+			foreach($this->dvd['streams']['audio'] as $arr) {
+
+				$hb_stream_id = substr($arr['id'], 0, 4);;
+
+				if($hb_stream_id == $dvd_stream_id)
+					return true;
+
+			}
+
+			return false;
+
+		}
+
 		public function set_chapters($a, $b) {
 
 			$this->starting_chapter = $a;
