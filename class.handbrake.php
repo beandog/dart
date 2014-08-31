@@ -651,6 +651,33 @@
 
 		}
 
+		/**
+		 * Scan all the subtitles to see if it has one matching the
+		 * argument.
+		 *
+		 * Example stream id: '0x20' for first subp stream id
+		 *
+		 * @param string DVD stream id
+		 * @return boolean
+		 */
+		public function dvd_has_subtitle_stream_id($dvd_stream_id) {
+
+			if(!$this->scan_complete)
+				$this->scan();
+
+			foreach($this->dvd['streams']['subtitle'] as $arr) {
+
+				$hb_stream_id = substr($arr['id'], 0, 4);;
+
+				if($hb_stream_id == $dvd_stream_id)
+					return true;
+
+			}
+
+			return false;
+
+		}
+
 		public function set_chapters($a, $b) {
 
 			$this->starting_chapter = $a;
