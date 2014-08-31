@@ -17,10 +17,9 @@
 		private $dry_run = false;
 
 		// DVD source
-		private $dvd_titles;
-		private $dvd_audio_tracks;
-		private $dvd_subtitle_tracks;
-		private $dvd_chapters;
+		public $dvd;
+		public $dvd_num_audio_tracks;
+		public $dvd_num_subtitles;
 
 		// Video
 		private $video_bitrate;
@@ -63,7 +62,6 @@
 		private $srt_language = 'eng';
 		private $closed_captioning = false;
 		private $closed_captioning_ix;
-		private $num_bitmaps;
 
 		function debug($bool = true) {
 			$this->debug = $this->verbose = (boolean)$bool;
@@ -571,19 +569,53 @@
 
 			$arr = file($output_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 			unlink($output_file);
+
+			// Strip out library messages
 			$pattern = "/^(libdvdread|libdvdnav|libbluray)/";
 			$arr = preg_grep($pattern, $arr, PREG_GREP_INVERT);
 
-			$vobsubs = preg_grep("/.*(Bitmap).*/", $arr);
+			// Strip out "[00:11:22] scan: " strings
+			$arr = preg_replace("/\[\d{2}:\d{2}:\d{2}\] scan: /", "", $arr);
 
-			$this->num_bitmaps = count($vobsubs);
+			// Find all the lines that list the audio and subtitle streams
+			$arr_scan_streams = array_merge(preg_grep("/^(checking|id=0)/", $arr));
+
+			$this->dvd['streams']['audio'] = array();
+			$this->dvd['streams']['subtitle'] = array();
+
+			for($x = 0; $x < count($arr_scan_streams); $x += 2) {
+
+				$data_audio_subp = explode(" ", $arr_scan_streams[$x]);
+				$stream_type = $data_audio_subp[1];
+
+				if(!($stream_type == 'audio' || $stream_type == 'subtitle'))
+					break;
+
+				$stream_data = explode(', ', $arr_scan_streams[$x + 1]);
+				$stream_id = substr($stream_data[0], 3);
+				$stream_lang = substr($stream_data[1], 5);
+				$tmp = explode(' ', $stream_data[2]);
+				$stream_3cc = substr($tmp[0], 4);
+				$stream_ext = substr($tmp[1], 4);
+
+				$this->dvd['streams'][$stream_type][] = array(
+					'id' => $stream_id,
+					'lang' => $stream_lang,
+					'3cc' => $stream_3cc,
+					'ext' => $stream_ext,
+				);
+
+			}
+
+			$this->dvd_num_audio_tracks = count($this->dvd['streams']['audio']);
+			$this->dvd_num_subtitles = count($this->dvd['streams']['subtitle']);
 
 			// Sample source string: Closed Captions (iso639-2: eng) (Text)(CC)
 			$closed_captioning = preg_grep("/.*Closed Captions.*eng.*/", $arr);
 
 			if(count($closed_captioning)) {
 				$this->closed_captioning = true;
-				$this->closed_captioning_ix = (count($vobsubs) + 1);
+				$this->closed_captioning_ix = $this->dvd_num_subtitles + 1;
 			}
 
 			$this->scan_complete = true;
