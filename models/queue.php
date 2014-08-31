@@ -29,8 +29,9 @@
 			$this->remove_episode($id);
 
 			$this->create_new();
-			$this->episode_id = $id;
-			$this->hostname = $hostname;
+			$this->__set('episode_id', $id);
+			if($this->hostname)
+				$this->__set('hostname', $this->hostname);
 
 		}
 
@@ -135,9 +136,13 @@
 
 		}
 
-		public function get_dvds($hostname) {
+		public function get_dvds() {
 
-			$sql = "SELECT DISTINCT dvd_id FROM view_episodes e JOIN queue q ON q.episode_id = e.episode_id WHERE q.hostname = ".$this->db->quote($hostname).";";
+			$where = '';
+			if($this->hostname)
+				$where = "WHERE q.hostname = ".$this->db->quote($hostname);
+
+			$sql = "SELECT DISTINCT dvd_id FROM view_episodes e JOIN queue q ON q.episode_id = e.episode_id $where;";
 
 			$arr = $this->db->getCol($sql);
 
