@@ -578,7 +578,7 @@
 			$arr = preg_replace("/\[\d{2}:\d{2}:\d{2}\] scan: /", "", $arr);
 
 			// Find all the lines that list the audio and subtitle streams
-			$arr_scan_streams = array_merge(preg_grep("/^(checking|id=0)/", $arr));
+			$arr_scan_streams = array_merge(preg_grep("/^id=0/", $arr));
 
 			$this->dvd['streams']['audio'] = array();
 			$this->dvd['streams']['subtitle'] = array();
@@ -586,15 +586,19 @@
 			$stream_ix['audio'] = 1;
 			$stream_ix['subtitle'] = 1;
 
-			for($x = 0; $x < count($arr_scan_streams); $x += 2) {
+			foreach($arr_scan_streams as $scan_stream) {
 
-				$data_audio_subp = explode(" ", $arr_scan_streams[$x]);
-				$stream_type = $data_audio_subp[1];
+				$tmp = explode(" ", $scan_stream);
+				$stream_type = $tmp[1];
 
-				if(!($stream_type == 'audio' || $stream_type == 'subtitle'))
+				if(substr($scan_stream, 0, 6) == 'id=0x8')
+					$stream_type = 'audio';
+				elseif(substr($scan_stream, 0, 6) == 'id=0x2' || substr($scan_stream, 0, 6) == 'id=0x3')
+					$stream_type = 'subtitle';
+				else
 					break;
 
-				$stream_data = explode(', ', $arr_scan_streams[$x + 1]);
+				$stream_data = explode(', ', $scan_stream);
 				$stream_id = substr($stream_data[0], 3);
 				$stream_lang = substr($stream_data[1], 5);
 				$tmp = explode(' ', $stream_data[2]);
