@@ -16,6 +16,12 @@
 		private $do_not_scan = false;
 		private $dry_run = false;
 
+		// DVD source
+		private $dvd_titles;
+		private $dvd_audio_tracks;
+		private $dvd_subtitle_tracks;
+		private $dvd_chapters;
+
 		// Video
 		private $video_bitrate;
 		private $video_encoder;
@@ -563,9 +569,10 @@
 
 			}
 
-			$arr = file($output_file);
-
+			$arr = file($output_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 			unlink($output_file);
+			$pattern = "/^(libdvdread|libdvdnav|libbluray)/";
+			$arr = preg_grep($pattern, $arr, PREG_GREP_INVERT);
 
 			$audio = preg_grep("/.*(scan: id=8).*/", $arr);
 
