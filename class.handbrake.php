@@ -400,7 +400,7 @@
 				if(count($this->audio_tracks)) {
 					$str = implode(",", $this->audio_tracks);
 					$args['--audio'] = $str;
-				} elseif(count($this->audio_streams)) {
+				} else
 					$args['--audio'] = 1;
 				}
 
