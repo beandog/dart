@@ -61,7 +61,7 @@
 		public $subtitle_tracks = array();
 		public $srt_language = 'eng';
 		public $closed_captioning = false;
-		public $closed_captioning_ix;
+		public $closed_captioning_ix = null;
 
 		function debug($bool = true) {
 			$this->debug = $this->verbose = (boolean)$bool;
@@ -287,6 +287,9 @@
 		 * @param boolean added
 		 */
 		public function add_closed_captioning() {
+
+			if(!$this->scan_complete)
+				$this->scan();
 
 			if($this->closed_captioning) {
 				$this->add_subtitle_track($this->closed_captioning_ix);
@@ -752,20 +755,6 @@
 			$this->starting_chapter = $a;
 			$this->ending_chapter = $b;
 
-		}
-
-		public function has_closed_captioning() {
-			if(!$this->scan_complete)
-				$this->scan();
-
-			return $this->closed_captioning;
-		}
-
-		public function get_closed_captioning_ix() {
-			if(!$this->scan_complete)
-				$this->scan();
-
-			return $this->closed_captioning_ix;
 		}
 
 		public function encode() {
