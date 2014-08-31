@@ -77,13 +77,6 @@
 		'action' => 'StoreInt',
 		'default' => 96,
 	));
-	$parser->addOption('disable_audio', array(
-		'short_name' => '-A',
-		'long_name' => '--no-audio',
-		'description' => 'Disable audio encoding',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
 	$parser->addOption('subtitles', array(
 		'short_name' => '-s',
 		'long_name' => '--subtitles',
@@ -288,15 +281,11 @@
 		$hb->set_video_quality($video_quality);
 	$hb->set_two_pass($two_pass);
 	$hb->set_two_pass_turbo($two_pass_turbo);
-	if($disable_audio) {
-		$hb->disable_audio();
-	} else {
-		$hb->add_audio_encoder($audio_encoder);
-		if($audio_encoder != 'copy')
-			$hb->set_audio_bitrate($audio_bitrate);
-		if($audio_encoder != $audio_fallback)
-			$hb->set_audio_fallback($audio_fallback);
-	}
+	$hb->add_audio_encoder($audio_encoder);
+	if($audio_encoder != 'copy')
+		$hb->set_audio_bitrate($audio_bitrate);
+	if($audio_encoder != $audio_fallback)
+		$hb->set_audio_fallback($audio_fallback);
 	if($subtitles && $subtitle_track)
 		$hb->add_subtitle_track($subtitle_track);
 	elseif($subtitles && $has_closed_captioning)
@@ -327,8 +316,6 @@
 	$d_audio_encoder = $audio_encoder;
 	if(!$audio_encoder)
 		$d_audio_encoder = "(default)";
-	if($disable_audio)
-		$d_audio_encoder = "(no audio)";
 	$d_subtitle_track = $subtitle_track;
 	if(!$subtitle_track)
 		$d_subtitle_track = "(default)";
@@ -359,11 +346,9 @@
 	}
 	echo "// Audio //\n";
 	echo "* Encoder: $d_audio_encoder\n";
-	if(!$disable_audio) {
-		if($audio_fallback)
-			echo "* Fallback: $audio_fallback\n";
-		echo "* Bitrate: $d_audio_bitrate\n";
-	}
+	if($audio_fallback)
+		echo "* Fallback: $audio_fallback\n";
+	echo "* Bitrate: $d_audio_bitrate\n";
 	if($subtitles) {
 		echo "// Subtitles //\n";
 		if($subtitle_track)

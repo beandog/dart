@@ -193,10 +193,6 @@
 			$this->audio = true;
 		}
 
-		public function disable_audio() {
-			$this->audio = false;
-		}
-
 		public function autocrop($bool = true) {
 			$bool = (boolean)$bool;
 			if($bool)
