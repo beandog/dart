@@ -281,6 +281,22 @@
 		}
 
 		/**
+		 * Check to see if the closed captioning exists, and if so
+		 * go ahead and add it to the list of subtitles to include.
+		 *
+		 * @param boolean added
+		 */
+		public function add_closed_captioning() {
+
+			if($this->closed_captioning) {
+				$this->add_subtitle_track($this->closed_captioning_ix);
+				return true;
+			} else
+				return false;
+
+		}
+
+		/**
 		 * Add a subtitle stream id
 		 *
 		 * @param string subtitle track stream id
