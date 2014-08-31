@@ -24,7 +24,7 @@
 
 		}
 
-		public function add_episode($id, $hostname) {
+		public function add_episode($id) {
 
 			$this->remove_episode($id);
 

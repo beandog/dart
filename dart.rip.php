@@ -47,7 +47,7 @@
 
 					if(!file_exists($episode->episode_mkv)) {
 
-						$queue_model->add_episode($episode_id, php_uname('n'));
+						$queue_model->add_episode($episode_id);
 						$num_queued++;
 
 						$episode->create_queue_iso_symlink($device_realpath);
