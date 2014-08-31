@@ -33,6 +33,8 @@ if($encode) {
 			}
 
 			$episode = new MediaEpisode($episode_id, $export_dir);
+			$episode->create_queue_dir();
+			$episode->create_queue_iso_symlink();
 
 			// If episode already exists, remove it from the queue, and move
 			// onto the next.  Change the num_encoded value so that it doesn't
@@ -95,9 +97,6 @@ if($encode) {
 
 			// Begin the encode if everything is good to go
 			if($episode->x264_ready()) {
-
-				$episode->create_queue_dir();
-				$episode->create_queue_iso_symlink();
 
 				// Flag episode encoding as "in progress"
 				$queue_model->set_episode_status($episode_id, 'x264', 1);
