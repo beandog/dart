@@ -300,7 +300,7 @@
 	if($subtitles && $subtitle_track)
 		$hb->add_subtitle_track($subtitle_track);
 	elseif($subtitles && $has_closed_captioning)
-		$hb->add_subtitle_track($hb->get_closed_captioning_ix());
+		$hb->add_subtitle_track($hb->get_closed_captioning_ix);
 	$hb->autocrop($autocrop);
 	$hb->decomb($decomb);
 	$hb->detelecine($detelecine);
