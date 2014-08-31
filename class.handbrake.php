@@ -280,6 +280,36 @@
 			$this->subtitle_tracks[] = $int;
 		}
 
+		/**
+		 * Add a subtitle stream id
+		 *
+		 * @param string subtitle track stream id
+		 * @return boolean success
+		 */
+		public function add_subtitle_stream($stream_id) {
+
+			if(!$this->scan_complete)
+				$this->scan();
+
+			if($this->dvd_has_subtitle_stream_id($stream_id)) {
+
+				// 0x20 = 32
+				$subtitle_stream_idx = $stream_id - 32;
+
+				// Check to make sure the stream exists
+				if(!array_key_exists($subtitle_stream_idx, $this->dvd['streams']['subtitle']))
+					return false;
+
+				$subtitle_track = $this->dvd['streams']['subtitle'][$subtitle_stream_idx]['track'];
+				$this->add_subtitle_track($subtitle_track);
+				return true;
+
+			}
+
+			return false;
+
+		}
+
 		public function get_options() {
 
 			$options = array();
