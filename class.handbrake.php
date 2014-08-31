@@ -505,13 +505,17 @@
 
 			$args = $this->get_arguments();
 
-			foreach($args as $key => $value)
-				$cmd[] = "$key ".escapeshellarg($value);
+			foreach($args as $key => $value) {
+				$arg_value = escapeshellarg($value);
+				$cmd[] = "$key $arg_value";
+			}
 
 			$str = $this->binary." ".implode(" ", $cmd);
 
-			$str .= " --input ".escapeshellarg($this->input);
-			$str .= " --output ".escapeshellarg($this->output);
+			$arg_input = escapeshellarg($this->input);
+			$arg_output = escapeshellarg($this->output);
+			$str .= " --input $arg_input";
+			$str .= " --output $arg_output";
 
 			return $str;
 
@@ -573,7 +577,8 @@
 			if($this->track)
 				$options = "--title ".$this->track;
 
-			$cmd = $this->binary." --scan --verbose $options --input ".escapeshellarg($this->input)." 2>&1";
+			$arg_input = escapeshellarg($this->input);
+			$cmd = $this->binary." --scan --verbose $options --input $arg_input 2>&1";
 
 			$output_file = tempnam(sys_get_temp_dir(), "handbrake-scan");
 

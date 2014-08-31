@@ -109,7 +109,9 @@ if($encode) {
 					$cmd = escapeshellcmd($handbrake_command);
 					echo "Executing: $cmd\n";
 				} else {
-					$cmd = escapeshellcmd($handbrake_command)." 2> ".escapeshellarg($episode->queue_handbrake_output);
+					$cmd_handbrake_command = escapeshellcmd($handbrake_command);
+					$arg_queue_handbrake_output = escapeshellarg($episode->queue_handbrake_output);
+					$cmd = "$cmd_handbrake_command 2> $arg_queue_handbrake_output";
 				}
 
 				$exit_code = null;

@@ -103,7 +103,8 @@
 
 		private function dvd_info() {
 
-			$cmd = "dvd_info --json ".escapeshellarg($this->device)." 2> /dev/null";
+			$arg_device = escapeshellarg($this->device);
+			$cmd = "dvd_info --json $arg_device 2> /dev/null";
 
 			if($this->debug)
 				echo "* Executing: $cmd\n";
@@ -188,7 +189,10 @@
 				if(file_exists($logfile))
 					unlink($logfile);
 
-				$cmd = "ddrescue -b 2048 -n ".escapeshellarg($this->device)." ".escapeshellarg($dest)." ".escapeshellarg($logfile);
+				$arg_device = escapeshellarg($this->device);
+				$arg_dest = escapeshellarg($dest);
+				$arg_logfile = escapeshellarg($logfile);
+				$cmd = "ddrescue -b 2048 -n $arg_device $arg_dest $arg_logfile";
 				passthru($cmd, $retval);
 
 				if($retval !== 0)
@@ -197,7 +201,10 @@
 					return true;
 
 			} elseif($method == 'pv') {
-				$cmd = "pv -pter -w 80 ".escapeshellarg($this->device)." | dd of=".escapeshellarg($dest)." 2> /dev/null";
+
+				$arg_device = escapeshellarg($this->device);
+				$arg_dest = escapeshellarg($dest);
+				$cmd = "pv -pter -w 80 $arg_device | dd of=$arg_dest 2> /dev/null";
 				$cmd .= '; echo ${PIPESTATUS[*]}';
 
 				exec($cmd, $arr);
@@ -216,12 +223,14 @@
 			if(!$this->opened)
 				return null;
 
+			$arg_dest = escapeshellarg($dest);
 			if($this->debug)
-				echo "* dvd->dump_ifo($dest)\n";
+				echo "* dvd->dump_ifo($arg_dest)\n";
 
 			chdir($dest);
 
-			$cmd = "dvd_backup_ifo ".escapeshellarg($this->device)." &> /dev/null";
+			$arg_device = escapeshellarg($this->device);
+			$cmd = "dvd_backup_ifo $arg_device &> /dev/null";
 
 			$arr = array();
 
@@ -352,7 +361,8 @@
 		// Use serial number from HandBrake 0.9.9
 		public function serial_id() {
 
-			$cmd = "HandBrakeCLI --scan -i ".escapeshellarg($this->device)." 2>&1";
+			$arg_device = escapeshellarg($this->device);
+			$cmd = "HandBrakeCLI --scan -i $arg_device 2>&1";
 			exec($cmd, $arr, $retval);
 
 			if($retval !== 0) {

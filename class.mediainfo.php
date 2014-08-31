@@ -21,7 +21,8 @@
 
 			// Get XML
 
-			$cmd = "mediainfo --output=XML ".escapeshellarg($this->filename)." 2> /dev/null";
+			$arg_filename = escapeshellarg($this->filename);
+			$cmd = "mediainfo --output=XML $arg_filename 2> /dev/null";
 
 			exec($cmd, $output, $retval);
 
