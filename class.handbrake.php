@@ -421,9 +421,7 @@
 				}
 
 			} else {
-
-				$args['--audio'] = 'none';
-
+				$args['--audio'] = 1;
 			}
 
 
