@@ -62,7 +62,7 @@
 
 		}
 
-		public function set_random($random) {
+		public function set_random($random = true) {
 
 			$this->random = (bool)$random;
 

@@ -74,6 +74,8 @@
 		$queue_model->set_max_episodes($max);
 	if($queue_episode_id)
 		$queue_model->set_episode_id($queue_episode_id);
+	if($random)
+		$queue_model->set_random();
 	if($remove_queue)
 		$queue_model->remove();
 	if($reset_queue)
