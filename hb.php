@@ -276,7 +276,7 @@
 		echo "* Scanning $input_track FAILED\n";
 		exit(1);
 	}
-	$has_closed_captioning = $hb->has_closed_captioning();
+	$has_closed_captioning = $hb->closed_captioning;
 	$hb->output_filename($output_filename);
 	$hb->add_chapters($add_chapters);
 	if($first_chapter || $last_chapter)

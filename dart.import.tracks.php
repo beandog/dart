@@ -124,7 +124,7 @@
 					$tracks_model->tag_track('track_no_handbrake_scan');
 				} else {
 
-					if($handbrake->has_closed_captioning())
+					if($handbrake->closed_captioning)
 						$tracks_model->closed_captioning = 't';
 					else
 						$tracks_model->closed_captioning = 'f';

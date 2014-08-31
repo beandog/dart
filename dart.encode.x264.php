@@ -153,8 +153,8 @@ if($encode && $episode_id) {
 	if($subp_ix) {
 		$handbrake->add_subtitle_track($subp_ix);
 		$d_subtitles = "VOBSUB";
-	} elseif($handbrake->has_closed_captioning()) {
-		$handbrake->add_subtitle_track($handbrake->get_closed_captioning_ix());
+	} elseif($handbrake->closed_captioning) {
+		$handbrake->add_subtitle_track($handbrake->closed_captioning_ix);
 		$d_subtitles = "Closed Captioning";
 	} else {
 		$d_subtitles = "None :(";
