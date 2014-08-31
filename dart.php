@@ -157,7 +157,7 @@
 			$display_device = basename($device);
 
 		// Determine whether we are reading the device
-		if($rip || $info || $import || $archive || $dump_iso || $dump_ifo) {
+		if($rip || $info || $import || $archive || $dump_iso || $dump_ifo || $qa) {
 			$access_device = true;
 			if(!$wait) {
 				echo "[Access Device]\n";
@@ -372,6 +372,7 @@
 
 	require 'dart.queue.php';
 	require 'dart.encode.php';
+	require 'dart.qa.php';
 	// require 'dart.ftp.php';
 
 ?>
