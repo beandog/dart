@@ -170,6 +170,10 @@
 			if(!is_dir($dir))
 				mkdir($dir, 0755, true);
 
+			// If a symlink exists, but the source file does not, start over
+			if(is_link($this->queue_iso_symlink) && !file_exists($this->queue_iso_symlink))
+				unlink($this->queue_iso_symlink);
+
 			if(!file_exists($this->queue_iso_symlink))
 				symlink($source, $this->queue_iso_symlink);
 
