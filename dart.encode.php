@@ -10,7 +10,7 @@ if($encode) {
 
 	echo "[Encode]\n";
 
-	$queue_episodes = $queue_model->get_episodes($hostname, $skip, $max, $random);
+	$queue_episodes = $queue_model->get_episodes();
 
 	if(count($queue_episodes) == 0)
 		echo "* No episodes in queue to encode\n";
