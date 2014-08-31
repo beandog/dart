@@ -105,7 +105,7 @@
 		// If that's the case, skip over them.
 		if(in_array('track_no_handbrake_scan', $arr_tags)) {
 			// Default to false, so we don't depend on it.
-			$tracks_model->closed_captioning = 'f';
+			$tracks_model->closed_captioning = 0;
 		} else {
 
 			if(is_null($tracks_model->closed_captioning)) {
@@ -124,10 +124,7 @@
 					$tracks_model->tag_track('track_no_handbrake_scan');
 				} else {
 
-					if($handbrake->closed_captioning)
-						$tracks_model->closed_captioning = 't';
-					else
-						$tracks_model->closed_captioning = 'f';
+					$tracks_model->closed_captioning = $handbrake->closed_captioning;
 
 				}
 
