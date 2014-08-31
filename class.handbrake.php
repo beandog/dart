@@ -574,20 +574,6 @@
 			$pattern = "/^(libdvdread|libdvdnav|libbluray)/";
 			$arr = preg_grep($pattern, $arr, PREG_GREP_INVERT);
 
-			$audio = preg_grep("/.*(scan: id=8).*/", $arr);
-
-			$audio_index = 1;
-
-			foreach($audio as $str) {
-
-				$stream_id = "0x".substr($str, 20, 2);
-
-				$this->audio_streams[$stream_id] = $audio_index;
-				$audio_index++;
-			}
-
-			ksort($this->audio_streams);
-
 			$vobsubs = preg_grep("/.*(Bitmap).*/", $arr);
 
 			$this->num_bitmaps = count($vobsubs);
