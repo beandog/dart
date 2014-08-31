@@ -754,18 +754,6 @@
 
 		}
 
-		public function get_audio_index($stream_id) {
-
-			if(!$this->scan_complete)
-				$this->scan();
-
-			$var = null;
-			if(in_array($stream_id, $this->audio_streams))
-				$var = $this->audio_streams[$stream_id];
-
-			return $var;
-		}
-
 		public function has_closed_captioning() {
 			if(!$this->scan_complete)
 				$this->scan();
