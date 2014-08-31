@@ -94,10 +94,6 @@
 			}
 		}
 
-		public function set_debug($bool = true) {
-			$this->debug = $this->verbose = (boolean)$bool;
-		}
-
 		public function set_dry_run($bool = true) {
 			$this->dry_run = (boolean)$bool;
 		}
