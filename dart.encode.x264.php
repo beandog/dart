@@ -105,16 +105,20 @@ if($encode && $episode_id) {
 	$best_quality_audio_streamid = $tracks_model->get_best_quality_audio_streamid();
 	$first_english_streamid = $tracks_model->get_first_english_streamid();
 
+	// Major FIXME -- The audio stream should never be guessed at this point in
+	// the encode.  A *proper* call to the database should fetch it, and then
+	// set the *track number*.
+
 	$audio_stream_id = "0x80";
 
 	// Do a a check for a dry run here, because HandBrake scans the source directly
 	// which can take some time.
 	if(!$dry_run) {
 
-		if($handbrake->get_audio_index($best_quality_audio_streamid)) {
+		if($handbrake->dvd_has_audio_stream_id($best_quality_audio_streamid)) {
 			$handbrake->add_audio_stream($best_quality_audio_streamid);
 			$audio_stream_id = $best_quality_audio_streamid;
-		} elseif($handbrake->get_audio_index($first_english_streamid)) {
+		} elseif($handbrake->dvd_has_audio_stream_id($first_english_streamid)) {
 			$handbrake->add_audio_stream($first_english_streamid);
 			$audio_stream_id = $first_english_streamid;
 		} else {
