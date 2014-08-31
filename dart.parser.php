@@ -125,6 +125,27 @@
 		'default' => 0,
 		'help_name' => 'episode',
 	));
+	$parser->addOption('queue_track_id', array(
+		'long_name' => '--track',
+		'description' => 'Limit queue to track id',
+		'action' => 'StoreInt',
+		'default' => 0,
+		'help_name' => 'id',
+	));
+	$parser->addOption('queue_dvd_id', array(
+		'long_name' => '--dvd',
+		'description' => 'Limit queue to DVD id',
+		'action' => 'StoreInt',
+		'default' => 0,
+		'help_name' => 'id',
+	));
+	$parser->addOption('queue_series_id', array(
+		'long_name' => '--series',
+		'description' => 'Limit queue to series id',
+		'action' => 'StoreInt',
+		'default' => 0,
+		'help_name' => 'id',
+	));
 	$parser->addOption('qa', array(
 		'long_name' => '--qa',
 		'description' => 'Run qa checks on DVD',

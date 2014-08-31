@@ -74,6 +74,12 @@
 		$queue_model->set_max_episodes($max);
 	if($queue_episode_id)
 		$queue_model->set_episode_id($queue_episode_id);
+	if($queue_track_id)
+		$queue_model->set_track_id($queue_track_id);
+	if($queue_dvd_id)
+		$queue_model->set_dvd_id($queue_dvd_id);
+	if($queue_series_id)
+		$queue_model->set_series_id($queue_series_id);
 	if($random)
 		$queue_model->set_random();
 	if($remove_queue)

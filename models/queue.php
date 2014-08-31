@@ -8,6 +8,9 @@
 		private $max;
 		private $random;
 		private $episode_id;
+		private $track_id;
+		private $dvd_id;
+		private $series_id;
 		private $hostname;
 
 		function __construct($id = null) {
@@ -63,6 +66,24 @@
 
 		}
 
+		public function set_track_id($track_id) {
+
+			$this->track_id = abs(intval($track_id));
+
+		}
+
+		public function set_dvd_id($dvd_id) {
+
+			$this->dvd_id = abs(intval($dvd_id));
+
+		}
+
+		public function set_series_id($series_id) {
+
+			$this->series_id = abs(intval($series_id));
+
+		}
+
 		public function set_random($random = true) {
 
 			$this->random = (bool)$random;
@@ -98,6 +119,21 @@
 
 			if(count($where))
 				$str_where = "WHERE ".implode(" AND ", $where);
+
+			if($this->track_id) {
+				$track_id = intval($this->track_id);
+				$str_where .= " AND episode_id IN (SELECT episode_id FROM view_episodes WHERE track_id = $track_id) ";
+			}
+
+			if($this->dvd_id) {
+				$dvd_id = intval($this->dvd_id);
+				$str_where .= " AND episode_id IN (SELECT episode_id FROM view_episodes WHERE dvd_id  = $dvd_id) ";
+			}
+
+			if($this->series_id) {
+				$series_id = intval($this->series_id);
+				$str_where .= " AND episode_id IN (SELECT episode_id FROM view_episodes WHERE series_id  = $series_id) ";
+			}
 
 			$sql = "SELECT episode_id FROM ".$this->table." $str_where ORDER BY $order_by id $sql;";
 
@@ -158,6 +194,20 @@
 				$sql .= " AND hostname = ".$this->db->quote($this->hostname);
 			if($this->episode_id)
 				$sql .= " AND episode_id = ".$this->db->quote($this->episode_id);
+			if($this->track_id) {
+				$track_id = intval($this->track_id);
+				$sql .= " AND episode_id IN (SELECT episode_id FROM view_episodes WHERE track_id = $track_id) ";
+			}
+
+			if($this->dvd_id) {
+				$dvd_id = intval($this->dvd_id);
+				$sql .= " AND episode_id IN (SELECT episode_id FROM view_episodes WHERE dvd_id  = $dvd_id) ";
+			}
+
+			if($this->series_id) {
+				$series_id = intval($this->series_id);
+				$sql .= " AND episode_id IN (SELECT episode_id FROM view_episodes WHERE series_id  = $series_id) ";
+			}
 
 			$sql = "DELETE FROM queue WHERE x264 = 0 AND xml = 0 AND mkv = 0 $sql;";
 
@@ -173,6 +223,20 @@
 				$sql .= " AND hostname = ".$this->db->quote($this->hostname);
 			if($this->episode_id)
 				$sql .= " AND episode_id = ".$this->db->quote($this->episode_id);
+			if($this->track_id) {
+				$track_id = intval($this->track_id);
+				$sql .= " AND episode_id IN (SELECT episode_id FROM view_episodes WHERE track_id = $track_id) ";
+			}
+
+			if($this->dvd_id) {
+				$dvd_id = intval($this->dvd_id);
+				$sql .= " AND episode_id IN (SELECT episode_id FROM view_episodes WHERE dvd_id  = $dvd_id) ";
+			}
+
+			if($this->series_id) {
+				$series_id = intval($this->series_id);
+				$sql .= " AND episode_id IN (SELECT episode_id FROM view_episodes WHERE series_id  = $series_id) ";
+			}
 
 			$sql = "UPDATE queue SET x264 = 0, xml = 0, mkv = 0 WHERE (x264 > 0 OR xml > 0 OR mkv > 0) $sql;";
 
