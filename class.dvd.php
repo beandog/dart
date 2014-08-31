@@ -197,10 +197,10 @@
 					return true;
 
 			} elseif($method == 'pv') {
-				$exec = "pv -pter -w 80 ".escapeshellarg($this->device)." | dd of=".escapeshellarg($dest)." 2> /dev/null";
-				$exec .= '; echo ${PIPESTATUS[*]}';
+				$cmd = "pv -pter -w 80 ".escapeshellarg($this->device)." | dd of=".escapeshellarg($dest)." 2> /dev/null";
+				$cmd .= '; echo ${PIPESTATUS[*]}';
 
-				exec($exec, $arr);
+				exec($cmd, $arr);
 
 				foreach($arr as $exit_code)
 					if(intval($exit_code))
@@ -221,11 +221,11 @@
 
 			chdir($dest);
 
-			$exec = "dvd_backup_ifo ".escapeshellarg($this->device)." &> /dev/null";
+			$cmd = "dvd_backup_ifo ".escapeshellarg($this->device)." &> /dev/null";
 
 			$arr = array();
 
-			exec($exec, $arr, $retval);
+			exec($cmd, $arr, $retval);
 
 			if($retval !== 0)
 				return false;
@@ -352,8 +352,8 @@
 		// Use serial number from HandBrake 0.9.9
 		public function serial_id() {
 
-			$exec = "HandBrakeCLI --scan -i ".escapeshellarg($this->device)." 2>&1";
-			exec($exec, $arr, $retval);
+			$cmd = "HandBrakeCLI --scan -i ".escapeshellarg($this->device)." 2>&1";
+			exec($cmd, $arr, $retval);
 
 			if($retval !== 0) {
 				echo "* getSerialID(): HandBrakeCLI quit with exit code $retval\n";

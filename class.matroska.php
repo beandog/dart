@@ -9,7 +9,7 @@
 		private $args = array();
 		private $streams = array();
 		private $dtd;
-		private $exec;
+		private $cmd;
 		private $debug;
 		private $verbose;
 
@@ -247,25 +247,25 @@ XML;
 		public function getCommandString() {
 			$this->arguments();
 
-			$exec[] = "mkvmerge";
+			$cmd[] = "mkvmerge";
 
 			if($this->verbose || $this->debug)
-				$exec[] = "-v";
+				$cmd[] = "-v";
 
 			foreach($this->args as $argument) {
-				$exec[] = escapeshellarg($argument);
+				$cmd[] = escapeshellarg($argument);
 			}
 
 			foreach($this->flags as $option => $mixed) {
 
 				if(is_array($mixed))
 					foreach($mixed as $argument)
-						$exec[] = "--$option ".escapeshellarg($argument);
+						$cmd[] = "--$option ".escapeshellarg($argument);
 				else
-					$exec[] = "--$option ".escapeshellarg($mixed);
+					$cmd[] = "--$option ".escapeshellarg($mixed);
 			}
 
-			$str = implode(" ", $exec);
+			$str = implode(" ", $cmd);
 
 			$this->exec = $str;
 

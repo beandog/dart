@@ -106,14 +106,14 @@ if($encode) {
 				chmod($episode->queue_handbrake_script, 0755);
 
 				if($debug) {
-					$exec = escapeshellcmd($handbrake_command);
-					echo "Executing: $exec\n";
+					$cmd = escapeshellcmd($handbrake_command);
+					echo "Executing: $cmd\n";
 				} else {
-					$exec = escapeshellcmd($handbrake_command)." 2> ".escapeshellarg($episode->queue_handbrake_output);
+					$cmd = escapeshellcmd($handbrake_command)." 2> ".escapeshellarg($episode->queue_handbrake_output);
 				}
 
 				$exit_code = null;
-				passthru($exec, $exit_code);
+				passthru($cmd, $exit_code);
 
 				// Update queue status
 				if($exit_code === 0) {

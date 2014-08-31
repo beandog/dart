@@ -50,8 +50,8 @@
 
 			/*
 			if($this->debug) {
-				$exec_time = shell::executionTime($start, $finish);
-				echo "Execution time: ".$exec_time['minutes']."m ".$exec_time['seconds']."s";
+				$cmd_time = shell::executionTime($start, $finish);
+				echo "Execution time: ".$cmd_time['minutes']."m ".$cmd_time['seconds']."s";
 			}
 			*/
 
