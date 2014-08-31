@@ -8,7 +8,6 @@
 
 	$matroska->addTag();
 	$matroska->addTarget(70, "COLLECTION");
-	$matroska->addSimpleTag("TITLE", $episode->metadata['series_title']);
 	$matroska->addSimpleTag("DATE_RELEASE", $episode->metadata['production_year']);
 	$matroska->addSimpleTag("ORIGINAL_MEDIA_TYPE", "DVD");
 
@@ -16,8 +15,9 @@
 	$matroska->addSimpleTag("ENCODING_SPEC", "dlna-usb-5");
 
 	// Metadata specification DVD-MKV-1
-	$matroska->addSimpleTag("METADATA_SPEC", "DVD-MKV-1");
+	$matroska->addSimpleTag("METADATA_SPEC", "dvd-mkv-2");
 	$matroska->addSimpleTag("DVD_COLLECTION", $episode->metadata['collection_title']);
+	$matroska->addSimpleTag("DVD_SERIES_TITLE", $episode->metadata['series_title']);
 	$matroska->addSimpleTag("DVD_SERIES_SEASON", $episode->metadata['episode_season']);
 	$matroska->addSimpleTag("DVD_SERIES_VOLUME", $episode->metadata['series_dvds_volume']);
 	$matroska->addSimpleTag("DVD_TRACK_NUMBER", $episode->metadata['track_ix']);
