@@ -583,6 +583,9 @@
 			$this->dvd['streams']['audio'] = array();
 			$this->dvd['streams']['subtitle'] = array();
 
+			$stream_ix['audio'] = 1;
+			$stream_ix['subtitle'] = 1;
+
 			for($x = 0; $x < count($arr_scan_streams); $x += 2) {
 
 				$data_audio_subp = explode(" ", $arr_scan_streams[$x]);
@@ -599,11 +602,14 @@
 				$stream_ext = substr($tmp[1], 4);
 
 				$this->dvd['streams'][$stream_type][] = array(
+					'track' => $stream_ix[$stream_type],
 					'id' => $stream_id,
 					'lang' => $stream_lang,
 					'3cc' => $stream_3cc,
 					'ext' => $stream_ext,
 				);
+
+				$stream_ix[$stream_type]++;
 
 			}
 
