@@ -11,7 +11,7 @@ class LibAV {
 
 	// Timestamps
 	public $min_start_point = 1;
-	public $min_stop_point = 0;
+	public $min_stop_point = 1;
 	public $duration = 0;
 
 	// libav
