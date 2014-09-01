@@ -8,6 +8,7 @@ class LibAV {
 	public $dirname;
 	public $output;
 	public $log;
+	public $chapters_file;
 
 	// Timestamps
 	public $min_start_point = 1;
@@ -33,6 +34,7 @@ class LibAV {
 		$this->dirname = dirname($source);
 
 		$this->log = $this->dirname.'/'.$this->basename.'.avconv.out';
+		$this->chapters_file = $this->dirname.'/'.$this->basename.'.chapters.txt';
 
 		$this->avprobe();
 
@@ -323,6 +325,35 @@ class LibAV {
 		$this->chapters = $chapters;
 
 		return $this->chapters;
+
+	}
+
+	/**
+	 * Helper function to create chapters file directly.
+	 *
+	 * Can optionally write out to a specific filename.  If none is given, it
+	 * uses the basename of the original source file.
+	 *
+	 * Like the get_chapters() function, this outputs only the very basic format
+	 * syntax for a chapters file, and not the full XML which mkvmerge can use.
+	 *
+	 * @param filename
+	 */
+	public function create_chapters_file($filename = null) {
+
+		if(is_null($filename))
+			$filename = $this->chapters_file;
+
+		$chapters = $this->get_chapters();
+
+		$contents = implode("\n", $chapters)."\n";
+
+		$int = file_put_contents($filename, $contents);
+
+		if($int === false)
+			return false;
+		else
+			return true;
 
 	}
 
