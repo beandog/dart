@@ -20,6 +20,9 @@ class LibAV {
 	public $min_frames = 30;
 	public $possible_breaks = array();
 
+	// Chapters
+	public $chapters = array();
+
 	public function __construct($source) {
 
 		$this->source = $source;
@@ -100,9 +103,9 @@ class LibAV {
 		}
 
 		// Find the probable break points by first counting how many pblack entries
-		// there are in a point sequence, and seeing if they are over 15 frames
-		// (half a second).  Then, give the middle number between the start and
-		// stop points to get the place where it is in the middle.
+		// there are in a point sequence, and seeing if they are over the minimum
+		// frames amount.  Then, give the middle number between the start and
+		// stop points to get the best place to break.
 
 		$possible_breaks = array();
 
@@ -115,10 +118,15 @@ class LibAV {
 				$start_timestamp = current($sequence['timestamps']);
 				$stop_timestamp = end($sequence['timestamps']);
 				$possible_break = $stop_timestamp - $start_timestamp;
+
+				// Number of seconds + milliseconds of breakpoint in entire file
 				$breakpoint = $start_timestamp + $possible_break;
 
 				$time_index = gmdate("H:i:s", $breakpoint);
 				$ms = end(explode('.', $breakpoint));
+
+				// Time index in format hh:mm:ss.ms, which can be used as
+				// values for Matroska chapters
 				$time_index .= ".$ms";
 
 				$possible_breaks[] = array(
@@ -217,6 +225,37 @@ class LibAV {
 		$seconds = abs(intval($seconds));
 
 		$this->min_start_point = $seconds;
+
+	}
+
+	/**
+	 * Helper function to create basic values for a chapter file to be muxed
+	 * directly into a Matroska file using mkvpropedit.
+	 *
+	 * Example: mkvpropedit -c chapters.xml movie.mkv
+	 */
+	public function get_chapters() {
+
+		$chapters[] = "CHAPTER01=00:00:00.000";
+		$chapters[] = "CHAPTER01NAME=Chapter 1";
+
+		foreach($this->possible_breaks as $key => $arr) {
+
+			$chapter = $key + 2;
+			$time_index = $arr['time_index'];
+
+			$chapter_prefix = "CHAPTER".str_pad($chapter, 2, 0, STR_PAD_LEFT);
+			$chapter_time_index = $chapter_prefix."=".$time_index;
+			$chapter_name = $chapter_prefix."NAME=Chapter $chapter";
+
+			$chapters[] = $chapter_time_index;
+			$chapters[] = $chapter_name;
+
+		}
+
+		$this->chapters = $chapters;
+
+		return $this->chapters;
 
 	}
 
