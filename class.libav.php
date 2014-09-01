@@ -273,9 +273,17 @@ class LibAV {
 	 * during a movie / episode opening sequence, this function does the same,
 	 * but for the ending.
 	 *
-	 * As the video ends, there are going to be blackframes (2 seconds or so).  If the
-	 * length between those blackframes and the end timestamp of the video are
+	 * As the video ends, there are going to be blackframes as everything fades out.
+	 * If the length between those blackframes and the end timestamp of the video are
 	 * less than this parameter, then don't include it as a possible breakpoint.
+	 *
+	 * This is included so that your number of chapter points can be accurate.
+	 * Recommended value would be on a individual basis.  For TV shows, the ending
+	 * credits could be anywhere from 30 seconds to a minute, usually.  And for a movie,
+	 * this is going to be much longer.
+	 *
+	 * The default value is safe, at only 1 second, guaranteeing to trim the last final
+	 * fade-out so that there's not a chapter that jumps to the very end of the video.
 	 *
 	 * @param integer
 	 */
