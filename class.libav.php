@@ -11,8 +11,11 @@ class LibAV {
 
 	// Timestamps
 	public $min_start_point = 1;
+	public $min_stop_point = 0;
+	public $duration = 0;
 
 	// libav
+	public $metadata;
 	public $avconv_blackframe_amount = 98;
 
 	// Scanning
@@ -30,6 +33,29 @@ class LibAV {
 		$this->dirname = dirname($source);
 
 		$this->log = $this->dirname.'/'.$this->basename.'.avconv.out';
+
+		$this->avprobe();
+
+	}
+
+	public function avprobe() {
+
+		$arg_filename = escapeshellarg($this->source);
+
+		$cmd = "avprobe -show_format -of json $arg_filename 2> /dev/null";
+
+		exec($cmd, $output, $retval);
+
+		if($retval)
+			return false;
+
+		$output = implode(' ', $output);
+		$json = json_decode($output, true);
+		$this->metadata = $json['format'];
+
+		$this->duration = $this->metadata['duration'];
+
+		return $this->metadata;
 
 	}
 
@@ -225,6 +251,25 @@ class LibAV {
 		$seconds = abs(intval($seconds));
 
 		$this->min_start_point = $seconds;
+
+	}
+
+	/**
+	 * Like setting a minimum start point to avoid blackfames that are possible
+	 * during a movie / episode opening sequence, this function does the same,
+	 * but for the ending.
+	 *
+	 * As the video ends, there are going to be blackframes (2 seconds or so).  If the
+	 * length between those blackframes and the end timestamp of the video are
+	 * less than this parameter, then don't include it as a possible breakpoint.
+	 *
+	 * @param integer
+	 */
+	public function set_min_stop_point($seconds) {
+
+		$seconds = abs(intval($seconds));
+
+		$this->min_stop_point = $seconds;
 
 	}
 
