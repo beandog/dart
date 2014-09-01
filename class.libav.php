@@ -96,8 +96,8 @@ class LibAV {
 			$timestamp = end(explode(':', end($tmp)));
 
 			// Only keep track of minimum amount of black frames and minimum starting point
-			if($pblack >= $this->min_pblack && intval($timestamp) >= $this->min_start_point) {
-				$seconds[intval($timestamp)][] = $timestamp;
+			if($pblack >= $this->min_pblack && floor($timestamp) >= $this->min_start_point) {
+				$seconds[floor($timestamp)][] = $timestamp;
 			}
 
 		}
