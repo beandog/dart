@@ -95,8 +95,22 @@ class LibAV {
 			$t = end($tmp);
 			$timestamp = end(explode(':', end($tmp)));
 
+			// Check if the current timestamp is equal to or after the minimum
+			// starting point.
+			if($timestamp < $this->min_start_point)
+				$before_min_start_point = true;
+			else
+				$before_min_start_point = false;
+
+			// Check if the current timestamp is far away enough from the minimum
+			// stopping point.
+			if(($this->duration - $timestamp) < $this->min_stop_point)
+				$after_min_stop_point = true;
+			else
+				$after_min_stop_point = false;
+
 			// Only keep track of minimum amount of black frames and minimum starting point
-			if($pblack >= $this->min_pblack && floor($timestamp) >= $this->min_start_point) {
+			if($pblack >= $this->min_pblack && !$before_min_start_point && !$after_min_stop_point) {
 				$seconds[floor($timestamp)][] = $timestamp;
 			}
 
