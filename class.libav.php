@@ -53,13 +53,6 @@ class LibAV {
 		else
 			return false;
 
-		$this->min_pblack = abs(intval($this->min_pblack));
-		if($this->min_pblack > 100)
-			$this->min_pblack = $this->default_min_pblack;
-		$this->min_frames = abs(intval($this->min_frames));
-		if(!$this->min_frames)
-			$this->min_frames = $this->default_min_frames;
-
 		// Scan the avconv output and arrange into an array of values
 		// that match the given minimum pblack amount.
 
@@ -73,7 +66,7 @@ class LibAV {
 			$t = end($tmp);
 			$timestamp = end(explode(':', end($tmp)));
 
-			// Only keep track of 100% black frames
+			// Only keep track of minimum amount of black frames and minimum starting point
 			if($pblack >= $this->min_pblack && intval($timestamp) >= $this->min_start_point) {
 				$seconds[intval($timestamp)][] = $timestamp;
 			}
@@ -93,6 +86,8 @@ class LibAV {
 			foreach($arr as $timestamp)
 				$points[$points_index]['timestamps'][] = $timestamp;
 
+			// If the new index is just one second after the previous one, then
+			// include it in the first range.
 			if($key == $start_point + 1 || $key == $stop_point + 1) {
 				$stop_point = $key;
 				$points[$points_index]['start'] = $start_point;
