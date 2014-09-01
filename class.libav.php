@@ -122,7 +122,7 @@ class LibAV {
 
 		$start_point = current(array_keys($seconds));
 		$last_point = $start_point;
-		$stop_point = 0;
+		$stop_point = $start_point;
 		$points = array();
 		$points_index = 0;
 
