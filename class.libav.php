@@ -232,7 +232,7 @@ class LibAV {
 	 * Helper function to create basic values for a chapter file to be muxed
 	 * directly into a Matroska file using mkvpropedit.
 	 *
-	 * Example: mkvpropedit -c chapters.xml movie.mkv
+	 * Example: mkvpropedit -c chapters.txt movie.mkv
 	 */
 	public function get_chapters() {
 
