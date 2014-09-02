@@ -27,6 +27,7 @@ class LibAV {
 
 	// Chapters
 	public $chapters = array();
+	public $min_chapter_length = 0;
 
 	public function __construct($source) {
 
@@ -326,13 +327,17 @@ class LibAV {
 	 * timestamps to see if they fit in one range or not.  Defaults to 1
 	 * second.
 	 *
-	 * Increase this if you are getting valid results, but the breakpoints
-	 * are very close to each other, and you are trying to close the gap
-	 * to have only as many chapters as necessary.
+	 * Set this if the break points are too short, and the blackframes
+	 * are longer than 1 second.
 	 *
 	 * For example, if you have one breakpoint at 63.997 and the next one
 	 * at 65.131, the difference is 1.134 seconds.  Changing the value to
 	 * 1.5 seconds will close that gap and only return one breakpoint.
+	 *
+	 * If you are not having long periods of blackframes that need to be
+	 * monitored, and instead don't like chapters closely following
+	 * each other, you can set the minimum length between chapters instead
+	 * with the set_min_chapter_length() function.
 	 *
 	 * @param float
 	 */
@@ -345,6 +350,43 @@ class LibAV {
 			$this->max_timestamp_diff = $seconds;
 
 	}
+
+	/**
+	 * Set the minimum amount of time that should exist between two
+	 * chapters.
+	 *
+	 * By default this is unset, and lets the chapters create as they
+	 * normally would.  However, if you are having chapter points that are
+	 * too close to each other, and only want the first one, then set this
+	 * value to how long a chapter *should* be, in minimum length.
+	 *
+	 * An example where this would be useful, is an episode has a break
+	 * point at 60 seconds, where the intro sequence fades out and the
+	 * feature title begins.  If shortly after that, there's a fade-out and
+	 * back in at 66 seconds, then it would create a second break point for
+	 * that event as well.  A fix for that would be to say that chapter
+	 * breaks should at least be a certain amount apart (6 seconds is hardly
+	 * being unreasonable).
+	 *
+	 * If the chapter points are starting too early to begin with in any
+	 * case, regardless of break points in the beginning, then set the
+	 * minimum starting point instead with set_min_start_point(), so that
+	 * it will never create a break point in the chapters for anything
+	 * before that time index.
+	 *
+	 * @param float
+	 */
+	/*
+	public function set_min_chapter_length($seconds) {
+
+		// Get correct precision for timestamps
+		$seconds = bcadd($seconds, 0, 3);
+
+		if($seconds > 0)
+			$this->min_chapter_length = $seconds;
+
+	}
+	*/
 
 	/**
 	 * Helper function to create basic values for a chapter file to be muxed
