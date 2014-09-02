@@ -144,7 +144,7 @@ class LibAV {
 
 			// Check if the current timestamp is far away enough from the minimum
 			// stopping point.
-			if(($this->duration - $timestamp) < $this->min_stop_point)
+			if(bcsub($this->duration, $timestamp) < $this->min_stop_point)
 				$after_min_stop_point = true;
 			else
 				$after_min_stop_point = false;
@@ -240,10 +240,10 @@ class LibAV {
 
 				$start_timestamp = current($sequence['timestamps']);
 				$stop_timestamp = end($sequence['timestamps']);
-				$possible_break = $stop_timestamp - $start_timestamp;
+				$possible_break = bcsub($stop_timestamp, $start_timestamp, 3);
 
 				// Number of seconds + milliseconds of breakpoint in entire file
-				$breakpoint = $start_timestamp + $possible_break;
+				$breakpoint = bcadd($start_timestamp, $possible_break);
 
 				$time_index = gmdate("H:i:s", $breakpoint);
 				$ms = str_pad(end(explode('.', $breakpoint)), 3, 0, STR_PAD_RIGHT);
