@@ -181,10 +181,9 @@ class LibAV {
 				// Precision Timestamps
 				if($match_diff) {
 
-					if(is_null($range_index)) {
+					if(is_null($range_index))
 						$range_index = $timestamp;
-						$ranges[$range_index][] = $timestamp;
-					}
+
 					$ranges[$range_index][] = $timestamp;
 
 				}
@@ -264,6 +263,8 @@ class LibAV {
 		/** Precision Timestamps **/
 
 		foreach($ranges as $range) {
+
+			$num_frames = count($range);
 
 			$start_timestamp = reset($range);
 			$stop_timestamp = end($range);
