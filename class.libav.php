@@ -245,7 +245,7 @@ class LibAV {
 				$breakpoint = $start_timestamp + $possible_break;
 
 				$time_index = gmdate("H:i:s", $breakpoint);
-				$ms = end(explode('.', $breakpoint));
+				$ms = str_pad(end(explode('.', $breakpoint)), 3, 0, STR_PAD_RIGHT);
 
 				// Time index in format hh:mm:ss.ms, which can be used as
 				// values for Matroska chapters
@@ -275,7 +275,7 @@ class LibAV {
 			$breakpoint = bcadd($start_timestamp, bcsub($stop_timestamp, $start_timestamp));
 
 			$time_index = gmdate("H:i:s", $breakpoint);
-			$ms = end(explode('.', $breakpoint));
+			$ms = str_pad(end(explode('.', $breakpoint)), 3, 0, STR_PAD_RIGHT);
 			$time_index .= ".$ms";
 
 			$precise_breaks[] = array(
