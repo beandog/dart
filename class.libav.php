@@ -277,7 +277,8 @@ class LibAV {
 			$stop_timestamp = end($range);
 
 			$timestamp_diff = bcsub($stop_timestamp, $start_timestamp);
-			$breakpoint = bcadd($start_timestamp, $timestamp_diff);
+			$timestamp_adjustment = bcdiv($timestamp_diff, 2);
+			$breakpoint = bcadd($start_timestamp, $timestamp_adjustment);
 
 			$time_index = gmdate("H:i:s", $breakpoint);
 			$ms = str_pad(end(explode('.', $breakpoint)), 3, 0, STR_PAD_RIGHT);
