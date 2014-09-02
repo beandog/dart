@@ -1,5 +1,28 @@
 <?php
 
+	/**
+	 * The minimum frames and minimum seconds are not set by default, which will result
+	 * in a lot of break points.  Recommended to set at least one of these.  Safe starting
+	 * values for minimum seconds would be between 0.5 to 1.0.  Likewise, frames would match
+	 * your fps times number of seconds, so 30 for 1 second on NTSC video.
+	 *
+	 * Setting minimum start point is recommended as well.  Default is 1 seconds, but it's
+	 * extremely likely there's other break points before the feature title starts.
+	 *
+	 * Set the minimum stop point to not create chapters from fade-outs at the end of the
+	 * video.  Default is 1 second.
+	 *
+	 * Example syntax:
+	 *
+	 * $libav = new LibAV($filename);
+	 * $libav->set_min_seconds(1);
+	 * $libav->set_min_start_point(15);
+	 * $libav->set_min_stop_point(1);
+	 * $libav->scan_breakpoints();
+	 * $libav->create_chapters_file('chapters.txt');
+	 *
+	 */
+
 class LibAV {
 
 	// Filenames
@@ -22,9 +45,11 @@ class LibAV {
 	// Scanning
 	public $min_pblack = 98;
 	public $min_frames = null;
-	public $min_seconds = 1;
+	public $min_seconds = null;
 	public $max_timestamp_diff = 1;
 	public $precise_breaks = array();
+	public $blackframes = array();
+	public $blackframe_ranges = array();
 
 	// Chapters
 	public $chapters = array();
@@ -175,6 +200,9 @@ class LibAV {
 			}
 
 		}
+
+		$this->blackframes = $seconds;
+		$this->blackframe_ranges = $ranges;
 
 		$precise_breaks = array();
 
