@@ -184,14 +184,16 @@ class LibAV {
 
 			$num_frames = count($range);
 
-			if($this->min_frames && $num_frames < $this->min_frames)
+			// Check if frames meets requested minimum
+			if($this->min_frames && ($num_frames < $this->min_frames))
 				continue;
 
 			$start_timestamp = reset($range);
 			$stop_timestamp = end($range);
 			$timestamp_diff = bcsub($stop_timestamp, $start_timestamp);
 
-			if($this->min_seconds && $timestamp_diff < $this->min_seconds)
+			// Check if seconds meets requested minimum
+			if($this->min_seconds && ($timestamp_diff < $this->min_seconds))
 				continue;
 
 			$timestamp_adjustment = bcdiv($timestamp_diff, 2);
