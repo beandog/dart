@@ -40,6 +40,11 @@ class LibAV {
 
 	}
 
+	/**
+	 * avprobe scans the media file and return a JSON object
+	 *
+	 * @return array
+	 */
 	public function avprobe() {
 
 		$arg_filename = escapeshellarg($this->source);
@@ -61,6 +66,11 @@ class LibAV {
 
 	}
 
+	/**
+	 * Scan the source media file for black frames using the av filter.
+	 *
+	 * @return boolean success on execution of command
+	 */
 	public function scan_blackframes() {
 
 		$arg_filename = escapeshellarg($this->source);
@@ -77,7 +87,16 @@ class LibAV {
 
 	}
 
-	public function scan_breakpoints() {
+	/**
+	 * Scan the data acquired by the avfilter, and assemble breakpoints.
+	 *
+	 * @param string type of breakpoint assembly (see the source code for details)
+	 * @return array of possible breakpoints
+	 */
+	public function scan_breakpoints($type = 'general') {
+
+		// Scale everything to 3 decimal points
+		bcscale(3);
 
 		if(file_exists($this->log))
 			$this->output = file($this->log, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
@@ -88,6 +107,12 @@ class LibAV {
 		// that match the given minimum pblack amount.
 
 		$seconds = array();
+		$timestamp = 0;
+		$previous_timestamp = 0;
+
+		$timestamp_diff = 0;
+		$ranges = array();
+		$range_index = null;
 
 		foreach($this->output as $line) {
 
@@ -95,7 +120,19 @@ class LibAV {
 
 			$pblack = end(explode(':', $tmp[4]));
 			$t = end($tmp);
-			$timestamp = end(explode(':', end($tmp)));
+
+			$previous_timestamp = $timestamp;
+
+			$timestamp = bcadd(end(explode(':', end($tmp))), 0);
+
+			$timestamp_diff = bcsub($timestamp, $previous_timestamp);
+
+			if($timestamp_diff > 1) {
+				$match_diff = false;
+				$range_index = null;
+			} else {
+				$match_diff = true;
+			}
 
 			// Check if the current timestamp is equal to or after the minimum
 			// starting point.
@@ -113,11 +150,50 @@ class LibAV {
 
 			// Only keep track of minimum amount of black frames and minimum starting point
 			if($pblack >= $this->min_pblack && !$before_min_start_point && !$after_min_stop_point) {
-				$seconds[floor($timestamp)][] = $timestamp;
+
+				// Two different arrays of values to track are generated here.  The first
+				// uses the timestamps from the first integer value of the first timestamp
+				// that matches the parameters.  This means that any timestamps following this
+				// one that also match the parameters for the blackframe detection are
+				// ignored.  This means that the breakpoint is going to be closest to the
+				// *very beginning* of the first blackframes.  Specifically, within the middle
+				// of all the ones that match that first second.
+				//
+				// These values are used by default, and is probably the preferred method
+				// as starting a breakpoint earlier means that there's less chance that it
+				// will start while the content is beginning to fade back in.
+				//
+				// As a matter of *personal preference*, these are the breakpoints I use
+				// in my media library.
+
+				// General Timestamps
+				$key = floor($timestamp);
+				$seconds[$key][] = $timestamp;
+
+				// This second array is more precise in that it calculates a breakpoint for
+				// in the middle of *all* the blackframes that meet the requested parameters
+				// and also fit within the range specified by the user.
+				//
+				// These values are created as a proof-of-concept, and are not used by
+				// default.  This is probably not the best method to use, since a fade-in
+				// from blackframes could be preceded by dialogue, entry music, etc.
+
+				// Precision Timestamps
+				if($match_diff) {
+
+					if(is_null($range_index)) {
+						$range_index = $timestamp;
+						$ranges[$range_index][] = $timestamp;
+					}
+					$ranges[$range_index][] = $timestamp;
+
+				}
+
 			}
 
 		}
 
+		/** General Timestamps **/
 		// Get the timestamps for something that starts and stops within a second
 
 		$start_point = current(array_keys($seconds));
@@ -183,7 +259,33 @@ class LibAV {
 
 		$this->possible_breaks = $possible_breaks;
 
-		return true;
+		/** Precision Timestamps **/
+
+		foreach($ranges as $range) {
+
+			$start_timestamp = reset($range);
+			$stop_timestamp = end($range);
+
+			$breakpoint = bcadd($start_timestamp, bcsub($stop_timestamp, $start_timestamp));
+
+			$time_index = gmdate("H:i:s", $breakpoint);
+			$ms = end(explode('.', $breakpoint));
+			$time_index .= ".$ms";
+
+			$precise_breaks[] = array(
+				'breakpoint' => $breakpoint,
+				'time_index' => $time_index,
+				'num_frames' => $num_frames,
+			);
+
+		}
+
+		$this->precise_breaks = $precise_breaks;
+
+		if($type == 'general')
+			return $this->possible_breaks;
+		elseif($type == 'precision')
+			return $this->precise_breaks;
 
 	}
 
@@ -243,6 +345,8 @@ class LibAV {
 	 * determine what the most accurate average number of frames a break has.
 	 *
 	 * Default is 30, or 30 frames for NTSC video.
+	 *
+	 * @param integer
 	 */
 	public function set_min_frames($frames = 30) {
 
@@ -279,13 +383,16 @@ class LibAV {
 	 * If the length between those blackframes and the end timestamp of the video are
 	 * less than this parameter, then don't include it as a possible breakpoint.
 	 *
-	 * This is included so that your number of chapter points can be accurate.
+	 * This function is here so that your number of chapter points can be accurate.
 	 * Recommended value would be on a individual basis.  For TV shows, the ending
 	 * credits could be anywhere from 30 seconds to a minute, usually.  And for a movie,
 	 * this is going to be much longer.
 	 *
 	 * The default value is safe, at only 1 second, guaranteeing to trim the last final
 	 * fade-out so that there's not a chapter that jumps to the very end of the video.
+	 *
+	 * If I had to pick a number to suggest, I'd say between 5 to 10 seconds would be
+	 * good. :)
 	 *
 	 * @param integer
 	 */
