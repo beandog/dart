@@ -172,7 +172,10 @@ class LibAV {
 
 				// This second array is more precise in that it calculates a breakpoint for
 				// in the middle of *all* the blackframes that meet the requested parameters
-				// and also fit within the range specified by the user.
+				// and also fit within the range of times to examine specified by the user.
+				// As a result, this can have more or less frames to use as a base of
+				// calculation, even with the same gap size of seconds beetween the two
+				// arrays.
 				//
 				// These values are created as a proof-of-concept, and are not used by
 				// default.  This is probably not the best method to use, since a fade-in
