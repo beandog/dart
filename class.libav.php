@@ -256,6 +256,9 @@ class LibAV {
 					'breakpoint' => $breakpoint,
 					'time_index' => $time_index,
 					'num_frames' => $num_frames,
+					'start_timestamp' => $start_timestamp,
+					'stop_timestamp' => $stop_timestamp,
+					'timestamp_diff' => $possible_break,
 				);
 
 			}
@@ -273,7 +276,8 @@ class LibAV {
 			$start_timestamp = reset($range);
 			$stop_timestamp = end($range);
 
-			$breakpoint = bcadd($start_timestamp, bcsub($stop_timestamp, $start_timestamp));
+			$timestamp_diff = bcsub($stop_timestamp, $start_timestamp);
+			$breakpoint = bcadd($start_timestamp, $timestamp_diff);
 
 			$time_index = gmdate("H:i:s", $breakpoint);
 			$ms = str_pad(end(explode('.', $breakpoint)), 3, 0, STR_PAD_RIGHT);
@@ -283,6 +287,9 @@ class LibAV {
 				'breakpoint' => $breakpoint,
 				'time_index' => $time_index,
 				'num_frames' => $num_frames,
+				'start_timestamp' => $start_timestamp,
+				'stop_timestamp' => $stop_timestamp,
+				'timestamp_diff' => $timestamp_diff,
 			);
 
 		}
