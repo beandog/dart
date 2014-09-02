@@ -23,7 +23,7 @@ class LibAV {
 	public $min_pblack = 98;
 	public $min_frames = 30;
 	public $max_timestamp_diff = 1;
-	public $possible_breaks = array();
+	public $precise_breaks = array();
 
 	// Chapters
 	public $chapters = array();
@@ -91,10 +91,9 @@ class LibAV {
 	/**
 	 * Scan the data acquired by the avfilter, and assemble breakpoints.
 	 *
-	 * @param string type of breakpoint assembly (see the source code for details)
 	 * @return array of possible breakpoints
 	 */
-	public function scan_breakpoints($type = 'general') {
+	public function scan_breakpoints() {
 
 		// Scale everything to 3 decimal points
 		bcscale(3);
@@ -114,6 +113,11 @@ class LibAV {
 		$timestamp_diff = 0;
 		$ranges = array();
 		$range_index = null;
+
+		// Find the probable break points by first counting how many pblack entries
+		// there are in a point sequence, and seeing if they are over the minimum
+		// frames amount.  Then, give the middle number between the start and
+		// stop points to get the best place to break.
 
 		foreach($this->output as $line) {
 
@@ -152,35 +156,9 @@ class LibAV {
 			// Only keep track of minimum amount of black frames and minimum starting point
 			if($pblack >= $this->min_pblack && !$before_min_start_point && !$after_min_stop_point) {
 
-				// Two different arrays of values to track are generated here.  The first
-				// uses the timestamps from the first integer value of the first timestamp
-				// that matches the parameters.  This means that any timestamps following this
-				// one that also match the parameters for the blackframe detection are
-				// ignored.  This means that the breakpoint is going to be closest to the
-				// *very beginning* of the first blackframes.  Specifically, within the middle
-				// of all the ones that match that first second.
-				//
-				// These values are used by default, and is probably the preferred method
-				// as starting a breakpoint earlier means that there's less chance that it
-				// will start while the content is beginning to fade back in.
-				//
-				// As a matter of *personal preference*, these are the breakpoints I use
-				// in my media library.
-
 				// General Timestamps
 				$key = floor($timestamp);
 				$seconds[$key][] = $timestamp;
-
-				// This second array is more precise in that it calculates a breakpoint for
-				// in the middle of *all* the blackframes that meet the requested parameters
-				// and also fit within the range of times to examine specified by the user.
-				// As a result, this can have more or less frames to use as a base of
-				// calculation, even with the same gap size of seconds beetween the two
-				// arrays.
-				//
-				// These values are created as a proof-of-concept, and are not used by
-				// default.  This is probably not the best method to use, since a fade-in
-				// from blackframes could be preceded by dialogue, entry music, etc.
 
 				// Precision Timestamps
 				if($match_diff) {
@@ -195,79 +173,6 @@ class LibAV {
 			}
 
 		}
-
-		/** General Timestamps **/
-		// Get the timestamps for something that starts and stops within a second
-
-		$start_point = reset(array_keys($seconds));
-		$last_point = $start_point;
-		$stop_point = $start_point;
-		$points = array();
-		$points_index = 0;
-
-		foreach($seconds as $key => $arr) {
-
-			foreach($arr as $timestamp)
-				$points[$points_index]['timestamps'][] = $timestamp;
-
-			// If the new index is just one second after the previous one, then
-			// include it in the first range.
-			if($key == $start_point + 1) {
-				$stop_point = $key;
-				$points[$points_index]['start'] = $start_point;
-				$points[$points_index]['stop'] = $stop_point;
-				ksort($points[$points_index]);
-				$points_index++;
-			} else {
-				$start_point = $key;
-				$stop_point = $start_point;
-			}
-
-		}
-
-		// Find the probable break points by first counting how many pblack entries
-		// there are in a point sequence, and seeing if they are over the minimum
-		// frames amount.  Then, give the middle number between the start and
-		// stop points to get the best place to break.
-
-		$possible_breaks = array();
-
-		foreach($points as $sequence) {
-
-			$min_frames = $this->min_frames;
-			$num_frames = count($sequence['timestamps']);
-			if($num_frames > $min_frames) {
-
-				$start_timestamp = reset($sequence['timestamps']);
-				$stop_timestamp = end($sequence['timestamps']);
-				$possible_break = bcsub($stop_timestamp, $start_timestamp, 3);
-
-				// Number of seconds + milliseconds of breakpoint in entire file
-				$breakpoint = bcadd($start_timestamp, $possible_break);
-
-				$time_index = gmdate("H:i:s", $breakpoint);
-				$ms = str_pad(end(explode('.', $breakpoint)), 3, 0, STR_PAD_RIGHT);
-
-				// Time index in format hh:mm:ss.ms, which can be used as
-				// values for Matroska chapters
-				$time_index .= ".$ms";
-
-				$possible_breaks[] = array(
-					'breakpoint' => $breakpoint,
-					'time_index' => $time_index,
-					'num_frames' => $num_frames,
-					'start_timestamp' => $start_timestamp,
-					'stop_timestamp' => $stop_timestamp,
-					'timestamp_diff' => $possible_break,
-				);
-
-			}
-
-		}
-
-		$this->possible_breaks = $possible_breaks;
-
-		/** Precision Timestamps **/
 
 		foreach($ranges as $range) {
 
@@ -297,10 +202,7 @@ class LibAV {
 
 		$this->precise_breaks = $precise_breaks;
 
-		if($type == 'general')
-			return $this->possible_breaks;
-		elseif($type == 'precision')
-			return $this->precise_breaks;
+		return $this->precise_breaks;
 
 	}
 
