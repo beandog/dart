@@ -21,7 +21,8 @@ class LibAV {
 
 	// Scanning
 	public $min_pblack = 98;
-	public $min_frames = 30;
+	public $min_frames = null;
+	public $min_seconds = 1;
 	public $max_timestamp_diff = 1;
 	public $precise_breaks = array();
 
@@ -175,14 +176,24 @@ class LibAV {
 
 		}
 
+		$precise_breaks = array();
+
+		// Create break points
+
 		foreach($ranges as $range) {
 
 			$num_frames = count($range);
 
+			if($this->min_frames && $num_frames < $this->min_frames)
+				continue;
+
 			$start_timestamp = reset($range);
 			$stop_timestamp = end($range);
-
 			$timestamp_diff = bcsub($stop_timestamp, $start_timestamp);
+
+			if($this->min_seconds && $timestamp_diff < $this->min_seconds)
+				continue;
+
 			$timestamp_adjustment = bcdiv($timestamp_diff, 2);
 			$breakpoint = bcadd($start_timestamp, $timestamp_adjustment);
 
@@ -252,24 +263,15 @@ class LibAV {
 	}
 
 	/**
-	 * Part of the calcuation of a possible breakpoint depends on the minimum
-	 * that would have to exist for a sequential number of black frames.
+	 * Specify the minimum amount of frames that a break point should have
+	 * before it's considered.
 	 *
-	 * Sequences of blackframes are very common, and it's the length of those
-	 * seconds that determines whether it's a break point that could be used as
-	 * a chapter index or not.  For example, just because something breaks for
-	 * 3 frames (.1 seconds) doesn't mean it's a fade-in, fade-out sequence
-	 * that would be suitable for a chapter point.
+	 * Remember that this number of frames is going to match the other
+	 * parameters as well, such as percent black, so this could create invalid
+	 * results.
 	 *
-	 * So with 29.97 frames per second, and looking for at least half a second
-	 * minimum of black frames, the value would be 15.
-	 *
-	 * This is helpful because sometimes the amount of possible breakpoints
-	 * returned is not what was expected.  Tweaking this number can help
-	 * determine what the most accurate average number of frames a break has.
-	 *
-	 * If confused, a helper function exists as well that uses seconds as
-	 * an argument instead: set_min_seconds()
+	 * Setting the minimum amount of seconds for a chapter may be a better
+	 * option depending on what you're trying to do.
 	 *
 	 * Default is 30 frames, or 1 second for NTSC video.
 	 *
@@ -284,8 +286,17 @@ class LibAV {
 	}
 
 	/**
-	 * Set the minimum amount of seconds a break point should be considered
-	 * to be a chapter.
+	 * Set the minimum amount of seconds for a break point's length to be
+	 * considered as a chapter.
+	 *
+	 * Part of the calcuation of a possible breakpoint depends on the minimum
+	 * that would have to exist for a sequential number of black frames.
+	 *
+	 * Sequences of blackframes are very common, and it's the length of those
+	 * seconds that determines whether it's a break point that could be used as
+	 * a chapter index or not.  For example, just because something breaks for
+	 * 3 frames (.1 seconds) doesn't mean it's a fade-in, fade-out sequence
+	 * that would be suitable for a chapter point.
 	 *
 	 * @param float
 	 */
@@ -295,12 +306,7 @@ class LibAV {
 
 		$seconds = bcadd($seconds, 0);
 
-		if($format == 'PAL')
-			$frames = bcmul($seconds, 25);
-		else
-			$frames = bcmul($seconds, 29.97);
-
-		$this->set_min_frames($frames);
+		$this->min_seconds = $seconds;
 
 	}
 
@@ -373,8 +379,10 @@ class LibAV {
 	 */
 	public function set_max_timestamp_diff($seconds) {
 
+		bcscale(3);
+
 		// Get correct precision for timestamps
-		$seconds = bcadd($seconds, 0, 3);
+		$seconds = bcadd($seconds, 0);
 
 		if($seconds > 0)
 			$this->max_timestamp_diff = $seconds;
