@@ -221,6 +221,13 @@ class LibAV {
 	}
 
 	/**
+	 * FRAME DETECTION FUNCTIONS
+	 *
+	 * These functions change the way that break points are calculated, and affect the
+	 * source data to begin with.
+	 */
+
+	/**
 	 * avconv uses the blackframe filter to detect frames that are (almost)
 	 * completely black.  The percentage here is the amount of pixels that match
 	 * the threshhold, and are reported in the log file.  The default is 98.
@@ -261,54 +268,6 @@ class LibAV {
 
 		if($percentage <= 100)
 			$this->min_pblack = $percentage;
-
-	}
-
-	/**
-	 * Specify the minimum amount of frames that a break point should have
-	 * before it's considered.
-	 *
-	 * Remember that this number of frames is going to match the other
-	 * parameters as well, such as percent black, so this could create invalid
-	 * results.
-	 *
-	 * Setting the minimum amount of seconds for a chapter may be a better
-	 * option depending on what you're trying to do.
-	 *
-	 * Default is 30 frames, or 1 second for NTSC video.
-	 *
-	 * @param integer
-	 */
-	public function set_min_frames($frames = 30) {
-
-		$frames = abs(intval($frames));
-
-		$this->min_frames = $frames;
-
-	}
-
-	/**
-	 * Set the minimum amount of seconds for a break point's length to be
-	 * considered as a chapter.
-	 *
-	 * Part of the calcuation of a possible breakpoint depends on the minimum
-	 * that would have to exist for a sequential number of black frames.
-	 *
-	 * Sequences of blackframes are very common, and it's the length of those
-	 * seconds that determines whether it's a break point that could be used as
-	 * a chapter index or not.  For example, just because something breaks for
-	 * 3 frames (.1 seconds) doesn't mean it's a fade-in, fade-out sequence
-	 * that would be suitable for a chapter point.
-	 *
-	 * @param float
-	 */
-	public function set_min_seconds($seconds = 1, $format = 'NTSC') {
-
-		bcscale(3);
-
-		$seconds = bcadd($seconds, 0);
-
-		$this->min_seconds = $seconds;
 
 	}
 
@@ -388,6 +347,61 @@ class LibAV {
 
 		if($seconds > 0)
 			$this->max_timestamp_diff = $seconds;
+
+	}
+
+	/**
+	 * CHAPTER CREATION FUNCTIONS
+	 *
+	 * These set parameters that can be changed when deciding when a break point
+	 * becomes a chapter.
+	 */
+
+	/**
+	 * Specify the minimum amount of frames that a break point should have
+	 * before it's considered to be a chapter.
+	 *
+	 * Remember that this number of frames is going to match the other
+	 * parameters as well, such as percent black, so this could create invalid
+	 * results.
+	 *
+	 * Setting the minimum amount of seconds for a chapter may be a better
+	 * option depending on what you're trying to do.
+	 *
+	 * Default is 30 frames, or 1 second for NTSC video.
+	 *
+	 * @param integer
+	 */
+	public function set_min_frames($frames = 30) {
+
+		$frames = abs(intval($frames));
+
+		$this->min_frames = $frames;
+
+	}
+
+	/**
+	 * Set the minimum amount of seconds for a break point's length to be
+	 * considered to be a chapter.
+	 *
+	 * Part of the calcuation of a possible breakpoint depends on the minimum
+	 * that would have to exist for a sequential number of black frames.
+	 *
+	 * Sequences of blackframes are very common, and it's the length of those
+	 * seconds that determines whether it's a break point that could be used as
+	 * a chapter index or not.  For example, just because something breaks for
+	 * 3 frames (.1 seconds) doesn't mean it's a fade-in, fade-out sequence
+	 * that would be suitable for a chapter point.
+	 *
+	 * @param float
+	 */
+	public function set_min_seconds($seconds = 1, $format = 'NTSC') {
+
+		bcscale(3);
+
+		$seconds = bcadd($seconds, 0);
+
+		$this->min_seconds = $seconds;
 
 	}
 
