@@ -357,7 +357,7 @@ class LibAV {
 		$chapters[] = "CHAPTER01=00:00:00.000";
 		$chapters[] = "CHAPTER01NAME=Chapter 1";
 
-		foreach($this->possible_breaks as $key => $arr) {
+		foreach($this->precise_breaks as $key => $arr) {
 
 			$chapter = $key + 2;
 			$time_index = $arr['time_index'];
