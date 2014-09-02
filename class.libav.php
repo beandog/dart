@@ -22,6 +22,7 @@ class LibAV {
 	// Scanning
 	public $min_pblack = 98;
 	public $min_frames = 30;
+	public $max_timestamp_diff = 1;
 	public $possible_breaks = array();
 
 	// Chapters
@@ -127,7 +128,7 @@ class LibAV {
 
 			$timestamp_diff = bcsub($timestamp, $previous_timestamp);
 
-			if($timestamp_diff > 1) {
+			if($timestamp_diff > $this->max_timestamp_diff) {
 				$match_diff = false;
 				$range_index = null;
 			} else {
@@ -407,6 +408,31 @@ class LibAV {
 		$seconds = abs(intval($seconds));
 
 		$this->min_stop_point = $seconds;
+
+	}
+
+	/**
+	 * Set the maximum amount of a difference in seconds between comparing
+	 * timestamps to see if they fit in one range or not.  Defaults to 1
+	 * second.
+	 *
+	 * Increase this if you are getting valid results, but the breakpoints
+	 * are very close to each other, and you are trying to close the gap
+	 * to have only as many chapters as necessary.
+	 *
+	 * For example, if you have one breakpoint at 63.997 and the next one
+	 * at 65.131, the difference is 1.134 seconds.  Changing the value to
+	 * 1.5 seconds will close that gap and only return one breakpoint.
+	 *
+	 * @param float
+	 */
+	public function set_max_timestamp_diff($seconds) {
+
+		// Get correct precision for timestamps
+		$seconds = bcadd($seconds, 0, 3);
+
+		if($seconds > 0)
+			$this->max_timestamp_diff = $seconds;
 
 	}
 
