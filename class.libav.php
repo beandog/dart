@@ -199,7 +199,7 @@ class LibAV {
 		/** General Timestamps **/
 		// Get the timestamps for something that starts and stops within a second
 
-		$start_point = current(array_keys($seconds));
+		$start_point = reset(array_keys($seconds));
 		$last_point = $start_point;
 		$stop_point = $start_point;
 		$points = array();
@@ -238,7 +238,7 @@ class LibAV {
 			$num_frames = count($sequence['timestamps']);
 			if($num_frames > $min_frames) {
 
-				$start_timestamp = current($sequence['timestamps']);
+				$start_timestamp = reset($sequence['timestamps']);
 				$stop_timestamp = end($sequence['timestamps']);
 				$possible_break = bcsub($stop_timestamp, $start_timestamp, 3);
 
