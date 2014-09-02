@@ -211,7 +211,7 @@ class LibAV {
 
 			// If the new index is just one second after the previous one, then
 			// include it in the first range.
-			if($key == $start_point + 1 || $key == $stop_point + 1) {
+			if($key == $start_point + 1) {
 				$stop_point = $key;
 				$points[$points_index]['start'] = $start_point;
 				$points[$points_index]['stop'] = $stop_point;
