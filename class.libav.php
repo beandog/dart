@@ -215,8 +215,10 @@ class LibAV {
 				$points[$points_index]['stop'] = $stop_point;
 				ksort($points[$points_index]);
 				$points_index++;
-			} else
+			} else {
 				$start_point = $key;
+				$stop_point = $start_point;
+			}
 
 		}
 
