@@ -12,6 +12,15 @@
 
 		}
 
+
+		// A note about metadata specifications: they should be used as
+		// a reference to *what method that data was imported* into the database,
+		// and not as whether the metadata is up to date or not (despite the name).
+		// The reason for this is that metadata can be marked as "missing" if minor
+		// changes are made to the schema, but they would not qualify as out of
+		// reference if the same source for providing the data remained the same.
+		// So, a FIXME is probably in order and metadata_spec should be changed or
+		// perhaps include  something like data_source, as well.
 		public function max_metadata_spec() {
 
 			$sql = "SELECT MAX(id) FROM specs WHERE metadata = 'database';";
