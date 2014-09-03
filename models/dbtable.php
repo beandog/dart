@@ -12,10 +12,9 @@
 
 			$this->table = $table;
 
-			// FIXME make a constructor
-			// *Starting* to migrate from PEAR DBA to native PHP PDO.
-			global $pg;
-			$this->pg = $pg;
+			// FIXME needs a constructor
+			global $pdo_dsn;
+			$this->new_pdo($pdo_dsn);
 
 			return $this->id = $id;
 
@@ -70,6 +69,20 @@
 
 		}
 
+		public function new_pdo($pdo_dsn) {
+
+			// *Starting* to migrate from PEAR DBA to native PHP PDO.
+			try {
+				$this->pg = new PDO($pdo_dsn);
+				$this->pg->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+				return true;
+			} catch (PDOException $e) {
+				echo "* PHP PDO connection FAILED: ".$e->getMessage()."\n";
+				return false;
+			}
+
+		}
+
 		public function create_new() {
 
 			$this->db->query("INSERT INTO ".$this->table." DEFAULT VALUES;");
@@ -89,6 +102,44 @@
 		public function load($id) {
 
 			$this->id = $id;
+
+		}
+
+		// Replace DBA with native PHP PDO functions that return the correct
+		// data types from PostgreSQL instead of casting them all to strings :D
+
+		public function get_one($sql) {
+
+			$rs = $this->pg->pg_query($sql);
+			$var = $rs->fetchColumn();
+
+			return $var;
+
+		}
+
+		public function get_col($sql) {
+
+			$rs = $pg->query($sql);
+			$arr = $rs->fetchAll(PDO::FETCH_COLUMN);
+
+			return $arr;
+
+		}
+
+		public function get_all($sql) {
+
+			$rs = $pg->query($sql);
+			$arr = $rs->fetchAll();
+
+			return $arr;
+
+		}
+
+		public function getRow($sql) {
+
+			$arr = current($this->get_all($sql));
+
+			return $arr;
 
 		}
 
