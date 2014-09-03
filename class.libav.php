@@ -53,7 +53,7 @@ class LibAV {
 
 	// Chapters
 	public $chapters = array();
-	public $min_chapter_length = 0;
+	public $min_chapter_gap = 0;
 
 	public function __construct($source) {
 
@@ -208,6 +208,9 @@ class LibAV {
 
 		// Create break points
 
+		$previous_breakpoint = null;
+		$breakpoint_diff = null;
+
 		foreach($ranges as $range) {
 
 			$num_frames = count($range);
@@ -220,12 +223,27 @@ class LibAV {
 			$stop_timestamp = end($range);
 			$timestamp_diff = bcsub($stop_timestamp, $start_timestamp);
 
+			$previous_timestamp_diff = $timestamp_diff;
+
 			// Check if seconds meets requested minimum
 			if($this->min_seconds && ($timestamp_diff < $this->min_seconds))
 				continue;
 
 			$timestamp_adjustment = bcdiv($timestamp_diff, 2);
 			$breakpoint = bcadd($start_timestamp, $timestamp_adjustment);
+
+			// Check for the minimum gap between two chapters, and drop the next one
+			// if it does not meet this value.
+			if($this->min_chapter_gap) {
+				if($previous_breakpoint) {
+					$breakpoint_diff = bcsub($breakpoint, $previous_breakpoint);
+					if($breakpoint_diff < $this->min_chapter_gap) {
+						$previous_breakpoint = $breakpoint;
+						continue;
+					}
+				}
+				$previous_breakpoint = $breakpoint;
+			}
 
 			$time_index = gmdate("H:i:s", $breakpoint);
 			$ms = str_pad(end(explode('.', $breakpoint)), 3, 0, STR_PAD_RIGHT);
@@ -362,7 +380,7 @@ class LibAV {
 	 * If you are not having long periods of blackframes that need to be
 	 * monitored, and instead don't like chapters closely following
 	 * each other, you can set the minimum length between chapters instead
-	 * with the set_min_chapter_length() function.
+	 * with the set_min_chapter_gap() function.
 	 *
 	 * @param float
 	 */
@@ -398,6 +416,8 @@ class LibAV {
 	 *
 	 * Default is 30 frames, or 1 second for NTSC video.
 	 *
+	 * If you don't want to measure by frames, then use set_min_seconds() instead.
+	 *
 	 * @param integer
 	 */
 	public function set_min_frames($frames = 30) {
@@ -421,6 +441,8 @@ class LibAV {
 	 * 3 frames (.1 seconds) doesn't mean it's a fade-in, fade-out sequence
 	 * that would be suitable for a chapter point.
 	 *
+	 * If you don't want to measure by seconds, then use set_min_frames() instead.
+	 *
 	 * @param float
 	 */
 	public function set_min_seconds($seconds = 1, $format = 'NTSC') {
@@ -440,7 +462,8 @@ class LibAV {
 	 * By default this is unset, and lets the chapters create as they
 	 * normally would.  However, if you are having chapter points that are
 	 * too close to each other, and only want the first one, then set this
-	 * value to how long a chapter *should* be, in minimum length.
+	 * value to how long of a gap there should be between two chapters at
+	 * a minimum.
 	 *
 	 * An example where this would be useful, is an episode has a break
 	 * point at 60 seconds, where the intro sequence fades out and the
@@ -456,19 +479,22 @@ class LibAV {
 	 * it will never create a break point in the chapters for anything
 	 * before that time index.
 	 *
+	 * When comparing two chapters, this one defaults to using the *first*
+	 * match.  Using the same example as before, it would use the 60 seconds
+	 * breaking point, and ignore the 66 seconds one if this value was set
+	 * to anything over 6 seconds.
+	 *
 	 * @param float
 	 */
-	/*
-	public function set_min_chapter_length($seconds) {
+	public function set_min_chapter_gap($seconds) {
 
 		// Get correct precision for timestamps
 		$seconds = bcadd($seconds, 0, 3);
 
 		if($seconds > 0)
-			$this->min_chapter_length = $seconds;
+			$this->min_chapter_gap = $seconds;
 
 	}
-	*/
 
 	/**
 	 * Helper function to create basic values for a chapter file to be muxed
