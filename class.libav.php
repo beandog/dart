@@ -155,9 +155,9 @@ class LibAV {
 
 			$previous_timestamp = $timestamp;
 
-			$timestamp = bcadd(end(explode(':', end($tmp))), 0);
+			$timestamp = floatval(bcadd(end(explode(':', end($tmp))), 0));
 
-			$timestamp_diff = bcsub($timestamp, $previous_timestamp);
+			$timestamp_diff = floatval(bcsub($timestamp, $previous_timestamp));
 
 			if($timestamp_diff > $this->max_timestamp_diff) {
 				$match_diff = false;
@@ -175,7 +175,7 @@ class LibAV {
 
 			// Check if the current timestamp is far away enough from the minimum
 			// stopping point.
-			if(bcsub($this->duration, $timestamp) < $this->min_stop_point)
+			if(floatval(bcsub($this->duration, $timestamp)) < $this->min_stop_point)
 				$after_min_stop_point = true;
 			else
 				$after_min_stop_point = false;
@@ -221,7 +221,7 @@ class LibAV {
 
 			$start_timestamp = reset($range);
 			$stop_timestamp = end($range);
-			$timestamp_diff = bcsub($stop_timestamp, $start_timestamp);
+			$timestamp_diff = floatval(bcsub($stop_timestamp, $start_timestamp));
 
 			$previous_timestamp_diff = $timestamp_diff;
 
@@ -229,14 +229,14 @@ class LibAV {
 			if($this->min_seconds && ($timestamp_diff < $this->min_seconds))
 				continue;
 
-			$timestamp_adjustment = bcdiv($timestamp_diff, 2);
-			$breakpoint = bcadd($start_timestamp, $timestamp_adjustment);
+			$timestamp_adjustment = floatval(bcdiv($timestamp_diff, 2));
+			$breakpoint = floatval(bcadd($start_timestamp, $timestamp_adjustment));
 
 			// Check for the minimum gap between two chapters, and drop the next one
 			// if it does not meet this value.
 			if($this->min_chapter_gap) {
 				if($previous_breakpoint) {
-					$breakpoint_diff = bcsub($breakpoint, $previous_breakpoint);
+					$breakpoint_diff = floatval(bcsub($breakpoint, $previous_breakpoint));
 					if($breakpoint_diff < $this->min_chapter_gap) {
 						$previous_breakpoint = $breakpoint;
 						continue;
@@ -389,7 +389,7 @@ class LibAV {
 		bcscale(3);
 
 		// Get correct precision for timestamps
-		$seconds = bcadd($seconds, 0);
+		$seconds = floatval(bcadd($seconds, 0));
 
 		if($seconds > 0)
 			$this->max_timestamp_diff = $seconds;
@@ -449,7 +449,7 @@ class LibAV {
 
 		bcscale(3);
 
-		$seconds = bcadd($seconds, 0);
+		$seconds = floatval(bcadd($seconds, 0));
 
 		$this->min_seconds = $seconds;
 
@@ -489,7 +489,7 @@ class LibAV {
 	public function set_min_chapter_gap($seconds) {
 
 		// Get correct precision for timestamps
-		$seconds = bcadd($seconds, 0, 3);
+		$seconds = floatval(bcadd($seconds, 0, 3));
 
 		if($seconds > 0)
 			$this->min_chapter_gap = $seconds;
