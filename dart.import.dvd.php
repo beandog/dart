@@ -16,30 +16,39 @@
 
 		if($debug)
 			echo "* Created new DVD id: $dvds_model_id\n";
-
-	} elseif($disc_indexed && $missing_dvd_metadata) {
-
-		echo "[Metadata]\n";
-		echo "* Updating legacy metadata\n";
 	}
 
-	if(!$dvds_model->dvdread_id) {
-		echo "* dvdread id = $dvdread_id\n";
-		$dvds_model->dvdread_id = $dvdread_id;
-	}
-	if(!$dvds_model->title) {
-		echo "* title: $dvd_title\n";
-		$dvds_model->title = $dvd_title;
-	}
-	if($missing_dvd_metadata || !$disc_indexed) {
-		$dvd_filesize = $dvd->size();
+	// Hand off control of whether a DVD is missing metadata to the dvds model,
+	// but if it is flagged as missing metadata, run *all* the checks in the
+	// import process, regardless of what the model says.
+
+	if(!$disc_indexed || ($disc_indexed && $missing_dvd_metadata)) {
+
+		if($disc_indexed && $missing_dvd_metadata) {
+			echo "[Metadata]\n";
+			echo "* Updating legacy metadata\n";
+		}
+
+		if(!$dvds_model->dvdread_id) {
+			echo "* dvdread id = $dvdread_id\n";
+			$dvds_model->dvdread_id = $dvdread_id;
+		}
+
+		if(!$dvds_model->title) {
+			echo "* title: $dvd_title\n";
+			$dvds_model->title = $dvd_title;
+		}
+
+		$dvd_filesize = $dvd->size;
 		if($dvds_model->filesize != $dvd_filesize) {
 			$dvds_model->filesize = $dvd_filesize;
 		}
-	}
-	if(!$dvds_model->side) {
-		echo "* Side: ".$dvd->side."\n";
-		$dvds_model->side = $dvd->side;
+
+		if(!$dvds_model->side) {
+			echo "* Side: ".$dvd->side."\n";
+			$dvds_model->side = $dvd->side;
+		}
+
 	}
 
 	// Flag it as indexed

@@ -1,9 +1,9 @@
 <?php
 
 	/**
-	 * --import
+	 * --import, --archive
 	 *
-	 * Import a new DVD into the database
+	 * Import a new DVD into the database or check for missing metadata
 	 */
 
 	// Keep track of some numbers for debugging or displaying when metadata
@@ -36,6 +36,11 @@
 	// Set this to say if we *can* import it, if requested
 	$allow_import = false;
 
+	// Set a persistent value to see if it was a new DVD or not
+	$new_dvd = false;
+	if(!$disc_indexed)
+		$new_dvd = true;
+
 	if($import || !$disc_indexed || $missing_dvd_metadata || $missing_dvd_tracks_metadata)
 		$allow_import = true;
 
@@ -51,7 +56,7 @@
 		require 'dart.import.dvd.php';
 		require 'dart.import.tracks.php';
 
-		if($import && !$missing_dvd_metadata) {
+		if($import && $new_dvd) {
 			echo "* New DVD imported! Yay! :D\n";
 		}
 
