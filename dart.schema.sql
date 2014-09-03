@@ -243,7 +243,8 @@ CREATE TABLE dvds (
     dvdread_id character varying(255) DEFAULT ''::character varying NOT NULL,
     title character varying(255) DEFAULT ''::character varying NOT NULL,
     filesize bigint,
-    metadata_spec smallint DEFAULT 0 NOT NULL
+    metadata_spec smallint DEFAULT 0 NOT NULL,
+    side smallint
 );
 
 
@@ -529,8 +530,7 @@ CREATE TABLE series_dvds (
     ix smallint DEFAULT 1 NOT NULL,
     size bigint,
     volume smallint DEFAULT 0 NOT NULL,
-    audio_preference smallint DEFAULT 0 NOT NULL,
-    no_dvdnav boolean DEFAULT false NOT NULL
+    audio_preference smallint DEFAULT 0 NOT NULL
 );
 
 
@@ -553,13 +553,6 @@ COMMENT ON COLUMN series_dvds.season IS 'Default season for episodes';
 --
 
 COMMENT ON COLUMN series_dvds.audio_preference IS 'Which audio track to select by default';
-
-
---
--- Name: COLUMN series_dvds.no_dvdnav; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN series_dvds.no_dvdnav IS 'Toggle --no-dvdnav on handbrake';
 
 
 --
@@ -675,7 +668,8 @@ CREATE TABLE specs (
     id integer NOT NULL,
     metadata character varying(255) NOT NULL,
     name character varying(255) NOT NULL,
-    version smallint DEFAULT 0 NOT NULL
+    version double precision DEFAULT 0 NOT NULL,
+    changelog text DEFAULT ''::text NOT NULL
 );
 
 
