@@ -50,37 +50,6 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: anomalies; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE anomalies (
-    id integer NOT NULL,
-    dvd_id integer NOT NULL,
-    tag character varying(255) NOT NULL,
-    notes text NOT NULL
-);
-
-
---
--- Name: anomalies_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE anomalies_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: anomalies_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE anomalies_id_seq OWNED BY anomalies.id;
-
-
---
 -- Name: audio; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -235,8 +204,7 @@ ALTER SEQUENCE collection_sets_id_seq OWNED BY collection_sets.id;
 
 CREATE TABLE collections (
     id integer NOT NULL,
-    title character varying(255) DEFAULT ''::character varying NOT NULL,
-    directory character varying(255) DEFAULT ''::character varying NOT NULL
+    title character varying(255) DEFAULT ''::character varying NOT NULL
 );
 
 
@@ -945,13 +913,6 @@ CREATE VIEW view_episodes AS
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY anomalies ALTER COLUMN id SET DEFAULT nextval('anomalies_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY audio ALTER COLUMN id SET DEFAULT nextval('audio_id_seq'::regclass);
 
 
@@ -1093,14 +1054,6 @@ ALTER TABLE ONLY tags_tracks ALTER COLUMN id SET DEFAULT nextval('tags_tracks_id
 --
 
 ALTER TABLE ONLY tracks ALTER COLUMN id SET DEFAULT nextval('tracks_id_seq'::regclass);
-
-
---
--- Name: anomalies_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
---
-
-ALTER TABLE ONLY anomalies
-    ADD CONSTRAINT anomalies_pkey PRIMARY KEY (id);
 
 
 --
@@ -1321,14 +1274,6 @@ ALTER TABLE ONLY tracks
     ADD CONSTRAINT tracks_pkey PRIMARY KEY (id);
 
 ALTER TABLE tracks CLUSTER ON tracks_pkey;
-
-
---
--- Name: anomalies_dvd_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY anomalies
-    ADD CONSTRAINT anomalies_dvd_id_fkey FOREIGN KEY (dvd_id) REFERENCES dvds(id) ON DELETE CASCADE;
 
 
 --
