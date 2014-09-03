@@ -5,8 +5,6 @@
 	$dvdread_id = $dvd->dvdread_id;
 	$dvd_title = $dvd->title;
 
-	echo "* Title: $dvd_title\n";
-
 	// Create a new database record for the DVD
 	if($new_dvd) {
 
@@ -46,7 +44,7 @@
 		}
 
 		if(!$dvds_model->side) {
-			echo "* side: ".$dvd->side."\n";
+			echo "* DVD side:\t".$dvd->side."\n";
 			$dvds_model->side = $dvd->side;
 		}
 

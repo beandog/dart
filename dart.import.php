@@ -19,12 +19,9 @@
 
 	if($dvds_model->dvd_missing_metadata()) {
 		$missing_dvd_metadata = true;
-		echo "* Missing some DVD metadata\n";
 	}
 	if($dvds_model->dvd_tracks_missing_metadata()) {
 		$missing_dvd_tracks_metadata = true;
-		if(!$missing_dvd_metadata)
-			echo "* Missing some DVD tracks metadata\n";
 	}
 
 	if($archive && !$missing_dvd_metadata && !$missing_dvd_tracks_metadata) {
