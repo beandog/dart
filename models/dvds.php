@@ -14,7 +14,7 @@
 
 		// Check a DVD record to see if it is missing
 		// metadata somewhere.
-		public function missing_metadata() {
+		public function dvd_missing_metadata() {
 
 			$dvd_id = abs(intval($this->id));
 
@@ -27,6 +27,24 @@
 			if(!$count)
 				return true;
 
+			// Check if the DVD doesn't have the side set
+			$sql = "SELECT COUNT(1) FROM dvds WHERE id = $dvd_id AND side IS NULL;";
+			$count = abs(intval($this->db->getOne($sql)));
+
+			if($count)
+				return true;
+
+			return false;
+
+		}
+
+		// Check if any of the tracks on the DVD are missing metadata, regardless
+		// of spec.
+		public function dvd_tracks_missing_metadata() {
+
+			$dvd_id = abs(intval($this->id));
+
+			// Check if any of the tracks are missing an active flag
 			$sql = "SELECT COUNT(1) FROM tracks t JOIN dvds d ON d.id = t.dvd_id JOIN audio a ON a.track_id = t.id JOIN subp s ON s.track_id = t.id WHERE d.id = $dvd_id AND (s.active IS NULL OR a.active IS NULL);";
 			$count = abs(intval($this->db->getOne($sql)));
 

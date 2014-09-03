@@ -16,6 +16,7 @@
 		public $longest_track;
 		public $provider_id;
 		public $size;
+		public $side;
 
 		// DVD Track
 		public $title_track;
@@ -94,6 +95,7 @@
 			$this->longest_track = $this->longest_track();
 			$this->provider_id = $this->provider_id();
 			$this->size = $this->size();
+			$this->side = $this->side();
 
 			return true;
 
@@ -355,6 +357,22 @@
 			$mb_size = intval($kb_size / 1024);
 
 			return $mb_size;
+
+		}
+
+		/**
+		 * Get the side of the DVD
+		 *
+		 * Ideally, this should be set correctly on the DVD.
+		 */
+		public function side() {
+
+			$side = $this->dvd_info['dvd']['side'];
+
+			if(intval($side) === 2)
+				return 2;
+			else
+				return 1;
 
 		}
 

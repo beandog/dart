@@ -37,6 +37,10 @@
 			$dvds_model->filesize = $dvd_filesize;
 		}
 	}
+	if(!$dvds_model->side) {
+		echo "* Side: ".$dvd->side."\n";
+		$dvds_model->side = $dvd->side;
+	}
 
 	// Flag it as indexed
 	$disc_indexed = true;

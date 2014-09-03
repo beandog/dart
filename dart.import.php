@@ -14,9 +14,20 @@
 	$new_chapters = 0;
 	$new_cells = 0;
 
-	$missing_dvd_metadata = $dvds_model->missing_metadata();
+	$missing_dvd_metadata = false;
+	$missing_dvd_tracks_metadata = false;
 
-	if($archive && !$missing_dvd_metadata) {
+	if($dvds_model->dvd_missing_metadata()) {
+		$missing_dvd_metadata = true;
+		echo "* Missing some DVD metadata\n";
+	}
+	if($dvds_model->dvd_tracks_missing_metadata()) {
+		$missing_dvd_tracks_metadata = true;
+		if(!$missing_dvd_metadata)
+			echo "* Missing some DVD tracks metadata\n";
+	}
+
+	if($archive && !$missing_dvd_metadata && !$missing_dvd_tracks_metadata) {
 		echo "* Archive:\tNo legacy metadata! :D\n";
 	}
 
@@ -25,7 +36,7 @@
 	// Set this to say if we *can* import it, if requested
 	$allow_import = false;
 
-	if($import || !$disc_indexed || $missing_dvd_metadata)
+	if($import || !$disc_indexed || $missing_dvd_metadata || $missing_dvd_tracks_metadata)
 		$allow_import = true;
 
 	// If only creating the ISO is requested, then skip import.  This is
