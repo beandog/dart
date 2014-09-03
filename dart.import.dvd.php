@@ -24,9 +24,9 @@
 
 	if($new_dvd || ($disc_indexed && $missing_dvd_metadata)) {
 
-		if(!$new_dvd && $missing_dvd_metadata) {
+		if(!$new_dvd) {
 			echo "[Metadata]\n";
-			echo "* Updating legacy metadata\n";
+			echo "* Updating legacy DVD metadata\n";
 		}
 
 		if(!$dvds_model->dvdread_id) {

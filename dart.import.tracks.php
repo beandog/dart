@@ -24,9 +24,7 @@
 
 	}
 
-	if($missing_dvd_metadata && !$new_dvd)
-		echo "* Updating DVD metadata: ";
-	elseif($missing_dvd_tracks_metadata && !$new_dvd)
+	if($missing_dvd_tracks_metadata && !$new_dvd)
 		echo "* Updating DVD tracks metadata: ";
 	elseif($archive && !$new_dvd)
 		echo "* Checking tracks for full archival: ";
