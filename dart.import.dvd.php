@@ -8,7 +8,7 @@
 	echo "* Title: $dvd_title\n";
 
 	// Create a new database record for the DVD
-	if(!$disc_indexed) {
+	if($new_dvd) {
 
 		echo "[Import]\n";
 
@@ -22,9 +22,9 @@
 	// but if it is flagged as missing metadata, run *all* the checks in the
 	// import process, regardless of what the model says.
 
-	if(!$disc_indexed || ($disc_indexed && $missing_dvd_metadata)) {
+	if($new_dvd || ($disc_indexed && $missing_dvd_metadata)) {
 
-		if($disc_indexed && $missing_dvd_metadata) {
+		if(!$new_dvd && $missing_dvd_metadata) {
 			echo "[Metadata]\n";
 			echo "* Updating legacy metadata\n";
 		}
