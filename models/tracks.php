@@ -81,21 +81,19 @@
 
 			$track_id = abs(intval($this->id));
 
-			$sql = "SELECT 1 FROM tracks WHERE (angles IS NULL OR cc IS NULL) AND id = $track_id;";
-			$var = $this->db->getOne($sql);
-			$bool = (bool)$var;
-
-			if($bool)
+			$sql = "SELECT COUNT(1) FROM tracks WHERE (angles IS NULL OR closed_captioning IS NULL) AND id = $track_id;";
+			$count = $this->get_one($sql);
+			if($count)
 				return true;
 
 			$sql = "SELECT COUNT(1) FROM audio WHERE track_id = $track_id AND active IS NULL;";
-			$var = $this->db->getOne($sql);
-			if($var)
+			$count = $this->get_one($sql);
+			if($count)
 				return true;
 
 			$sql = "SELECT COUNT(1) FROM subp WHERE track_id = $track_id AND active IS NULL;";
-			$var = $this->db->getOne($sql);
-			if($var)
+			$count = $this->get_one($sql);
+			if($count)
 				return true;
 
 			return false;
