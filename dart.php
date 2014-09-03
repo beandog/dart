@@ -328,10 +328,14 @@
 
 			}
 
-			if($disc_indexed) {
-				echo "* Indexed:\tYes\n";
-			} else {
-				echo "* Indexed:\tNo\n";
+			// Only need to display if it's imported if requesting import or
+			// getting DVD info.
+			if($import || $info) {
+				if($disc_indexed) {
+					echo "* Imported:\tYes\n";
+				} else {
+					echo "* Imported:\tNo\n";
+				}
 			}
 
 		}
