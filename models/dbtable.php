@@ -4,12 +4,18 @@
 		protected $id;
 		protected $db;
 		protected $table;
+		protected $db;
 
 		public function __construct($table, $id = null) {
 
 			$this->db = MDB2::singleton();
 
 			$this->table = $table;
+
+			// FIXME make a constructor
+			// *Starting* to migrate from PEAR DBA to native PHP PDO.
+			global $pg;
+			$this->pg = $pg;
 
 			return $this->id = $id;
 
