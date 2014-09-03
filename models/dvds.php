@@ -12,19 +12,27 @@
 
 		}
 
+		public function max_metadata_spec() {
+
+			$sql = "SELECT MAX(id) FROM specs WHERE metadata = 'database';";
+			$max_metadata_spec_id = intval($this->db->getOne($sql));
+
+			return $max_metadata_spec_id;
+
+		}
+
 		// Check a DVD record to see if it is missing
 		// metadata somewhere.
 		public function dvd_missing_metadata() {
 
 			$dvd_id = abs(intval($this->id));
 
-			$sql = "SELECT MAX(version) FROM specs WHERE metadata = 'database';";
-			$version = abs(intval($this->db->getOne($sql)));
+			$max_metadata_spec_id = $this->max_metadata_spec();
 
-			$sql = "SELECT COUNT(1) FROM dvds d WHERE id = $dvd_id AND metadata_spec = $version;";
+			$sql = "SELECT COUNT(1) FROM dvds d WHERE id = $dvd_id AND metadata_spec < $max_metadata_spec_id;";
 			$count = abs(intval($this->db->getOne($sql)));
 
-			if(!$count)
+			if($count)
 				return true;
 
 			// Check if the DVD doesn't have the side set

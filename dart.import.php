@@ -62,10 +62,12 @@
 
 	}
 
-	// Metadata meets spec v3: dvd_info database
-	if($missing_dvd_metadata) {
+	// Metadata meets spec v3.1: dvd_info database
+	if($missing_dvd_metadata || $missing_dvd_tracks_metadata) {
+
 		$missing_dvd_metadata = false;
-		$dvds_model->metadata_spec = 3;
+		$missing_dvd_tracks_metadata = false;
+		$dvds_model->metadata_spec = $dvds_model->max_metadata_spec();
 
 		echo "* DVD model now meets latest database spec!!\n";
 		if($new_title_tracks)
