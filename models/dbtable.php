@@ -110,7 +110,7 @@
 
 		public function get_one($sql) {
 
-			$rs = $this->pg->pg_query($sql);
+			$rs = $this->pg->query($sql);
 			$var = $rs->fetchColumn();
 
 			return $var;
@@ -119,7 +119,7 @@
 
 		public function get_col($sql) {
 
-			$rs = $pg->query($sql);
+			$rs = $this->pg->query($sql);
 			$arr = $rs->fetchAll(PDO::FETCH_COLUMN);
 
 			return $arr;
@@ -128,7 +128,7 @@
 
 		public function get_all($sql) {
 
-			$rs = $pg->query($sql);
+			$rs = $this->pg->query($sql);
 			$arr = $rs->fetchAll();
 
 			return $arr;
