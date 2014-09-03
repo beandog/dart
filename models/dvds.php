@@ -53,7 +53,7 @@
 			$dvd_id = abs(intval($this->id));
 
 			// Check if any of the tracks are missing an active flag
-			$sql = "SELECT COUNT(1) FROM tracks t JOIN dvds d ON d.id = t.dvd_id JOIN audio a ON a.track_id = t.id JOIN subp s ON s.track_id = t.id WHERE d.id = $dvd_id AND (s.active IS NULL OR a.active IS NULL);";
+			$sql = "SELECT COUNT(1) FROM tracks t JOIN dvds d ON d.id = t.dvd_id JOIN audio a ON a.track_id = t.id JOIN subp s ON s.track_id = t.id WHERE d.id = $dvd_id AND (s.active IS NULL OR a.active IS NULL OR closed_captioning IS NULL);";
 			$count = $this->get_one($sql);
 
 			if($count)
