@@ -455,7 +455,7 @@ CREATE TABLE series (
     production_year character varying(4) DEFAULT ''::character varying NOT NULL,
     indexed boolean DEFAULT false NOT NULL,
     average_length integer DEFAULT 0 NOT NULL,
-    grayscale boolean DEFAULT false NOT NULL
+    grayscale integer DEFAULT 0 NOT NULL
 );
 
 

@@ -64,7 +64,7 @@ if($encode && $episode_id) {
 	$video_bitrate = $series_model->get_video_bitrate();
 	$video_quality = $series_model->get_crf();
 	$video_two_pass = $series_model->get_two_pass();
-	$grayscale = ($series_model->grayscale == 't');
+	$grayscale = $series_model->grayscale;
 	$handbrake->grayscale($grayscale);
 
 	if($video_bitrate)
