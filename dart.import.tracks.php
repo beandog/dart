@@ -123,9 +123,11 @@
 					}
 					$tracks_model->tag_track('track_no_handbrake_scan');
 				} else {
+					if($debug) {
+						echo "* Closed captioning: ".($handbrake->closed_captioning? 'yes' : 'no')."\n";
 
-					$tracks_model->closed_captioning = $handbrake->closed_captioning;
-
+					}
+					$tracks_model->closed_captioning = intval($handbrake->closed_captioning);
 				}
 
 			}
