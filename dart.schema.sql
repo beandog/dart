@@ -668,8 +668,7 @@ CREATE TABLE specs (
     id integer NOT NULL,
     metadata character varying(255) NOT NULL,
     name character varying(255) NOT NULL,
-    version double precision DEFAULT 0 NOT NULL,
-    changelog text DEFAULT ''::text NOT NULL
+    version double precision DEFAULT 0 NOT NULL
 );
 
 
