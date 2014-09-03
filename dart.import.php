@@ -41,7 +41,7 @@
 	if(!$disc_indexed)
 		$new_dvd = true;
 
-	if($import || !$disc_indexed || $missing_dvd_metadata || $missing_dvd_tracks_metadata)
+	if($import || $archive || $new_dvd || $missing_dvd_metadata || $missing_dvd_tracks_metadata)
 		$allow_import = true;
 
 	// If only creating the ISO is requested, then skip import.  This is
@@ -53,8 +53,11 @@
 	// Start import
 	if($access_device && $allow_import) {
 
-		require 'dart.import.dvd.php';
-		require 'dart.import.tracks.php';
+		if($new_dvd || $missing_dvd_metadata) {
+			require 'dart.import.dvd.php';
+			if($new_dvd || $missing_dvd_tracks_metadata)
+				require 'dart.import.tracks.php';
+		}
 
 		if($import && $new_dvd) {
 			echo "* New DVD imported! Yay! :D\n";
