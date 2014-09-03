@@ -4,7 +4,7 @@
 		protected $id;
 		protected $db;
 		protected $table;
-		protected $db;
+		protected $pg;
 
 		public function __construct($table, $id = null) {
 
