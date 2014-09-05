@@ -148,14 +148,21 @@ class LibAV {
 
 		foreach($this->output as $line) {
 
-			$tmp = explode(' ', $line);
-
-			$pblack = end(explode(':', $tmp[4]));
-			$t = end($tmp);
-
 			$previous_timestamp = $timestamp;
 
+			$tmp = explode(' ', $line);
+
+			$frame = intval(end(explode(':', $tmp[3])));
+			$pblack = intval(end(explode(':', $tmp[4])));
+			$pts = intval(end(explode(':', $tmp[6])));
 			$timestamp = floatval(bcadd(end(explode(':', end($tmp))), 0));
+
+			$blackframes[] = array(
+				'frame' => $frame,
+				'pblack' => $pblack,
+				'pts' => $pts,
+				'timestamp' => $timestamp,
+			);
 
 			$timestamp_diff = floatval(bcsub($timestamp, $previous_timestamp));
 
@@ -201,7 +208,7 @@ class LibAV {
 
 		}
 
-		$this->blackframes = $seconds;
+		$this->blackframes = $blackframes;
 		$this->blackframe_ranges = $ranges;
 
 		$precise_breaks = array();
