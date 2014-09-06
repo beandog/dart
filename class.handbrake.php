@@ -1,5 +1,7 @@
 <?php
 
+	// Supports HandBrake 0.10
+
 	class Handbrake {
 
 		// Handbrake

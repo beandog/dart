@@ -89,7 +89,7 @@ if($encode && $episode_id) {
 	if(strlen($series_x264opts))
 		$arr_x264_opts[] = $series_x264opts();
 	$arr_x264_opts[] = "keyint=30";
-	$arr_x264_opts[] = "vbv-bufsize=1024:vbv-maxrate=1024";
+	// $arr_x264_opts[] = "vbv-bufsize=1024:vbv-maxrate=1024";
 	$x264_opts = implode(":", $arr_x264_opts);
 	$handbrake->set_x264opts($x264_opts);
 	$x264_preset = $series_model->get_x264_preset();
