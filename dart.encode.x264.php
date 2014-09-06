@@ -39,6 +39,7 @@ if($encode && $episode_id) {
 	$h264_profile = "high";
 
 	$handbrake = new Handbrake;
+	$handbrake->set_binary($handbrake_bin);
 	$handbrake->verbose($verbose);
 	$handbrake->debug($debug);
 	$handbrake->set_dry_run($dry_run);

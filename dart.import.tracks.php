@@ -111,6 +111,7 @@
 			if(is_null($tracks_model->closed_captioning)) {
 
 				$handbrake = new Handbrake;
+				$handbrake->set_binary($handbrake_bin);
 				$handbrake->input_filename($device);
 				$handbrake->input_track($title_track);
 
