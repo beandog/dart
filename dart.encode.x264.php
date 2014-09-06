@@ -46,7 +46,7 @@ if($encode && $episode_id) {
 
 	/** Files **/
 
-	$handbrake->output_format('mkv');
+	$handbrake->output_format('av_mkv');
 	$handbrake->input_filename($episode->queue_iso_symlink);
 	$handbrake->input_track($episode->metadata['track_ix']);
 	$handbrake->output_filename($episode->queue_handbrake_x264);

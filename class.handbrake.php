@@ -1,11 +1,12 @@
 <?php
 
-	// Supports HandBrake 0.10
+	// Supports HandBrake versions 0.9.9, 0.10
 
 	class Handbrake {
 
 		// Handbrake
 		public $binary = "HandBrakeCLI";
+		public $version = "0.10";
 		public $verbose = false;
 		public $debug = false;
 		public $dvdnav = true;
@@ -75,6 +76,10 @@
 
 		public function set_binary($str) {
 			$this->binary = $str;
+		}
+
+		public function set_version($str) {
+			$this->version = $str;
 		}
 
 		/** Filename **/
@@ -375,7 +380,10 @@
 
 			// Add preset
 			if(!is_null($this->preset)) {
-				$args['--preset'] = $this->preset;
+				if($this->version == '0.9.9')
+					$args['--preset'] = $this->preset;
+				else
+					$args['--encoder-preset'] = $this->preset;
 			}
 
 			// Set track #
@@ -406,22 +414,34 @@
 
 			// Set H.264 profile
 			if(!is_null($this->h264_profile)) {
-				$args['--h264-profile'] = $this->h264_profile;
+				if($this->version == '0.9.9')
+					$args['--h264-profile'] = $this->h264_profile;
+				else
+					$args['--encoder-profile'] = $this->h264_profile;
 			}
 
 			// Set H.264 level
 			if(!is_null($this->h264_level)) {
-				$args['--h264-level'] = $this->h264_level;
+				if($this->version == '0.9.9')
+					$args['--h264-level'] = $this->h264_level;
+				else
+					$args['--encoder-level'] = $this->h264_level;
 			}
 
 			// Set x264 preset
 			if(!is_null($this->x264_preset)) {
-				$args['--x264-preset'] = $this->x264_preset;
+				if($this->version == '0.9.9')
+					$args['--x264-preset'] = $this->x264_preset;
+				else
+					$args['--encoder-preset'] = $this->x264_preset;
 			}
 
 			// Set x264 tune option
 			if(!is_null($this->x264_tune)) {
-				$args['--x264-tune'] = $this->x264_tune;
+				if($this->version == '0.9.9')
+					$args['--x264-tune'] = $this->x264_tune;
+				else
+					$args['--encoder-tune'] = $this->x264_tune;
 			}
 
 			// Set x264 encoding options
