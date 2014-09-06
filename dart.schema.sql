@@ -23,6 +23,20 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
+--
+-- Name: uuid-ossp; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION "uuid-ossp"; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UUIDs)';
+
+
 SET search_path = public, pg_catalog;
 
 --
@@ -89,6 +103,39 @@ CREATE SEQUENCE audio_id_seq
 --
 
 ALTER SEQUENCE audio_id_seq OWNED BY audio.id;
+
+
+--
+-- Name: blackframes; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE blackframes (
+    id integer NOT NULL,
+    encode_id integer NOT NULL,
+    frame integer NOT NULL,
+    pblack integer NOT NULL,
+    pts integer NOT NULL,
+    "timestamp" double precision NOT NULL
+);
+
+
+--
+-- Name: blackframes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE blackframes_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: blackframes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE blackframes_id_seq OWNED BY blackframes.id;
 
 
 --
@@ -272,6 +319,40 @@ CREATE SEQUENCE dvds_id_seq
 --
 
 ALTER SEQUENCE dvds_id_seq OWNED BY dvds.id;
+
+
+--
+-- Name: encodes; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE encodes (
+    id integer NOT NULL,
+    episode_id integer NOT NULL,
+    uniq_id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    encode_time timestamp with time zone DEFAULT now() NOT NULL,
+    filesize integer DEFAULT 0 NOT NULL,
+    encode_cmd text DEFAULT ''::text NOT NULL,
+    encode_output text DEFAULT ''::text NOT NULL
+);
+
+
+--
+-- Name: encodes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE encodes_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: encodes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE encodes_id_seq OWNED BY encodes.id;
 
 
 --
@@ -912,6 +993,13 @@ ALTER TABLE ONLY audio ALTER COLUMN id SET DEFAULT nextval('audio_id_seq'::regcl
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY blackframes ALTER COLUMN id SET DEFAULT nextval('blackframes_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY cells ALTER COLUMN id SET DEFAULT nextval('cells_id_seq'::regclass);
 
 
@@ -941,6 +1029,13 @@ ALTER TABLE ONLY collections ALTER COLUMN id SET DEFAULT nextval('collections_id
 --
 
 ALTER TABLE ONLY dvds ALTER COLUMN id SET DEFAULT nextval('dvds_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY encodes ALTER COLUMN id SET DEFAULT nextval('encodes_id_seq'::regclass);
 
 
 --
@@ -1059,6 +1154,14 @@ ALTER TABLE audio CLUSTER ON audio_pkey;
 
 
 --
+-- Name: blackframes_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY blackframes
+    ADD CONSTRAINT blackframes_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: cells_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -1102,6 +1205,14 @@ ALTER TABLE ONLY dvds
     ADD CONSTRAINT dvds_pkey PRIMARY KEY (id);
 
 ALTER TABLE dvds CLUSTER ON dvds_pkey;
+
+
+--
+-- Name: encodes_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY encodes
+    ADD CONSTRAINT encodes_pkey PRIMARY KEY (id);
 
 
 --
@@ -1277,6 +1388,14 @@ ALTER TABLE ONLY audio
 
 
 --
+-- Name: blackframes_encode_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY blackframes
+    ADD CONSTRAINT blackframes_encode_id_fkey FOREIGN KEY (encode_id) REFERENCES encodes(id) ON DELETE CASCADE;
+
+
+--
 -- Name: cells_track_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1298,6 +1417,14 @@ ALTER TABLE ONLY chapters
 
 ALTER TABLE ONLY collection_sets
     ADD CONSTRAINT collection_sets_collection_id_fkey FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE;
+
+
+--
+-- Name: encodes_episode_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY encodes
+    ADD CONSTRAINT encodes_episode_id_fkey FOREIGN KEY (episode_id) REFERENCES episodes(id) ON DELETE CASCADE;
 
 
 --
