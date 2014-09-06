@@ -104,17 +104,17 @@ if($encode) {
 				file_put_contents($episode->queue_handbrake_script, $handbrake_command." $*\n");
 				chmod($episode->queue_handbrake_script, 0755);
 
+				$arg_queue_handbrake_output = escapeshellarg($episode->queue_handbrake_output);
+
 				if($debug) {
-					$cmd = escapeshellcmd($handbrake_command);
+					$handbrake_command .= " 2>&1 | tee $arg_queue_handbrake_output";
 					echo "Executing: $cmd\n";
 				} else {
-					$cmd_handbrake_command = escapeshellcmd($handbrake_command);
-					$arg_queue_handbrake_output = escapeshellarg($episode->queue_handbrake_output);
-					$cmd = "$cmd_handbrake_command 2> $arg_queue_handbrake_output";
+					$handbrake_command .= " 2> $arg_queue_handbrake_output";
 				}
 
 				$exit_code = null;
-				passthru($cmd, $exit_code);
+				passthru($handbrake_command, $exit_code);
 
 				// Update queue status
 				if($exit_code === 0) {
