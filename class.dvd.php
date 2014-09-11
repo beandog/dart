@@ -68,7 +68,7 @@
 		function __construct($device = "/dev/dvd", $debug = false) {
 
 			$this->device = realpath($device);
-			$this->debug = (bool)$debug;
+			$this->debug = boolval($debug);
 
 			if(!file_exists($this->device)) {
 				$this->opened = false;

@@ -86,7 +86,7 @@
 
 		public function set_random($random = true) {
 
-			$this->random = (bool)$random;
+			$this->random = boolval($random);
 
 		}
 
