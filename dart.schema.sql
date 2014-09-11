@@ -338,6 +338,13 @@ CREATE TABLE encodes (
 
 
 --
+-- Name: COLUMN encodes.uniq_id; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN encodes.uniq_id IS 'Unique identifier for container format';
+
+
+--
 -- Name: encodes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
