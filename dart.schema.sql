@@ -332,7 +332,8 @@ CREATE TABLE encodes (
     encode_time timestamp with time zone DEFAULT now() NOT NULL,
     filesize integer DEFAULT 0 NOT NULL,
     encode_cmd text DEFAULT ''::text NOT NULL,
-    encode_output text DEFAULT ''::text NOT NULL
+    encode_output text DEFAULT ''::text NOT NULL,
+    encoder_version character varying(255) DEFAULT ''::character varying NOT NULL
 );
 
 
