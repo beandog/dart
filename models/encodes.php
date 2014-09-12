@@ -19,8 +19,20 @@
 			if(!$seconds)
 				$seconds = time();
 
-			$sql = "UPDATE episodes SET encode_finish = (encode_begin + interval '$seconds seconds') WHERE id = $id;";
+			$sql = "UPDATE encodes SET encode_finish = (encode_begin + interval '$seconds seconds') WHERE id = $id;";
 			$this->db->query($sql);
+
+		}
+
+		function find_episode_id($episode_id) {
+
+			$id = intval($this->id);
+			$episode_id = intval($episode_id);
+
+			$sql = "SELECT id FROM encodes WHERE episode_id = $episode_id AND encode_finish IS NULL ORDER BY ID DESC LIMIT 1;";
+			$encode_id = $this->getOne($sql);
+
+			return $encode_id;
 
 		}
 
