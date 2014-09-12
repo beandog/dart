@@ -98,6 +98,13 @@ if($encode) {
 			// Begin the encode if everything is good to go
 			if($episode->x264_ready()) {
 
+				$encodes_model = new Encodes_Model();
+				$encodes_model->create_new();
+				$encodes_model->episode_id = $episode_id;
+				$encodes_model->encode_cmd = $handbrake_command;
+				$encodes_model->encoder_version = $handbrake_version;
+				$uuid = $encodes_model->uniq_id;
+
 				// Flag episode encoding as "in progress"
 				$queue_model->set_episode_status($episode_id, 'x264', 1);
 
@@ -115,6 +122,9 @@ if($encode) {
 
 				$exit_code = null;
 				passthru($handbrake_command, $exit_code);
+
+				$encodes_model->encode_output = $arg_queue_handbrake_output;
+				$encodes_model->exit_code = $exit_code;
 
 				// Update queue status
 				if($exit_code === 0) {
