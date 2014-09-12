@@ -79,6 +79,13 @@ if($encode) {
 			// file and muxing if possible.
 			if($episode->x264_passed()) {
 
+				$encodes_model = new Encodes_Model();
+				$encode_id = $encodes_model->find_episode_id($episode_id);
+				if(is_null($encode_id))
+					$encodes_model->create_new();
+				else
+					$encodes_model->load($encode_id);
+
 				echo "* x264 queue encoded file exists\n";
 				echo "* Jumping to Matroska muxing\n";
 				goto goto_matroska_encode;
@@ -124,7 +131,8 @@ if($encode) {
 				$exit_code = null;
 				passthru($handbrake_command, $exit_code);
 
-				$encodes_model->encode_output = file_get_contents($arg_queue_handbrake_output);
+				$encode_output = file_get_contents($episode->queue_handbrake_output);
+				$encodes_model->encode_output = $encode_output;
 				$encodes_model->encoder_exit_code = $exit_code;
 
 				// Update queue status
@@ -181,7 +189,7 @@ if($encode) {
 					$episode->remove_queue_dir();
 
 				$encode_finish_time = time();
-				$episodes_model->set_encode_finish($encode_finish_time);
+				$encodes_model->set_encode_finish($encode_finish_time);
 
 			}
 
