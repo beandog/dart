@@ -104,6 +104,7 @@ if($encode) {
 				$encodes_model->encode_cmd = $handbrake_command;
 				$encodes_model->encoder_version = $handbrake_version;
 				$uuid = $encodes_model->uniq_id;
+				$encode_begin_time = time();
 
 				// Flag episode encoding as "in progress"
 				$queue_model->set_episode_status($episode_id, 'x264', 1);
@@ -178,6 +179,9 @@ if($encode) {
 				// Cleanup
 				if(!$debug && file_exists($episode->episode_mkv))
 					$episode->remove_queue_dir();
+
+				$encode_finish_time = time();
+				$episodes_model->set_encode_finish($encode_finish_time);
 
 			}
 
