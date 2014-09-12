@@ -124,7 +124,7 @@ if($encode) {
 				$exit_code = null;
 				passthru($handbrake_command, $exit_code);
 
-				$encodes_model->encode_output = $arg_queue_handbrake_output;
+				$encodes_model->encode_output = file_get_contents($arg_queue_handbrake_output);
 				$encodes_model->encoder_exit_code = $exit_code;
 
 				// Update queue status
