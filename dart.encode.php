@@ -132,6 +132,9 @@ if($encode) {
 				passthru($handbrake_command, $exit_code);
 
 				$encode_output = file_get_contents($episode->queue_handbrake_output);
+				// Must be converted to UTF-8 from ISO 8859-1 because libdvdnav can output
+				// garbage characters when displaying 'Menu Languages'
+				$encode_output = mb_convert_encoding($encode_output, 'UTF-8');
 				$encodes_model->encode_output = $encode_output;
 				$encodes_model->encoder_exit_code = $exit_code;
 
