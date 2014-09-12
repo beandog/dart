@@ -74,6 +74,7 @@
 			file_put_contents($episode->queue_matroska_xml, $xml);
 			$queue_model->set_episode_status($episode_id, 'xml', 2);
 			echo "Metadata:\tpassed\n";
+			$encodes_model->remux_metadata = mb_convert_encoding($xml, 'UTF-8');
 
 		} else {
 
