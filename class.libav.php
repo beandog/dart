@@ -40,9 +40,10 @@ class LibAV {
 
 	// libav
 	public $metadata;
-	public $avconv_blackframe_amount = 98;
+	public $streams;
 
 	// Scanning
+	public $avconv_blackframe_amount = 98;
 	public $min_pblack = 98;
 	public $min_frames = null;
 	public $min_seconds = null;
@@ -77,7 +78,7 @@ class LibAV {
 
 		$arg_filename = escapeshellarg($this->source);
 
-		$cmd = "avprobe -show_format -of json $arg_filename 2> /dev/null";
+		$cmd = "avprobe -show_format -show_streams -of json $arg_filename 2> /dev/null";
 
 		exec($cmd, $output, $retval);
 
@@ -86,9 +87,9 @@ class LibAV {
 
 		$output = implode(' ', $output);
 		$json = json_decode($output, true);
-		$this->metadata = $json['format'];
+		$this->metadata = $json;
 
-		$this->duration = $this->metadata['duration'];
+		$this->duration = $this->metadata['format']['duration'];
 
 		return $this->metadata;
 
