@@ -111,7 +111,7 @@ ALTER SEQUENCE audio_id_seq OWNED BY audio.id;
 
 CREATE TABLE blackframes (
     id integer NOT NULL,
-    encode_id integer NOT NULL,
+    episode_id integer NOT NULL,
     frame integer NOT NULL,
     pblack integer NOT NULL,
     pts integer NOT NULL,
@@ -327,13 +327,20 @@ ALTER SEQUENCE dvds_id_seq OWNED BY dvds.id;
 
 CREATE TABLE encodes (
     id integer NOT NULL,
-    episode_id integer NOT NULL,
+    episode_id integer,
     uniq_id uuid DEFAULT uuid_generate_v4() NOT NULL,
-    encode_time timestamp with time zone DEFAULT now() NOT NULL,
-    filesize integer DEFAULT 0 NOT NULL,
+    filesize integer,
     encode_cmd text DEFAULT ''::text NOT NULL,
     encode_output text DEFAULT ''::text NOT NULL,
-    encoder_version character varying(255) DEFAULT ''::character varying NOT NULL
+    encoder_version character varying(255) DEFAULT ''::character varying NOT NULL,
+    encoder_exit_code smallint,
+    encode_begin timestamp with time zone DEFAULT now() NOT NULL,
+    encode_finish timestamp with time zone,
+    remux_command text DEFAULT ''::text NOT NULL,
+    remux_metadata text DEFAULT ''::text NOT NULL,
+    remux_output text DEFAULT ''::text NOT NULL,
+    remux_version character varying(255) DEFAULT ''::character varying NOT NULL,
+    remux_exit_code smallint
 );
 
 
@@ -1396,11 +1403,11 @@ ALTER TABLE ONLY audio
 
 
 --
--- Name: blackframes_encode_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: blackframes_episode_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY blackframes
-    ADD CONSTRAINT blackframes_encode_id_fkey FOREIGN KEY (encode_id) REFERENCES encodes(id) ON DELETE CASCADE;
+    ADD CONSTRAINT blackframes_episode_id_fkey FOREIGN KEY (episode_id) REFERENCES episodes(id) ON DELETE CASCADE;
 
 
 --
