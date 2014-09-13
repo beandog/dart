@@ -60,7 +60,7 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('info', array(
+	$parser->addOption('opt_info', array(
 		'long_name' => '--info',
 		'description' => 'Display metadata about a DVD',
 		'action' => 'StoreTrue',

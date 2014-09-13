@@ -1,7 +1,7 @@
 <?php
 
 	// Display info about disc
-	if($info) {
+	if($opt_info) {
 
 		echo "[Info]\n";
 

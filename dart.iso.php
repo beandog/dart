@@ -97,7 +97,7 @@
 
 		// Move the ISO to the correct filesystem location
 		// *except* in cases where --info is passed
-		if(!is_link($device) && $device_is_iso && !file_exists($target_iso) && !$info) {
+		if(!is_link($device) && $device_is_iso && !file_exists($target_iso) && !$opt_info) {
 			rename($device, $target_iso);
 			echo "* Moving $device to ISOs dir\n";
 		}

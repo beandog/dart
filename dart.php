@@ -64,7 +64,7 @@
 		}
 	}
 
-	if(!count($devices) && ($opt_rip || $info || $dump_iso || $dump_ifo || $opt_import || $opt_archive))
+	if(!count($devices) && ($opt_rip || $opt_info || $dump_iso || $dump_ifo || $opt_import || $opt_archive))
 		$devices = $all_devices;
 
 	// Manage queue
@@ -165,7 +165,7 @@
 			$display_device = basename($device);
 
 		// Determine whether we are reading the device
-		if($opt_rip || $info || $opt_import || $opt_archive || $dump_iso || $dump_ifo || $qa) {
+		if($opt_rip || $opt_info || $opt_import || $opt_archive || $dump_iso || $dump_ifo || $qa) {
 			$access_device = true;
 			if(!$wait) {
 				echo "[Access Device]\n";
@@ -332,7 +332,7 @@
 
 			// Only need to display if it's imported if requesting import or
 			// getting DVD info.
-			if($opt_import || $info) {
+			if($opt_import || $opt_info) {
 				if($disc_indexed) {
 					echo "* Imported:\tYes\n";
 				} else {
