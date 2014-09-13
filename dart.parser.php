@@ -78,7 +78,7 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('max', array(
+	$parser->addOption('arg_max', array(
 		'short_name' => '-m',
 		'long_name' => '--max',
 		'description' => 'Max # of episodes to rip or encode',

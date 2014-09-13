@@ -49,6 +49,12 @@
 	else
 		$dry_run = false;
 
+	$arg_max = abs($arg_max);
+	if($arg_max)
+		$max = $arg_max;
+	else
+		$max = 0;
+
 	// Dumping the ISO may be necessary at some point in the encode process,
 	// so handle the request and the action separately.
 	if($opt_dump_iso)
