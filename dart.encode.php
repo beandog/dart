@@ -6,7 +6,7 @@
 	 * Encode the episodes in the queue
 	 *
 	 */
-if($encode) {
+if($opt_encode) {
 
 	echo "[Encode]\n";
 

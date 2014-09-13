@@ -40,7 +40,7 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('encode', array(
+	$parser->addOption('o_encode', array(
 		'short_name' => '-e',
 		'long_name' => '--encode',
 		'description' => 'Encode episodes in the queue',

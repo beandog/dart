@@ -1,6 +1,6 @@
 <?php
 
-if($encode && $episode_id) {
+if($opt_encode && $episode_id) {
 
 	/**
 	 * Handbrake
