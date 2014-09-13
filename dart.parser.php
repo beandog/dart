@@ -19,7 +19,7 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('import', array(
+	$parser->addOption('opt_import', array(
 		'short_name' => '-i',
 		'long_name' => '--import',
 		'description' => 'Import DVD metadata into database',

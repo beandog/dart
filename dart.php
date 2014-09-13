@@ -64,7 +64,7 @@
 		}
 	}
 
-	if(!count($devices) && ($rip || $info || $dump_iso || $dump_ifo || $import || $archive))
+	if(!count($devices) && ($rip || $info || $dump_iso || $dump_ifo || $opt_import || $archive))
 		$devices = $all_devices;
 
 	// Manage queue
@@ -165,7 +165,7 @@
 			$display_device = basename($device);
 
 		// Determine whether we are reading the device
-		if($rip || $info || $import || $archive || $dump_iso || $dump_ifo || $qa) {
+		if($rip || $info || $opt_import || $archive || $dump_iso || $dump_ifo || $qa) {
 			$access_device = true;
 			if(!$wait) {
 				echo "[Access Device]\n";
@@ -332,7 +332,7 @@
 
 			// Only need to display if it's imported if requesting import or
 			// getting DVD info.
-			if($import || $info) {
+			if($opt_import || $info) {
 				if($disc_indexed) {
 					echo "* Imported:\tYes\n";
 				} else {
@@ -361,7 +361,7 @@
 
 		// If polling for a new disc, check to see if one is in the
 		// drive.  If there is, start over.
-		if($wait && ($rip || $import || $archive || $dump_iso || $dump_ifo) && $device_is_hardware) {
+		if($wait && ($rip || $opt_import || $archive || $dump_iso || $dump_ifo) && $device_is_hardware) {
 
 			// Only toggle devices if passed more than one
 			// Otherwise, just re-poll the original.

@@ -28,7 +28,7 @@
 		echo "* Updating DVD tracks metadata: ";
 	elseif($archive && !$new_dvd)
 		echo "* Checking tracks for full archival: ";
-	elseif($import && $new_dvd)
+	elseif($opt_import && $new_dvd)
 		echo "* Importing $dvd_title_tracks tracks: ";
 
 	next_track:

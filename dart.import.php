@@ -38,13 +38,13 @@
 	if(!$disc_indexed)
 		$new_dvd = true;
 
-	if($import || $archive || $new_dvd || $missing_dvd_metadata || $missing_dvd_tracks_metadata)
+	if($opt_import || $archive || $new_dvd || $missing_dvd_metadata || $missing_dvd_tracks_metadata)
 		$allow_import = true;
 
 	// If only creating the ISO is requested, then skip import.  This is
 	// common when there are problems accessing the DVD, and import is
 	// expected to fail.
-	if($dump_iso && (!$import && !$archive))
+	if($dump_iso && (!$opt_import && !$archive))
 		$allow_import = false;
 
 	// Start import
@@ -56,7 +56,7 @@
 				require 'dart.import.tracks.php';
 		}
 
-		if($import && $new_dvd) {
+		if($opt_import && $new_dvd) {
 			echo "* New DVD imported! Yay! :D\n";
 		}
 
