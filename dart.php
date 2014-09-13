@@ -40,10 +40,14 @@
 	$hostname = php_uname('n');
 
 
-	// Parser allows multiple levels of verbosity
-
+	// Handle parser arguments and options
 	if($debug)
 		$verbose = 10;
+
+	if($opt_dry_run)
+		$dry_run = true;
+	else
+		$dry_run = false;
 
 	// Base URL to access DVD admin frontend
 	// Override in preferences
