@@ -92,7 +92,7 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('queue', array(
+	$parser->addOption('opt_queue', array(
 		'short_name' => '-q',
 		'long_name' => '--queue',
 		'description' => 'Display the episodes in the queue to be encoded',

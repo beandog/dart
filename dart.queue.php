@@ -8,7 +8,7 @@
 
 	$queue_episodes = $queue_model->get_episodes();
 
-	if($queue) {
+	if($opt_queue) {
 
 		$counter = 1;
 
