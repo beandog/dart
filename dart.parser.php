@@ -85,6 +85,13 @@
 		'action' => 'StoreInt',
 		'default' => 0,
 	));
+	$parser->addOption('arg_skip', array(
+		'short_name' => '-s',
+		'long_name' => '--skip',
+		'description' => 'Skip the number of episodes to rip or encode',
+		'action' => 'StoreInt',
+		'default' => 0,
+	));
 	$parser->addOption('opt_wait', array(
 		'short_name' => '-w',
 		'long_name' => '--wait',
@@ -110,13 +117,6 @@
 		'description' => 'Reset queue status for episodes',
 		'action' => 'StoreTrue',
 		'default' => false,
-	));
-	$parser->addOption('skip', array(
-		'short_name' => '-s',
-		'long_name' => '--skip',
-		'description' => 'Skip the number of episodes to rip or encode',
-		'action' => 'StoreInt',
-		'default' => 0,
 	));
 	$parser->addOption('arg_queue_series_id', array(
 		'long_name' => '--series',
