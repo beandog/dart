@@ -184,7 +184,7 @@
 		// Determine whether we are reading the device
 		if($opt_rip || $opt_info || $opt_import || $opt_archive || $dump_iso || $opt_dump_ifo || $qa) {
 			$access_device = true;
-			if(!$wait) {
+			if(!$opt_wait) {
 				echo "[Access Device]\n";
 				echo "* Reading $display_device\n";
 				if($debug)
@@ -219,7 +219,7 @@
 			}
 
 			if($debug) {
-				if($wait)
+				if($opt_wait)
 					echo "* Wait for media requested by user\n";
 				else
 					echo "* No waiting requested\n";
@@ -242,7 +242,7 @@
 			// in there, do the courtesy of opening the tray so that the user doesn't
 			// have to eject it manually.  A possible option is also to check for the
 			// --open option given, and only eject the tray in that case.
-			if(!$wait && !$tray_open && !$tray_has_media && $access_device) {
+			if(!$opt_wait && !$tray_open && !$tray_has_media && $access_device) {
 
 				// The device was included in the main program call, so eject
 				// the tray if there is no media in there.
@@ -251,7 +251,7 @@
 			}
 
 			// If waiting and the drive is closed and has no media, go to the next device
-			if($wait && !$tray_open && !$tray_has_media && $access_device) {
+			if($opt_wait && !$tray_open && !$tray_has_media && $access_device) {
 				echo "* Drive is closed, without media\n";
 				echo "* No media, so out we go!\n";
 				$tray_open = $drive->open();
@@ -259,14 +259,14 @@
 			}
 
 			// If waiting, and the drive is open, move along to the next device
-			if($wait && $tray_open && $access_device) {
+			if($opt_wait && $tray_open && $access_device) {
 				if($debug)
 					echo "* Drive is open, skipping device\n";
 				$access_device = false;
 			}
 
 			// Close the tray if not waiting
-			if(!$wait && $tray_open && !$open_trays && $access_device) {
+			if(!$opt_wait && $tray_open && !$open_trays && $access_device) {
 
 				echo "* Drive is open, closing tray\n";
 				if($drive->close())
@@ -378,7 +378,7 @@
 
 		// If polling for a new disc, check to see if one is in the
 		// drive.  If there is, start over.
-		if($wait && ($opt_rip || $opt_import || $opt_archive || $dump_iso || $opt_dump_ifo) && $device_is_hardware) {
+		if($opt_wait && ($opt_rip || $opt_import || $opt_archive || $dump_iso || $opt_dump_ifo) && $device_is_hardware) {
 
 			// Only toggle devices if passed more than one
 			// Otherwise, just re-poll the original.

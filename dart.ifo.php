@@ -74,7 +74,7 @@
 		}
 
 		// Eject the disc if exporting the IFO, and nothing else
-		if($wait && !$opt_rip && !$dump_iso && !$opt_import) {
+		if($opt_wait && !$opt_rip && !$dump_iso && !$opt_import) {
 			$drive->open();
 		}
 

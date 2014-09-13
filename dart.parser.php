@@ -85,7 +85,7 @@
 		'action' => 'StoreInt',
 		'default' => 0,
 	));
-	$parser->addOption('wait', array(
+	$parser->addOption('opt_wait', array(
 		'short_name' => '-w',
 		'long_name' => '--wait',
 		'description' => 'Wait for media to be in the tray before proceeding',
