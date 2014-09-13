@@ -82,7 +82,7 @@
 		$queue_model->set_dvd_id($queue_dvd_id);
 	if($queue_series_id)
 		$queue_model->set_series_id($queue_series_id);
-	if($random)
+	if($opt_random)
 		$queue_model->set_random();
 	if($remove_queue)
 		$queue_model->remove();
