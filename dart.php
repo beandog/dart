@@ -49,6 +49,13 @@
 	else
 		$dry_run = false;
 
+	// Dumping the ISO may be necessary at some point in the encode process,
+	// so handle the request and the action separately.
+	if($opt_dump_iso)
+		$dump_iso = true;
+	else
+		$dump_iso = false;
+
 	// Base URL to access DVD admin frontend
 	// Override in preferences
 	if(empty($baseurl))
