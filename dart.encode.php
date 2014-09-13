@@ -55,6 +55,9 @@ if($opt_encode) {
 			// Build the Handbrake object
 			require 'dart.encode.x264.php';
 
+			// Store encoder details in episode class
+			$episode->encoder_command = $handbrake->get_executable_string();
+
 			$str = $handbrake->get_executable_string();
 			$tmpfile = tempnam(sys_get_temp_dir(), "encode");
 			file_put_contents($tmpfile, "$str\n");
@@ -95,7 +98,7 @@ if($opt_encode) {
 
 			// Check for existing x264 encoded file, and go straight to creating the XML
 			// file and muxing if possible.
-			if($episode->x264_passed()) {
+			if($episode->x264_passed() && !$force_encode) {
 
 				$encodes_model = new Encodes_Model();
 				$encode_id = $encodes_model->find_episode_id($episode_id);
@@ -114,14 +117,14 @@ if($opt_encode) {
 			// but do *not* remove it from the queue.  This means that if an encode failed, it
 			// will always loop over it, skipping it for now, until manually reset or removed
 			// from the queue.
-			if($episode->x264_running() || $episode->x264_failed()) {
+			if(($episode->x264_running() || $episode->x264_failed()) && !$force_encode) {
 
 				goto goto_encode_next_episode;
 
 			}
 
 			// Begin the encode if everything is good to go
-			if($episode->x264_ready()) {
+			if($episode->x264_ready() || $force_encode) {
 
 				// Flag episode encoding as "in progress"
 				$queue_model->set_episode_status($episode_id, 'x264', 1);
@@ -166,6 +169,10 @@ if($opt_encode) {
 				}
 
 			}
+
+			// If stage was limited to encoding, then skip the others
+			if($arg_stage == 'encode')
+				goto goto_encode_next_episode;
 
 			// Goto point for dry runs: Matroska functionality
 			goto_matroska_encode:
