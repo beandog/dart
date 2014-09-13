@@ -1,7 +1,7 @@
 <?php
 
 			/*
-			if($dumpvob) {
+			if($opt_dumpvob) {
 
 				$vob = "$episode_filename.vob";
 

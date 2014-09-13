@@ -1,6 +1,6 @@
 <?php
 
-	if($ftp) {
+	if($opt_ftp) {
 
 		$src = getenv('HOME')."/dvds/";
 		$target = "/var/media/updates/";

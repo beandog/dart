@@ -167,7 +167,7 @@ if($opt_encode && $episode_id) {
 	$handbrake->add_chapters();
 
 	/*
-	if($dumpvob) {
+	if($opt_dumpvob) {
 
 		$vob = "$episode_filename.vob";
 

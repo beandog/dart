@@ -146,26 +146,26 @@
 		'default' => 0,
 		'help_name' => 'episode',
 	));
-	$parser->addOption('qa', array(
+	$parser->addOption('opt_qa', array(
 		'long_name' => '--qa',
 		'description' => 'Run qa checks on DVD',
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('open_trays', array(
+	$parser->addOption('opt_open_trays', array(
 		'long_name' => '--open',
 		'description' => 'Open all DVD trays',
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('close_trays', array(
+	$parser->addOption('opt_close_trays', array(
 		'long_name' => '--close',
 		'description' => 'Close all DVD trays',
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
 	/*
-	$parser->addOption('ftp', array(
+	$parser->addOption('opt_ftp', array(
 		'short_name' => '-f',
 		'long_name' => '--ftp',
 		'description' => 'FTP finished files',
@@ -174,7 +174,7 @@
 	));
 	*/
 	/*
-	$parser->addOption('dumpvob', array(
+	$parser->addOption('opt_dumpvob', array(
 		'long_name' => '--vob',
 		'description' => 'Dump stream to .vob file',
 		'action' => 'StoreTrue',

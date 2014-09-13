@@ -67,14 +67,14 @@
 	if(empty($baseurl))
 		$baseurl = '';
 
-	if($open_trays && !$close_trays) {
+	if($opt_open_trays && !$opt_close_trays) {
 		foreach($all_devices as $str) {
 			$drive = new DVDDrive($str);
 			$drive->open();
 		}
 	}
 
-	if($close_trays && !$open_trays) {
+	if($opt_close_trays && !$opt_open_trays) {
 		foreach($all_devices as $str) {
 			$drive = new DVDDrive($str);
 			$drive->close();
@@ -180,7 +180,7 @@
 			$display_device = basename($device);
 
 		// Determine whether we are reading the device
-		if($opt_rip || $opt_info || $opt_import || $opt_archive || $dump_iso || $opt_dump_ifo || $qa) {
+		if($opt_rip || $opt_info || $opt_import || $opt_archive || $dump_iso || $opt_dump_ifo || $opt_qa) {
 			$access_device = true;
 			if(!$opt_wait) {
 				echo "[Access Device]\n";
