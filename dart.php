@@ -91,22 +91,20 @@
 		$queue_model->skip_episodes($skip);
 	if($max)
 		$queue_model->set_max_episodes($max);
-	if($queue_episode_id)
-		$queue_model->set_episode_id($queue_episode_id);
-	if($queue_track_id)
-		$queue_model->set_track_id($queue_track_id);
-	if($queue_dvd_id)
-		$queue_model->set_dvd_id($queue_dvd_id);
-	if($queue_series_id)
-		$queue_model->set_series_id($queue_series_id);
 	if($opt_random)
 		$queue_model->set_random();
-	if($remove_queue)
+	if($opt_remove_queue)
 		$queue_model->remove();
-	if($reset_queue)
+	if($opt_reset_queue)
 		$queue_model->reset();
-	if($queue_episode_id)
-		$queue_episode_id = abs(intval($queue_episode_id));
+	if($arg_queue_series_id)
+		$queue_model->set_series_id($arg_queue_series_id);
+	if($arg_queue_dvd_id)
+		$queue_model->set_dvd_id($arg_queue_dvd_id);
+	if($arg_queue_track_id)
+		$queue_model->set_track_id($arg_queue_track_id);
+	if($arg_queue_episode_id)
+		$queue_model->set_episode_id($arg_queue_episode_id);
 
 	// General boolean for various items
 	$first_run = true;

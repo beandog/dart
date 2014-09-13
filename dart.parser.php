@@ -99,13 +99,13 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('remove_queue', array(
+	$parser->addOption('opt_remove_queue', array(
 		'long_name' => '--remove',
 		'description' => 'Remove all episodes from the queue',
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('reset_queue', array(
+	$parser->addOption('opt_reset_queue', array(
 		'long_name' => '--reset',
 		'description' => 'Reset queue status for episodes',
 		'action' => 'StoreTrue',
@@ -118,33 +118,33 @@
 		'action' => 'StoreInt',
 		'default' => 0,
 	));
-	$parser->addOption('queue_episode_id', array(
-		'short_name' => '-p',
-		'description' => 'Limit queue to episode id',
-		'action' => 'StoreInt',
-		'default' => 0,
-		'help_name' => 'episode',
-	));
-	$parser->addOption('queue_track_id', array(
-		'long_name' => '--track',
-		'description' => 'Limit queue to track id',
+	$parser->addOption('arg_queue_series_id', array(
+		'long_name' => '--series',
+		'description' => 'Limit queue to series id',
 		'action' => 'StoreInt',
 		'default' => 0,
 		'help_name' => 'id',
 	));
-	$parser->addOption('queue_dvd_id', array(
+	$parser->addOption('arg_queue_dvd_id', array(
 		'long_name' => '--dvd',
 		'description' => 'Limit queue to DVD id',
 		'action' => 'StoreInt',
 		'default' => 0,
 		'help_name' => 'id',
 	));
-	$parser->addOption('queue_series_id', array(
-		'long_name' => '--series',
-		'description' => 'Limit queue to series id',
+	$parser->addOption('arg_queue_track_id', array(
+		'long_name' => '--track',
+		'description' => 'Limit queue to track id',
 		'action' => 'StoreInt',
 		'default' => 0,
 		'help_name' => 'id',
+	));
+	$parser->addOption('arg_queue_episode_id', array(
+		'short_name' => '-p',
+		'description' => 'Limit queue to episode id',
+		'action' => 'StoreInt',
+		'default' => 0,
+		'help_name' => 'episode',
 	));
 	$parser->addOption('qa', array(
 		'long_name' => '--qa',
