@@ -72,7 +72,7 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('dump_ifo', array(
+	$parser->addOption('opt_dump_ifo', array(
 		'long_name' => '--ifo',
 		'description' => 'Backup the DVD IFOs',
 		'action' => 'StoreTrue',
