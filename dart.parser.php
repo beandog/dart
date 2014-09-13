@@ -164,9 +164,21 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_force', array(
+		'short_name' => '-f',
+		'long_name' => '--force',
+		'description' => 'Close all DVD trays',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
+	$parser->addOption('arg_stage', array(
+		'long_name' => '--stage',
+		'description' => 'Specific stage to execute',
+		'action' => 'StoreString',
+		'default' => 'all',
+	));
 	/*
 	$parser->addOption('opt_ftp', array(
-		'short_name' => '-f',
 		'long_name' => '--ftp',
 		'description' => 'FTP finished files',
 		'action' => 'StoreTrue',
