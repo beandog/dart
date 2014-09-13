@@ -22,6 +22,7 @@
 		public $episode_mkv;
 		public $metadata;
 		public $arr_queue_status;
+		public $encoder_command;
 
 		public function __construct($episode_id, $export_dir) {
 
