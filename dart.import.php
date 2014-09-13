@@ -24,7 +24,7 @@
 		$missing_dvd_tracks_metadata = true;
 	}
 
-	if($archive && !$missing_dvd_metadata && !$missing_dvd_tracks_metadata) {
+	if($opt_archive && !$missing_dvd_metadata && !$missing_dvd_tracks_metadata) {
 		echo "* Archive:\tNo legacy metadata! :D\n";
 	}
 
@@ -38,13 +38,13 @@
 	if(!$disc_indexed)
 		$new_dvd = true;
 
-	if($opt_import || $archive || $new_dvd || $missing_dvd_metadata || $missing_dvd_tracks_metadata)
+	if($opt_import || $opt_archive || $new_dvd || $missing_dvd_metadata || $missing_dvd_tracks_metadata)
 		$allow_import = true;
 
 	// If only creating the ISO is requested, then skip import.  This is
 	// common when there are problems accessing the DVD, and import is
 	// expected to fail.
-	if($dump_iso && (!$opt_import && !$archive))
+	if($dump_iso && (!$opt_import && !$opt_archive))
 		$allow_import = false;
 
 	// Start import

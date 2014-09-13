@@ -26,7 +26,7 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('archive', array(
+	$parser->addOption('opt_archive', array(
 		'short_name' => '-a',
 		'long_name' => '--archive',
 		'description' => 'Update DVD metadata to latest schema',
