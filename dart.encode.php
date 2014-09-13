@@ -58,9 +58,7 @@ if($opt_encode) {
 			// Store encoder details in episode class
 			$episode->encoder_command = $handbrake->get_executable_string();
 
-			$str = $handbrake->get_executable_string();
-			$tmpfile = tempnam(sys_get_temp_dir(), "encode");
-			file_put_contents($tmpfile, "$str\n");
+			$tmpfile = tmpfile_put_contents($episode->encoder_command."\n", 'encode');
 			echo "Command:\t$tmpfile\n";
 
 			if($dry_run) {
