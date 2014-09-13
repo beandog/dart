@@ -64,7 +64,7 @@
 		}
 	}
 
-	if(!count($devices) && ($rip || $info || $dump_iso || $dump_ifo || $opt_import || $opt_archive))
+	if(!count($devices) && ($opt_rip || $info || $dump_iso || $dump_ifo || $opt_import || $opt_archive))
 		$devices = $all_devices;
 
 	// Manage queue
@@ -165,7 +165,7 @@
 			$display_device = basename($device);
 
 		// Determine whether we are reading the device
-		if($rip || $info || $opt_import || $opt_archive || $dump_iso || $dump_ifo || $qa) {
+		if($opt_rip || $info || $opt_import || $opt_archive || $dump_iso || $dump_ifo || $qa) {
 			$access_device = true;
 			if(!$wait) {
 				echo "[Access Device]\n";
@@ -361,7 +361,7 @@
 
 		// If polling for a new disc, check to see if one is in the
 		// drive.  If there is, start over.
-		if($wait && ($rip || $opt_import || $opt_archive || $dump_iso || $dump_ifo) && $device_is_hardware) {
+		if($wait && ($opt_rip || $opt_import || $opt_archive || $dump_iso || $dump_ifo) && $device_is_hardware) {
 
 			// Only toggle devices if passed more than one
 			// Otherwise, just re-poll the original.

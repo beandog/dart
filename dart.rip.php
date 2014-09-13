@@ -7,7 +7,7 @@
 	 *
 	 */
 
-	if($rip && $disc_indexed && !$broken_dvd) {
+	if($opt_rip && $disc_indexed && !$broken_dvd) {
 
 		echo "[Rip]\n";
 

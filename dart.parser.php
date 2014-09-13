@@ -33,7 +33,7 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('rip', array(
+	$parser->addOption('opt_rip', array(
 		'short_name' => '-r',
 		'long_name' => '--rip',
 		'description' => 'Rip the episodes from a DVD device or ISO',
