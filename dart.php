@@ -68,6 +68,24 @@
 	else
 		$dump_iso = false;
 
+	// Handle arguments to force stages, and do logic here instead of later
+	$force_encode = false;
+	$force_metadata = false;
+	$force_remux = false;
+	$force_rename = false;
+	if($opt_force) {
+
+		if($stage == 'encode')
+			$force_encode = true;
+		elseif($stage == 'metadata')
+			$force_metadata = true;
+		elseif($stage == 'remux')
+			$force_remux = true;
+		elseif($stage == 'rename')
+			$force_rename = true;
+
+	}
+
 	// Base URL to access DVD admin frontend
 	// Override in preferences
 	if(empty($baseurl))
