@@ -17,8 +17,6 @@
 
 			$this->id = parent::__construct($this->table, $id);
 
-			$this->skip = 0;
-			$this->max = 0;
 			$this->random = false;
 			$this->episode_id = 0;
 			$this->hostname = '';
@@ -47,8 +45,6 @@
 		public function set_episode_id($episode_id) {
 
 			$this->episode_id = abs(intval($episode_id));
-			$this->skip = 0;
-			$this->max = 1;
 
 		}
 
