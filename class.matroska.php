@@ -8,6 +8,7 @@
 		private $flags = array();
 		private $args = array();
 		private $streams = array();
+		private $chapters = array();
 		private $dtd;
 		private $cmd;
 		private $debug;
@@ -86,15 +87,6 @@
 			}
 		}
 
-		public function addChapters($filename) {
-
-			clearstatcache();
-
-			if(file_exists($filename)) {
-				$this->add($filename, 'chapters');
-			}
-		}
-
 		public function addGlobalTags($filename) {
 
 			clearstatcache();
@@ -102,6 +94,71 @@
 			if(file_exists($filename)) {
 				$this->add($filename, 'global_tags');
 			}
+		}
+
+		/** Chapters **/
+
+		public function addChapter($time) {
+
+			$time = abs(floatval(bcadd($time, 0, 3)));
+
+			$this->chapters[] = $time;
+
+		}
+
+		public function getChapters() {
+
+			sort($this->chapters);
+
+			if(floatval($this->chapters[0]) != 0) {
+
+				array_unshift($this->chapters, 0);
+
+			}
+
+			return $this->chapters;
+
+		}
+
+		public function getFormattedChapters() {
+
+			$chapters = $this->getChapters();
+			$format = array();
+
+			foreach($chapters as $key => $breakpoint) {
+
+				$chapter_number = $key + 1;
+
+				$breakpoint = bcadd($breakpoint, 0, 3);
+
+				$time_index = gmdate("H:i:s", $breakpoint);
+				$arr = explode('.', $breakpoint);
+				$ms = str_pad(end($arr), 3, 0, STR_PAD_RIGHT);
+				$time_index .= ".$ms";
+
+				$chapter_prefix = "CHAPTER".str_pad($chapter_number, 2, 0, STR_PAD_LEFT);
+				$chapter_time_index = $chapter_prefix."=".$time_index;
+				$chapter_name = $chapter_prefix."NAME=Chapter $chapter_number";
+
+				$format[] = $chapter_time_index;
+				$format[] = $chapter_name;
+
+			}
+
+			$str = implode("\n", $format)."\n";
+
+			return $str;
+
+		}
+
+		public function addChaptersFilename($filename) {
+
+			clearstatcache();
+
+			if(file_exists($filename)) {
+				$this->add($filename, 'chapters');
+			}
+
 		}
 
 		/** Metadata **/
