@@ -111,10 +111,6 @@
 	// Manage queue
 	$queue_model = new Queue_Model;
 	$queue_model->set_hostname($hostname);
-	if($skip)
-		$queue_model->skip_episodes($skip);
-	if($max)
-		$queue_model->set_max_episodes($max);
 	if($opt_random)
 		$queue_model->set_random();
 	if($opt_remove_queue)
