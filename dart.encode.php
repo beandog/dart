@@ -153,9 +153,6 @@ if($opt_encode) {
 
 		$num_encoded++;
 
-		// Refresh the queue
-		$queue_episodes = $queue_model->get_episodes($hostname);
-
 	}
 
 }
