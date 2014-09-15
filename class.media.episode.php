@@ -374,6 +374,9 @@
 
 		public function create_pre_encode_stage_files() {
 
+			$this->create_queue_dir();
+			$this->create_queue_iso_symlink();
+
 			file_put_contents($this->queue_handbrake_script, $this->encode_stage_command." $*\n");
 			chmod($this->queue_handbrake_script, 0755);
 

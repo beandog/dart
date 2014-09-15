@@ -36,8 +36,6 @@ if($opt_encode) {
 
 		$episode->debug = $debug;
 		$episode->encoder_version = $handbrake_version;
-		$episode->create_queue_dir();
-		$episode->create_queue_iso_symlink();
 
 		$episodes_model = new Episodes_Model($episode_id);
 		$tracks_model = new Tracks_Model($episode->metadata['track_id']);
