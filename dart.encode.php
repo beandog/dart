@@ -232,6 +232,6 @@ if($opt_encode) {
 
 		}
 
-	} while(count($queue_episodes) && $encode && (!$max || ($num_encoded < $max)));
+	} while(count($queue_episodes) && $opt_encode && (!$max || ($num_encoded < $max)));
 
 }
