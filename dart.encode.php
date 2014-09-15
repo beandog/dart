@@ -17,7 +17,6 @@ if($opt_encode) {
 
 	foreach($encode_episodes as $episode_id) {
 
-
 		if($num_encoded) {
 			echo "\n";
 			echo "[Episode]\n";
@@ -122,10 +121,8 @@ if($opt_encode) {
 
 			clearstatcache();
 
-			assert(file_exists($episode->queue_matroska_mkv));
-			assert(filesize($episode->queue_matroska_mkv) > 0);
 			$episode->create_episodes_dir();
-			assert(copy($episode->queue_matroska_mkv, $episode->episode_mkv));
+			copy($episode->queue_matroska_mkv, $episode->episode_mkv);
 			$num_encoded++;
 			$queue_model->remove_episode($episode_id);
 
