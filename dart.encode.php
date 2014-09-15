@@ -15,14 +15,6 @@ if($opt_encode) {
 	if(count($queue_episodes) == 0)
 		echo "* No episodes in queue to encode\n";
 
-	if($skip)
-		echo "* Skipping $skip episodes\n";
-	if($max)
-		echo "* Limiting encoding to $max episodes\n";
-
-	if($dry_run && !$max)
-		$max = count($queue_episodes);
-
 	do {
 
 		foreach($queue_episodes as $episode_id) {
@@ -62,17 +54,6 @@ if($opt_encode) {
 
 			$tmpfile = tmpfile_put_contents($episode->encode_stage_command."\n", 'encode');
 			echo "Command:\t$tmpfile\n";
-
-			if($dry_run) {
-
-				$num_encoded++;
-
-				echo "\n$str\n";
-
-				goto goto_encode_next_episode;
-
-			}
-
 
 			// Cartoons!
 			if($animation) {
@@ -141,11 +122,6 @@ if($opt_encode) {
 			// allowing resume-encoding
 			require 'dart.encode.xml.php';
 
-			if($dry_run) {
-				$num_encoded--;
-				goto goto_encode_next_episode;
-			};
-
 			if($episode->x264_passed() && $episode->xml_passed() && $episode->mkv_ready()) {
 				require 'dart.encode.mkv.php';
 			}
@@ -187,13 +163,12 @@ if($opt_encode) {
 			goto_encode_next_episode:
 
 			$num_encoded++;
-			$skip++;
 
 			// Refresh the queue
-			$queue_episodes = $queue_model->get_episodes($hostname, $skip);
+			$queue_episodes = $queue_model->get_episodes($hostname);
 
 		}
 
-	} while(count($queue_episodes) && $opt_encode && (!$max || ($num_encoded < $max)));
+	} while(count($queue_episodes) && $opt_encode);
 
 }
