@@ -431,12 +431,12 @@
 
 			if($exit_code === 0) {
 
-				$queue_model->set_episode_status($this->episode_id, 'x264', 2);
+				$this->queue_model->set_episode_status($this->episode_id, 'x264', 2);
 				return true;
 
 			} else {
 
-				$queue_model->set_episode_status($this->episode_id, 'x264', 3);
+				$this->queue_model->set_episode_status($this->episode_id, 'x264', 3);
 				return false;
 
 			}
