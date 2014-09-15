@@ -134,7 +134,7 @@ if($opt_encode) {
 				$episode->remove_queue_dir();
 
 			$encode_finish_time = time();
-			$encodes_model->set_encode_finish($encode_finish_time);
+			$episode->encodes_model->set_encode_finish($encode_finish_time);
 
 		}
 
