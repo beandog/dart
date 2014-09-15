@@ -44,6 +44,7 @@
 			$tracks_model = new Tracks_Model($this->metadata['track_id']);
 			$series_model = new Series_Model($this->metadata['series_id']);
 			$this->queue_model = new Queue_Model();
+			$this->encodes_model = new Encodes_Model();
 
 			// The view uses the full title name, including parts, which is what is
 			// used in the final filename for the title.  Reset it in the array
@@ -378,6 +379,27 @@
 
 		}
 
+		// Track encoding session in the database
+		// A little bit about the encodes table ... it is designed to keep track of
+		// *attempts* to encode an episode, and is not meant to be a tracker for a
+		// unique episode.  The valuable part is the uuid that will be stored in the
+		// container metadata when everything is finished -- it will point to the
+		// database entry where the encoding settings, commands, reuslts, etc. are
+		// stored.
+		// The database table is intended to be abused, so creating an entry as soon
+		// as possible falls within that goal, but only occurs when a dry run is not
+		// enabled.
+		public function create_encodes_entry() {
+
+			$this->encodes_model->create_new();
+			$this->encodes_model->episode_id = $this->episode_id;
+			$this->encodes_model->encode_cmd = $this->encode_stage_command;
+			$this->encodes_model->encoder_version = $this->encoder_version;
+			$this->uuid = $encodes_model->uniq_id;
+			$this->encode_begin_time = time();
+
+		}
+
 		/**
 		 * Starts the encode stage for DVD to HandBrake MKV file
 		 *
@@ -426,6 +448,8 @@
 		 */
 		public function encode_video() {
 
+			$this->create_encodes_entry();
+
 			$arg_queue_handbrake_output = escapeshellarg($this->queue_handbrake_output);
 			if($this->debug)
 				$passthru_command = $this->encode_stage_command ." 2>&1 | tee $arg_queue_handbrake_output";
@@ -433,6 +457,13 @@
 				$passthru_command = $this->encode_stage_command ." 2> $arg_queue_handbrake_output";
 
 			passthru($passthru_command, $exit_code);
+
+			$encode_stage_output = file_get_contents($this->queue_handbrake_output);
+			// Convert string to UTF-8 for database, and to avoid libdvdnav output invalid chars
+			$encode_stage_output = mb_convert_encoding($encode_stage_output, 'UTF-8');
+			$encodes_model->encode_output = $encode_stage_output;
+
+			$encodes_model->encoder_exit_code = $exit_code;
 
 			return $exit_code;
 

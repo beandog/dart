@@ -34,6 +34,7 @@ if($opt_encode) {
 
 			$episode = new MediaEpisode($episode_id, $export_dir);
 			$episode->debug = $debug;
+			$episode->encoder_version = $handbrake_version;
 			$episode->create_queue_dir();
 			$episode->create_queue_iso_symlink();
 
@@ -72,23 +73,6 @@ if($opt_encode) {
 
 			}
 
-			// Track encoding session in the database
-			// A little bit about the encodes table ... it is designed to keep track of
-			// *attempts* to encode an episode, and is not meant to be a tracker for a
-			// unique episode.  The valuable part is the uuid that will be stored in the
-			// container metadata when everything is finished -- it will point to the
-			// database entry where the encoding settings, commands, reuslts, etc. are
-			// stored.
-			// The database table is intended to be abused, so creating an entry as soon
-			// as possible falls within that goal, but only occurs when a dry run is not
-			// enabled.
-			$encodes_model = new Encodes_Model();
-			$encodes_model->create_new();
-			$encodes_model->episode_id = $episode_id;
-			$encodes_model->encode_cmd = $episode->encode_stage_command;
-			$encodes_model->encoder_version = $handbrake_version;
-			$uuid = $encodes_model->uniq_id;
-			$encode_begin_time = time();
 
 			// Cartoons!
 			if($animation) {
@@ -133,15 +117,6 @@ if($opt_encode) {
 
 				// Encode video
 				$encode_stage_pass = $episode->encode_stage($force_encode);
-
-				// Store encode stage output in database
-				// Must be converted to UTF-8 from ISO 8859-1 because libdvdnav can output
-				// garbage characters when displaying 'Menu Languages'
-				$encode_stage_output = file_get_contents($episode->queue_handbrake_output);
-				$encode_stage_output = mb_convert_encoding($encode_stage_output, 'UTF-8');
-				$encodes_model->encode_output = $encode_stage_output;
-
-				$encodes_model->encoder_exit_code = $episode->encode_stage_exit_code;
 
 				// Update queue status
 				if($encode_stage_pass)
