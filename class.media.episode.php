@@ -24,12 +24,16 @@
 		public $arr_queue_status;
 		public $encoder_command;
 
-		public function __construct($episode_id, $export_dir) {
+		public function __construct($episode_id, $export_dir = null) {
 
 			clearstatcache();
 
 			$this->episode_id = $episode_id;
+
+			if(is_null($export_dir))
+				$export_dir = realpath(getenv('HOME').'/dvds/');
 			$this->export_dir = $export_dir;
+
 			$episodes_model = new Episodes_Model($episode_id);
 			$this->metadata = $episodes_model->get_metadata();
 			$tracks_model = new Tracks_Model($this->metadata['track_id']);
