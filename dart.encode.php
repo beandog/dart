@@ -10,29 +10,20 @@ if($opt_encode) {
 
 	echo "[Encode]\n";
 
-	$queue_episodes = $queue_model->get_episodes($skip, $max, $opt_resume);
-	$encode_episodes = array();
-
-	foreach($queue_episodes as $episode_id) {
-
-		echo "$episode_id\n";
-
-		$encode_episodes[] = $episode_id;
-
-	}
-
-	print_r($encode_episodes);
-
-	$encode_episodes = array_slice($encode_episodes, $skip, $max);
-
-	print_r($encode_episodes);
-
-	die;
+	$encode_episodes = $queue_model->get_episodes($skip, $max, $opt_resume);
 
 	if(count($encode_episodes) == 0)
 		echo "* No episodes in queue to encode\n";
 
 	foreach($encode_episodes as $episode_id) {
+
+
+		if($num_encoded) {
+			echo "\n";
+			echo "[Episode]\n";
+		}
+
+		$episode = new MediaEpisode($episode_id, $export_dir);
 
 		// If episode already exists, remove it from the queue, and move
 		// onto the next.
@@ -41,12 +32,6 @@ if($opt_encode) {
 			break;
 		}
 
-		if($num_encoded) {
-			echo "\n";
-			echo "[Episode]\n";
-		}
-
-		$episode = new MediaEpisode($episode_id, $export_dir);
 		$episode->debug = $debug;
 		$episode->encoder_version = $handbrake_version;
 		$episode->create_queue_dir();
