@@ -17,9 +17,9 @@
 	file_put_contents($episode->queue_mkvmerge_output, $queue_mkvmerge_output."\n");
 	assert(filesize($episode->queue_mkvmerge_output) > 0);
 
-	$encodes_model->remux_command = $matroska->getCommandString();
-	$encodes_model->remux_output = $queue_mkvmerge_output;
-	$encodes_model->remux_exit_code = $mkvmerge_exit_code;
+	$episode->encodes_model->remux_command = $matroska->getCommandString();
+	$episode->encodes_model->remux_output = $queue_mkvmerge_output;
+	$episode->encodes_model->remux_exit_code = $mkvmerge_exit_code;
 
 	if($mkvmerge_exit_code == 0 || $mkvmerge_exit_code == 1) {
 

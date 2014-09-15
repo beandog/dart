@@ -60,13 +60,6 @@ if($opt_encode) {
 		// file and muxing if possible.
 		if($episode->x264_passed() && !$force_encode) {
 
-			$encodes_model = new Encodes_Model();
-			$encode_id = $encodes_model->find_episode_id($episode_id);
-			if(is_null($encode_id))
-				$encodes_model->create_new();
-			else
-				$encodes_model->load($encode_id);
-
 			echo "* x264 queue encoded file exists\n";
 			echo "* Jumping to Matroska muxing\n";
 			goto goto_matroska_encode;
