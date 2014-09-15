@@ -204,5 +204,37 @@
 
 		}
 
+		public function get_chapter_lengths($minimum_length = 0) {
+
+			$episode_id = abs(intval($this->id));
+			$minimum_length = abs(floatval($minimum_length));
+
+			// Get the track id
+			$sql = "SELECT track_id FROM episodes WHERE id = $episode_id;";
+			$track_id = $this->get_one($sql);
+
+			if(is_null($track_id))
+				return array();
+
+			// Get starting and ending chapter
+			$sql = "SELECT starting_chapter, ending_chapter FROM episodes WHERE id = $episode_id;";
+			$arr = $this->get_row($sql);
+			extract($arr);
+
+			$sql = "SELECT length FROM chapters WHERE track_id = $track_id";
+			if(!is_null($starting_chapter))
+				$sql .= " AND ix >= $starting_chapter";
+			if(!is_null($ending_chapter))
+				$sql .= " AND ix <= $ending_chapter";
+			if($minimum_length)
+				$sql .= " AND length >= $minimum_length";
+			$sql .= " ORDER BY ix;";
+
+			$arr = $this->get_col($sql);
+
+			return $arr;
+
+		}
+
 	}
 ?>
