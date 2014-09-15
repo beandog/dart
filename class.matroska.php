@@ -283,6 +283,7 @@ XML;
 
 					case 'chapters':
 						$flags['chapters'] = $arr['filename'];
+						$flags['chapter-language'] = 'eng';
 						break;
 
 					case 'global_tags':
