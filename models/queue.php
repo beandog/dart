@@ -84,7 +84,7 @@
 
 		}
 
-		public function get_episodes($skip, $max, $in_progress = true) {
+		public function get_episodes($skip = 0, $max = 0, $in_progress = true) {
 
 			$sql = '';
 			$where = array();
