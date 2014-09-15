@@ -32,6 +32,8 @@ if($opt_encode) {
 			break;
 		}
 
+		$episode->create_encodes_entry();
+
 		$episode->debug = $debug;
 		$episode->encoder_version = $handbrake_version;
 		$episode->create_queue_dir();

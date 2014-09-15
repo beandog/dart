@@ -448,8 +448,6 @@
 		 */
 		public function encode_video() {
 
-			$this->create_encodes_entry();
-
 			$arg_queue_handbrake_output = escapeshellarg($this->queue_handbrake_output);
 			if($this->debug)
 				$passthru_command = $this->encode_stage_command ." 2>&1 | tee $arg_queue_handbrake_output";
