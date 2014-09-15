@@ -111,6 +111,10 @@
 		public function get_one($sql) {
 
 			$rs = $this->pg->query($sql);
+			if($rs === false) {
+				trigger_error("Query failed: $sql", E_USER_ERROR);
+				return null;
+			}
 			$var = $rs->fetchColumn();
 
 			return $var;
@@ -120,6 +124,10 @@
 		public function get_col($sql) {
 
 			$rs = $this->pg->query($sql);
+			if($rs === false) {
+				trigger_error("Query failed: $sql", E_USER_ERROR);
+				return array();
+			}
 			$arr = $rs->fetchAll(PDO::FETCH_COLUMN);
 
 			return $arr;
@@ -129,15 +137,25 @@
 		public function get_all($sql) {
 
 			$rs = $this->pg->query($sql);
+			if($rs === false) {
+				trigger_error("Query failed: $sql", E_USER_ERROR);
+				return array();
+			}
 			$arr = $rs->fetchAll();
 
 			return $arr;
 
 		}
 
-		public function getRow($sql) {
+		public function get_row($sql) {
 
-			$arr = current($this->get_all($sql));
+			$rs = $this->pg->query($sql);
+			if($rs === false) {
+				trigger_error("Query failed: $sql", E_USER_ERROR);
+				return array();
+			}
+			$arr = $rs->fetchAll();
+			$arr = current($arr);
 
 			return $arr;
 
