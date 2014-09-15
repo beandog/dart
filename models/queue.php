@@ -46,18 +46,6 @@
 
 		}
 
-		public function skip_episodes($num_episodes) {
-
-			$this->skip = abs(intval($num_episodes));
-
-		}
-
-		public function set_max_episodes($num_episodes) {
-
-			$this->max = abs(intval($num_episodes));
-
-		}
-
 		public function set_episode_id($episode_id) {
 
 			$this->episode_id = abs(intval($episode_id));
@@ -96,16 +84,16 @@
 
 		}
 
-		public function get_episodes() {
+		public function get_episodes($skip, $max, $in_progress = true) {
 
 			$sql = '';
 			$where = array();
 			$order_by = '';
 
-			if($this->skip)
+			if($skip)
 				$sql = " OFFSET ".$this->skip;
 
-			if($this->max > 0)
+			if($max > 0)
 				$sql .= " LIMIT ".$this->max;
 
 			if($this->random)
@@ -116,6 +104,9 @@
 
 			if($this->episode_id)
 				$where[] = "episode_id = ".abs(intval($this->episode_id));
+
+			if($in_progress == false)
+				$where[] = "x264 = 0 AND xml = 0 AND mkv = 0";
 
 			if(count($where))
 				$str_where = "WHERE ".implode(" AND ", $where);
