@@ -4,6 +4,7 @@
 
 	class MediaEpisode extends MediaFile {
 
+		public $debug;
 		public $export_dir;
 		public $dvd_iso;
 		public $episode_id;
@@ -11,6 +12,7 @@
 		public $queue_dir;
 		public $episodes_dir;
 		public $episode_title_filename;
+		public $queue_model;
 		public $queue_iso_symlink;
 		public $queue_handbrake_script;
 		public $queue_handbrake_output;
@@ -22,7 +24,10 @@
 		public $episode_mkv;
 		public $metadata;
 		public $arr_queue_status;
-		public $encoder_command;
+		public $chapter_lengths = array();
+
+		public $encode_stage_command;
+		public $encode_stage_exit_code = 0;
 
 		public function __construct($episode_id, $export_dir = null) {
 
@@ -38,6 +43,7 @@
 			$this->metadata = $episodes_model->get_metadata();
 			$tracks_model = new Tracks_Model($this->metadata['track_id']);
 			$series_model = new Series_Model($this->metadata['series_id']);
+			$this->queue_model = new Queue_Model();
 
 			// The view uses the full title name, including parts, which is what is
 			// used in the final filename for the title.  Reset it in the array
@@ -360,6 +366,75 @@
 				$arr[$key] = intval($value);
 
 			return $arr;
+
+		}
+
+		/** Encoding **/
+
+		public function create_pre_encode_stage_files() {
+
+			file_put_contents($this->queue_handbrake_script, $this->encode_stage_command." $*\n");
+			chmod($this->queue_handbrake_script, 0755);
+
+		}
+
+		/**
+		 * Starts the encode stage for DVD to HandBrake MKV file
+		 *
+		 * Checks if file exists, etc.  Optional to force the encode.
+		 *
+		 * @param force encode stage
+		 */
+		public function encode_stage($force = false) {
+
+			clearstatcache();
+
+			$this->create_pre_encode_stage_files();
+
+			$exit_code = null;
+
+			$this->queue_model->set_episode_status($this->episode_id, 'x264', 1);
+
+			if(file_exists($this->queue_handbrake_x264) && !$force) {
+
+				$this->queue_model->set_episode_status($this->episode_id, 'x264', 2);
+				return true;
+
+			} elseif(!file_exists($this->queue_handbrake_x264) || $force) {
+
+				$exit_code = $this->encode_video();
+				$this->encode_stage_exit_code = $exit_code;
+
+			}
+
+			if($exit_code === 0) {
+
+				$queue_model->set_episode_status($this->episode_id, 'x264', 2);
+				return true;
+
+			} else {
+
+				$queue_model->set_episode_status($this->episode_id, 'x264', 3);
+				return false;
+
+			}
+
+		}
+
+		/**
+		 * Encodes the video directly, with no arguments
+		 */
+		public function encode_video() {
+
+			$arg_queue_handbrake_output = escapeshellarg($this->queue_handbrake_output);
+			if($this->debug)
+				$passthru_command = $this->encode_stage_command ." 2>&1 | tee $arg_queue_handbrake_output";
+			else
+				$passthru_command = $this->encode_stage_command ." 2> $arg_queue_handbrake_output";
+
+			passthru($passthru_command, $exit_code);
+
+			return $exit_code;
 
 		}
 

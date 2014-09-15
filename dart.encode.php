@@ -33,6 +33,7 @@ if($opt_encode) {
 			}
 
 			$episode = new MediaEpisode($episode_id, $export_dir);
+			$episode->debug = $debug;
 			$episode->create_queue_dir();
 			$episode->create_queue_iso_symlink();
 
@@ -56,9 +57,9 @@ if($opt_encode) {
 			require 'dart.encode.x264.php';
 
 			// Store encoder details in episode class
-			$episode->encoder_command = $handbrake->get_executable_string();
+			$episode->encode_stage_command = $handbrake_command;
 
-			$tmpfile = tmpfile_put_contents($episode->encoder_command."\n", 'encode');
+			$tmpfile = tmpfile_put_contents($episode->encode_stage_command."\n", 'encode');
 			echo "Command:\t$tmpfile\n";
 
 			if($dry_run) {
@@ -84,7 +85,7 @@ if($opt_encode) {
 			$encodes_model = new Encodes_Model();
 			$encodes_model->create_new();
 			$encodes_model->episode_id = $episode_id;
-			$encodes_model->encode_cmd = $handbrake_command;
+			$encodes_model->encode_cmd = $episode->encode_stage_command;
 			$encodes_model->encoder_version = $handbrake_version;
 			$uuid = $encodes_model->uniq_id;
 			$encode_begin_time = time();
@@ -121,45 +122,31 @@ if($opt_encode) {
 
 			}
 
+			// Create the handbrake script files
+			$episode->create_pre_encode_stage_files();
+
 			// Begin the encode if everything is good to go
 			if($episode->x264_ready() || $force_encode) {
 
-				// Flag episode encoding as "in progress"
-				$queue_model->set_episode_status($episode_id, 'x264', 1);
+				if($debug)
+					echo "Executing: $handbrake_command\n";
 
-				file_put_contents($episode->queue_handbrake_script, $handbrake_command." $*\n");
-				chmod($episode->queue_handbrake_script, 0755);
+				// Encode video
+				$encode_stage_pass = $episode->encode_stage($force_encode);
 
-				$arg_queue_handbrake_output = escapeshellarg($episode->queue_handbrake_output);
-
-				if($debug) {
-					$handbrake_command .= " 2>&1 | tee $arg_queue_handbrake_output";
-					echo "Executing: $cmd\n";
-				} else {
-					$handbrake_command .= " 2> $arg_queue_handbrake_output";
-				}
-
-				$exit_code = null;
-				passthru($handbrake_command, $exit_code);
-
-				$encode_output = file_get_contents($episode->queue_handbrake_output);
+				// Store encode stage output in database
 				// Must be converted to UTF-8 from ISO 8859-1 because libdvdnav can output
 				// garbage characters when displaying 'Menu Languages'
-				$encode_output = mb_convert_encoding($encode_output, 'UTF-8');
-				$encodes_model->encode_output = $encode_output;
-				$encodes_model->encoder_exit_code = $exit_code;
+				$encode_stage_output = file_get_contents($episode->queue_handbrake_output);
+				$encode_stage_output = mb_convert_encoding($encode_stage_output, 'UTF-8');
+				$encodes_model->encode_output = $encode_stage_output;
+
+				$encodes_model->encoder_exit_code = $episode->encode_stage_exit_code;
 
 				// Update queue status
-				if($exit_code === 0) {
-
-					// Encode succeeded
-					$queue_model->set_episode_status($episode_id, 'x264', 2);
+				if($encode_stage_pass)
 					echo "Handbrake:\tpassed\n";
-
-				} else {
-
-					// Encode failed
-					$queue_model->set_episode_status($episode_id, 'x264', 3);
+				else {
 					echo "Handbrake:\tfailed\n";
 					echo "See ".$episode->queue_dir." for temporary files.\n";
 					goto goto_encode_next_episode;
