@@ -395,7 +395,7 @@
 			$this->encodes_model->episode_id = $this->episode_id;
 			$this->encodes_model->encode_cmd = $this->encode_stage_command;
 			$this->encodes_model->encoder_version = $this->encoder_version;
-			$this->uuid = $encodes_model->uniq_id;
+			$this->uuid = $this->encodes_model->uniq_id;
 			$this->encode_begin_time = time();
 
 		}
