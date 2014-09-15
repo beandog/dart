@@ -31,8 +31,6 @@ if($opt_encode) {
 			break;
 		}
 
-		$episode->create_encodes_entry();
-
 		$episode->debug = $debug;
 		$episode->encoder_version = $handbrake_version;
 
@@ -46,6 +44,8 @@ if($opt_encode) {
 
 		// Store encoder details in episode class
 		$episode->encode_stage_command = $handbrake_command;
+
+		$episode->create_encodes_entry();
 
 		$tmpfile = tmpfile_put_contents($episode->encode_stage_command."\n", 'encode');
 		echo "Command:\t$tmpfile\n";
