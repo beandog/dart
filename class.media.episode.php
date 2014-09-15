@@ -461,9 +461,9 @@
 			$encode_stage_output = file_get_contents($this->queue_handbrake_output);
 			// Convert string to UTF-8 for database, and to avoid libdvdnav output invalid chars
 			$encode_stage_output = mb_convert_encoding($encode_stage_output, 'UTF-8');
-			$encodes_model->encode_output = $encode_stage_output;
+			$this->encodes_model->encode_output = $encode_stage_output;
 
-			$encodes_model->encoder_exit_code = $exit_code;
+			$this->encodes_model->encoder_exit_code = $exit_code;
 
 			return $exit_code;
 
