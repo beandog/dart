@@ -80,6 +80,9 @@
 
 		public function get_episodes($skip = 0, $max = 0, $in_progress = true) {
 
+			$skip = abs(intval($skip));
+			$max = abs(intval($max));
+
 			$sql = '';
 			$where = array();
 			$order_by = '';
