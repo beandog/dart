@@ -4,8 +4,6 @@
 
 	class Queue_Model extends DBTable {
 
-		private $skip;
-		private $max;
 		private $random;
 		private $episode_id;
 		private $track_id;
@@ -91,10 +89,10 @@
 			$order_by = '';
 
 			if($skip)
-				$sql = " OFFSET ".$this->skip;
+				$sql = " OFFSET $skip";
 
 			if($max > 0)
-				$sql .= " LIMIT ".$this->max;
+				$sql .= " LIMIT $max";
 
 			if($this->random)
 				$order_by = "RANDOM(), ";
