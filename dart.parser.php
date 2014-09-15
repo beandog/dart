@@ -118,6 +118,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_resume', array(
+		'long_name' => '--resume',
+		'description' => 'Resume encoding episodes in queue',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('arg_queue_series_id', array(
 		'long_name' => '--series',
 		'description' => 'Limit queue to series id',
