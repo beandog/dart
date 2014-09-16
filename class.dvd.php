@@ -136,6 +136,7 @@
 
 		protected function dvd_info_string($arr, $key) {
 
+
 			if(!array_key_exists($key, $arr))
 				return "";
 			else
@@ -605,7 +606,7 @@
 
 			$this->subtitle_track_active = $this->subtitle_track_active();
 			$this->subtitle_track_lang_code = $this->subtitle_track_lang_code();
-			$this->subtitle_track_lang_stream_id = $this->subtitle_track_stream_id();
+			$this->subtitle_track_stream_id = $this->subtitle_track_stream_id();
 
 			return true;
 
