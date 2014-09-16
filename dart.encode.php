@@ -1,12 +1,14 @@
 <?php
 
-	/**
-	 * --encode
-	 *
-	 * Encode the episodes in the queue
-	 *
-	 */
+/**
+ * --encode
+ *
+ * Encode the episodes in the queue
+ *
+ */
 if($opt_encode) {
+
+	$num_encoded = 0;
 
 	echo "[Encode]\n";
 
@@ -22,6 +24,12 @@ if($opt_encode) {
 			echo "[Episode]\n";
 		}
 
+		// Stages
+		$encode_stage_pass = false;
+		$metadata_stage_pass = false;
+		$remux_stage_pass = false;
+
+		// new Media Episode
 		$episode = new MediaEpisode($episode_id, $export_dir);
 
 		// If episode already exists, remove it from the queue, and move
@@ -31,22 +39,27 @@ if($opt_encode) {
 			break;
 		}
 
-		$episode->debug = $debug;
-		$episode->encoder_version = $handbrake_version;
-
+		// Create models
 		$episodes_model = new Episodes_Model($episode_id);
 		$tracks_model = new Tracks_Model($episode->metadata['track_id']);
 		$series_model = new Series_Model($episode->metadata['series_id']);
 		$dvds_model = new Dvds_Model($episode->metadata['dvd_id']);
 
-		// Build the Handbrake object
-		require 'dart.encode.x264.php';
-
-		// Store encoder details in episode class
+		// Build Handbrake object
+		require_once 'dart.encode.x264.php';
 		$episode->encode_stage_command = $handbrake_command;
 
-		$episode->create_encodes_entry();
+		// Build Matroska metadata XML file
+		require_once 'dart.encode.mkv.php';
+		$episode->metadata_xml = $metadata_xml;
+		$episode->remux_stage_command = $remux_stage_command;
 
+		// Create encode files
+		$episode->create_pre_encode_stage_files();
+		$episode->create_metadata_xml_file();
+		$episode->create_pre_remux_stage_files();
+
+		// Display Handbrake encode command
 		$tmpfile = tmpfile_put_contents($episode->encode_stage_command."\n", 'encode');
 		echo "Command:\t$tmpfile\n";
 
@@ -55,100 +68,57 @@ if($opt_encode) {
 			echo "Cartoons!! :D\n";
 		}
 
-		// Check for existing x264 encoded file, and go straight to creating the XML
-		// file and muxing if possible.
-		if($episode->x264_passed() && !$force_encode) {
+		if($dry_run)
+			break;
 
-			echo "* x264 queue encoded file exists\n";
-			echo "* Jumping to Matroska muxing\n";
-			goto goto_matroska_encode;
+		// Encode video
+		if($arg_stage == 'encode' || $arg_stage == 'all') {
 
-		}
-
-		// If an episode is in the queue, either failed or running, skip it and go to the next one,
-		// but do *not* remove it from the queue.  This means that if an encode failed, it
-		// will always loop over it, skipping it for now, until manually reset or removed
-		// from the queue.
-		if(($episode->x264_running() || $episode->x264_failed()) && !$force_encode) {
-
-			goto goto_encode_next_episode;
-
-		}
-
-		// Create the handbrake script files
-		$episode->create_pre_encode_stage_files();
-
-		// Begin the encode if everything is good to go
-		if($episode->x264_ready() || $force_encode) {
-
-			if($debug)
-				echo "Executing: $handbrake_command\n";
-
-			// Encode video
 			$encode_stage_pass = $episode->encode_stage($force_encode);
 
-			// Update queue status
 			if($encode_stage_pass)
 				echo "Handbrake:\tpassed\n";
-			else {
+			else
 				echo "Handbrake:\tfailed\n";
-				echo "See ".$episode->queue_dir." for temporary files.\n";
-				goto goto_encode_next_episode;
 
-			}
+			if($arg_stage == 'encode')
+				break;
 
 		}
 
-		// If stage was limited to encoding, then skip the others
-		if($arg_stage == 'encode')
-			goto goto_encode_next_episode;
+		if($arg_stage == 'xml' || $arg_stage == 'all') {
 
-		// Goto point for dry runs: Matroska functionality
-		goto_matroska_encode:
+			$metadata_stage_pass = $episode->metadata_stage($force_metadata);
 
-		// Run through the Matroska functionality *if the x264 file exists, but not the target MKV files*,
-		// allowing resume-encoding
-		require 'dart.encode.xml.php';
+			if($metadata_stage_pass)
+				echo "Metadata:\tpassed\n";
+			else
+				echo "Metadata:\tfailed\n";
 
-		if($episode->x264_passed() && $episode->xml_passed() && $episode->mkv_ready()) {
-			require 'dart.encode.mkv.php';
+			if($arg_stage == 'xml')
+				break;
+
 		}
 
-		/** Final Checks **/
-		// This is where if everything passed, the episode is completely removed
-		// from the queue, the temporary files are removed
-		if($episode->x264_passed() && $episode->xml_passed() && $episode->mkv_passed()) {
+		// Create metadata XML
+		if($arg_stage == 'remux' || $arg_stage == 'all') {
 
-			clearstatcache();
+			$remux_stage_pass = $episode->remux_stage($force_remux);
 
-			$episode->create_episodes_dir();
-			copy($episode->queue_matroska_mkv, $episode->episode_mkv);
+			if($remux_stage_pass)
+				echo "Matroska:\tpassed\n";
+			else
+				echo "Matroska:\tfailed\n";
+
+			if($arg_stage == 'remux')
+				break;
+
+		}
+
+		echo "\n";
+
+		if($encode_stage_pass || $metadata_stage_pass || $remux_stage_pass)
 			$num_encoded++;
-			$queue_model->remove_episode($episode_id);
-
-			// Cleanup
-			if(!$debug && file_exists($episode->episode_mkv))
-				$episode->remove_queue_dir();
-
-			$encode_finish_time = time();
-			$episode->encodes_model->set_encode_finish($encode_finish_time);
-
-		}
-
-		clearstatcache();
-
-		if(!file_exists($episode->queue_iso_symlink) && !file_exists($episode->episode_mkv)) {
-
-			// At this point, it shouldn't be in the queue.
-			echo "* ISO not found (".$episode->queue_iso_symlink."), MKV not found (".$episode->episode_mkv."), force removing episode from queue\n";
-			$queue_model->remove_episode($episode_id);
-
-		}
-
-		// Goto point: jump to the next episode
-		goto_encode_next_episode:
-
-		$num_encoded++;
 
 	}
 
