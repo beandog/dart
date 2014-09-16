@@ -2,9 +2,9 @@
 
 	class DVD {
 
-		private $device;
-		private $dvd_info;
-		private $is_iso;
+		public $device;
+		public $dvd_info;
+		public $is_iso;
 		public $debug;
 
 		public $opened;
