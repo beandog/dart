@@ -68,6 +68,13 @@
 			if($count)
 				return true;
 
+			// Verify tracks are existent
+			$sql = "SELECT COUNT(1) FROM tracks WHERE dvd_id = $dvd_id;";
+			$count = intval($this->db->getOne($sql));
+
+			if(!$count)
+				return true;
+
 			return false;
 
 		}
