@@ -50,15 +50,14 @@
 	// Start import
 	if($access_device && $allow_import) {
 
-		if($new_dvd || $missing_dvd_metadata) {
+		if($new_dvd || $missing_dvd_metadata)
 			require 'dart.import.dvd.php';
-			if($new_dvd || $missing_dvd_tracks_metadata)
-				require 'dart.import.tracks.php';
-		}
 
-		if($opt_import && $new_dvd) {
+		if($new_dvd || $missing_dvd_tracks_metadata)
+			require 'dart.import.tracks.php';
+
+		if($opt_import && $new_dvd)
 			echo "* New DVD imported! Yay! :D\n";
-		}
 
 	}
 
