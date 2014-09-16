@@ -27,7 +27,14 @@
 		public $chapter_lengths = array();
 
 		public $encode_stage_command;
+		public $encode_stage_output;
 		public $encode_stage_exit_code = 0;
+
+		public $metadata_xml = '';
+
+		public $remux_stage_command;
+		public $remux_stage_output;
+		public $remux_stage_exit_code = 0;
 
 		public function __construct($episode_id, $export_dir = null) {
 
@@ -425,9 +432,17 @@
 				$this->queue_model->set_episode_status($this->episode_id, 'x264', 2);
 				return true;
 
-			} elseif(!file_exists($this->queue_handbrake_x264) || $force) {
+			}
+
+			if(!file_exists($this->queue_handbrake_x264) || $force) {
 
 				$exit_code = $this->encode_video();
+
+				$encode_stage_output = file_get_contents($this->queue_handbrake_output);
+				$encode_stage_output = mb_convert_encoding($encode_stage_output, 'UTF-8');
+				$this->encodes_model->encode_output = $encode_stage_output;
+
+				$this->encodes_model->encoder_exit_code = $exit_code;
 				$this->encode_stage_exit_code = $exit_code;
 
 			}
@@ -459,14 +474,113 @@
 
 			passthru($passthru_command, $exit_code);
 
-			$encode_stage_output = file_get_contents($this->queue_handbrake_output);
-			// Convert string to UTF-8 for database, and to avoid libdvdnav output invalid chars
-			$encode_stage_output = mb_convert_encoding($encode_stage_output, 'UTF-8');
-			$this->encodes_model->encode_output = $encode_stage_output;
+			return $exit_code;
 
-			$this->encodes_model->encoder_exit_code = $exit_code;
+		}
+
+		/** Metadata Stage **/
+
+		public function create_metadata_xml_file() {
+
+			$this->create_queue_dir();
+			$ret = file_put_contents($this->queue_matroska_xml, $this->metadata_xml);
+
+			if($ret === false)
+				return false;
+			else
+				return true;
+
+		}
+
+		public function encode_metadata_xml() {
+
+			$this->metadata_xml = mb_convert_encoding($this->metadata_xml, 'UTF-8');
+			$this->encodes_model->remux_metadata = $this->metadata_xml;
+
+		}
+
+		public function metadata_stage($force = false) {
+
+			$this->queue_model->set_episode_status($this->episode_id, 'xml', 1);
+
+			if(file_exists($this->queue_matroska_xml) && !$force) {
+				$this->queue_model->set_episode_status($this->episode_id, 'xml', 3);
+				return true;
+			}
+
+			if(!strlen($this->metadata_xml)) {
+				$this->queue_model->set_episode_status($this->episode_id, 'xml', 2);
+				return false;
+			}
+
+			$this->encode_metadata_xml();
+			$this->encodes_model->remux_metadata = $this->metadata_xml;
+
+			$bool = $this->create_metadata_xml_file();
+
+			if(!$bool) {
+				$this->queue_model->set_episode_status($this->episode_id, 'xml', 2);
+				return false;
+			}
+
+			$this->queue_model->set_episode_status($this->episode_id, 'xml', 3);
+
+			return true;
+
+		}
+
+		/** Remux stage **/
+
+		// Create the files on the filesystem, and update the encodes table
+		public function create_pre_remux_stage_files() {
+
+			$this->create_queue_dir();
+			$contents = $this->remux_stage_command." $*\n";
+			file_put_contents($this->queue_mkvmerge_script, $contents);
+			chmod($this->queue_mkvmerge_script, 0755);
+			$this->encodes_model->remux_command = $this->remux_stage_command;
+
+		}
+
+		public function create_post_remux_stage_files() {
+
+			file_put_contents($this->queue_mkvmerge_output, $this->remux_stage_output);
+
+		}
+
+		public function remux_video() {
+
+			$command = $this->remux_stage_command." 2>&1";
+			exec($command, $arr, $exit_code);
+			$remux_stage_output = implode("\n", $arr)."\n";
+			$this->remux_stage_output = $remux_stage_output;
 
 			return $exit_code;
+
+		}
+
+		public function remux_stage($force = false) {
+
+			if(file_exists($this->queue_matroska_mkv && !$force)) {
+				$this->queue_model->set_episode_status($this->episode_id, 'mkv', 3);
+				return true;
+			}
+
+			$this->queue_model->set_episode_status($this->episode_id, 'mkv', 1);
+			$this->create_pre_remux_stage_files();
+			$exit_code = $this->remux_video();
+			$this->encodes_model->remux_output = $this->remux_stage_output;
+			$this->encodes_model->remux_exit_code = $exit_code;
+			$this->remux_stage_exit_code = $exit_code;
+			$this->create_post_remux_stage_files();
+
+			if(!($exit_code === 0 || $exit_code === 1)) {
+				$this->queue_model->set_episode_status($this->episode_id, 'mkv', 2);
+				return false;
+			}
+
+			$this->queue_model->set_episode_status($this->episode_id, 'mkv', 3);
+			return true;
 
 		}
 
