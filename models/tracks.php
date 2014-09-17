@@ -77,6 +77,7 @@
 
 		// Check a track record to see if it is missing
 		// metadata somewhere.
+		// Unused -- dvd_tracks_missing_metadata() is used instead.
 		public function missing_metadata() {
 
 			$track_id = abs(intval($this->id));
