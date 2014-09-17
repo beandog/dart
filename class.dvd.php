@@ -20,6 +20,7 @@
 
 		// DVD Track
 		public $title_track;
+		public $title_track_index;
 		public $title_track_length;
 		public $title_track_msecs;
 		public $title_track_vts;
@@ -92,6 +93,7 @@
 			$this->dvdread_id = $this->dvdread_id();
 			$this->title = $this->title();
 			$this->title_tracks = $this->title_tracks();
+			$this->title_track_index = $this->title_track_index();
 			$this->longest_track = $this->longest_track();
 			$this->provider_id = $this->provider_id();
 			$this->size = $this->size();
@@ -287,6 +289,22 @@
 			$title_tracks = $this->dvd_info['dvd']['tracks'];
 
 			return $title_tracks;
+
+		}
+
+		public function title_track_index() {
+
+			$title_track_index = array();
+
+			foreach($this->dvd_info['tracks'] as $key => $arr) {
+
+				$title_track = $arr['track'];
+
+				$title_track_index[$title_track] = $key;
+
+			}
+
+			return $title_track_index;
 
 		}
 
@@ -581,8 +599,10 @@
 				return false;
 			}
 
+			$title_track_index = $this->title_track_index[$title_track];
+
 			$this->audio_track = $audio_track;
-			$this->audio_track_info = $this->dvd_info['tracks'][$this->title_track - 1]['audio'][$this->audio_track - 1];
+			$this->audio_track_info = $this->dvd_info['tracks'][$title_track_index]['audio'][$this->audio_track - 1];
 
 			$this->audio_track_active = $this->audio_track_active();
 			$this->audio_track_lang_code = $this->audio_track_lang_code();
@@ -628,8 +648,10 @@
 				return false;
 			}
 
+			$title_track_index = $this->title_track_index[$title_track];
+
 			$this->subtitle_track = $subtitle_track;
-			$this->subtitle_track_info = $this->dvd_info['tracks'][$this->title_track - 1]['subtitles'][$this->subtitle_track - 1];
+			$this->subtitle_track_info = $this->dvd_info['tracks'][$title_track_index]['subtitles'][$this->subtitle_track - 1];
 
 			$this->subtitle_track_active = $this->subtitle_track_active();
 			$this->subtitle_track_lang_code = $this->subtitle_track_lang_code();
@@ -665,8 +687,10 @@
 				return false;
 			}
 
+			$title_track_index = $this->title_track_index[$title_track];
+
 			$this->chapter = $chapter;
-			$this->chapter_info = $this->dvd_info['tracks'][$this->title_track - 1]['chapters'][$this->chapter - 1];
+			$this->chapter_info = $this->dvd_info['tracks'][$title_track_index]['chapters'][$this->chapter - 1];
 
 			$this->chapter_length = $this->chapter_length();
 			$this->chapter_msecs = $this->chapter_msecs();
@@ -714,8 +738,10 @@
 				return false;
 			}
 
+			$title_track_index = $this->title_track_index[$title_track];
+
 			$this->cell = $cell;
-			$this->cell_info = $this->dvd_info['tracks'][$this->title_track - 1]['cells'][$this->cell - 1];
+			$this->cell_info = $this->dvd_info['tracks'][$title_track_index]['cells'][$this->cell - 1];
 
 			$this->cell_length = $this->cell_length();
 			$this->cell_msecs = $this->cell_msecs();
