@@ -81,7 +81,7 @@
 
 			$track_id = abs(intval($this->id));
 
-			$sql = "SELECT COUNT(1) FROM tracks WHERE (angles IS NULL OR closed_captioning IS NULL) AND id = $track_id;";
+			$sql = "SELECT COUNT(1) FROM tracks WHERE closed_captioning AND id = $track_id;";
 			$count = $this->get_one($sql);
 			if($count)
 				return true;
