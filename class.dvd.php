@@ -424,8 +424,24 @@
 				return false;
 			}
 
+			// dvd_info skips over title tracks that cannot be opened, but
+			// sets the 'track' value individually.  Check that variable to
+			// see if we actually can open it.
+			$title_track_key = null;
+			foreach($this->dvd_info['tracks'] as $key => $arr) {
+
+				if($this->dvd_info['tracks'][$key]['track'] == $title_track) {
+					$title_track_key = $key;
+					break;
+				}
+
+			}
+
+			if(is_null($title_track_key))
+				return false;
+
 			$this->title_track = $title_track;
-			$this->title_track_info = $this->dvd_info['tracks'][$this->title_track - 1];
+			$this->title_track_info = $this->dvd_info['tracks'][$title_track_key];
 
 			$this->title_track_length = $this->title_track_length();
 			$this->title_track_msecs = $this->title_track_msecs();
