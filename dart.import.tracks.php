@@ -68,6 +68,11 @@
 			// Tag the track as broken in the database
 			$tracks_model->tag_track('track_open_fail');
 
+			// Set some of the data so it won't trigger false positives on
+			// missing metadata.
+			$tracks_model->length = 0;
+			$tracks_model->closed_captioning = 0;
+
 			// BOOP!
 			beep_error();
 
