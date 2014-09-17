@@ -163,9 +163,8 @@ if($opt_encode && $episode_id) {
 
 	/** Chapters **/
 
-	// This only specifies which ones to encode.  Chapters are manually added later to
-	// the final MKV.
 	$handbrake->set_chapters($episode->metadata['episode_starting_chapter'], $episode->metadata['episode_ending_chapter']);
+	$handbrake->add_chapters();
 
 	/*
 	if($opt_dumpvob) {
