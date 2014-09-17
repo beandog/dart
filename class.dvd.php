@@ -275,7 +275,18 @@
 
 			}
 
-			return count($this->dvd_info['tracks']);
+			// dvd_info will skip over tracks that have invalid IFOs, so the
+			// number of array entries will not always equal the number of
+			// actual tracks in some cases.  Because of that, always use the
+			// number of tracks from the original DVD information, and do not
+			// simply count the number of tracks in the JSON array.
+			//
+			// Example: The Black Cauldron (dvdread id b91668d201f6659e049caa4abf0a71b6)
+			// has 99 title tracks, but tracks 2-8, and 97-99 have invalid IFOs.
+
+			$title_tracks = $this->dvd_info['dvd']['tracks'];
+
+			return $title_tracks;
 
 		}
 
