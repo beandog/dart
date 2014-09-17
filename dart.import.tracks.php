@@ -31,8 +31,6 @@
 	elseif($opt_import && $new_dvd)
 		echo "* Importing $dvd_title_tracks tracks: ";
 
-	next_track:
-
 	for($title_track = 1; $title_track < $dvd_title_tracks + 1; $title_track++) {
 
 		echo "$title_track ";
@@ -66,7 +64,6 @@
 		if(!$title_track_loaded) {
 			echo "\n";
 			echo "* Opening $device track number $title_track FAILED\n";
-			$title_track++;
 
 			// Tag the track as broken in the database
 			$tracks_model->tag_track('track_open_fail');
@@ -74,7 +71,7 @@
 			// BOOP!
 			beep_error();
 
-			goto next_track;
+			continue;
 		}
 
 		// Check the database to see if any tags / anomalies are reported
