@@ -26,6 +26,7 @@
 		public $arr_queue_status;
 		public $chapter_lengths = array();
 
+		public $encoder_version;
 		public $encode_stage_command;
 		public $encode_stage_output;
 		public $encode_stage_exit_code = 0;
@@ -405,7 +406,7 @@
 
 			$this->encodes_model->create_new();
 			$this->encodes_model->episode_id = $this->episode_id;
-			$this->encodes_model->encoder_version = $this->encoder_version;
+			$this->encodes_model->encoder_version = strval($this->encoder_version);
 			$this->uuid = $this->encodes_model->uniq_id;
 			$this->encode_begin_time = time();
 
