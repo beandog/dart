@@ -9,7 +9,6 @@
 		private $args = array();
 		private $streams = array();
 		private $chapters = array();
-		private $dtd;
 		private $cmd;
 		private $debug = false;
 		private $verbose = false;
@@ -18,8 +17,6 @@
 
 			if(!is_null($filename))
 				$this->setFilename($filename);
-
-			$this->dtd = "/usr/local/share/matroska/xml/matroskatags.dtd";
 
 		}
 
@@ -154,11 +151,8 @@
 		/** Global Tags **/
 		function createXML() {
 
-			$dtd =& $this->dtd;
-
 			$str = <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE Tags SYSTEM "$this->dtd">
 <Tags>
 </Tags>
 XML;
