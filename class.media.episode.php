@@ -421,9 +421,9 @@
 		 */
 		public function encode_stage($force = false) {
 
-			clearstatcache();
-
 			$this->create_pre_encode_stage_files();
+
+			clearstatcache();
 
 			$exit_code = null;
 
@@ -501,6 +501,8 @@
 
 			$this->create_pre_metadata_stage_files();
 
+			clearstatcache();
+
 			$this->queue_model->set_episode_status($this->episode_id, 'xml', 1);
 
 			if(file_exists($this->queue_matroska_xml) && !$force) {
@@ -558,17 +560,39 @@
 
 		}
 
+		public function remux_set_filesize() {
+
+			clearstatcache();
+
+			if(!file_exists($this->queue_matroska_mkv))
+				return false;
+
+			$filesize = filesize($this->queue_matroska_mkv);
+
+			if($filesize === false)
+				return false;
+
+			$this->encodes_model->filesize = $filesize;
+
+			return true;
+
+		}
+
 		public function remux_stage($force = false) {
 
 			$this->create_pre_remux_stage_files();
 
+			clearstatcache();
+
 			if(file_exists($this->queue_matroska_mkv) && !$force) {
 				$this->queue_model->set_episode_status($this->episode_id, 'mkv', 3);
+				$this->remux_set_filesize();
 				return true;
 			}
 
 			$this->queue_model->set_episode_status($this->episode_id, 'mkv', 1);
 			$exit_code = $this->remux_video();
+			$this->remux_set_filesize();
 			$this->encodes_model->remux_output = $this->remux_stage_output;
 			$this->encodes_model->remux_exit_code = $exit_code;
 			$this->remux_stage_exit_code = $exit_code;
@@ -579,16 +603,14 @@
 				return false;
 			}
 
-			$filesize = filesize($this->queue_matroska_mkv);
-			if($filesize !== false)
-				$this->encodes_model->filesize = $filesize;
-
 			$this->queue_model->set_episode_status($this->episode_id, 'mkv', 3);
 			return true;
 
 		}
 
 		public function final_stage($force = false) {
+
+			clearstatcache();
 
 			if(file_exists($this->episode_mkv) && $force == false) {
 
