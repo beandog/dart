@@ -412,6 +412,16 @@
 
 		}
 
+		public function encode_stage_output() {
+
+			$encode_stage_output = file_get_contents($this->queue_handbrake_output);
+			$encode_stage_output = mb_convert_encoding($encode_stage_output, 'UTF-8');
+			$this->encodes_model->encode_output = $encode_stage_output;
+
+			return $encode_stage_output;
+
+		}
+
 		/**
 		 * Starts the encode stage for DVD to HandBrake MKV file
 		 *
@@ -431,6 +441,10 @@
 
 			if(file_exists($this->queue_handbrake_x264) && !$force) {
 
+				if(file_exists($this->queue_handbrake_output) && !$this->encodes_model->encode_output) {
+					$this->encode_stage_output = $this->encode_stage_output();
+				}
+
 				$this->queue_model->set_episode_status($this->episode_id, 'x264', 2);
 				return true;
 
@@ -440,9 +454,7 @@
 
 				$exit_code = $this->encode_video();
 
-				$encode_stage_output = file_get_contents($this->queue_handbrake_output);
-				$encode_stage_output = mb_convert_encoding($encode_stage_output, 'UTF-8');
-				$this->encodes_model->encode_output = $encode_stage_output;
+				$this->encode_stage_output = $this->encode_stage_output();
 
 				$this->encodes_model->encoder_exit_code = $exit_code;
 				$this->encode_stage_exit_code = $exit_code;
