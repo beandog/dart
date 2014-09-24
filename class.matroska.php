@@ -51,58 +51,23 @@
 		}
 
 		public function addFile($filename) {
-
-			clearstatcache();
-
-			if(file_exists($filename)) {
-				$this->add($filename);
-				return true;
-			} else
-				return false;
+			$this->add($filename);
 		}
 
 		public function addVideo($filename) {
-
-			clearstatcache();
-
-			if(file_exists($filename)) {
-				$this->add($filename, 'video');
-				return true;
-			} else
-				return false;
+			$this->add($filename, 'video');
 		}
 
 		public function addAudio($filename) {
-
-			clearstatcache();
-
-			if(file_exists($filename)) {
-				$this->add($filename, 'audio');
-				return true;
-			} else
-				return false;
+			$this->add($filename, 'audio');
 		}
 
 		public function addSubtitles($filename) {
-
-			clearstatcache();
-
-			if(file_exists($filename)) {
-				$this->add($filename, 'subtitles');
-				return true;
-			} else
-				return false;
+			$this->add($filename, 'subtitles');
 		}
 
 		public function addGlobalTags($filename) {
-
-			clearstatcache();
-
-			if(file_exists($filename)) {
-				$this->add($filename, 'global_tags');
-				return true;
-			} else
-				return false;
+			$this->add($filename, 'global_tags');
 		}
 
 		/** Chapters **/
@@ -161,15 +126,7 @@
 		}
 
 		public function addChaptersFilename($filename) {
-
-			clearstatcache();
-
-			if(file_exists($filename)) {
-				$this->add($filename, 'chapters');
-				return true;
-			} else
-				return false;
-
+			$this->add($filename, 'chapters');
 		}
 
 		/** Metadata **/
