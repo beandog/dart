@@ -60,6 +60,11 @@ if($opt_encode) {
 		$episode->matroska_xml = $matroska_xml;
 		$episode->remux_stage_command = $remux_stage_command;
 
+		// Create temporary files early
+		$episode->create_pre_encode_stage_files();
+		$episode->create_pre_metadata_stage_files();
+		$episode->create_pre_remux_stage_files();
+
 		// Display Handbrake encode command
 		$tmpfile = tmpfile_put_contents($episode->encode_stage_command."\n", 'encode');
 		echo "Command:\t$tmpfile\n";
@@ -69,13 +74,8 @@ if($opt_encode) {
 			echo "Cartoons!! :D\n";
 		}
 
-		// Create encode files on a dry run
-		if($dry_run) {
-			$episode->create_pre_encode_stage_files();
-			$episode->create_pre_metadata_stage_files();
-			$episode->create_pre_remux_stage_files();
+		if($dry_run)
 			break;
-		}
 
 		// Encode video
 		if($arg_stage == 'encode' || $arg_stage == 'all') {
