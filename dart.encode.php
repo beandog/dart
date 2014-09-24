@@ -140,9 +140,9 @@ if($opt_encode) {
 			$final_stage_pass = $episode->final_stage($force_final);
 
 			if($final_stage_pass)
-				echo "Final:\tpassed\n";
+				echo "Final:\t\tpassed\n";
 			else
-				echo "Final:\tfailed\n";
+				echo "Final:\t\tfailed\n";
 
 			if($arg_stage == 'final');
 				break;
