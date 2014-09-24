@@ -211,6 +211,7 @@ XML;
 		private function arguments() {
 
 			$flags = array();
+			$args = array();
 
 			$flags['output'] = $this->getFilename();
 
@@ -218,7 +219,6 @@ XML;
 			// on all tracks.  Need to specify it manually
 			// with --language TID:eng
 			$flags['default-language'] = 'eng';
-			$args = array();
 
 			// Added for spec dlna-usb-1
 			$flags['engage'] = array('no_cue_duration', 'no_cue_relative_position');
