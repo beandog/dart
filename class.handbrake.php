@@ -649,7 +649,7 @@
 			}
 
 			$arr = file($output_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-			if(!$debug)
+			if(!$this->debug)
 				unlink($output_file);
 
 			// Strip out library messages
