@@ -68,11 +68,12 @@ if($opt_encode) {
 		}
 
 		// Create encode files on a dry run
-		if($dry_run)
+		if($dry_run) {
 			$episode->create_pre_encode_stage_files();
 			$episode->create_pre_metadata_stage_files();
 			$episode->create_pre_remux_stage_files();
 			break;
+		}
 
 		// Encode video
 		if($arg_stage == 'encode' || $arg_stage == 'all') {
