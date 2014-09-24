@@ -579,6 +579,10 @@
 				return false;
 			}
 
+			$filesize = filesize($this->queue_matroska_mkv);
+			if($filesize !== false)
+				$this->encodes_model->filesize = $filesize;
+
 			$this->queue_model->set_episode_status($this->episode_id, 'mkv', 3);
 			return true;
 
@@ -586,22 +590,13 @@
 
 		public function final_stage($force = false) {
 
-			if(file_exists($this->episode_mkv)) {
+			if(file_exists($this->episode_mkv) && $force == false) {
 
-				$filesize = filesize($this->episode_mkv);
-				if($filesize !== false)
-					$this->encodes_model->filesize = $filesize;
-
-				if($force == false) {
-
-					if(!$this->debug) {
-						$this->queue_model->remove_episode($this->episode_id);
-						$this->remove_queue_dir();
-					}
-
-					return true;
-
+				if(!$this->debug) {
+					$this->queue_model->remove_episode($this->episode_id);
+					$this->remove_queue_dir();
 				}
+				return true;
 
 			}
 
