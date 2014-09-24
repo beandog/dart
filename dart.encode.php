@@ -47,6 +47,8 @@ if($opt_encode) {
 		$series_model = new Series_Model($episode->metadata['series_id']);
 		$dvds_model = new Dvds_Model($episode->metadata['dvd_id']);
 
+		$episode->create_encodes_entry();
+
 		// Build Handbrake object
 		require_once 'dart.encode.x264.php';
 		$episode->encode_stage_command = $handbrake_command;
@@ -55,11 +57,6 @@ if($opt_encode) {
 		require_once 'dart.encode.mkv.php';
 		$episode->matroska_xml = $matroska_xml;
 		$episode->remux_stage_command = $remux_stage_command;
-
-		// Create encode files
-		$episode->create_pre_encode_stage_files();
-		$episode->create_matroska_xml_file();
-		$episode->create_pre_remux_stage_files();
 
 		// Display Handbrake encode command
 		$tmpfile = tmpfile_put_contents($episode->encode_stage_command."\n", 'encode');
@@ -70,7 +67,11 @@ if($opt_encode) {
 			echo "Cartoons!! :D\n";
 		}
 
+		// Create encode files on a dry run
 		if($dry_run)
+			$episode->create_pre_encode_stage_files();
+			$episode->create_pre_metadata_stage_files();
+			$episode->create_pre_remux_stage_files();
 			break;
 
 		// Encode video
