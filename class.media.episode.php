@@ -4,7 +4,7 @@
 
 	class MediaEpisode extends MediaFile {
 
-		public $debug;
+		public $debug = false;
 		public $export_dir;
 		public $dvd_iso;
 		public $episode_id;
