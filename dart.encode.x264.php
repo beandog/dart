@@ -184,7 +184,7 @@ if($opt_encode && $episode_id) {
 			unlink($tmpfname);
 			$dvdtrack->dumpStream();
 
-			rename("$tmpfname.vob", $vob);
+			rename($tmpfname.vob, $vob);
 
 		}
 
