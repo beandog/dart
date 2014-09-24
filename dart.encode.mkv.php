@@ -55,8 +55,15 @@
 
 	$metadata_xml = $matroska->getXML();
 
-	$matroska->addFile($episode->queue_handbrake_x264);
-	$matroska->addGlobalTags($episode->queue_matroska_xml);
+	$bool = $matroska->addFile($episode->queue_handbrake_x264);
+	if(!$bool)
+		echo "* Adding media file ".$episode->queue_handbrake_x264." to Matroska object FAILED\n";
+
+	$bool = $matroska->addGlobalTags($episode->queue_matroska_xml);
+	if(!$bool)
+		echo "* Adding global tags file ".$episode->queue_matroska_xml." to Matroska object FAILED\n";
+
 	$matroska->setFilename($episode->queue_matroska_mkv);
 
 	$remux_stage_command = $matroska->getCommandString();
+
