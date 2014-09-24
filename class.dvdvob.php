@@ -24,7 +24,7 @@
 		}
 
 		function setDebug($bool = true) {
-			$this->debug = (boolean)$bool;
+			$this->debug = boolval($bool);
 		}
 
 		/**
