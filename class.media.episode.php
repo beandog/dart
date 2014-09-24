@@ -586,13 +586,22 @@
 
 		public function final_stage($force = false) {
 
-			if(file_exists($this->episode_mkv) && $force == false) {
+			if(file_exists($this->episode_mkv)) {
 
-				if(!$this->debug) {
-					$this->queue_model->remove_episode($this->episode_id);
-					$this->remove_queue_dir();
+				$filesize = filesize($this->episode_mkv);
+				if($filesize !== false)
+					$this->encodes_model->filesize = $filesize;
+
+				if($force == false) {
+
+					if(!$this->debug) {
+						$this->queue_model->remove_episode($this->episode_id);
+						$this->remove_queue_dir();
+					}
+
+					return true;
+
 				}
-				return true;
 
 			}
 
