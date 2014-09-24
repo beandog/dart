@@ -72,7 +72,7 @@
 	$force_encode = false;
 	$force_metadata = false;
 	$force_remux = false;
-	$force_rename = false;
+	$force_final = false;
 	if($opt_force) {
 
 		if($stage == 'encode')
@@ -81,8 +81,8 @@
 			$force_metadata = true;
 		elseif($stage == 'remux')
 			$force_remux = true;
-		elseif($stage == 'rename')
-			$force_rename = true;
+		elseif($stage == 'final')
+			$force_final = true;
 
 	}
 

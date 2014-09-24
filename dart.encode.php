@@ -28,6 +28,7 @@ if($opt_encode) {
 		$encode_stage_pass = false;
 		$metadata_stage_pass = false;
 		$remux_stage_pass = false;
+		$final_stage_pass = false;
 
 		// new Media Episode
 		$episode = new MediaEpisode($episode_id, $export_dir);
