@@ -118,7 +118,20 @@ if($opt_encode) {
 
 		}
 
-		// Final move to new location
+		/*
+		 * Final move to new location
+		 *
+		 * If debugging is enabled, it will copy the final episode file,
+		 * but not remove it from the queue.  If a re-encode is begun, and
+		 * everything exists, and debugging is not enabled, then it will
+		 * be removed from the queue.  Because of that, if an encode session
+		 * is started again with the unfinished file in the queue, it will
+		 * be moved to the episodes directory, and the queue entry removed.
+		 *
+		 * The queue directory will be removed if debugging is disabled or
+		 * if the final copy is successful.
+		 *
+		 */
 		if($arg_stage == 'final' || $arg_stage == 'all') {
 
 			$final_stage_pass = $episode->final_stage($force_final);

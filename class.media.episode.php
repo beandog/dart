@@ -588,7 +588,10 @@
 
 			if(file_exists($this->episode_mkv) && $force == false) {
 
-				$this->queue_model->remove_episode($this->episode_id);
+				if(!$this->debug) {
+					$this->queue_model->remove_episode($this->episode_id);
+					$this->remove_queue_dir();
+				}
 				return true;
 
 			}
@@ -601,8 +604,10 @@
 			} else {
 
 				$bool = rename($this->queue_matroska_mkv, $this->episode_mkv);
-				if($bool)
+				if($bool) {
 					$this->queue_model->remove_episode($this->episode_id);
+					$this->remove_queue_dir();
+				}
 				return $bool;
 
 			}
