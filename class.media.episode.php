@@ -601,6 +601,8 @@
 
 			if(file_exists($this->queue_matroska_mkv) && !$force) {
 				$this->queue_model->set_episode_status($this->episode_id, 'mkv', 3);
+				if(file_exists($this->queue_mkvmerge_output))
+					$this->encodes_model->remux_output = mb_convert_encoding(file_get_contents($this->queue_mkvmerge_output), 'UTF-8');
 				$this->remux_set_filesize();
 				return true;
 			}
