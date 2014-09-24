@@ -34,6 +34,7 @@ if($opt_encode) {
 		$episode = new MediaEpisode($episode_id, $export_dir);
 		$episode->debug = $debug;
 		$episode->encoder_version = $handbrake_version;
+		$episode->remux_version = $mkvmerge_version;
 
 		// If episode already exists, remove it from the queue, and move
 		// onto the next.

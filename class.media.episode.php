@@ -33,6 +33,7 @@
 
 		public $matroska_xml = '';
 
+		public $remux_version;
 		public $remux_stage_command;
 		public $remux_stage_output;
 		public $remux_stage_exit_code = 0;
@@ -407,6 +408,7 @@
 			$this->encodes_model->create_new();
 			$this->encodes_model->episode_id = $this->episode_id;
 			$this->encodes_model->encoder_version = strval($this->encoder_version);
+			$this->encodes_model->remux_version = strval($this->remux_version);
 			$this->uuid = $this->encodes_model->uniq_id;
 			$this->encode_begin_time = time();
 			$this->encodes_model->encode_begin = date('%r');
