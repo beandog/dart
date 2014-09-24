@@ -59,9 +59,8 @@
 	if(!$bool)
 		echo "* Adding media file ".$episode->queue_handbrake_x264." to Matroska object FAILED\n";
 
-	$bool = $matroska->addGlobalTags($episode->queue_matroska_xml);
-	if(!$bool)
-		echo "* Adding global tags file ".$episode->queue_matroska_xml." to Matroska object FAILED\n";
+	// Global tags file will not exist at this point, so don't check for its existence
+	$matroska->addGlobalTags($episode->queue_matroska_xml);
 
 	$matroska->setFilename($episode->queue_matroska_mkv);
 
