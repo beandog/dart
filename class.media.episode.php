@@ -584,6 +584,31 @@
 
 		}
 
+		public function final_stage($force = false) {
+
+			if(file_exists($this->episode_mkv) && $force == false) {
+
+				$this->queue_model->remove_episode($this->episode_id);
+				return true;
+
+			}
+
+			if($this->debug) {
+
+				$bool = copy($this->queue_mkv, $this->episode_mkv);
+				return $bool;
+
+			} else {
+
+				$bool = rename($this->queue_mkv, $this->episode_mkv);
+				$this->queue_model->remove_episode($this->episode_id);
+				return $bool;
+
+			}
+
+
+		}
+
 		// In the queue, at any stage
 		public function in_queue() {
 

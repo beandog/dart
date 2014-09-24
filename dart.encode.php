@@ -116,6 +116,21 @@ if($opt_encode) {
 
 		}
 
+		// Final move to new location
+		if($arg_stage == 'final' || $arg_stage == 'all') {
+
+			$final_stage_pass = $episode->final_stage($force_final);
+
+			if($final_stage_pass)
+				echo "Final:\tpassed\n";
+			else
+				echo "Final:\tfailed\n";
+
+			if($arg_stage == 'final');
+				break;
+
+		}
+
 		echo "\n";
 
 		if($encode_stage_pass || $metadata_stage_pass || $remux_stage_pass)
