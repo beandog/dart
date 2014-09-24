@@ -495,7 +495,6 @@
 		public function encode_matroska_xml() {
 
 			$this->matroska_xml = mb_convert_encoding($this->matroska_xml, 'UTF-8');
-			$this->encodes_model->remux_metadata = $this->matroska_xml;
 
 		}
 
