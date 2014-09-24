@@ -266,8 +266,8 @@ XML;
 				}
 			}
 
-			$this->args = $args;
 			$this->flags = $flags;
+			$this->args = $args;
 
 		}
 
@@ -279,10 +279,6 @@ XML;
 			if($this->verbose || $this->debug)
 				$cmd[] = "-v";
 
-			foreach($this->args as $argument) {
-				$cmd[] = escapeshellarg($argument);
-			}
-
 			foreach($this->flags as $option => $mixed) {
 
 				if(is_array($mixed))
@@ -290,6 +286,10 @@ XML;
 						$cmd[] = "--$option ".escapeshellarg($argument);
 				else
 					$cmd[] = "--$option ".escapeshellarg($mixed);
+			}
+
+			foreach($this->args as $argument) {
+				$cmd[] = escapeshellarg($argument);
 			}
 
 			$str = implode(" ", $cmd);
