@@ -34,7 +34,7 @@
 		}
 
 		function setDebug($bool = true) {
-			$this->debug = $this->verbose = (boolean)$bool;
+			$this->debug = $this->verbose = boolval($bool);
 		}
 
 		/** Streams **/
@@ -57,7 +57,9 @@
 
 			if(file_exists($filename)) {
 				$this->add($filename);
-			}
+				return true;
+			} else
+				return false;
 		}
 
 		public function addVideo($filename) {
@@ -66,7 +68,9 @@
 
 			if(file_exists($filename)) {
 				$this->add($filename, 'video');
-			}
+				return true;
+			} else
+				return false;
 		}
 
 		public function addAudio($filename) {
@@ -75,7 +79,9 @@
 
 			if(file_exists($filename)) {
 				$this->add($filename, 'audio');
-			}
+				return true;
+			} else
+				return false;
 		}
 
 		public function addSubtitles($filename) {
@@ -84,7 +90,9 @@
 
 			if(file_exists($filename)) {
 				$this->add($filename, 'subtitles');
-			}
+				return true;
+			} else
+				return false;
 		}
 
 		public function addGlobalTags($filename) {
@@ -93,7 +101,9 @@
 
 			if(file_exists($filename)) {
 				$this->add($filename, 'global_tags');
-			}
+				return true;
+			} else
+				return false;
 		}
 
 		/** Chapters **/
@@ -157,7 +167,9 @@
 
 			if(file_exists($filename)) {
 				$this->add($filename, 'chapters');
-			}
+				return true;
+			} else
+				return false;
 
 		}
 
@@ -170,7 +182,7 @@
 		}
 
 		public function getTitle() {
-			return (string)$this->title;
+			return strval($this->title);
 		}
 
 		public function setAspectRatio($str) {
@@ -181,7 +193,7 @@
 		}
 
 		public function getAspectRatio() {
-			return (string)$this->aspect_ratio;
+			return strval($this->aspect_ratio);
 		}
 
 
