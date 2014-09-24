@@ -51,12 +51,12 @@ if($opt_encode) {
 
 		// Build Matroska metadata XML file
 		require_once 'dart.encode.mkv.php';
-		$episode->metadata_xml = $metadata_xml;
+		$episode->matroska_xml = $matroska_xml;
 		$episode->remux_stage_command = $remux_stage_command;
 
 		// Create encode files
 		$episode->create_pre_encode_stage_files();
-		$episode->create_metadata_xml_file();
+		$episode->create_matroska_xml_file();
 		$episode->create_pre_remux_stage_files();
 
 		// Display Handbrake encode command

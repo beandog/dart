@@ -30,7 +30,7 @@
 		public $encode_stage_output;
 		public $encode_stage_exit_code = 0;
 
-		public $metadata_xml = '';
+		public $matroska_xml = '';
 
 		public $remux_stage_command;
 		public $remux_stage_output;
@@ -480,10 +480,10 @@
 
 		/** Metadata Stage **/
 
-		public function create_metadata_xml_file() {
+		public function create_matroska_xml_file() {
 
 			$this->create_queue_dir();
-			$ret = file_put_contents($this->queue_matroska_xml, $this->metadata_xml);
+			$ret = file_put_contents($this->queue_matroska_xml, $this->matroska_xml);
 
 			if($ret === false)
 				return false;
@@ -492,10 +492,10 @@
 
 		}
 
-		public function encode_metadata_xml() {
+		public function encode_matroska_xml() {
 
-			$this->metadata_xml = mb_convert_encoding($this->metadata_xml, 'UTF-8');
-			$this->encodes_model->remux_metadata = $this->metadata_xml;
+			$this->matroska_xml = mb_convert_encoding($this->matroska_xml, 'UTF-8');
+			$this->encodes_model->remux_metadata = $this->matroska_xml;
 
 		}
 
@@ -508,15 +508,15 @@
 				return true;
 			}
 
-			if(!strlen($this->metadata_xml)) {
+			if(!strlen($this->matroska_xml)) {
 				$this->queue_model->set_episode_status($this->episode_id, 'xml', 2);
 				return false;
 			}
 
-			$this->encode_metadata_xml();
-			$this->encodes_model->remux_metadata = $this->metadata_xml;
+			$this->encode_matroska_xml();
+			$this->encodes_model->remux_metadata = $this->matroska_xml;
 
-			$bool = $this->create_metadata_xml_file();
+			$bool = $this->create_matroska_xml_file();
 
 			if(!$bool) {
 				$this->queue_model->set_episode_status($this->episode_id, 'xml', 2);

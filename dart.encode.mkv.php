@@ -53,7 +53,7 @@
 		$matroska->addSimpleTag("PART_NUMBER", $episode->metadata['episode_part']);
 	}
 
-	$metadata_xml = $matroska->getXML();
+	$matroska_xml = $matroska->getXML();
 
 	$bool = $matroska->addFile($episode->queue_handbrake_x264);
 	if(!$bool)
