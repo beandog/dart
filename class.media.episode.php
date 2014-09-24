@@ -9,7 +9,8 @@
 		public $dvd_iso;
 		public $episode_id;
 		public $isos_dir;
-		public $queue_dir;
+		public $series_queue_dir;
+		public $episode_queue_dir;
 		public $episodes_dir;
 		public $episode_title_filename;
 		public $queue_model;
@@ -93,7 +94,8 @@
 
 			// Get all the filenames
 			$this->episode_title_filename = $this->get_episode_title_filename();
-			$this->queue_dir = $this->get_queue_dir();
+			$this->series_queue_dir = $this->get_series_queue_dir();
+			$this->episode_queue_dir = $this->get_episode_queue_dir();
 			$this->isos_dir = $this->get_isos_dir();
 			$this->episodes_dir = $this->get_episodes_dir();
 			$this->queue_iso_symlink = $this->get_queue_iso_symlink();
@@ -137,22 +139,30 @@
 
 		}
 
-		public function get_queue_dir() {
+		public function get_series_queue_dir() {
 
 			$dir = $this->export_dir;
 			$dir .= "queue/";
 			$dir .= $this->safe_filename_title($this->metadata['series_title'])."/";
+
+			return $dir;
+
+		}
+
+		public function get_episode_queue_dir() {
+
+			$dir = $this->get_series_queue_dir();
 			$dir .= $this->safe_filename_title($this->episode_title_filename)."/";
 
 			return $dir;
 
 		}
 
-		public function create_queue_dir() {
+		public function create_episode_queue_dir() {
 
 			clearstatcache();
 
-			$dir = $this->get_queue_dir();
+			$dir = $this->get_episode_queue_dir();
 
 			if(!is_dir($dir))
 				return mkdir($dir, 0755, true);
@@ -244,7 +254,7 @@
 
 		public function get_queue_handbrake_script() {
 
-			$filename = $this->get_queue_dir();
+			$filename = $this->get_episode_queue_dir();
 			$filename .= "handbrake.sh";
 
 			return $filename;
@@ -253,7 +263,7 @@
 
 		public function get_queue_handbrake_output() {
 
-			$filename = $this->get_queue_dir();
+			$filename = $this->get_episode_queue_dir();
 			$filename .= "encode.out";
 
 			return $filename;
@@ -262,7 +272,7 @@
 
 		public function get_queue_handbrake_x264() {
 
-			$filename = $this->get_queue_dir();
+			$filename = $this->get_episode_queue_dir();
 			$filename .= "x264.mkv";
 
 			return $filename;
@@ -271,7 +281,7 @@
 
 		public function get_queue_mkvmerge_script() {
 
-			$filename = $this->get_queue_dir();
+			$filename = $this->get_episode_queue_dir();
 			$filename .= "mkvmerge.sh";
 
 			return $filename;
@@ -280,7 +290,7 @@
 
 		public function get_queue_mkvmerge_output() {
 
-			$filename = $this->get_queue_dir();
+			$filename = $this->get_episode_queue_dir();
 			$filename .= "mkvmerge.out";
 
 			return $filename;
@@ -289,7 +299,7 @@
 
 		public function get_queue_matroska_xml() {
 
-			$filename = $this->get_queue_dir();
+			$filename = $this->get_episode_queue_dir();
 			$filename .= "matroska.xml";
 
 			return $filename;
@@ -298,7 +308,7 @@
 
 		public function get_queue_matroska_mkv() {
 
-			$filename = $this->get_queue_dir();
+			$filename = $this->get_episode_queue_dir();
 			$filename .= "queue_matroska.mkv";
 
 			return $filename;
@@ -334,10 +344,14 @@
 				unlink($this->queue_matroska_xml);
 			if(file_exists($this->queue_matroska_mkv))
 				unlink($this->queue_matroska_mkv);
-			if(is_dir($this->queue_dir)) {
+			if(is_dir($this->episode_queue_dir)) {
 				// Only remove directory if it's empty
-				if(count(scandir($this->queue_dir)) == 2)
-					rmdir($this->queue_dir);
+				if(count(scandir($this->episode_queue_dir)) == 2)
+					rmdir($this->episode_queue_dir);
+			}
+			if(is_dir($this->series_queue_dir)) {
+				if(count(scandir($this->series_queue_dir)) == 2)
+					rmdir($this->series_queue_dir);
 			}
 
 		}
@@ -383,7 +397,7 @@
 
 		public function create_pre_encode_stage_files() {
 
-			$this->create_queue_dir();
+			$this->create_episode_queue_dir();
 			$this->create_queue_iso_symlink();
 
 			file_put_contents($this->queue_handbrake_script, $this->encode_stage_command." $*\n");
@@ -499,7 +513,7 @@
 
 		public function create_pre_metadata_stage_files() {
 
-			$this->create_queue_dir();
+			$this->create_episode_queue_dir();
 			$this->matroska_xml = mb_convert_encoding($this->matroska_xml, 'UTF-8');
 			$ret = file_put_contents($this->queue_matroska_xml, $this->matroska_xml);
 
@@ -550,7 +564,7 @@
 		// Create the files on the filesystem, and update the encodes table
 		public function create_pre_remux_stage_files() {
 
-			$this->create_queue_dir();
+			$this->create_episode_queue_dir();
 			$contents = $this->remux_stage_command." $*\n";
 			file_put_contents($this->queue_mkvmerge_script, $contents);
 			chmod($this->queue_mkvmerge_script, 0755);
