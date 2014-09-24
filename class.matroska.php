@@ -2,7 +2,7 @@
 
 	class Matroska {
 
-		private $filename;
+		private $filename = 'matroska.mkv';
 		private $sxe;
 		private $aspect_ratio;
 		private $flags = array();
@@ -11,8 +11,8 @@
 		private $chapters = array();
 		private $dtd;
 		private $cmd;
-		private $debug;
-		private $verbose;
+		private $debug = false;
+		private $verbose = false;
 
 		function __construct($filename = null) {
 
@@ -25,8 +25,7 @@
 
 		/** Filename **/
 		public function setFilename($str) {
-			if(is_string($str))
-				$this->filename = $str;
+			$this->filename = strval($str);
 		}
 
 		public function getFilename() {
@@ -175,10 +174,9 @@
 
 		/** Metadata **/
 		public function setTitle($str) {
-			$str = trim($str);
-			if(is_string($str) && strlen($str)) {
+			$str = trim(strval($str));
+			if(strlen($str))
 				$this->title = $str;
-			}
 		}
 
 		public function getTitle() {
@@ -186,10 +184,9 @@
 		}
 
 		public function setAspectRatio($str) {
-			$str = trim($str);
-			if(is_string($str) && strlen($str)) {
+			$str = trim(strval($str));
+			if(strlen($str))
 				$this->aspect_ratio = $str;
-			}
 		}
 
 		public function getAspectRatio() {
