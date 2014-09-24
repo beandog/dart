@@ -86,6 +86,7 @@ if($opt_encode) {
 
 		}
 
+		// Create metadata XML
 		if($arg_stage == 'xml' || $arg_stage == 'all') {
 
 			$metadata_stage_pass = $episode->metadata_stage($force_metadata);
@@ -100,7 +101,7 @@ if($opt_encode) {
 
 		}
 
-		// Create metadata XML
+		// Mux contents into file Matroska file
 		if($arg_stage == 'remux' || $arg_stage == 'all') {
 
 			$remux_stage_pass = $episode->remux_stage($force_remux);
