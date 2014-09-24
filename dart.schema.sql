@@ -334,8 +334,8 @@ CREATE TABLE encodes (
     encode_output text DEFAULT ''::text NOT NULL,
     encoder_version character varying(255) DEFAULT ''::character varying NOT NULL,
     encoder_exit_code smallint,
-    encode_begin timestamp with time zone DEFAULT now() NOT NULL,
-    encode_finish timestamp with time zone,
+    encode_begin timestamp without time zone DEFAULT now() NOT NULL,
+    encode_finish timestamp without time zone,
     remux_command text DEFAULT ''::text NOT NULL,
     remux_metadata text DEFAULT ''::text NOT NULL,
     remux_output text DEFAULT ''::text NOT NULL,
@@ -1228,6 +1228,8 @@ ALTER TABLE dvds CLUSTER ON dvds_pkey;
 
 ALTER TABLE ONLY encodes
     ADD CONSTRAINT encodes_pkey PRIMARY KEY (id);
+
+ALTER TABLE encodes CLUSTER ON encodes_pkey;
 
 
 --
