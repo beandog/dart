@@ -488,7 +488,7 @@
 			$this->matroska_xml = mb_convert_encoding($this->matroska_xml, 'UTF-8');
 			$ret = file_put_contents($this->queue_matroska_xml, $this->matroska_xml);
 
-			$this->episodes_model->remux_metadata = $this->matroska_xml;
+			$this->encodes_model->remux_metadata = $this->matroska_xml;
 
 			if($ret === false)
 				return false;
