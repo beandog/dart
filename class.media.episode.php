@@ -409,6 +409,7 @@
 			$this->encodes_model->encoder_version = strval($this->encoder_version);
 			$this->uuid = $this->encodes_model->uniq_id;
 			$this->encode_begin_time = time();
+			$this->encodes_model->encode_begin = date('%r');
 
 		}
 
@@ -621,6 +622,9 @@
 		}
 
 		public function final_stage($force = false) {
+
+			$this->encode_finish_time = time();
+			$this->encodes_model->encode_finish = date('%r');
 
 			clearstatcache();
 
