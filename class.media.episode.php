@@ -560,13 +560,14 @@
 
 		public function remux_stage($force = false) {
 
+			$this->create_pre_remux_stage_files();
+
 			if(file_exists($this->queue_matroska_mkv) && !$force) {
 				$this->queue_model->set_episode_status($this->episode_id, 'mkv', 3);
 				return true;
 			}
 
 			$this->queue_model->set_episode_status($this->episode_id, 'mkv', 1);
-			$this->create_pre_remux_stage_files();
 			$exit_code = $this->remux_video();
 			$this->encodes_model->remux_output = $this->remux_stage_output;
 			$this->encodes_model->remux_exit_code = $exit_code;
