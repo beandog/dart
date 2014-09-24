@@ -387,6 +387,8 @@
 			file_put_contents($this->queue_handbrake_script, $this->encode_stage_command." $*\n");
 			chmod($this->queue_handbrake_script, 0755);
 
+			$this->encodes_model->encode_cmd = $this->encode_stage_command;
+
 		}
 
 		// Track encoding session in the database
@@ -403,7 +405,6 @@
 
 			$this->encodes_model->create_new();
 			$this->encodes_model->episode_id = $this->episode_id;
-			$this->encodes_model->encode_cmd = $this->encode_stage_command;
 			$this->encodes_model->encoder_version = $this->encoder_version;
 			$this->uuid = $this->encodes_model->uniq_id;
 			$this->encode_begin_time = time();
@@ -480,10 +481,13 @@
 
 		/** Metadata Stage **/
 
-		public function create_matroska_xml_file() {
+		public function create_pre_metadata_stage_files() {
 
 			$this->create_queue_dir();
+			$this->matroska_xml = mb_convert_encoding($this->matroska_xml, 'UTF-8');
 			$ret = file_put_contents($this->queue_matroska_xml, $this->matroska_xml);
+
+			$this->episodes_model->remux_metadata = $this->matroska_xml;
 
 			if($ret === false)
 				return false;
@@ -492,13 +496,9 @@
 
 		}
 
-		public function encode_matroska_xml() {
-
-			$this->matroska_xml = mb_convert_encoding($this->matroska_xml, 'UTF-8');
-
-		}
-
 		public function metadata_stage($force = false) {
+
+			$this->create_pre_metadata_stage_files();
 
 			$this->queue_model->set_episode_status($this->episode_id, 'xml', 1);
 
@@ -512,7 +512,6 @@
 				return false;
 			}
 
-			$this->encode_matroska_xml();
 			$this->encodes_model->remux_metadata = $this->matroska_xml;
 
 			$bool = $this->create_matroska_xml_file();
@@ -560,7 +559,7 @@
 
 		public function remux_stage($force = false) {
 
-			if(file_exists($this->queue_matroska_mkv && !$force)) {
+			if(file_exists($this->queue_matroska_mkv) && !$force) {
 				$this->queue_model->set_episode_status($this->episode_id, 'mkv', 3);
 				return true;
 			}
