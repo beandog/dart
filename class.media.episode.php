@@ -595,13 +595,14 @@
 
 			if($this->debug) {
 
-				$bool = copy($this->queue_mkv, $this->episode_mkv);
+				$bool = copy($this->queue_matroska_mkv, $this->episode_mkv);
 				return $bool;
 
 			} else {
 
-				$bool = rename($this->queue_mkv, $this->episode_mkv);
-				$this->queue_model->remove_episode($this->episode_id);
+				$bool = rename($this->queue_matroska_mkv, $this->episode_mkv);
+				if($bool)
+					$this->queue_model->remove_episode($this->episode_id);
 				return $bool;
 
 			}
