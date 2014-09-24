@@ -253,11 +253,14 @@ XML;
 
 		private function arguments() {
 
+			$flags = array();
+
+			$flags['output'] = $this->getFilename();
+
 			// FIXME in v4.2.0, this doesn't set English
 			// on all tracks.  Need to specify it manually
 			// with --language TID:eng
 			$flags['default-language'] = 'eng';
-			$flags['output'] = $this->getFilename();
 			$args = array();
 
 			// Added for spec dlna-usb-1
