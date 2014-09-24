@@ -349,7 +349,7 @@
 
 			// Found a new disc if it's not in the database!
 			if(!$dvds_model_id) {
-				echo "* DVD not found, ready to import!";
+				echo "* DVD not found, ready to import!\n";
 			}
 
 			if($dvds_model_id) {
