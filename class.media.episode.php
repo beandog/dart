@@ -641,6 +641,8 @@
 
 		public function final_stage($force = false) {
 
+			$this->create_episodes_dir();
+
 			$this->encode_finish_time = time();
 			$this->encodes_model->encode_finish = date('%r');
 
