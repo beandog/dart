@@ -9,6 +9,7 @@
 if($opt_encode) {
 
 	$num_encoded = 0;
+	$first_pass = true;
 
 	echo "[Encode]\n";
 
@@ -19,10 +20,11 @@ if($opt_encode) {
 
 	foreach($encode_episodes as $episode_id) {
 
-		if($num_encoded) {
+		if(!$first_pass) {
 			echo "\n";
 			echo "[Episode]\n";
 		}
+		$first_pass = false;
 
 		// Stages
 		$encode_stage_pass = false;
@@ -40,7 +42,7 @@ if($opt_encode) {
 		// onto the next.
 		if($episode->encoded()) {
 			$queue_model->remove_episode($episode_id);
-			break;
+			continue;
 		}
 
 		// Create models
@@ -52,11 +54,11 @@ if($opt_encode) {
 		$episode->create_encodes_entry();
 
 		// Build Handbrake object
-		require_once 'dart.encode.x264.php';
+		require 'dart.encode.x264.php';
 		$episode->encode_stage_command = $handbrake_command;
 
 		// Build Matroska metadata XML file
-		require_once 'dart.encode.mkv.php';
+		require 'dart.encode.mkv.php';
 		$episode->matroska_xml = $matroska_xml;
 		$episode->remux_stage_command = $remux_stage_command;
 
@@ -74,8 +76,10 @@ if($opt_encode) {
 			echo "Cartoons!! :D\n";
 		}
 
-		if($dry_run)
-			break;
+		if($dry_run) {
+			$first_pass = false;
+			continue;
+		}
 
 		// Encode video
 		if($arg_stage == 'encode' || $arg_stage == 'all') {
@@ -88,7 +92,7 @@ if($opt_encode) {
 				echo "Handbrake:\tfailed\n";
 
 			if($arg_stage == 'encode')
-				break;
+				continue;
 
 		}
 
@@ -103,7 +107,7 @@ if($opt_encode) {
 				echo "Metadata:\tfailed\n";
 
 			if($arg_stage == 'xml')
-				break;
+				continue;
 
 		}
 
@@ -118,7 +122,7 @@ if($opt_encode) {
 				echo "Matroska:\tfailed\n";
 
 			if($arg_stage == 'remux')
-				break;
+				continue;
 
 		}
 
@@ -146,7 +150,7 @@ if($opt_encode) {
 				echo "Final:\t\tfailed\n";
 
 			if($arg_stage == 'final');
-				break;
+				continue;
 
 		}
 
