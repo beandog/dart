@@ -13,8 +13,8 @@ if($opt_encode && $episode_id) {
 	 * Encoding specification requirements
 	 * Current version: dlna-usb-5 working spec
 	 *
-	 * Handbrake 0.9.9, upstream release
-	 * mkvtoolnix 6.7.0
+	 * Handbrake 0.10.0-beta through release
+	 * mkvtoolnix 7.2.0
 	 * libebml 1.3.0
 	 * libmatroska 1.4.1
 	 * chapters
