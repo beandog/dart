@@ -18,7 +18,11 @@ if($opt_encode) {
 	if(count($encode_episodes) == 0)
 		echo "* No episodes in queue to encode\n";
 
-	foreach($encode_episodes as $episode_id) {
+	$encode_episode_id = array_shift($encode_episodes);
+
+	while($encode_episode_id) {
+
+		$episode_id = $encode_episode_id;
 
 		if(!$first_pass) {
 			echo "\n";
@@ -77,7 +81,7 @@ if($opt_encode) {
 		}
 
 		if($dry_run) {
-			$first_pass = false;
+			$encode_episode_id = array_shift($encode_episodes);
 			continue;
 		}
 
@@ -156,8 +160,10 @@ if($opt_encode) {
 
 		echo "\n";
 
-		if($encode_stage_pass || $metadata_stage_pass || $remux_stage_pass)
+		if($encode_stage_pass || $metadata_stage_pass || $remux_stage_pass || $final_stage_pass)
 			$num_encoded++;
+
+		$encode_episode_id = array_shift($encode_episodes);
 
 	}
 
