@@ -17,6 +17,10 @@ if($opt_encode && $episode_id) {
 	 * mkvtoolnix 7.2.0
 	 * libebml 1.3.0
 	 * libmatroska 1.4.1
+	 * libdvdread 5.0.x
+	 * libdvdnav 5.0.x
+	 * libdvdcss 1.3.0
+	 * no dvdnav
 	 * chapters
 	 * decomb
 	 * detelecine
@@ -58,7 +62,7 @@ if($opt_encode && $episode_id) {
 	$handbrake->decomb($decomb);
 	$handbrake->detelecine($detelecine);
 	$handbrake->autocrop($autocrop);
-	// $handbrake->dvdnav($dvdnav);
+	$handbrake->dvdnav(false);
 
 	/** Video **/
 
