@@ -133,7 +133,9 @@
 
 		public function get_episode_status($episode_id) {
 
-			$sql = "SELECT x264, xml, mkv FROM queue WHERE episode_id = ".$this->db->quote($episode_id).";";
+			$episode_id = abs(intval($episode_id));
+
+			$sql = "SELECT x264, xml, mkv FROM queue WHERE episode_id = $episode_id;";
 
 			$arr = $this->db->getRow($sql);
 
