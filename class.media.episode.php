@@ -378,6 +378,9 @@
 		 * Get encoding status
 		 *
 		 * If value is NULL, then it is either not in the queue or has been encoded
+		 *
+		 * FIXME handle cases where this returns a non-array value, meaning the
+		 * episode is no longer in the queue for whatever reason.
 		 */
 		public function get_queue_status() {
 
