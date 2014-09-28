@@ -683,7 +683,7 @@
 				$stream_data = explode(', ', $scan_stream);
 				$stream_id = substr($stream_data[0], 3);
 				$stream_lang = substr($stream_data[1], 5);
-				$tmp = explode(' ', $stream_data[2]);
+				$tmp = explode(' ', end($stream_data));
 				$stream_3cc = substr($tmp[0], 4);
 				$stream_ext = substr($tmp[1], 4);
 
