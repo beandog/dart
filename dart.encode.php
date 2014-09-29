@@ -24,6 +24,9 @@ if($opt_encode) {
 
 		$episode_id = $encode_episode_id;
 
+		if($debug)
+			echo "* Episode ID: $encode_episode_id\n";
+
 		if(!$first_pass) {
 			echo "\n";
 			echo "[Episode]\n";
