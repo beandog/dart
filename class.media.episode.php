@@ -365,9 +365,7 @@
 
 			clearstatcache();
 
-			$status = $this->get_queue_status();
-
-			if(($status > 2 || is_null($status)) && file_exists($this->episode_mkv))
+			if(file_exists($this->episode_mkv) && !$this->in_queue())
 				return true;
 			else
 				return false;
@@ -382,17 +380,21 @@
 		 * FIXME handle cases where this returns a non-array value, meaning the
 		 * episode is no longer in the queue for whatever reason.
 		 */
-		public function get_queue_status() {
+		public function get_queue_status($stage) {
 
-			$queue_model = new Queue_Model;
+			if(!in_array($stage, array('x264', 'xml', 'mkv')))
+				return null;
 
-			$arr = $queue_model->get_episode_status($this->episode_id);
+			$episode_id = abs(intval($this->episode_id));
 
-			// Stupid model function sets values to strings, fix it here
-			foreach($arr as $key => $value)
-				$arr[$key] = intval($value);
+			$sql = "SELECT $stage FROM queue WHERE episode_id = $episode_id;";
 
-			return $arr;
+			$status = current(pg_fetch_assoc(pg_query($sql)));
+
+			if(is_null($status))
+				return null;
+			else
+				return intval($status);
 
 		}
 
@@ -683,20 +685,21 @@
 		// In the queue, at any stage
 		public function in_queue() {
 
-			$arr = $this->get_queue_status();
+			$sql = "SELECT id FROM queue WHERE episode_id = ".pg_escape_literal($this->episode_id).";";
+			$id = current(pg_fetch_assoc(pg_query($sql)));
 
-			if(count($arr))
-				return true;
-			else
+			if(is_null($id))
 				return false;
+			else
+				return true;
 
 		}
 
 		public function x264_ready() {
 
-			$arr = $this->get_queue_status();
+			$status = $this->get_queue_status('x264');
 
-			if($arr['x264'] === 0)
+			if($status === 0)
 				return true;
 			else
 				return false;
@@ -705,9 +708,9 @@
 
 		public function x264_running() {
 
-			$arr = $this->get_queue_status();
+			$status = $this->get_queue_status('x264');
 
-			if($arr['x264'] === 1)
+			if($status === 1)
 				return true;
 			else
 				return false;
@@ -716,9 +719,9 @@
 
 		public function x264_passed() {
 
-			$arr = $this->get_queue_status();
+			$status = $this->get_queue_status('x264');
 
-			if($arr['x264'] === 2)
+			if($status === 2)
 				return true;
 			else
 				return false;
@@ -727,9 +730,9 @@
 
 		public function x264_failed() {
 
-			$arr = $this->get_queue_status();
+			$status = $this->get_queue_status('x264');
 
-			if($arr['x264'] === 3)
+			if($status === 3)
 				return true;
 			else
 				return false;
@@ -738,9 +741,9 @@
 
 		public function xml_ready() {
 
-			$arr = $this->get_queue_status();
+			$status = $this->get_queue_status('xml');
 
-			if($arr['xml'] === 0)
+			if($status === 0)
 				return true;
 			else
 				return false;
@@ -749,9 +752,9 @@
 
 		public function xml_running() {
 
-			$arr = $this->get_queue_status();
+			$status = $this->get_queue_status('xml');
 
-			if($arr['xml'] === 1)
+			if($status === 1)
 				return true;
 			else
 				return false;
@@ -760,9 +763,9 @@
 
 		public function xml_passed() {
 
-			$arr = $this->get_queue_status();
+			$status = $this->get_queue_status('xml');
 
-			if($arr['xml'] === 2)
+			if($status === 2)
 				return true;
 			else
 				return false;
@@ -771,9 +774,9 @@
 
 		public function xml_failed() {
 
-			$arr = $this->get_queue_status();
+			$status = $this->get_queue_status('xml');
 
-			if($arr['xml'] === 3)
+			if($status === 3)
 				return true;
 			else
 				return false;
@@ -782,9 +785,9 @@
 
 		public function mkv_ready() {
 
-			$arr = $this->get_queue_status();
+			$status = $this->get_queue_status('mkv');
 
-			if($arr['mkv'] === 0)
+			if($status === 0)
 				return true;
 			else
 				return false;
@@ -793,9 +796,9 @@
 
 		public function mkv_running() {
 
-			$arr = $this->get_queue_status();
+			$status = $this->get_queue_status('mkv');
 
-			if($arr['mkv'] === 1)
+			if($status === 1)
 				return true;
 			else
 				return false;
@@ -804,9 +807,9 @@
 
 		public function mkv_passed() {
 
-			$arr = $this->get_queue_status();
+			$status = $this->get_queue_status('mkv');
 
-			if($arr['mkv'] === 2)
+			if($status === 2)
 				return true;
 			else
 				return false;
@@ -815,9 +818,9 @@
 
 		public function mkv_failed() {
 
-			$arr = $this->get_queue_status();
+			$status = $this->get_queue_status('mkv');
 
-			if($arr['mkv'] === 3)
+			if($status === 3)
 				return true;
 			else
 				return false;
