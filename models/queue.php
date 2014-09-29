@@ -131,15 +131,24 @@
 
 		}
 
-		public function get_episode_status($episode_id) {
+		/**
+		 * Get the queue status for an episode at a specific stage.
+		 */
+		public function get_episode_status($episode_id, $stage) {
+
+			if(!in_array($stage, array('x264', 'xml', 'mkv')))
+				return null;
 
 			$episode_id = abs(intval($episode_id));
 
-			$sql = "SELECT x264, xml, mkv FROM queue WHERE episode_id = $episode_id;";
+			$sql = "SELECT $stage FROM queue WHERE episode_id = $episode_id;";
 
-			$arr = $this->db->getRow($sql);
+			$status = current(pg_fetch_assoc(pg_query($sql)));
 
-			return $arr;
+			if(is_null($status))
+				return null;
+			else
+				return intval($status);
 
 		}
 
