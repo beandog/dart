@@ -685,13 +685,7 @@
 		// In the queue, at any stage
 		public function in_queue() {
 
-			$sql = "SELECT id FROM queue WHERE episode_id = ".pg_escape_literal($this->episode_id).";";
-			$id = current(pg_fetch_assoc(pg_query($sql)));
-
-			if(is_null($id))
-				return false;
-			else
-				return true;
+			return $this->queue_model->episode_in_queue($this->episode_id);
 
 		}
 
