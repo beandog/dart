@@ -385,11 +385,10 @@
 			if(!in_array($stage, array('x264', 'xml', 'mkv')))
 				return null;
 
-			$episode_id = abs(intval($this->episode_id));
+			if(!$this->in_queue())
+				return null;
 
-			$sql = "SELECT $stage FROM queue WHERE episode_id = $episode_id;";
-
-			$status = current(pg_fetch_assoc(pg_query($sql)));
+			$status = $this->queue_model->get_episode_status($this->episode_id, $stage);
 
 			if(is_null($status))
 				return null;
