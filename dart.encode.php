@@ -24,9 +24,6 @@ if($opt_encode) {
 
 		$episode_id = $encode_episode_id;
 
-		if($debug)
-			echo "* Episode ID: $encode_episode_id\n";
-
 		if(!$first_pass) {
 			echo "\n";
 			echo "[Episode]\n";
@@ -48,6 +45,7 @@ if($opt_encode) {
 		// Verify it's actually in the queue (race conditions)
 		if(!$episode->in_queue()) {
 			$encode_episode_id = array_shift($encode_episodes);
+			echo "* Episode ID: $encode_episode_id\n";
 			echo "* Episode is NOT in the queue ... skipping\n";
 			continue;
 		}
