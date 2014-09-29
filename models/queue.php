@@ -161,12 +161,12 @@
 
 			$sql = "SELECT $stage FROM queue WHERE episode_id = $episode_id;";
 
-			$status = current(pg_fetch_assoc(pg_query($sql)));
+			$var = $this->db->getOne($sql);
 
-			if(is_null($status))
+			if(is_null($var))
 				return null;
 			else
-				return intval($status);
+				return intval($var);
 
 		}
 
