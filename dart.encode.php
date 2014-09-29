@@ -43,7 +43,7 @@ if($opt_encode) {
 		$episode->remux_version = $mkvmerge_version;
 
 		// Verify it's actually in the queue (race conditions)
-		if(!$episode->in_queue()) {
+		if(!$queue_model->episode_in_queue($episode_id)) {
 			$encode_episode_id = array_shift($encode_episodes);
 			echo "* Episode ID: $encode_episode_id\n";
 			echo "* Episode is NOT in the queue ... skipping\n";
