@@ -131,6 +131,24 @@
 
 		}
 
+		public function episode_in_queue($episode_id) {
+
+			$episode_id = abs(intval($episode_id));
+
+			if(!$episode_id)
+				return false;
+
+			$sql = "SELECT 1 FROM queue WHERE episode_id = $episode_id;";
+
+			$var = $this->db->getOne($sql);
+
+			if(is_null($var))
+				return false;
+			else
+				return true;
+
+		}
+
 		/**
 		 * Get the queue status for an episode at a specific stage.
 		 */

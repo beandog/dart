@@ -37,9 +37,9 @@
 			foreach($dvd_episodes as $episode_id) {
 
 				$episodes_model = new Episodes_Model($episode_id);
-				$queue_episode_status = $queue_model->get_episode_status($episode_id);
+				$episode_in_queue = $queue_model->episode_in_queue($episode_id);
 
-				if((!$max || ($max && $num_queued < $max)) && is_null($queue_episode_status)) {
+				if((!$max || ($max && $num_queued < $max)) && !$episode_in_queue) {
 
 					clearstatcache();
 
