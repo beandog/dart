@@ -39,6 +39,7 @@
 			foreach($d_series as $series_title => $arr_isos) {
 
 				echo "[$series_title]\n";
+				echo "* Series ID: $series_id\n";
 
 				foreach($arr_isos as $iso => $arr_episodes) {
 
