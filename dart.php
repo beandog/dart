@@ -1,7 +1,15 @@
 #!/usr/bin/php
 <?php
 
+	// Defaults
+	$all_devices = array('/dev/dvd');
+	$export_dir = getenv('HOME').'/dvds/';
+	$ifo_export_dir = $export_dir.'ifos/';
+	$hostname = php_uname('n');
+
+	// Overrides to defaults
 	require_once 'config.local.php';
+
 	require_once 'config.pgconn.php';
 	require_once 'inc.mdb2.php';
 	require_once 'dart.functions.php';
@@ -34,11 +42,6 @@
 	require_once 'dart.parser.php';
 
 	/** Start everything **/
-	$all_devices = array('/dev/dvd');
-	$export_dir = getenv('HOME').'/dvds/';
-	$ifo_export_dir = $export_dir.'ifos/';
-	$hostname = php_uname('n');
-
 
 	// Handle parser arguments and options
 	if($debug)
