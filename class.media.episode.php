@@ -566,10 +566,11 @@
 		public function create_pre_remux_stage_files() {
 
 			$this->create_episode_queue_dir();
+			$this->encodes_model->remux_command = $this->remux_stage_command;
+
 			$contents = $this->remux_stage_command." $*\n";
 			file_put_contents($this->queue_mkvmerge_script, $contents);
 			chmod($this->queue_mkvmerge_script, 0755);
-			$this->encodes_model->remux_command = $this->remux_stage_command;
 
 		}
 
