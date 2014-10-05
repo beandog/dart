@@ -15,6 +15,7 @@
 		function set_encode_finish($seconds) {
 
 			$id = intval($this->id);
+			$seconds = intval($seconds);
 
 			if(!$seconds)
 				$seconds = time();
