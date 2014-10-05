@@ -448,8 +448,6 @@
 		 */
 		public function encode_stage($force = false) {
 
-			$exit_code = null;
-
 			$this->create_pre_encode_stage_files();
 			$this->queue_model->set_episode_status($this->episode_id, 'x264', 1);
 
@@ -468,16 +466,12 @@
 				return true;
 			}
 
-			if(!file_exists($this->queue_handbrake_x264) || $force) {
+			$exit_code = $this->encode_video();
 
-				$exit_code = $this->encode_video();
+			$this->encode_stage_output = $this->encode_stage_output();
 
-				$this->encode_stage_output = $this->encode_stage_output();
-
-				$this->encodes_model->encoder_exit_code = $exit_code;
-				$this->encode_stage_exit_code = $exit_code;
-
-			}
+			$this->encodes_model->encoder_exit_code = $exit_code;
+			$this->encode_stage_exit_code = $exit_code;
 
 			if($exit_code === 0) {
 
