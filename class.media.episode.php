@@ -414,10 +414,8 @@
 		// Track encoding session in the database
 		// A little bit about the encodes table ... it is designed to keep track of
 		// *attempts* to encode an episode, and is not meant to be a tracker for a
-		// unique episode.  The valuable part is the uuid that will be stored in the
-		// container metadata when everything is finished -- it will point to the
-		// database entry where the encoding settings, commands, reuslts, etc. are
-		// stored.
+		// unique episode.
+		//
 		// The database table is intended to be abused, so creating an entry as soon
 		// as possible falls within that goal, but only occurs when a dry run is not
 		// enabled.
@@ -427,7 +425,6 @@
 			$this->encodes_model->episode_id = $this->episode_id;
 			$this->encodes_model->encoder_version = strval($this->encoder_version);
 			$this->encodes_model->remux_version = strval($this->remux_version);
-			$this->uuid = $this->encodes_model->uniq_id;
 			$this->encode_begin_time = time();
 			$this->encodes_model->encode_begin = date('%r');
 
