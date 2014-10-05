@@ -63,7 +63,7 @@
 			}
 
 			echo "\n[Queue]\n";
-			echo "* Total episodes in queue: ".count($queue_model->get_episodes($hostname));
+			echo "* Total episodes in queue: $num_episodes\n";
 
 		}
 
