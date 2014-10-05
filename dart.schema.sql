@@ -966,6 +966,24 @@ ALTER SEQUENCE tracks_id_seq OWNED BY tracks.id;
 
 
 --
+-- Name: view_audio; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW view_audio AS
+ SELECT d.id,
+    d.title,
+    t.dvd_id,
+    t.ix AS title_track,
+    a.ix AS audio_track,
+    a.langcode,
+    a.active
+   FROM ((dvds d
+   JOIN tracks t ON ((t.dvd_id = d.id)))
+   JOIN audio a ON ((a.track_id = t.id)))
+  ORDER BY d.id, t.id, a.id;
+
+
+--
 -- Name: view_episodes; Type: VIEW; Schema: public; Owner: -
 --
 
@@ -995,6 +1013,24 @@ CREATE VIEW view_episodes AS
    JOIN dvds d ON ((t.dvd_id = d.id)))
    JOIN series_dvds sd ON ((sd.dvd_id = d.id)))
    JOIN series s ON ((s.id = sd.series_id)));
+
+
+--
+-- Name: view_subp; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW view_subp AS
+ SELECT d.id,
+    d.title,
+    t.dvd_id,
+    t.ix AS title_track,
+    s.ix AS subp_track,
+    s.langcode,
+    s.active
+   FROM ((dvds d
+   JOIN tracks t ON ((t.dvd_id = d.id)))
+   JOIN subp s ON ((s.track_id = t.id)))
+  ORDER BY d.id, t.id, s.id;
 
 
 --
