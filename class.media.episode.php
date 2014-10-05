@@ -457,6 +457,8 @@
 
 			// Exit if the x264 Handbrake file already exists, and re-encoding is
 			// not specified.  Also directly set the database as file is encoded.
+			// Basically, skip the encode stage if it was reset, but the files are
+			// already created.
 			if(file_exists($this->queue_handbrake_x264) && !$force) {
 				// Update the database with the output of Handbrake, if the
 				// file exists
