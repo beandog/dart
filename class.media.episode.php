@@ -514,10 +514,11 @@
 		public function create_pre_metadata_stage_files() {
 
 			$this->create_episode_queue_dir();
-			$this->matroska_xml = mb_convert_encoding($this->matroska_xml, 'UTF-8');
-			$ret = file_put_contents($this->queue_matroska_xml, $this->matroska_xml);
 
+			$this->matroska_xml = mb_convert_encoding($this->matroska_xml, 'UTF-8');
 			$this->encodes_model->remux_metadata = $this->matroska_xml;
+
+			$ret = file_put_contents($this->queue_matroska_xml, $this->matroska_xml);
 
 			if($ret === false)
 				return false;
