@@ -27,7 +27,6 @@
 
 		function find_episode_id($episode_id) {
 
-			$id = intval($this->id);
 			$episode_id = intval($episode_id);
 
 			$sql = "SELECT id FROM encodes WHERE episode_id = $episode_id AND encode_finish IS NULL ORDER BY ID DESC LIMIT 1;";
