@@ -68,19 +68,4 @@
 
 	}
 
-	/**
-	 * Create a temporary file and put contents into it.
-	 *
-	 * @param file contents
-	 * @param tempfile prefix
-	 * @return temporary file name
-	 */
-	function tmpfile_put_contents($contents, $prefix = '') {
-
-		$tmpfile = tempnam(sys_get_temp_dir(), $prefix);
-		file_put_contents($tmpfile, $contents);
-
-		return $tmpfile;
-
-	}
 ?>

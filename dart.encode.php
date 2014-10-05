@@ -73,7 +73,8 @@ if($opt_encode) {
 		$episode->create_pre_remux_stage_files();
 
 		// Display Handbrake encode command
-		$tmpfile = tmpfile_put_contents($episode->encode_stage_command."\n", 'encode');
+		$tmpfile = tempnam(sys_get_temp_dir(), 'encode');
+		file_put_contents($tmpfile, $episode->encode_stage_command."\n");
 		echo "Command:\t$tmpfile\n";
 
 		// Cartoons!
