@@ -328,7 +328,6 @@ ALTER SEQUENCE dvds_id_seq OWNED BY dvds.id;
 CREATE TABLE encodes (
     id integer NOT NULL,
     episode_id integer,
-    uniq_id uuid DEFAULT uuid_generate_v4() NOT NULL,
     filesize integer,
     encode_cmd text DEFAULT ''::text NOT NULL,
     encode_output text DEFAULT ''::text NOT NULL,
@@ -342,13 +341,6 @@ CREATE TABLE encodes (
     remux_version character varying(255) DEFAULT ''::character varying NOT NULL,
     remux_exit_code smallint
 );
-
-
---
--- Name: COLUMN encodes.uniq_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN encodes.uniq_id IS 'Unique identifier for container format';
 
 
 --
