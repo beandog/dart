@@ -403,11 +403,10 @@
 
 			$this->create_episode_queue_dir();
 			$this->create_queue_iso_symlink();
+			$this->encodes_model->encode_cmd = $this->encode_stage_command;
 
 			file_put_contents($this->queue_handbrake_script, $this->encode_stage_command." $*\n");
 			chmod($this->queue_handbrake_script, 0755);
-
-			$this->encodes_model->encode_cmd = $this->encode_stage_command;
 
 		}
 
