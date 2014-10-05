@@ -448,23 +448,22 @@
 		 */
 		public function encode_stage($force = false) {
 
+			$exit_code = null;
+
 			$this->create_pre_encode_stage_files();
+			$this->queue_model->set_episode_status($this->episode_id, 'x264', 1);
 
 			clearstatcache();
 
-			$exit_code = null;
-
-			$this->queue_model->set_episode_status($this->episode_id, 'x264', 1);
-
+			// Exit if the x264 Handbrake file already exists, and re-encoding is
+			// not specified.  Also directly set the database as file is encoded.
 			if(file_exists($this->queue_handbrake_x264) && !$force) {
-
-				if(file_exists($this->queue_handbrake_output) && !$this->encodes_model->encode_output) {
+				// Update the database with the output of Handbrake, if the
+				// file exists
+				if(file_exists($this->queue_handbrake_output))
 					$this->encode_stage_output = $this->encode_stage_output();
-				}
-
 				$this->queue_model->set_episode_status($this->episode_id, 'x264', 2);
 				return true;
-
 			}
 
 			if(!file_exists($this->queue_handbrake_x264) || $force) {
