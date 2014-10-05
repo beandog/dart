@@ -59,11 +59,11 @@ if($opt_encode) {
 		$episode->create_encodes_entry();
 
 		// Build Handbrake object
-		require 'dart.encode.x264.php';
+		require 'dart.x264.php';
 		$episode->encode_stage_command = $handbrake_command;
 
 		// Build Matroska metadata XML file
-		require 'dart.encode.mkv.php';
+		require 'dart.mkv.php';
 		$episode->matroska_xml = $matroska_xml;
 		$episode->remux_stage_command = $remux_stage_command;
 
