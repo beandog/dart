@@ -70,6 +70,7 @@ if($opt_encode) {
 		$episode->remux_stage_command = $remux_stage_command;
 
 		// Create temporary files early
+		require 'dart.encode.queue.php';
 		$episode->create_pre_encode_stage_files();
 		$episode->create_pre_metadata_stage_files();
 		$episode->create_pre_remux_stage_files();
