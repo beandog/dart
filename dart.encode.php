@@ -52,9 +52,11 @@ if($opt_encode) {
 
 		// Create models
 		$episodes_model = new Episodes_Model($episode_id);
-		$tracks_model = new Tracks_Model($episode->metadata['track_id']);
-		$series_model = new Series_Model($episode->metadata['series_id']);
-		$dvds_model = new Dvds_Model($episode->metadata['dvd_id']);
+		$tracks_model = new Tracks_Model($episodes_model->track_id);
+		$series_model = new Series_Model($episodes_model->get_series_id());
+		$dvds_model = new Dvds_Model($episodes_model->get_dvd_id());
+
+		$series_title = $series_model->title;
 
 		$episode->create_encodes_entry();
 
