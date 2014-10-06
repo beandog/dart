@@ -37,6 +37,17 @@
 
 		}
 
+		public function get_dvd_id() {
+
+			$episode_id = intval($this->id);
+
+			$sql = "SELECT t.dvd_id FROM tracks t JOIN episodes e ON e.id = $episode_id;";
+			$var = intval($this->db->getOne($sql));
+
+			return $var;
+
+		}
+
 		public function get_series_id() {
 
 			$sql = "SELECT s.id FROM series s INNER JOIN series_dvds sd ON sd.series_id = s.id INNER JOIN dvds d ON d.id = sd.dvd_id INNER JOIN tracks t ON t.dvd_id = d.id INNER JOIN episodes e ON e.track_id = t.id WHERE e.id = ".$this->db->quote($this->id)." LIMIT 1;";
