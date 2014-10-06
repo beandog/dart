@@ -143,7 +143,7 @@
 
 			$dir = $this->export_dir;
 			$dir .= "queue/";
-			$dir .= $this->safe_filename_title($this->metadata['series_title'])."/";
+			$dir .= safe_filename_title($this->metadata['series_title'])."/";
 
 			return $dir;
 
@@ -152,7 +152,7 @@
 		public function get_episode_queue_dir() {
 
 			$dir = $this->get_series_queue_dir();
-			$dir .= $this->safe_filename_title($this->episode_title_filename)."/";
+			$dir .= safe_filename_title($this->episode_title_filename)."/";
 
 			return $dir;
 
@@ -175,7 +175,7 @@
 
 			$filename = $this->export_dir;
 			$filename .= "queue/";
-			$filename .= $this->safe_filename_title($this->metadata['series_title'])."/";
+			$filename .= safe_filename_title($this->metadata['series_title'])."/";
 			$filename .= basename($this->dvd_iso);
 
 			return $filename;
@@ -195,7 +195,7 @@
 
 			$dir = $this->export_dir;
 			$dir .= "queue/";
-			$dir .= $this->safe_filename_title($this->metadata['series_title'])."/";
+			$dir .= safe_filename_title($this->metadata['series_title'])."/";
 
 			if(!is_dir($dir))
 				mkdir($dir, 0755, true);
@@ -245,8 +245,8 @@
 
 			$dir = $this->export_dir;
 			$dir .= "isos/";
-			$dir .= $this->safe_filename_title($this->metadata['collection_title'])."/";
-			$dir .= $this->safe_filename_title($this->metadata['series_title'])."/";
+			$dir .= safe_filename_title($this->metadata['collection_title'])."/";
+			$dir .= safe_filename_title($this->metadata['series_title'])."/";
 
 			return $dir;
 
