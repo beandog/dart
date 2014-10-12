@@ -1,7 +1,7 @@
 <?php
 
-	$series_title = $series_model->title;
-	$collection_title = $series_model->get_collection_title();
+	$series_title = $episode['series_title'];
+	$collection_title = $episode['collection_title']
 	$dvd_episode_iso = $episodes_model->get_iso();
 	$dvd_source_iso = $export_dir."isos/".safe_filename_title($collection_title)."/".safe_filename_title($series_title)."/$dvd_episode_iso";
 
