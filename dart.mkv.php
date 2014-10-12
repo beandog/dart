@@ -3,17 +3,17 @@
 	/** Matroska Metadata */
 
 	$matroska = new Matroska();
-	$matroska->setFilename($episode->queue_matroska_mkv);
+	$matroska->setFilename($queue_files['mkvmerge_output_filename']);
 
-	$matroska->setTitle($episode->metadata['episode_title']);
+	$matroska->setTitle($episode_title);
 
 	$matroska->addTag();
 	$matroska->addSimpleTag("encoding_spec", "dlna-usb-5");
 	$matroska->addSimpleTag("metadata_spec", "dvd-mkv-3");
 	$matroska->addSimpleTag("handbrake_version", $handbrake_version);
-	$matroska->addSimpleTag("collection_title", $episode->metadata['collection_title']);
-	$matroska->addSimpleTag("series_title", $episode->metadata['series_title']);
-	$matroska->addSimpleTag("dvd_id", $episode->metadata['dvd_id']);
+	$matroska->addSimpleTag("collection_title", $collection_title);
+	$matroska->addSimpleTag("series_title", $series_title);
+	$matroska->addSimpleTag("dvd_id", $episode['dvd_id']);
 	$matroska->addSimpleTag("episode_id", $episode_id);
 
 	// See http://matroska.org/files/tags/simpsons-s01e01.xml for an example of a DVD
@@ -21,44 +21,44 @@
 
 	$matroska->addTag();
 	$matroska->addTarget(70, "COLLECTION");
-	$matroska->addSimpleTag("TITLE", $episode->metadata['series_title']);
+	$matroska->addSimpleTag("TITLE", $series_title);
 	$matroska->addSimpleTag("ORIGINAL_MEDIA_TYPE", "DVD");
 
 	/** Season **/
-	if($episode->metadata['episode_season']) {
+	if($episode_season) {
 
 		$matroska->addTag();
 		$matroska->addTarget(60, "SEASON");
 
-		if($episode->metadata['episode_year']) {
-			$matroska->addSimpleTag("DATE_RELEASE", $episode->metadata['episode_year']);
+		if($episode_year) {
+			$matroska->addSimpleTag("DATE_RELEASE", $episode_year);
 		}
 
-		if($episode->metadata['episode_season'])
-			$matroska->addSimpleTag("PART_NUMBER", $episode->metadata['episode_season']);
+		if($episode_season)
+			$matroska->addSimpleTag("PART_NUMBER", $episode_season);
 
 	}
 
 	/** Episode **/
 	$matroska->addTag();
 	$matroska->addTarget(50, "EPISODE");
-	$matroska->addSimpleTag("TITLE", $episode->metadata['episode_title']);
-	if($episode->metadata['episode_number'])
-		$matroska->addSimpleTag("PART_NUMBER", $episode->metadata['episode_number']);
+	$matroska->addSimpleTag("TITLE", $episode_title);
+	if($episode_number)
+		$matroska->addSimpleTag("PART_NUMBER", $episode_number);
 	$matroska->addSimpleTag("DATE_TAGGED", date("Y-m-d"));
 	$matroska->addSimpleTag("PLAY_COUNTER", 0);
 
-	if($episode->metadata['episode_part'] > 1) {
+	if($episode_part > 1) {
 		$matroska->addTag();
 		$matroska->addTarget(40, "PART");
-		$matroska->addSimpleTag("PART_NUMBER", $episode->metadata['episode_part']);
+		$matroska->addSimpleTag("PART_NUMBER", $episode['part']);
 	}
 
-	$matroska_xml = $matroska->getXML();
-
 	// Files will not exist at this point, so don't check for its existence
-	$matroska->addFile($episode->queue_handbrake_x264);
-	$matroska->addGlobalTags($episode->queue_matroska_xml);
+	$matroska->addFile($queue_files['handbrake_output_filename']);
+	$matroska->addGlobalTags($queue_files['metadata_xml_file']);
 
-	$remux_stage_command = $matroska->getCommandString();
+	$matroska_xml = $matroska->getXML();
+	$matroska_xml = mb_convert_encoding($matroska_xml, 'UTF-8');
+	$mkvmerge_command = $matroska->getCommandString();
 
