@@ -303,6 +303,418 @@ COMMENT ON TABLE dvds IS 'Metadata';
 
 
 --
+-- Name: tracks; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE tracks (
+    id integer NOT NULL,
+    dvd_id integer,
+    ix integer DEFAULT 1 NOT NULL,
+    length double precision,
+    format character varying(255) DEFAULT 'NTSC'::character varying NOT NULL,
+    aspect character varying(255) DEFAULT ''::character varying NOT NULL,
+    closed_captioning smallint,
+    valid smallint DEFAULT 1 NOT NULL
+);
+
+
+--
+-- Name: TABLE tracks; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE tracks IS 'Metadata';
+
+
+--
+-- Name: COLUMN tracks.ix; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN tracks.ix IS 'Track number';
+
+
+--
+-- Name: dart_audio_tracks; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW dart_audio_tracks AS
+ SELECT a.id,
+    d.id AS dvd_id,
+    t.id AS track_id,
+    d.dvdread_id,
+    d.title,
+    d.filesize,
+    d.metadata_spec,
+    d.side,
+    t.ix AS track_ix,
+    t.length,
+    t.format AS track_format,
+    t.aspect,
+    t.closed_captioning,
+    t.valid,
+    a.ix,
+    a.langcode,
+    a.format,
+    a.channels,
+    a.streamid,
+    a.active
+   FROM ((dvds d
+   JOIN tracks t ON ((t.dvd_id = d.id)))
+   JOIN audio a ON ((a.track_id = t.id)))
+  ORDER BY d.id, t.id, a.id;
+
+
+--
+-- Name: episodes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE episodes_id_seq
+    START WITH 14147
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: episodes; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE episodes (
+    id integer DEFAULT nextval('episodes_id_seq'::regclass) NOT NULL,
+    track_id integer,
+    ix smallint DEFAULT 0 NOT NULL,
+    title character varying(255) DEFAULT ''::character varying NOT NULL,
+    part smallint,
+    starting_chapter smallint,
+    ending_chapter smallint,
+    season smallint DEFAULT 0 NOT NULL
+);
+
+
+--
+-- Name: dart_episodes; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW dart_episodes AS
+ SELECT e.id,
+    d.id AS dvd_id,
+    t.id AS track_id,
+    d.dvdread_id,
+    d.title AS dvd_title,
+    d.filesize,
+    d.metadata_spec,
+    d.side,
+    t.ix AS track_ix,
+    t.length AS track_length,
+    t.format,
+    t.aspect,
+    t.closed_captioning,
+    t.valid,
+    e.ix,
+    e.title,
+    e.part,
+    e.starting_chapter,
+    e.ending_chapter,
+    e.season
+   FROM ((dvds d
+   JOIN tracks t ON ((t.dvd_id = d.id)))
+   JOIN episodes e ON ((e.track_id = t.id)))
+  ORDER BY d.id, t.id, e.id;
+
+
+--
+-- Name: series; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE series (
+    id integer NOT NULL,
+    collection_id integer,
+    title character varying(255) DEFAULT ''::character varying NOT NULL,
+    production_year character varying(4) DEFAULT ''::character varying NOT NULL,
+    indexed boolean DEFAULT false NOT NULL,
+    average_length integer DEFAULT 0 NOT NULL,
+    grayscale smallint DEFAULT 0 NOT NULL
+);
+
+
+--
+-- Name: TABLE series; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE series IS 'Collection data';
+
+
+--
+-- Name: COLUMN series.title; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN series.title IS 'Title used for displays everywhere';
+
+
+--
+-- Name: COLUMN series.indexed; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN series.indexed IS 'Use indexing or not for episodes';
+
+
+--
+-- Name: COLUMN series.average_length; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN series.average_length IS 'Average length of minutes of an episode';
+
+
+--
+-- Name: dart_series; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW dart_series AS
+ SELECT s.id,
+    s.collection_id,
+    c.title AS collection_title,
+    s.title,
+    s.production_year,
+    s.indexed,
+    s.average_length,
+    s.grayscale
+   FROM (series s
+   LEFT JOIN collections c ON ((c.id = s.collection_id)))
+  ORDER BY c.title, s.title;
+
+
+--
+-- Name: series_dvds; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE series_dvds (
+    id integer NOT NULL,
+    series_id integer,
+    dvd_id integer,
+    side character(1) DEFAULT ' '::bpchar NOT NULL,
+    season smallint DEFAULT 0 NOT NULL,
+    ix smallint DEFAULT 1 NOT NULL,
+    size bigint,
+    volume smallint DEFAULT 0 NOT NULL,
+    audio_preference smallint DEFAULT 0 NOT NULL
+);
+
+
+--
+-- Name: TABLE series_dvds; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE series_dvds IS 'Collection data';
+
+
+--
+-- Name: COLUMN series_dvds.season; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN series_dvds.season IS 'Default season for episodes';
+
+
+--
+-- Name: COLUMN series_dvds.audio_preference; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN series_dvds.audio_preference IS 'Which audio track to select by default';
+
+
+--
+-- Name: dart_series_dvds; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW dart_series_dvds AS
+ SELECT sd.id,
+    s.collection_id,
+    d.id AS dvd_id,
+    s.id AS series_id,
+    c.title AS collection_title,
+    s.title AS series_title,
+    s.production_year,
+    s.indexed,
+    s.average_length,
+    s.grayscale,
+    sd.side AS series_dvds_side,
+    sd.season AS series_dvds_season,
+    sd.ix,
+    sd.volume,
+    sd.audio_preference,
+    d.dvdread_id,
+    d.title AS dvd_title,
+    d.filesize,
+    d.metadata_spec,
+    d.side
+   FROM (((series_dvds sd
+   JOIN series s ON ((s.id = sd.series_id)))
+   JOIN dvds d ON ((sd.dvd_id = d.id)))
+   LEFT JOIN collections c ON ((c.id = s.collection_id)))
+  ORDER BY c.title, s.title, sd.ix;
+
+
+--
+-- Name: dart_series_episodes; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW dart_series_episodes AS
+ SELECT e.id,
+    s.collection_id,
+    d.id AS dvd_id,
+    s.id AS series_id,
+    sd.id AS series_dvds_id,
+    t.id AS track_id,
+    c.title AS collection_title,
+    s.title AS series_title,
+    s.production_year,
+    s.indexed,
+    s.average_length,
+    s.grayscale,
+    sd.side AS series_dvds_side,
+    sd.season AS series_dvds_season,
+    sd.ix AS series_dvds_ix,
+    sd.volume,
+    sd.audio_preference,
+    d.dvdread_id,
+    d.title AS dvd_title,
+    d.filesize,
+    d.metadata_spec,
+    d.side,
+    t.ix AS track_ix,
+    t.length,
+    t.format,
+    t.aspect,
+    t.closed_captioning,
+    t.valid,
+    e.ix,
+    e.title,
+    e.part,
+    e.starting_chapter,
+    e.ending_chapter,
+    e.season
+   FROM (((((episodes e
+   JOIN tracks t ON ((e.track_id = t.id)))
+   JOIN dvds d ON ((d.id = t.dvd_id)))
+   JOIN series_dvds sd ON ((sd.dvd_id = d.id)))
+   JOIN series s ON ((sd.series_id = s.id)))
+   JOIN collections c ON ((c.id = s.collection_id)))
+  ORDER BY c.title, s.title, sd.ix, t.ix, e.ix, e.id;
+
+
+--
+-- Name: dart_series_tracks; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW dart_series_tracks AS
+ SELECT t.id,
+    s.collection_id,
+    d.id AS dvd_id,
+    s.id AS series_id,
+    sd.id AS series_dvds_id,
+    c.title AS collection_title,
+    s.title AS series_title,
+    s.production_year,
+    s.indexed,
+    s.average_length,
+    s.grayscale,
+    sd.side AS series_dvds_side,
+    sd.season AS series_dvds_season,
+    sd.ix AS series_dvds_ix,
+    sd.volume,
+    sd.audio_preference,
+    d.dvdread_id,
+    d.title AS dvd_title,
+    d.filesize,
+    d.metadata_spec,
+    d.side,
+    t.ix,
+    t.length,
+    t.format,
+    t.aspect,
+    t.closed_captioning,
+    t.valid
+   FROM ((((tracks t
+   JOIN dvds d ON ((d.id = t.dvd_id)))
+   JOIN series_dvds sd ON ((sd.dvd_id = d.id)))
+   JOIN series s ON ((sd.series_id = s.id)))
+   JOIN collections c ON ((c.id = s.collection_id)))
+  ORDER BY c.title, s.title, sd.ix, t.ix;
+
+
+--
+-- Name: subp; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE subp (
+    id integer NOT NULL,
+    track_id integer,
+    ix integer,
+    langcode character varying(255) DEFAULT ''::character varying NOT NULL,
+    streamid character varying(255) DEFAULT ''::character varying NOT NULL,
+    active smallint
+);
+
+
+--
+-- Name: TABLE subp; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE subp IS 'Metadata';
+
+
+--
+-- Name: dart_subp_tracks; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW dart_subp_tracks AS
+ SELECT s.id,
+    d.id AS dvd_id,
+    t.id AS track_id,
+    d.dvdread_id,
+    d.title,
+    d.filesize,
+    d.metadata_spec,
+    d.side,
+    t.ix AS track_ix,
+    t.length,
+    t.format AS track_format,
+    t.aspect,
+    t.closed_captioning,
+    t.valid,
+    s.ix,
+    s.langcode,
+    s.streamid,
+    s.active
+   FROM ((dvds d
+   JOIN tracks t ON ((t.dvd_id = d.id)))
+   JOIN subp s ON ((s.track_id = t.id)))
+  ORDER BY d.id, t.id, s.id;
+
+
+--
+-- Name: dart_tracks; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW dart_tracks AS
+ SELECT t.id,
+    d.id AS dvd_id,
+    d.dvdread_id,
+    d.title,
+    d.filesize,
+    d.metadata_spec,
+    d.side,
+    t.ix,
+    t.length,
+    t.format,
+    t.aspect,
+    t.closed_captioning,
+    t.valid
+   FROM (dvds d
+   JOIN tracks t ON ((t.dvd_id = d.id)))
+  ORDER BY d.id, t.id;
+
+
+--
 -- Name: dvds_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -360,34 +772,6 @@ CREATE SEQUENCE encodes_id_seq
 --
 
 ALTER SEQUENCE encodes_id_seq OWNED BY encodes.id;
-
-
---
--- Name: episodes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE episodes_id_seq
-    START WITH 14147
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: episodes; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE episodes (
-    id integer DEFAULT nextval('episodes_id_seq'::regclass) NOT NULL,
-    track_id integer,
-    ix smallint DEFAULT 0 NOT NULL,
-    title character varying(255) DEFAULT ''::character varying NOT NULL,
-    part smallint,
-    starting_chapter smallint,
-    ending_chapter smallint,
-    season smallint DEFAULT 0 NOT NULL
-);
 
 
 --
@@ -533,49 +917,6 @@ ALTER SEQUENCE queue_id_seq OWNED BY queue.id;
 SET default_with_oids = false;
 
 --
--- Name: series; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE series (
-    id integer NOT NULL,
-    collection_id integer,
-    title character varying(255) DEFAULT ''::character varying NOT NULL,
-    production_year character varying(4) DEFAULT ''::character varying NOT NULL,
-    indexed boolean DEFAULT false NOT NULL,
-    average_length integer DEFAULT 0 NOT NULL,
-    grayscale smallint DEFAULT 0 NOT NULL
-);
-
-
---
--- Name: TABLE series; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON TABLE series IS 'Collection data';
-
-
---
--- Name: COLUMN series.title; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN series.title IS 'Title used for displays everywhere';
-
-
---
--- Name: COLUMN series.indexed; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN series.indexed IS 'Use indexing or not for episodes';
-
-
---
--- Name: COLUMN series.average_length; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN series.average_length IS 'Average length of minutes of an episode';
-
-
---
 -- Name: series_alt_titles; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -603,44 +944,6 @@ CREATE SEQUENCE series_alt_titles_id_seq
 --
 
 ALTER SEQUENCE series_alt_titles_id_seq OWNED BY series_alt_titles.id;
-
-
---
--- Name: series_dvds; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE series_dvds (
-    id integer NOT NULL,
-    series_id integer,
-    dvd_id integer,
-    side character(1) DEFAULT ' '::bpchar NOT NULL,
-    season smallint DEFAULT 0 NOT NULL,
-    ix smallint DEFAULT 1 NOT NULL,
-    size bigint,
-    volume smallint DEFAULT 0 NOT NULL,
-    audio_preference smallint DEFAULT 0 NOT NULL
-);
-
-
---
--- Name: TABLE series_dvds; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON TABLE series_dvds IS 'Collection data';
-
-
---
--- Name: COLUMN series_dvds.season; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN series_dvds.season IS 'Default season for episodes';
-
-
---
--- Name: COLUMN series_dvds.audio_preference; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN series_dvds.audio_preference IS 'Which audio track to select by default';
 
 
 --
@@ -780,27 +1083,6 @@ ALTER SEQUENCE specs_id_seq OWNED BY specs.id;
 
 
 --
--- Name: subp; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE subp (
-    id integer NOT NULL,
-    track_id integer,
-    ix integer,
-    langcode character varying(255) DEFAULT ''::character varying NOT NULL,
-    streamid character varying(255) DEFAULT ''::character varying NOT NULL,
-    active smallint
-);
-
-
---
--- Name: TABLE subp; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON TABLE subp IS 'Metadata';
-
-
---
 -- Name: subp_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -910,36 +1192,6 @@ ALTER SEQUENCE tags_tracks_id_seq OWNED BY tags_tracks.id;
 
 
 --
--- Name: tracks; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE tracks (
-    id integer NOT NULL,
-    dvd_id integer,
-    ix integer DEFAULT 1 NOT NULL,
-    length double precision,
-    format character varying(255) DEFAULT 'NTSC'::character varying NOT NULL,
-    aspect character varying(255) DEFAULT ''::character varying NOT NULL,
-    closed_captioning smallint,
-    valid smallint DEFAULT 1 NOT NULL
-);
-
-
---
--- Name: TABLE tracks; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON TABLE tracks IS 'Metadata';
-
-
---
--- Name: COLUMN tracks.ix; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN tracks.ix IS 'Track number';
-
-
---
 -- Name: tracks_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -956,24 +1208,6 @@ CREATE SEQUENCE tracks_id_seq
 --
 
 ALTER SEQUENCE tracks_id_seq OWNED BY tracks.id;
-
-
---
--- Name: view_audio; Type: VIEW; Schema: public; Owner: -
---
-
-CREATE VIEW view_audio AS
- SELECT d.id,
-    d.title,
-    t.dvd_id,
-    t.ix AS title_track,
-    a.ix AS audio_track,
-    a.langcode,
-    a.active
-   FROM ((dvds d
-   JOIN tracks t ON ((t.dvd_id = d.id)))
-   JOIN audio a ON ((a.track_id = t.id)))
-  ORDER BY d.id, t.id, a.id;
 
 
 --
@@ -1006,24 +1240,6 @@ CREATE VIEW view_episodes AS
    JOIN dvds d ON ((t.dvd_id = d.id)))
    JOIN series_dvds sd ON ((sd.dvd_id = d.id)))
    JOIN series s ON ((s.id = sd.series_id)));
-
-
---
--- Name: view_subp; Type: VIEW; Schema: public; Owner: -
---
-
-CREATE VIEW view_subp AS
- SELECT d.id,
-    d.title,
-    t.dvd_id,
-    t.ix AS title_track,
-    s.ix AS subp_track,
-    s.langcode,
-    s.active
-   FROM ((dvds d
-   JOIN tracks t ON ((t.dvd_id = d.id)))
-   JOIN subp s ON ((s.track_id = t.id)))
-  ORDER BY d.id, t.id, s.id;
 
 
 --
