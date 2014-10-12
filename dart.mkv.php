@@ -33,7 +33,7 @@
 	$matroska->addSimpleTag("DATE_TAGGED", date("Y-m-d"));
 	$matroska->addSimpleTag("PLAY_COUNTER", 0);
 
-	if($episode_part > 1) {
+	if($episode['part'] > 1) {
 		$matroska->addTag();
 		$matroska->addTarget(40, "PART");
 		$matroska->addSimpleTag("PART_NUMBER", $episode['part']);
