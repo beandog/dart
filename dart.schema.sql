@@ -568,7 +568,6 @@ CREATE VIEW dart_series_episodes AS
     s.average_length,
     s.grayscale,
     sd.side AS series_dvds_side,
-    sd.season AS series_dvds_season,
     sd.ix AS series_dvds_ix,
     sd.volume,
     sd.audio_preference,
@@ -588,7 +587,7 @@ CREATE VIEW dart_series_episodes AS
     e.part,
     e.starting_chapter,
     e.ending_chapter,
-    e.season
+    GREATEST(e.season, sd.season) AS season
    FROM (((((episodes e
    JOIN tracks t ON ((e.track_id = t.id)))
    JOIN dvds d ON ((d.id = t.dvd_id)))
