@@ -119,10 +119,6 @@
 
 			extract($arr);
 
-			$episode_year = $production_year;
-			if($season)
-				$episode_year += $season;
-
 			// Episode part
 			if($part)
 				$title .= ", Part $part";
