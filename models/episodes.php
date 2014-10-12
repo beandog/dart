@@ -101,6 +101,37 @@
 
 		}
 
+		public function get_long_title() {
+
+			$episode_id = intval($this->id);
+
+			$sql = "SELECT * FROM dart_series_episodes WHERE id = $episode_id;";
+			$arr = $this->db->getRow($sql);
+
+			if(!$arr)
+				return "";
+
+			extract($arr);
+
+			$episode_year = $production_year;
+			if($season)
+				$episode_year += $season;
+
+			// Episode part
+			if($part)
+				$title .= ", Part $part";
+
+			// Add season, episode number to indexed series
+			if($indexed == 't') {
+				$episode_number = $this->get_number();
+				$episode_number_ix = str_pad($episode_number, 2, 0, STR_PAD_LEFT);
+				$title = "$season.$episode_number_ix $title";
+			}
+
+			return $title;
+
+		}
+
 		public function get_number() {
 
 			/**
