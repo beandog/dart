@@ -259,7 +259,7 @@
 
 			$episode_id = intval($this->id);
 
-			$sql = "SELECT * FROM view_episodes WHERE episode_id = $episode_id;";
+			$sql = "SELECT * FROM series_dvds_episodes WHERE id = $episode_id;";
 			$arr = $this->db->getRow($sql);
 
 			return $arr;
