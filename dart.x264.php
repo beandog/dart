@@ -51,9 +51,9 @@ if($opt_encode && $episode_id) {
 	/** Files **/
 
 	$handbrake->output_format('av_mkv');
-	$handbrake->input_filename($episode->queue_iso_symlink);
-	$handbrake->input_track($episode->metadata['track_ix']);
-	$handbrake->output_filename($episode->queue_handbrake_x264);
+	$handbrake->input_filename($dvd_source_iso);
+	$handbrake->input_track($episode['track_ix']);
+	$handbrake->output_filename($queue_files['handbrake_output_filename']);
 
 	/** Encoding **/
 
@@ -167,7 +167,7 @@ if($opt_encode && $episode_id) {
 
 	/** Chapters **/
 
-	$handbrake->set_chapters($episode->metadata['episode_starting_chapter'], $episode->metadata['episode_ending_chapter']);
+	$handbrake->set_chapters($episode['starting_chapter'], $episode['ending_chapter']);
 	$handbrake->add_chapters();
 
 	/*
@@ -235,11 +235,11 @@ if($opt_encode && $episode_id) {
 	$d_audio = implode(", ", $arr_audio);
 	$d_preset = $series_model->get_preset_name();
 
-	echo "Collection:\t".$episode->metadata['collection_title']."\n";
-	echo "Series:\t\t".$episode->metadata['series_title']."\n";
-	echo "Episode:\t".$episode->metadata['episode_title']."\n";
-	echo "Source:\t\t".$episode->dvd_iso."\n";
-	echo "Target:\t\t".basename($episode->episode_mkv)."\n";
+	echo "Collection:\t$collection_title\n";
+	echo "Series:\t\t$series_title\n";
+	echo "Episode:\t$episode_title\n";
+	echo "Source:\t\t$dvd_episode_iso\n";
+	echo "Target:\t\t".basename($target_files['episode_mkv'])."\n";
 	if($debug || $dry_run) {
 		echo "Episode ID:\t".$episode_id."\n";
 	}
