@@ -41,18 +41,6 @@
 
 		}
 
-		public function get_dvd_id() {
-
-			$episode_id = intval($this->id);
-
-			$sql = "SELECT dvd_id FROM dart_series_episodes WHERE id = $episode_id LIMIT 1;";
-			$var = $this->db->getOne($sql);
-			$var = intval($var);
-
-			return $var;
-
-		}
-
 		public function get_series_id() {
 
 			$episode_id = intval($this->id);
