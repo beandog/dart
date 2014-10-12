@@ -14,10 +14,14 @@
 
 		public function get_iso() {
 
-			// $sql = "SELECT d.id, d.title FROM series s INNER JOIN series_dvds sd ON sd.series_id = s.id INNER JOIN dvds d ON d.id = sd.dvd_id INNER JOIN tracks t ON t.dvd_id = d.id INNER JOIN episodes e ON e.track_id = t.id WHERE e.id = ".$this->db->quote($this->id)." LIMIT 1;";
-			$sql = "SELECT s.collection_id, sd.series_id, t.dvd_id, e.track_id, s.title FROM episodes e JOIN tracks t ON e.track_id = t.id JOIN dvds d ON t.dvd_id = d.id JOIN series_dvds sd ON d.id = sd.dvd_id JOIN series s ON sd.series_id = s.id  WHERE e.id = ".$this->db->quote($this->id)." LIMIT 1;";
+			$episode_id = intval($this->id);
+
+			$sql = "SELECT s.collection_id, sd.series_id, t.dvd_id, e.track_id, s.title FROM episodes e JOIN tracks t ON e.track_id = t.id JOIN dvds d ON t.dvd_id = d.id JOIN series_dvds sd ON d.id = sd.dvd_id JOIN series s ON sd.series_id = s.id WHERE e.id = $episode_id LIMIT 1;";
 
 			$arr = $this->db->getRow($sql);
+
+			if(!$arr)
+				return "";
 
 			extract($arr);
 
@@ -41,8 +45,9 @@
 
 			$episode_id = intval($this->id);
 
-			$sql = "SELECT t.dvd_id FROM tracks t JOIN episodes e ON e.id = $episode_id;";
-			$var = intval($this->db->getOne($sql));
+			$sql = "SELECT dvd_id FROM dart_series_episodes WHERE id = $episode_id LIMIT 1;";
+			$var = $this->db->getOne($sql);
+			$var = intval($var);
 
 			return $var;
 
@@ -50,9 +55,12 @@
 
 		public function get_series_id() {
 
-			$sql = "SELECT s.id FROM series s INNER JOIN series_dvds sd ON sd.series_id = s.id INNER JOIN dvds d ON d.id = sd.dvd_id INNER JOIN tracks t ON t.dvd_id = d.id INNER JOIN episodes e ON e.track_id = t.id WHERE e.id = ".$this->db->quote($this->id)." LIMIT 1;";
+			$episode_id = intval($this->id);
+
+			$sql = "SELECT series_id FROM dart_series_episodes WHERE id = $episode_id LIMIT 1;";
 
 			$var = $this->db->getOne($sql);
+			$var = intval($var);
 
 			return $var;
 
@@ -60,12 +68,16 @@
 
 		public function get_season() {
 
-			$sql = "SELECT season FROM view_episodes WHERE episode_id = ".$this->db->quote($this->id)." LIMIT 1;";
+			$episode_id = intval($this->id);
+
+			$sql = "SELECT series_dvds_season FROM dart_series_episodes WHERE id = $episode_id LIMIT 1;";
 
 			$var = $this->db->getOne($sql);
 
 			if($var === 0)
 				$var = null;
+			else
+				$var = intval($var);
 
 			return $var;
 
@@ -73,12 +85,16 @@
 
 		public function get_volume() {
 
-			$sql = "SELECT series_dvds_volume FROM view_episodes WHERE episode_id = ".$this->db->quote($this->id)." LIMIT 1;";
+			$episode_id = intval($this->id);
+
+			$sql = "SELECT volume FROM dart_series_episodes WHERE id = $episode_id LIMIT 1;";
 
 			$var = $this->db->getOne($sql);
 
 			if($var === 0)
 				$var = null;
+			else
+				$var = intval($var);
 
 			return $var;
 
@@ -86,7 +102,9 @@
 
 		public function get_display_name() {
 
-			$sql = "SELECT series_title, episode_title, episode_part FROM view_episodes WHERE episode_id = ".$this->db->quote($this->id).";";
+			$episode_id = intval($this->id);
+
+			$sql = "SELECT series_title, title, part FROM dart_series_episodes WHERE id = $episode_id;";
 
 			$arr = $this->db->getRow($sql);
 
@@ -239,7 +257,9 @@
 
 		public function get_metadata() {
 
-			$sql = "SELECT * FROM view_episodes WHERE episode_id = ".$this->db->quote($this->id).";";
+			$episode_id = intval($this->id);
+
+			$sql = "SELECT * FROM view_episodes WHERE episode_id = $episode_id;";
 			$arr = $this->db->getRow($sql);
 
 			return $arr;
@@ -248,7 +268,7 @@
 
 		public function get_chapter_lengths($minimum_length = 0) {
 
-			$episode_id = abs(intval($this->id));
+			$episode_id = intval($this->id);
 			$minimum_length = abs(floatval($minimum_length));
 
 			// Get the track id
