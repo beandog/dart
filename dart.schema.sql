@@ -888,10 +888,7 @@ CREATE TABLE queue (
     id integer NOT NULL,
     hostname character varying(255) DEFAULT ''::character varying NOT NULL,
     episode_id integer,
-    insert_date timestamp with time zone DEFAULT ('now'::text)::timestamp(6) with time zone NOT NULL,
-    x264 smallint DEFAULT 0 NOT NULL,
-    xml smallint DEFAULT 0 NOT NULL,
-    mkv smallint DEFAULT 0 NOT NULL
+    insert_date timestamp with time zone DEFAULT ('now'::text)::timestamp(6) with time zone NOT NULL
 );
 
 
