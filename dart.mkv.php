@@ -24,21 +24,6 @@
 	$matroska->addSimpleTag("TITLE", $series_title);
 	$matroska->addSimpleTag("ORIGINAL_MEDIA_TYPE", "DVD");
 
-	/** Season **/
-	if($episode_season) {
-
-		$matroska->addTag();
-		$matroska->addTarget(60, "SEASON");
-
-		if($episode_year) {
-			$matroska->addSimpleTag("DATE_RELEASE", $episode_year);
-		}
-
-		if($episode_season)
-			$matroska->addSimpleTag("PART_NUMBER", $episode_season);
-
-	}
-
 	/** Episode **/
 	$matroska->addTag();
 	$matroska->addTarget(50, "EPISODE");
