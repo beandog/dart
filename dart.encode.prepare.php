@@ -11,6 +11,7 @@
 	$encodes_model->encode_begin = date('%r');
 
 	$episode_title = $episodes_model->get_long_title();
+	$episode_number = $episodes_model->get_number();
 
 	// Create temporary queue directory, symlinks, files
 	$series_queue_dir = $export_dir."queue/".safe_filename_title($series_title);
