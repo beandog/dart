@@ -920,7 +920,8 @@ CREATE TABLE tracks (
     length double precision,
     format character varying(255) DEFAULT 'NTSC'::character varying NOT NULL,
     aspect character varying(255) DEFAULT ''::character varying NOT NULL,
-    closed_captioning smallint
+    closed_captioning smallint,
+    valid smallint DEFAULT 1 NOT NULL
 );
 
 
