@@ -2,6 +2,7 @@
 
 	$encode_video = false;
 	$encode_stage_pass = false;
+	$encode_stage_complete = false;
 
 	if($force_encode)
 		$encode_video = true;
@@ -12,10 +13,16 @@
 			if(!file_exists($queue_files['handbrake_output_filename']))
 				$encode_video = true;
 			else
-				$encode_stage_pass = true;
+				$encode_stage_complete = true;
+		else
+			$encode_stage_complete = true;
+	else
+		$encode_stage_complete = true;
 
-	if($dry_run)
-		$encode_video = false;
+	if($encode_stage_complete || $dry_run) {
+		$encode_stage_pass = true;
+		goto encode_stage_complete;
+	}
 
 	if($encode_video) {
 
@@ -66,3 +73,5 @@
 		$encodes_model->encode_finish = date('%r');
 
 	}
+
+	encode_stage_complete:
