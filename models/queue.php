@@ -78,7 +78,7 @@
 
 		}
 
-		public function get_episodes($skip = 0, $max = 0, $in_progress = true) {
+		public function get_episodes($skip = 0, $max = 0) {
 
 			$skip = abs(intval($skip));
 			$max = abs(intval($max));
@@ -101,9 +101,6 @@
 
 			if($this->episode_id)
 				$where[] = "episode_id = ".abs(intval($this->episode_id));
-
-			if($in_progress == false)
-				$where[] = "x264 = 0 AND xml = 0 AND mkv = 0";
 
 			if(count($where))
 				$str_where = "WHERE ".implode(" AND ", $where);
