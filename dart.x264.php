@@ -5,7 +5,7 @@ if($opt_encode && $episode_id) {
 	/**
 	 * Handbrake
 	 *
-	 * Gathers data from models, the MediaEpisode and the source itself to
+	 * Gathers data from models, the episode metadata and the source itself to
 	 * and builds a new HandBrake object.
 	 */
 
