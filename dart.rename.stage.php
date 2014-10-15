@@ -33,7 +33,7 @@
 
 	// Rename the video file
 	if($rename_video)
-		$rename_stage_passed = rename($queue_files['mkvmerge_output_filename'], $target_files['episode_mkv'])
+		$rename_stage_passed = rename($queue_files['mkvmerge_output_filename'], $target_files['episode_mkv']);
 
 	rename_stage_complete:
 
