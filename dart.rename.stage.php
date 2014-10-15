@@ -31,9 +31,23 @@
 	if($rename_stage_skipped)
 		goto rename_stage_complete;
 
+	// Create the series target dir if it does not exist
+	if($rename_video) {
+		if(!is_dir($target_files['series_dir'])) {
+			$rename_stage_passed = mkdir($target_files['series_dir'], 0777, true);
+			if(!$rename_stage_passed) {
+				echo "* Creating series target directory FAILED\n";
+				$rename_video = false;
+			}
+		}
+	}
+
 	// Rename the video file
 	if($rename_video)
 		$rename_stage_passed = rename($queue_files['mkvmerge_output_filename'], $target_files['episode_mkv']);
+
+	if(!$rename_stage_passed)
+		echo "* Renaming queue file to target episode filename FAILED\n";
 
 	rename_stage_complete:
 
