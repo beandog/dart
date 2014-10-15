@@ -36,7 +36,9 @@
 
 		public function remove_episode($id) {
 
-			$sql = "DELETE FROM ".$this->table." WHERE episode_id = ".$this->db->quote($id).";";
+			$episode_id = intval($id);
+
+			$sql = "DELETE FROM ".$this->table." WHERE episode_id = $episode_id;";
 
 			return $this->db->query($sql);
 
@@ -80,6 +82,8 @@
 
 		public function get_episodes($skip = 0, $max = 0) {
 
+			$episode_id = intval($this->episode_id);
+
 			$skip = abs(intval($skip));
 			$max = abs(intval($max));
 
@@ -100,7 +104,7 @@
 				$where[] = "hostname = ".$this->db->quote($this->hostname);
 
 			if($this->episode_id)
-				$where[] = "episode_id = ".abs(intval($this->episode_id));
+				$where[] = "episode_id = $episode_id";
 
 			if(count($where))
 				$str_where = "WHERE ".implode(" AND ", $where);
@@ -130,7 +134,7 @@
 
 		public function episode_in_queue($episode_id) {
 
-			$episode_id = abs(intval($episode_id));
+			$episode_id = intval($episode_id);
 
 			if(!$episode_id)
 				return false;
@@ -143,46 +147,6 @@
 				return false;
 			else
 				return true;
-
-		}
-
-		/**
-		 * Get the queue status for an episode at a specific stage.
-		 */
-		public function get_episode_status($episode_id, $stage) {
-
-			if(!in_array($stage, array('x264', 'xml', 'mkv')))
-				return null;
-
-			$episode_id = abs(intval($episode_id));
-
-			$sql = "SELECT $stage FROM queue WHERE episode_id = $episode_id;";
-
-			$var = $this->db->getOne($sql);
-
-			if(is_null($var))
-				return null;
-			else
-				return intval($var);
-
-		}
-
-		public function set_episode_status($episode_id, $stage, $status) {
-
-			$episode_id = abs(intval($episode_id));
-			$stage = trim($stage);
-			$status = abs(intval($status));
-
-			$arr_stages = array('x264', 'xml', 'mkv');
-
-			if(!in_array($stage, $arr_stages))
-				return false;
-
-			$sql = "UPDATE queue SET $stage = $status WHERE episode_id = $episode_id;";
-
-			$this->db->query($sql);
-
-			return true;
 
 		}
 
@@ -202,12 +166,17 @@
 
 		public function remove() {
 
+			$hostname = $this->db->quote(strval($this->hostname));
+			$episode_id = intval($this->episode_id);
+
 			$sql = '';
 
 			if($this->hostname)
-				$sql .= " AND hostname = ".$this->db->quote($this->hostname);
+				$sql .= " AND hostname = $hostname";
+
 			if($this->episode_id)
-				$sql .= " AND episode_id = ".$this->db->quote($this->episode_id);
+				$sql .= " AND episode_id = $episode_id";
+
 			if($this->track_id) {
 				$track_id = intval($this->track_id);
 				$sql .= " AND episode_id IN (SELECT episode_id FROM view_episodes WHERE track_id = $track_id) ";
@@ -223,20 +192,24 @@
 				$sql .= " AND episode_id IN (SELECT episode_id FROM view_episodes WHERE series_id  = $series_id) ";
 			}
 
-			$sql = "DELETE FROM queue WHERE x264 = 0 AND xml = 0 AND mkv = 0 $sql;";
-
-			$this->db->query($sql);
+			if($sql) {
+				$sql = "DELETE FROM queue WHERE $sql;";
+				$this->db->query($sql);
+			}
 
 		}
 
 		public function reset() {
+
+			$episode_id = intval($this->episode_id);
 
 			$sql = '';
 
 			if($this->hostname)
 				$sql .= " AND hostname = ".$this->db->quote($this->hostname);
 			if($this->episode_id)
-				$sql .= " AND episode_id = ".$this->db->quote($this->episode_id);
+				$sql .= " AND episode_id = $episode_id";
+
 			if($this->track_id) {
 				$track_id = intval($this->track_id);
 				$sql .= " AND episode_id IN (SELECT episode_id FROM view_episodes WHERE track_id = $track_id) ";
@@ -259,4 +232,3 @@
 		}
 
 	}
-?>
