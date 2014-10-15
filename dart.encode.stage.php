@@ -4,8 +4,6 @@
 	$encode_stage_pass = false;
 	$encode_stage_complete = false;
 
-	if($force_encode)
-		$encode_video = true;
 
 	// Enable encoding if target file, and mkvmerge output file, and handbrake output file don't exist
 	if(!file_exists($target_files['episode_mkv']))
@@ -19,11 +17,19 @@
 	else
 		$encode_stage_complete = true;
 
+	// Override all settings if encoding is forced
+	if($force_encode) {
+		$encode_video = true;
+		$encode_stage_complete = false;
+	}
+
+	// Jump ahead to next stage if necessary
 	if($encode_stage_complete || $dry_run) {
 		$encode_stage_pass = true;
 		goto encode_stage_complete;
 	}
 
+	// Begin encoding stage
 	if($encode_video) {
 
 		echo "\n";
