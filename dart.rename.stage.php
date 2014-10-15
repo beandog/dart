@@ -24,7 +24,7 @@
 	// Ignore everything on a dry run
 	if($dry_run) {
 		$rename_video = false;
-		$rename_stage_skipped = false;
+		$rename_stage_skipped = true;
 	}
 
 	// Skip the rename
