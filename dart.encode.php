@@ -8,18 +8,21 @@
  */
 if($opt_encode) {
 
-	$num_encoded = 0;
+	// Keep track
+	$episodes_encoded = 0;
+
+	// Certain first pass elements
 	$first_pass = true;
 
-	echo "[Encode]\n";
+	// Get the episodes to encode from the queue
+	$encode_episodes = $queue_model->get_episodes($skip, $max);
+	if(count($encode_episodes))
+		echo "[Encode]\n";
 
-	$encode_episodes = $queue_model->get_episodes($skip, $max, $opt_resume);
-
-	if(count($encode_episodes) == 0)
-		echo "* No episodes in queue to encode\n";
-
+	// Get the first episode id, and resort the array
 	$encode_episode_id = array_shift($encode_episodes);
 
+	// While the episode id is set, encode!
 	while($encode_episode_id) {
 
 		$episode_id = $encode_episode_id;
@@ -32,142 +35,131 @@ if($opt_encode) {
 
 		// Stages
 		$encode_stage_pass = false;
-		$metadata_stage_pass = false;
 		$remux_stage_pass = false;
 		$final_stage_pass = false;
 
-		// new Media Episode
-		$episode = new MediaEpisode($episode_id, $export_dir);
-		$episode->debug = $debug;
-		$episode->encoder_version = $handbrake_version;
-		$episode->remux_version = $mkvmerge_version;
-
-		// If episode already exists, remove it from the queue, and move
-		// onto the next.
-		if($episode->encoded()) {
-			$queue_model->remove_episode($episode_id);
-			$encode_episode_id = array_shift($encode_episodes);
-			continue;
-		}
+		// Toggle to remove the episode from the queue
+		$remove_encode_queue = false;
 
 		// Create models
 		$episodes_model = new Episodes_Model($episode_id);
-		$tracks_model = new Tracks_Model($episodes_model->track_id);
-		$series_model = new Series_Model($episodes_model->get_series_id());
-		$dvds_model = new Dvds_Model($episodes_model->get_dvd_id());
+		$episode = $episodes_model->get_metadata();
 
-		$series_title = $series_model->title;
+		$tracks_model = new Tracks_Model($episode['track_id']);
+		$series_model = new Series_Model($episode['series_id']);
+		$dvds_model = new Dvds_Model($episode['dvd_id']);
+		$encodes_model = new Encodes_Model();
 
-		$episode->create_encodes_entry();
+		// Build encoding variables
+		require 'dart.encode.prepare.php';
+
+		// If episode already exists, remove it from the queue, and move
+		// onto the next.
+		clearstatcache();
+		if(file_exists($target_files['episode_mkv'])) {
+			$remove_encode_queue = true;
+			goto next_episode;
+		}
+
+		// Create temporary directory
+		if(!is_dir($episode_queue_dir))
+			mkdir($episode_queue_dir, 0755, true);
+
+		// Check for ISO file, symlink
+		if(!file_exists($dvd_source_iso)) {
+			echo "* Source ISO $dvd_source_iso does not exist\n";
+			goto next_episode;
+
+		}
+		if(!is_link($queue_files['dvd_iso_symlink']))
+			symlink($dvd_source_iso, $queue_files['dvd_iso_symlink']);
 
 		// Build Handbrake object
 		require 'dart.x264.php';
-		$episode->encode_stage_command = $handbrake_command;
+
+		// Save Handbrake queue files
+		file_put_contents($queue_files['handbrake_script'], "$handbrake_command\n");
+		chmod($queue_files['handbrake_script'], 0777);
+		$tmpfile = tempnam(sys_get_temp_dir(), 'encode');
+		file_put_contents($tmpfile, "$handbrake_command\n");
 
 		// Build Matroska metadata XML file
 		require 'dart.mkv.php';
-		$episode->matroska_xml = $matroska_xml;
-		$episode->remux_stage_command = $remux_stage_command;
 
-		// Create temporary files early
-		require 'dart.encode.queue.php';
-		$episode->create_pre_encode_stage_files();
-		$episode->create_pre_metadata_stage_files();
-		$episode->create_pre_remux_stage_files();
+		// Save Matroska queue files
+		file_put_contents($queue_files['mkvmerge_script'], "$mkvmerge_command\n");
+		file_put_contents($queue_files['metadata_xml_file'], $matroska_xml);
+		chmod($queue_files['mkvmerge_script'], 0777);
 
 		// Display Handbrake encode command
-		$tmpfile = tempnam(sys_get_temp_dir(), 'encode');
-		file_put_contents($tmpfile, $episode->encode_stage_command."\n");
 		echo "Command:\t$tmpfile\n";
 
 		// Cartoons!
-		if($animation) {
+		if($animation)
 			echo "Cartoons!! :D\n";
-		}
-
-		if($dry_run) {
-			$encode_episode_id = array_shift($encode_episodes);
-			continue;
-		}
 
 		// Encode video
 		if($arg_stage == 'encode' || $arg_stage == 'all') {
 
-			$encode_stage_pass = $episode->encode_stage($force_encode);
+			require 'dart.encode.stage.php';
 
-			if($encode_stage_pass)
+			if($encode_stage_passed)
 				echo "Handbrake:\tpassed\n";
+			elseif($encode_stage_skipped)
+				echo "Handbrake:\tskipped\n";
 			else
 				echo "Handbrake:\tfailed\n";
 
 			if($arg_stage == 'encode')
-				continue;
-
-		}
-
-		// Create metadata XML
-		if($arg_stage == 'xml' || ($arg_stage == 'all' && $encode_stage_pass)) {
-
-			$metadata_stage_pass = $episode->metadata_stage($force_metadata);
-
-			if($metadata_stage_pass)
-				echo "Metadata:\tpassed\n";
-			else
-				echo "Metadata:\tfailed\n";
-
-			if($arg_stage == 'xml')
-				continue;
+				goto next_episode;
 
 		}
 
 		// Mux contents into file Matroska file
-		if($arg_stage == 'remux' || ($arg_stage == 'all' && $encode_stage_pass && $metadata_stage_pass)) {
+		if($arg_stage == 'remux' || $arg_stage == 'all') {
 
-			$remux_stage_pass = $episode->remux_stage($force_remux);
+			require 'dart.remux.stage.php';
 
-			if($remux_stage_pass)
+			if($remux_stage_passed)
 				echo "Matroska:\tpassed\n";
+			elseif($remux_stage_skipped)
+				echo "Matroska:\tskipped\n";
 			else
 				echo "Matroska:\tfailed\n";
 
 			if($arg_stage == 'remux')
-				continue;
+				goto next_episode;
 
 		}
 
-		/*
-		 * Final move to new location
-		 *
-		 * If debugging is enabled, it will copy the final episode file,
-		 * but not remove it from the queue.  If a re-encode is begun, and
-		 * everything exists, and debugging is not enabled, then it will
-		 * be removed from the queue.  Because of that, if an encode session
-		 * is started again with the unfinished file in the queue, it will
-		 * be moved to the episodes directory, and the queue entry removed.
-		 *
-		 * The queue directory will be removed if debugging is disabled or
-		 * if the final copy is successful.
-		 *
-		 */
-		if($arg_stage == 'final' || ($arg_stage == 'all' && $encode_stage_pass && $metadata_stage_pass && $remux_stage_pass)) {
+		// Remove queue files, move to final location
+		if($arg_stage == 'final' || $arg_stage == 'all') {
 
-			$final_stage_pass = $episode->final_stage($force_final);
-
-			if($final_stage_pass)
-				echo "Final:\t\tpassed\n";
-			else
-				echo "Final:\t\tfailed\n";
-
-			if($arg_stage == 'final');
-				continue;
+			require 'dart.rename.stage.php';
+			require 'dart.remove.stage.php';
 
 		}
+
+		// Finally, remove the episode from the queue
+		if(file_exists($target_files['episode_mkv']))
+			$remove_encode_queue = true;
+
+		// Don't remove if it's a dry run
+		if($dry_run)
+			$remove_encode_queue = false;
 
 		echo "\n";
 
-		if($encode_stage_pass || $metadata_stage_pass || $remux_stage_pass || $final_stage_pass)
-			$num_encoded++;
+		$episodes_encoded++;
 
+		next_episode:
+
+		if($remove_encode_queue)
+			$queue_model->remove_episode($episode_id);
+
+		// Get the next episode in the encoding queue
+		// At the moment, this is designed to stop when the number of
+		// episodes in the queue -- at startup time -- is depleted
 		$encode_episode_id = array_shift($encode_episodes);
 
 	}
