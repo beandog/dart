@@ -24,7 +24,6 @@
 
 	require_once 'class.media.file.php';
 	require_once 'class.media.iso.php';
-	require_once 'class.media.episode.php';
 
 	require_once 'models/dbtable.php';
 	require_once 'models/dvds.php';
