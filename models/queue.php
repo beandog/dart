@@ -164,38 +164,14 @@
 
 		}
 
+		// Remove all episodes from queue
 		public function remove() {
 
 			$hostname = $this->db->quote(strval($this->hostname));
-			$episode_id = intval($this->episode_id);
 
-			$sql = '';
+			$sql = "DELETE FROM queue WHERE hostname = $hostname";
 
-			if($this->hostname)
-				$sql .= " AND hostname = $hostname";
-
-			if($this->episode_id)
-				$sql .= " AND episode_id = $episode_id";
-
-			if($this->track_id) {
-				$track_id = intval($this->track_id);
-				$sql .= " AND episode_id IN (SELECT episode_id FROM view_episodes WHERE track_id = $track_id) ";
-			}
-
-			if($this->dvd_id) {
-				$dvd_id = intval($this->dvd_id);
-				$sql .= " AND episode_id IN (SELECT episode_id FROM view_episodes WHERE dvd_id  = $dvd_id) ";
-			}
-
-			if($this->series_id) {
-				$series_id = intval($this->series_id);
-				$sql .= " AND episode_id IN (SELECT episode_id FROM view_episodes WHERE series_id  = $series_id) ";
-			}
-
-			if($sql) {
-				$sql = "DELETE FROM queue WHERE $sql;";
-				$this->db->query($sql);
-			}
+			$this->db->query($sql);
 
 		}
 
