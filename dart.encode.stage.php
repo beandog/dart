@@ -1,7 +1,7 @@
 <?php
 
 	$encode_video = false;
-	$encode_stage_pass = false;
+	$encode_stage_passed = false;
 	$encode_stage_skipped = false;
 	$encode_stage_complete = false;
 
@@ -58,12 +58,12 @@
 		$encodes_model->encoder_exit_code = $exit_code;
 
 		// Check exit code
-		$encode_stage_pass = ($exit_code === 0 ? true : false);
+		$encode_stage_passed = ($exit_code === 0 ? true : false);
 
 		// Check for encoding log
 		if(!file_exists($queue_files['handbrake_log'])) {
 			echo "* HandBrake log file DOES NOT EXIST\n";
-			$encode_stage_pass = false;
+			$encode_stage_passed = false;
 		} else {
 			$encodes_model->encode_output = file_get_contents($queue_files['handbrake_log']);
 		}
@@ -72,17 +72,17 @@
 
 	// Do additional checks outside of the encoding
 	// Check if file is at least 2 MB in size
-	if($encode_stage_pass) {
+	if($encode_stage_passed) {
 		$bytes = filesize($queue_files['handbrake_output_filename']);
 		$megabytes = $bytes / 1048576;
 		if($megabytes < 2) {
 			echo "* HandBrake output file too small: $megabytes MB\n";
-			$encode_stage_pass = false;
+			$encode_stage_passed = false;
 		}
 	}
 
 	// Store endtime
-	if($encode_stage_pass)
+	if($encode_stage_passed)
 		$encodes_model->encode_finish = date('%r');
 
 	encode_stage_complete:
