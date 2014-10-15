@@ -53,7 +53,6 @@
 						$queue_model->add_episode($episode_id);
 						$num_queued++;
 
-						$episode->create_queue_iso_symlink($device_realpath);
 
 						$i++;
 
@@ -66,7 +65,7 @@
 			}
 
 			echo "\n[Queue]\n";
-			echo "* Total episodes in queue: $num_episodes\n";
+			echo "* Total episodes in queue: $num_queued\n";
 
 		}
 
