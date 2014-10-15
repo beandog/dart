@@ -70,7 +70,7 @@
 
 	function safe_filename_title($str = 'Title', $underlines = false) {
 
-		$str = preg_replace("/[^A-Za-z0-9 _]/", '', $str);
+		$str = preg_replace("/[^A-Za-z0-9 -_]/", '', $str);
 		$str = str_replace("/", "-", $str);
 		if($underlines)
 			$str = str_replace(' ', '_', $str);
