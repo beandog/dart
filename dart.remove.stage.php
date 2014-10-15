@@ -62,7 +62,7 @@
 		// Remove the episode queue dir
 		$scandir = scandir($episode_queue_dir);
 		if(count($scandir) == 2)
-			unlink($episode_queue_dir);
+			rmdir($episode_queue_dir);
 
 		// Check to see if there are any more than the ISO symlink left
 		// in the series queue dir
@@ -78,7 +78,7 @@
 		if(is_link($queue_files['dvd_iso_symlink']))
 			unlink($queue_files['dvd_iso_symlink']);
 
-		unlink($series_queue_dir);
+		rmdir($series_queue_dir);
 
 	}
 
