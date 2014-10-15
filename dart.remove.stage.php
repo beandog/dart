@@ -14,6 +14,10 @@
 	if(!is_dir($series_queue_dir))
 		$remove_stage_skipped = true;
 
+	// If the series queue dir exists, enable removing queue
+	if(is_dir($series_queue_dir))
+		$remove_queue = true;
+
 	// If the target filename exists, removing the queue is okay
 	if(file_exists($target_files['episode_mkv']))
 		$remove_queue = true;
