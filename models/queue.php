@@ -199,36 +199,4 @@
 
 		}
 
-		public function reset() {
-
-			$episode_id = intval($this->episode_id);
-
-			$sql = '';
-
-			if($this->hostname)
-				$sql .= " AND hostname = ".$this->db->quote($this->hostname);
-			if($this->episode_id)
-				$sql .= " AND episode_id = $episode_id";
-
-			if($this->track_id) {
-				$track_id = intval($this->track_id);
-				$sql .= " AND episode_id IN (SELECT episode_id FROM view_episodes WHERE track_id = $track_id) ";
-			}
-
-			if($this->dvd_id) {
-				$dvd_id = intval($this->dvd_id);
-				$sql .= " AND episode_id IN (SELECT episode_id FROM view_episodes WHERE dvd_id  = $dvd_id) ";
-			}
-
-			if($this->series_id) {
-				$series_id = intval($this->series_id);
-				$sql .= " AND episode_id IN (SELECT episode_id FROM view_episodes WHERE series_id  = $series_id) ";
-			}
-
-			$sql = "UPDATE queue SET x264 = 0, xml = 0, mkv = 0 WHERE (x264 > 0 OR xml > 0 OR mkv > 0) $sql;";
-
-			$this->db->query($sql);
-
-		}
-
 	}

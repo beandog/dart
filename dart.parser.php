@@ -112,12 +112,6 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_reset_queue', array(
-		'long_name' => '--reset',
-		'description' => 'Reset queue status for episodes',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
 	$parser->addOption('opt_resume', array(
 		'long_name' => '--resume',
 		'description' => 'Resume encoding episodes in queue',

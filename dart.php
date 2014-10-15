@@ -117,8 +117,6 @@
 		$queue_model->set_random();
 	if($opt_remove_queue)
 		$queue_model->remove();
-	if($opt_reset_queue)
-		$queue_model->reset();
 	if($arg_queue_series_id)
 		$queue_model->set_series_id($arg_queue_series_id);
 	if($arg_queue_dvd_id)
