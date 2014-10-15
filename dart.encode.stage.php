@@ -2,32 +2,41 @@
 
 	$encode_video = false;
 	$encode_stage_pass = false;
+	$encode_stage_skipped = false;
 	$encode_stage_complete = false;
 
+	// If the final target file exists, skip the encoding stage
+	if(file_exists($target_files['episode_mkv']))
+		$encode_stage_skipped = true;
 
-	// Enable encoding if target file, and mkvmerge output file, and handbrake output file don't exist
+	// If the remuxed video file exists, skip the encoding stage
+	if(file_exists($queue_files['mkvmerge_output_filename']))
+		$encode_stage_skipped = true;
+
+	// If the queue x264 file exists, mark the stage as complete
+	if(file_exists($queue_files['handbrake_output_filename']))
+		$encode_stage_skipped = true;
+
+	// Enable encoding if target file, mkvmerge output file, and handbrake output
+	// file don't exist
 	if(!file_exists($target_files['episode_mkv']))
 		if(!file_exists($queue_files['mkvmerge_output_filename']))
 			if(!file_exists($queue_files['handbrake_output_filename']))
 				$encode_video = true;
-			else
-				$encode_stage_complete = true;
-		else
-			$encode_stage_complete = true;
-	else
-		$encode_stage_complete = true;
 
 	// Override all settings if encoding is forced
 	if($force_encode) {
 		$encode_video = true;
-		$encode_stage_complete = false;
+		$encode_stage_skipped = false;
 	}
 
-	// Jump ahead to next stage if necessary
-	if($encode_stage_complete || $dry_run) {
-		$encode_stage_pass = true;
+	// Ignore everything on a dry run
+	if($dry_run)
+		$encode_stage_skipped = true;
+
+	// Skip the encoding
+	if($encode_stage_skipped)
 		goto encode_stage_complete;
-	}
 
 	// Begin encoding stage
 	if($encode_video) {
@@ -72,12 +81,10 @@
 		}
 	}
 
-	// Final checks
-	if($encode_stage_pass) {
-
-		// Store endtime
+	// Store endtime
+	if($encode_stage_pass)
 		$encodes_model->encode_finish = date('%r');
 
-	}
-
 	encode_stage_complete:
+
+	$encode_stage_complete = true;
