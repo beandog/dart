@@ -16,8 +16,9 @@ if($opt_encode) {
 
 	// Get the episodes to encode from the queue
 	$encode_episodes = $queue_model->get_episodes($skip, $max);
-	if(count($encode_episodes))
-		echo "[Encode]\n";
+	$num_queue_episodes = count($encode_episodes);
+	if($num_queue_episodes)
+		echo "[Encode: $num_queue_episodes episodes]\n";
 
 	// Get the first episode id, and resort the array
 	$encode_episode_id = array_shift($encode_episodes);
