@@ -31,8 +31,10 @@
 	}
 
 	// Ignore everything on a dry run
-	if($dry_run)
+	if($dry_run) {
+		$encode_video = false;
 		$encode_stage_skipped = true;
+	}
 
 	// Skip the encoding
 	if($encode_stage_skipped)
@@ -65,8 +67,12 @@
 			echo "* HandBrake log file DOES NOT EXIST\n";
 			$encode_stage_passed = false;
 		} else {
-			$encodes_model->encode_output = file_get_contents($queue_files['handbrake_log']);
+			$handbrake_log = file_get_contents($queue_files['handbrake_log']);
+			$encodes_model->encode_output = $handbrake_log;
 		}
+
+		// Store endtime
+		$encodes_model->encode_finish = date('%r');
 
 	}
 
@@ -80,10 +86,6 @@
 			$encode_stage_passed = false;
 		}
 	}
-
-	// Store endtime
-	if($encode_stage_passed)
-		$encodes_model->encode_finish = date('%r');
 
 	encode_stage_complete:
 
