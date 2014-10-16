@@ -43,10 +43,8 @@
 		else
 			$target_iso .= ".".$dvds_model->title.".iso";
 
-		$media_iso = new MediaISO($export_dir, $target_iso, $collection_title, $series_title);
-		$media_iso->create_isos_dir();
-
-		$target_iso = $media_iso->get_isos_dir().$target_iso;
+		$isos_dir = "${export_dir}isos/".safe_filename_title($collection_title)."/".safe_filename_title($series_title)."/";
+		$target_iso = $isos_dir.$target_iso;
 
 		$display_iso = basename($target_iso);
 		echo "* Filename: $display_iso\n";
