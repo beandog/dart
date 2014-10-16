@@ -194,7 +194,11 @@
 	));
 	*/
 
-	$result = $parser->parse();
+	try { $result = $parser->parse(); }
+	catch(PEAR_Exception $e) {
+		echo "Invalid options passed, try --help instead\n";
+		exit(1);
+	}
 
 	extract($result->args);
 	extract($result->options);
