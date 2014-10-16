@@ -48,7 +48,7 @@
 
 		// Build the encoding command based on debugging preferences
 		$arg = escapeshellarg($queue_files['handbrake_log']);
-		if($debug)
+		if($verbose)
 			$command = "$handbrake_command 2>&1 | tee $arg";
 		else
 			$command = "$handbrake_command 2> $arg";
