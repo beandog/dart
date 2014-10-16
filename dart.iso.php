@@ -80,6 +80,8 @@
 					$smap = $tmpfname.".smap";
 					if(file_exists($smap))
 						unlink($smap);
+					if(!is_dir($isos_dir))
+						mkdir($isos_dir, 0755, true);
 					rename($tmpfname, $target_iso);
 					chmod($target_iso, 0644);
 					unset($tmpfname);
@@ -96,6 +98,8 @@
 		// Move the ISO to the correct filesystem location
 		// *except* in cases where --info is passed
 		if(!is_link($device) && $device_is_iso && !file_exists($target_iso) && !$opt_info) {
+			if(!is_dir($isos_dir))
+				mkdir($isos_dir, 0755, true);
 			rename($device, $target_iso);
 			echo "* Moving $device to ISOs dir\n";
 		}
