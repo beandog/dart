@@ -334,7 +334,7 @@
 
 			foreach($this->dvd_info['tracks'] as $arr) {
 
-				if($arr['msecs'] > $longest_track_msecs) {
+				if(array_key_exists('msecs', $arr) && $arr['msecs'] > $longest_track_msecs) {
 
 					$longest_track = $arr['track'];
 					$longest_track_msecs = $arr['msecs'];
