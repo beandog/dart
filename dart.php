@@ -281,7 +281,7 @@
 			}
 
 			// Close the tray if not waiting
-			if(!$opt_wait && $tray_open && !$open_trays && $access_device) {
+			if(!$opt_wait && $tray_open && !$opt_open_trays && $access_device) {
 
 				echo "* Drive is open, closing tray\n";
 				if($drive->close())
