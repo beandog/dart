@@ -71,6 +71,9 @@
 			// Dump the DVD contents to an ISO on the filesystem
 			if(!$target_iso_exists && $dump_iso && $access_device) {
 
+				if(!is_dir($isos_dir))
+					mkdir($isos_dir, 0755, true);
+
 				$tmpfname = $target_iso.".dd";
 
 				echo "* Dumping $device to ISO ... ";
@@ -80,8 +83,6 @@
 					$smap = $tmpfname.".smap";
 					if(file_exists($smap))
 						unlink($smap);
-					if(!is_dir($isos_dir))
-						mkdir($isos_dir, 0755, true);
 					rename($tmpfname, $target_iso);
 					chmod($target_iso, 0644);
 					unset($tmpfname);
