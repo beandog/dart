@@ -20,7 +20,7 @@ if($opt_encode && $episode_id) {
 	 * libdvdread 5.0.x
 	 * libdvdnav 5.0.x
 	 * libdvdcss 1.3.0
-	 * use dvdnav over dvdread
+	 * use dvdread over dvdnav
 	 * chapters
 	 * decomb
 	 * detelecine
@@ -62,6 +62,7 @@ if($opt_encode && $episode_id) {
 	$handbrake->decomb($decomb);
 	$handbrake->detelecine($detelecine);
 	$handbrake->autocrop($autocrop);
+	$handbrake->dvdnav(false);
 
 	/** Video **/
 
