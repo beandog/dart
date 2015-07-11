@@ -245,7 +245,7 @@
 		$arr_fn[] = "chap-$first_chapter-final";
 
 	if(is_null($output_filename))
-		$output_filename = implode($arr_fn, '-').".mkv";
+		$output_filename = implode($arr_fn, '-').".mp4";
 
 	// Minimum filesize, 1 MB
 	$min_filesize = 1048576;
