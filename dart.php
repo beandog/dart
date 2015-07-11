@@ -6,6 +6,8 @@
 	$export_dir = getenv('HOME').'/dvds/';
 	$ifo_export_dir = $export_dir.'ifos/';
 	$hostname = php_uname('n');
+	$container = "mkv";
+	$extension = ".mkv";
 
 	// Overrides to defaults
 	require_once 'config.local.php';
