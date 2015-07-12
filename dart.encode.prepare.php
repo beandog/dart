@@ -22,14 +22,14 @@
 		'dvd_iso_symlink' => $series_queue_dir."/$dvd_episode_iso",
 		'handbrake_script' => $episode_queue_dir."/handbrake.sh",
 		'handbrake_log' => $episode_queue_dir."/encode.log",
-		'handbrake_output_filename' => $episode_queue_dir."/x264.mkv",
+		'handbrake_output_filename' => $episode_queue_dir."/x264".$extension,
 		'metadata_xml_file' => $episode_queue_dir."/matroska.xml",
 		'mkvmerge_script' => $episode_queue_dir."/mkvmerge.sh",
 		'mkvmerge_log' => $episode_queue_dir."/remux.out",
-		'mkvmerge_output_filename' => $episode_queue_dir."/remux.mkv",
+		'mkvmerge_output_filename' => $episode_queue_dir."/remux".$extension,
 	);
 
 	$target_files = array(
 		'series_dir' => $export_dir."episodes/".safe_filename_title($series_title),
-		'episode_mkv' => $export_dir."episodes/".safe_filename_title($series_title)."/".safe_filename_title($episode_title).".mkv",
+		'episode_mkv' => $export_dir."episodes/".safe_filename_title($series_title)."/".safe_filename_title($episode_title).$extension,
 	);

@@ -19,10 +19,20 @@
 
 	// Enable encoding if target file, mkvmerge output file, and handbrake output
 	// file don't exist
-	if(!file_exists($target_files['episode_mkv']))
-		if(!file_exists($queue_files['mkvmerge_output_filename']))
+	if($container == 'mkv') {
+
+		if(!file_exists($target_files['episode_mkv']))
+			if(!file_exists($queue_files['mkvmerge_output_filename']))
+				if(!file_exists($queue_files['handbrake_output_filename']))
+					$encode_video = true;
+
+	} elseif ($container = 'mp4') {
+
+		if(!file_exists($target_files['episode_mkv']))
 			if(!file_exists($queue_files['handbrake_output_filename']))
 				$encode_video = true;
+
+	}
 
 	// Override all settings if encoding is forced
 	if($force_encode) {

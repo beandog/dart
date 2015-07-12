@@ -11,8 +11,13 @@
 
 	// Rename the video if the target file does not exist, and the queue
 	// source file does.
-	if(!file_exists($target_files['episode_mkv']))
-		if(file_exists($queue_files['mkvmerge_output_filename']))
+	if($container == 'mkv')
+		if(!file_exists($target_files['episode_mkv']))
+			if(file_exists($queue_files['mkvmerge_output_filename']))
+				$rename_video = true;
+
+	if($container == 'mp4')
+		if(!file_exists($target_files['episode_mkv']))
 			$rename_video = true;
 
 	// Override all settings if renaming is forced

@@ -54,14 +54,17 @@
 			unlink($queue_files['handbrake_log']);
 		if(file_exists($queue_files['handbrake_output_filename']))
 			unlink($queue_files['handbrake_output_filename']);
-		if(file_exists($queue_files['metadata_xml_file']))
-			unlink($queue_files['metadata_xml_file']);
-		if(file_exists($queue_files['mkvmerge_script']))
-			unlink($queue_files['mkvmerge_script']);
-		if(file_exists($queue_files['mkvmerge_log']))
-			unlink($queue_files['mkvmerge_log']);
-		if(file_exists($queue_files['mkvmerge_output_filename']))
-			unlink($queue_files['mkvmerge_output_filename']);
+
+		if($container == 'mkv') {
+			if(file_exists($queue_files['metadata_xml_file']))
+				unlink($queue_files['metadata_xml_file']);
+			if(file_exists($queue_files['mkvmerge_script']))
+				unlink($queue_files['mkvmerge_script']);
+			if(file_exists($queue_files['mkvmerge_log']))
+				unlink($queue_files['mkvmerge_log']);
+			if(file_exists($queue_files['mkvmerge_output_filename']))
+				unlink($queue_files['mkvmerge_output_filename']);
+		}
 
 		// Remove the episode queue dir
 		$scandir = scandir($episode_queue_dir);

@@ -46,7 +46,7 @@
 					$episodes_model = new Episodes_Model($episode_id);
 					$episode = $episodes_model->get_metadata();
 					$episode_title = $episodes_model->get_long_title();
-					$episode_mkv = $export_dir."episodes/".safe_filename_title($episode['series_title'])."/".safe_filename_title($episode_title).".mkv";
+					$episode_mkv = $export_dir."episodes/".safe_filename_title($episode['series_title'])."/".safe_filename_title($episode_title).$extension;
 
 					if(!file_exists($episode_mkv)) {
 

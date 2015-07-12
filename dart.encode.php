@@ -84,13 +84,17 @@ if($opt_encode) {
 		$tmpfile = tempnam(sys_get_temp_dir(), 'encode');
 		file_put_contents($tmpfile, "$handbrake_command\n");
 
-		// Build Matroska metadata XML file
-		require 'dart.mkv.php';
+		if($container == 'mkv')
 
-		// Save Matroska queue files
-		file_put_contents($queue_files['mkvmerge_script'], "$mkvmerge_command\n");
-		file_put_contents($queue_files['metadata_xml_file'], $matroska_xml);
-		chmod($queue_files['mkvmerge_script'], 0777);
+			// Build Matroska metadata XML file
+			require 'dart.mkv.php';
+
+			// Save Matroska queue files
+			file_put_contents($queue_files['mkvmerge_script'], "$mkvmerge_command\n");
+			file_put_contents($queue_files['metadata_xml_file'], $matroska_xml);
+			chmod($queue_files['mkvmerge_script'], 0777);
+
+		}
 
 		// Display Handbrake encode command
 		echo "Command:\t$tmpfile\n";
@@ -117,19 +121,23 @@ if($opt_encode) {
 		}
 
 		// Mux contents into file Matroska file
-		if($arg_stage == 'remux' || $arg_stage == 'all') {
+		if($container == 'mkv') {
 
-			require 'dart.remux.stage.php';
+			if($arg_stage == 'remux' || $arg_stage == 'all') {
 
-			if($remux_stage_passed)
-				echo "Matroska:\tpassed\n";
-			elseif($remux_stage_skipped)
-				echo "Matroska:\tskipped\n";
-			else
-				echo "Matroska:\tfailed\n";
+				require 'dart.remux.stage.php';
 
-			if($arg_stage == 'remux')
-				goto next_episode;
+				if($remux_stage_passed)
+					echo "Matroska:\tpassed\n";
+				elseif($remux_stage_skipped)
+					echo "Matroska:\tskipped\n";
+				else
+					echo "Matroska:\tfailed\n";
+
+				if($arg_stage == 'remux')
+					goto next_episode;
+
+			}
 
 		}
 

@@ -6,7 +6,7 @@
 		$target = "/var/media/updates/";
 
 		// Continually look for files to send
-		while(count($arr =& glob($src."*/*.mkv"))) {
+		while(count($arr =& glob($src."*/*".$extension))) {
 
 			$src_filename = current($arr);
 
