@@ -18,7 +18,8 @@
 
 	if($container == 'mp4')
 		if(!file_exists($target_files['episode_mkv']))
-			$rename_video = true;
+			if(file_exists($queue_files['handbrake_output_filename']))
+				$rename_video = true;
 
 	// Override all settings if renaming is forced
 	if($force_final) {
@@ -49,7 +50,10 @@
 
 	// Rename the video file
 	if($rename_video)
-		$rename_stage_passed = rename($queue_files['mkvmerge_output_filename'], $target_files['episode_mkv']);
+		if($container == 'mkv')
+			$rename_stage_passed = rename($queue_files['mkvmerge_output_filename'], $target_files['episode_mkv']);
+		elseif($container == 'mp4')
+			$rename_stage_passed = rename($queue_files['handbrake_output_filename'], $target_files['episode_mkv']);
 
 	if(!$rename_stage_passed)
 		echo "* Renaming queue file to target episode filename FAILED\n";
