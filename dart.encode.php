@@ -84,7 +84,7 @@ if($opt_encode) {
 		$tmpfile = tempnam(sys_get_temp_dir(), 'encode');
 		file_put_contents($tmpfile, "$handbrake_command\n");
 
-		if($container == 'mkv')
+		if($container == 'mkv') {
 
 			// Build Matroska metadata XML file
 			require 'dart.mkv.php';
