@@ -11,16 +11,16 @@ if($opt_encode && $episode_id) {
 
 	/**
 	 * Encoding specification requirements
-	 * Current version: dlna-usb-5 working spec
+	 * Current version: dlna-ps4-plex-1 working spec
 	 *
-	 * Handbrake 0.10.0-beta through release
-	 * mkvtoolnix 7.2.0
-	 * libebml 1.3.0
-	 * libmatroska 1.4.1
+	 * Handbrake 0.10.2
+	 * mkvtoolnix 8.2.0
+	 * libebml 1.3.2
+	 * libmatroska 1.4.2
 	 * libdvdread 5.0.x
 	 * libdvdnav 5.0.x
 	 * libdvdcss 1.3.0
-	 * use dvdread over dvdnav
+	 * use dvdnav over dvdread
 	 * chapters
 	 * decomb
 	 * detelecine
@@ -65,7 +65,7 @@ if($opt_encode && $episode_id) {
 	$handbrake->decomb($decomb);
 	$handbrake->detelecine($detelecine);
 	$handbrake->autocrop($autocrop);
-	$handbrake->dvdnav(false);
+	$handbrake->dvdnav(true);
 
 	/** Video **/
 
