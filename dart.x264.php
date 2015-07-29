@@ -217,7 +217,7 @@ if($opt_encode && $episode_id) {
 	$arr_h264[] = "level $h264_level";
 	if($video_quality)
 		$arr_x264[] = "quality $video_quality";
-	if($video_bitrate) {
+	elseif($video_bitrate) {
 		$str = "${video_bitrate}k";
 		if($video_two_pass)
 			$str .= " two pass";
