@@ -78,6 +78,7 @@
 			$encode_stage_passed = false;
 		} else {
 			$handbrake_log = file_get_contents($queue_files['handbrake_log']);
+			$handbrake_log = mb_convert_encoding($handbrake_log, 'UTF-8');
 			$encodes_model->encode_output = $handbrake_log;
 		}
 

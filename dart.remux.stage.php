@@ -62,6 +62,7 @@
 			$remux_stage_passed = false;
 		} else {
 			$mkvmerge_log = file_get_contents($queue_files['mkvmerge_log']);
+			$mkvmerge_log = mb_convert_encoding($mkvmerge_log, 'UTF-8');
 			$encodes_model->remux_output = $mkvmerge_log;
 		}
 
