@@ -172,13 +172,25 @@
 
 		}
 
-		public function dump_iso($dest, $method = 'ddrescue') {
+		public function dump_iso($target_dir) {
 
 			if(!$this->opened)
 				return null;
 
 			if($this->debug)
-				echo "* dvd->dump_iso($dest, $method)\n";
+				echo "* dvd->dump_iso($target_dir)\n";
+
+			$arg_input = escapeshellarg($this->device);
+			$arg_output = escapeshellarg($target_dir);
+			$arg_name = $this->title;
+
+			@mkdir($target_dir, 0755, true);
+
+			$cmd = "dvdbackup --mirror --input=$arg_input --output=$arg_output --name=$arg_name";
+			if($this->debug)
+				echo "* $cmd\n";
+
+			exec($cmd, $arr);
 
 			// ddrescue README
 			// Since I've used dd in the past, ddrescue seems like a good
@@ -187,6 +199,9 @@
 			// It does come with a lot of options, so I'm testing these out
 			// for now; however, I have seen multiple examples of using these
 			// arguments for DVDs.
+
+			/**
+			 * Removing support for older ISO dumping methods
 			if($method == 'ddrescue') {
 
 				$logfile = getenv('HOME')."/.ddrescue/".$this->dvdread_id().".log";
@@ -219,7 +234,9 @@
 						return false;
 
 				return true;
+
 			}
+			*/
 
 		}
 
