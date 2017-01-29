@@ -54,18 +54,6 @@
 
 		}
 
-		function get_video_bitrate() {
-
-			$sql = "SELECT presets.video_bitrate FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->db->quote($this->id).";";
-
-			$var = $this->db->getOne($sql);
-
-			$var = abs(intval($var));
-
-			return $var;
-
-		}
-
 		function get_crf() {
 
 			$sql = "SELECT presets.crf FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->db->quote($this->id).";";
@@ -75,36 +63,6 @@
 			$var = abs(intval($var));
 
 			return $var;
-
-		}
-
-		function get_two_pass() {
-
-			$sql = "SELECT presets.two_pass FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->db->quote($this->id).";";
-
-			$var = $this->db->getOne($sql);
-
-			if($var == 't')
-				$bool = true;
-			else
-				$bool = false;
-
-			return $bool;
-
-		}
-
-		function get_two_pass_turbo() {
-
-			$sql = "SELECT presets.two_pass_turbo FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->db->quote($this->id).";";
-
-			$var = $this->db->getOne($sql);
-
-			if($var == 't')
-				$bool = true;
-			else
-				$bool = false;
-
-			return $bool;
 
 		}
 

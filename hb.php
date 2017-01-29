@@ -42,13 +42,6 @@
 		'action' => 'StoreInt',
 		'default' => 0,
 	));
-	$parser->addOption('video_bitrate', array(
-		'short_name' => '-b',
-		'long_name' => '--vb',
-		'description' => 'Video Bitrate (kbps)',
-		'action' => 'StoreInt',
-		'default' => 0,
-	));
 	$parser->addOption('video_quality', array(
 		'short_name' => '-q',
 		'long_name' => '--video-quality',
@@ -104,20 +97,6 @@
 		'description' => 'x264 tune',
 		'action' => 'StoreString',
 		'default' => 'film',
-	));
-	$parser->addOption('two_pass', array(
-		'short_name' => '-w',
-		'long_name' => '--two-pass',
-		'description' => 'Two-pass encode',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
-	$parser->addOption('two_pass_turbo', array(
-		'short_name' => '-T',
-		'long_name' => '--turbo',
-		'description' => 'Two-pass turbo encode',
-		'action' => 'StoreTrue',
-		'default' => false,
 	));
 	$parser->addOption('grayscale', array(
 		'short_name' => '-g',
@@ -183,7 +162,6 @@
 	$input_track = abs(intval($input_track));
 	$first_chapter = abs(intval($first_chapter));
 	$last_chapter = abs(intval($last_chapter));
-	$video_bitrate = abs(intval($video_bitrate));
 	$video_quality = abs(intval($video_quality));
 	$audio_bitrate = abs(intval($audio_bitrate));
 	$audio_encoder = trim($audio_encoder);
@@ -218,15 +196,8 @@
 		$arr_fn[] = $x264_preset;
 		$arr_fn[] = $x264_tune;
 	}
-	if($video_bitrate)
-		$arr_fn[] = $video_bitrate."k";
 	if($video_quality)
 		$arr_fn[] = $video_quality."q";
-	if($two_pass) {
-		$arr_fn[] = "2pass";
-		if($two_pass_turbo)
-			$arr_fn[] = "turbo";
-	}
 	if($video_encoder == 'x264') {
 		$arr_fn[] = $h264_profile;
 		$arr_fn[] = $h264_level;
@@ -274,13 +245,9 @@
 	$hb->add_chapters($add_chapters);
 	if($first_chapter || $last_chapter)
 		$hb->set_chapters($first_chapter, $last_chapter);
-	if($video_bitrate)
-		$hb->set_video_bitrate($video_bitrate);
 	$hb->set_video_encoder($video_encoder);
 	if($video_quality)
 		$hb->set_video_quality($video_quality);
-	$hb->set_two_pass($two_pass);
-	$hb->set_two_pass_turbo($two_pass_turbo);
 	$hb->add_audio_encoder($audio_encoder);
 	if($audio_encoder != 'copy')
 		$hb->set_audio_bitrate($audio_bitrate);
@@ -304,9 +271,6 @@
 	$d_video_quality = $video_quality;
 	if(!$video_quality)
 		$d_video_quality = "(default)";
-	$d_video_bitrate = "$video_bitrate kbps";
-	if(!$video_bitrate)
-		$d_video_bitrate = "(default)";
 	$d_input_track = $input_track;
 	if(!$input_track)
 		$d_input_track = "(default)";
@@ -328,10 +292,6 @@
 		echo "* Chapters: 1-$last_chapter\n";
 	echo "// Video //\n";
 	echo "* Quality: $d_video_quality\n";
-	echo "* Bitrate: $d_video_bitrate\n";
-	echo "* Two-pass: ".d_yes_no(intval($two_pass))."\n";
-	if($two_pass)
-		echo "* Turbo: ".d_yes_no(intval($two_pass_turbo))."\n";
 	echo "* Deinterlace: ".d_yes_no(intval($deinterlace))."\n";
 	echo "* Decomb: ".d_yes_no(intval($decomb))."\n";
 	echo "* Detelecine: ".d_yes_no(intval($detelecine))."\n";

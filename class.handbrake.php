@@ -25,7 +25,6 @@
 		public $dvd_num_subtitles;
 
 		// Video
-		public $video_bitrate;
 		public $video_encoder;
 		public $video_encoders = array('x264', 'ffmpeg4', 'ffmpeg2', 'theora');
 		public $video_quality;
@@ -34,8 +33,6 @@
 		public $decomb;
 		public $detelecine;
 		public $grayscale;
-		public $two_pass;
-		public $two_pass_turbo;
 		public $h264_profile;
 		public $h264_profiles = array('auto', 'high', 'main', 'baseline');
 		public $h264_level;
@@ -113,17 +110,6 @@
 			$this->add_chapters = (boolean)$bool;
 		}
 
-		public function set_video_bitrate($int) {
-			$int = abs(intval($int));
-
-			if($int) {
-				$this->video_bitrate = $int;
-				return true;
-			} else {
-				return false;
-			}
-		}
-
 		public function set_audio_bitrate($int) {
 			$int = abs(intval($int));
 			if($int)
@@ -143,16 +129,6 @@
 			$int = abs(intval($int));
 			if($int)
 				$this->video_quality = $int;
-		}
-
-		public function set_two_pass($bool = true) {
-			$bool = (bool)$bool;
-			$this->two_pass = $bool;
-		}
-
-		public function set_two_pass_turbo($bool = true) {
-			$bool = (bool)$bool;
-			$this->two_pass_turbo = $bool;
 		}
 
 		public function add_audio_track($int) {
@@ -360,12 +336,6 @@
 			if($this->http_optimize)
 				$options[] = "--optimize";
 
-			// Two pass encoding options
-			if($this->two_pass)
-				$options[] = "--two-pass";
-			if($this->two_pass_turbo)
-				$options[] = "--turbo";
-
 			return $options;
 
 		}
@@ -396,11 +366,6 @@
 
 			// Set encoder
 			$args['--encoder'] = $this->video_encoder;
-
-			// Add video bitrate
-			if($this->video_bitrate) {
-				$args['--vb'] = $this->video_bitrate;
-			}
 
 			// Add video quality
 			if(!is_null($this->video_quality)) {
