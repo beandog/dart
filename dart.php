@@ -196,7 +196,7 @@
 			$display_device = basename($device);
 
 		// Determine whether we are reading the device
-		if($opt_rip || $opt_info || $opt_import || $opt_archive || $dump_iso || $opt_dump_ifo || $opt_qa) {
+		if($opt_rip || $opt_info || $opt_import || $opt_archive || $dump_iso || $opt_dump_ifo) {
 			$access_device = true;
 			if(!$opt_wait) {
 				echo "[Access Device]\n";

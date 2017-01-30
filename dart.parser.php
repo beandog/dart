@@ -140,12 +140,6 @@
 		'default' => 0,
 		'help_name' => 'episode',
 	));
-	$parser->addOption('opt_qa', array(
-		'long_name' => '--qa',
-		'description' => 'Run qa checks on DVD',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
 	$parser->addOption('opt_open_trays', array(
 		'long_name' => '--open',
 		'description' => 'Open all DVD trays',
