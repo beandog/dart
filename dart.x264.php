@@ -130,7 +130,7 @@ if($opt_encode && $episode_id) {
 
 	$audio_encoder = $series_model->get_audio_encoder();
 	$audio_bitrate = $series_model->get_audio_bitrate();
-	if($audio_encoder == 'aac') {
+	if($audio_encoder == 'fdk_aac') {
 		$handbrake->add_audio_encoder('fdk_aac');
 		$handbrake->set_audio_fallback('copy');
 		if($audio_bitrate)
