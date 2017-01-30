@@ -82,6 +82,7 @@ if($opt_encode) {
 		file_put_contents($queue_files['handbrake_script'], "$handbrake_command\n");
 		chmod($queue_files['handbrake_script'], 0777);
 		$tmpfile = tempnam(sys_get_temp_dir(), 'encode');
+		chmod($tmpfile, 0755);
 		file_put_contents($tmpfile, "$handbrake_command\n");
 
 		if($container == 'mkv') {
