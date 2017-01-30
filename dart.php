@@ -111,8 +111,6 @@
 	// Manage queue
 	$queue_model = new Queue_Model;
 	$queue_model->set_hostname($hostname);
-	if($opt_random)
-		$queue_model->set_random();
 	if($opt_remove_queue)
 		$queue_model->remove();
 	if($arg_queue_series_id)

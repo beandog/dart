@@ -47,12 +47,6 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_random', array(
-		'long_name' => '--random',
-		'description' => 'Choose encoding order randomly',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
 	$parser->addOption('opt_dry_run', array(
 		'short_name' => '-n',
 		'long_name' => '--dry-run',

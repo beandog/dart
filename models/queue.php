@@ -4,7 +4,6 @@
 
 	class Queue_Model extends DBTable {
 
-		private $random;
 		private $episode_id;
 		private $track_id;
 		private $dvd_id;
@@ -17,7 +16,6 @@
 
 			$this->id = parent::__construct($this->table, $id);
 
-			$this->random = false;
 			$this->episode_id = 0;
 			$this->hostname = '';
 
@@ -68,12 +66,6 @@
 
 		}
 
-		public function set_random($random = true) {
-
-			$this->random = boolval($random);
-
-		}
-
 		public function set_hostname($hostname) {
 
 			$this->hostname = trim($hostname);
@@ -96,9 +88,6 @@
 
 			if($max > 0)
 				$sql .= " LIMIT $max";
-
-			if($this->random)
-				$order_by = "RANDOM(), ";
 
 			if($this->hostname)
 				$where[] = "hostname = ".$this->db->quote($this->hostname);
