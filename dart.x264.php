@@ -49,9 +49,10 @@ if($opt_encode && $episode_id) {
 
 	/** Files **/
 
-	if($container == 'mkv')
+	$preset_format = $series->get_preset_format();
+	if($preset_format == 'mkv')
 		$handbrake->output_format('av_mkv');
-	elseif($container == 'mp4')
+	elseif($preset_format == 'mp4')
 		$handbrake->output_format('av_mp4');
 	$handbrake->input_filename($dvd_source_iso);
 	$handbrake->input_track($episode['track_ix']);
