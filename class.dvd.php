@@ -285,31 +285,6 @@
 
 		}
 
-		public function dump_ifo($dest) {
-
-			if(!$this->opened)
-				return null;
-
-			$arg_dest = escapeshellarg($dest);
-			if($this->debug)
-				echo "* dvd->dump_ifo($arg_dest)\n";
-
-			chdir($dest);
-
-			$arg_device = escapeshellarg($this->device);
-			$cmd = "dvd_backup_ifo $arg_device &> /dev/null";
-
-			$arr = array();
-
-			exec($cmd, $arr, $retval);
-
-			if($retval !== 0)
-				return false;
-			else
-				return true;
-
-		}
-
 		/**
 		 * Get the DVD title
 		 */

@@ -4,7 +4,6 @@
 	// Defaults
 	$all_devices = array('/dev/dvd');
 	$export_dir = getenv('HOME').'/dvds/';
-	$ifo_export_dir = $export_dir.'ifos/';
 	$hostname = php_uname('n');
 	$container = "mp4";
 	$extension = ".mp4";
@@ -105,7 +104,7 @@
 		}
 	}
 
-	if(!count($devices) && ($opt_rip || $opt_info || $dump_iso || $opt_dump_ifo || $opt_import || $opt_archive))
+	if(!count($devices) && ($opt_rip || $opt_info || $dump_iso || $opt_import || $opt_archive))
 		$devices = $all_devices;
 
 	// Manage queue
@@ -196,7 +195,7 @@
 			$display_device = basename($device);
 
 		// Determine whether we are reading the device
-		if($opt_rip || $opt_info || $opt_import || $opt_archive || $dump_iso || $opt_dump_ifo) {
+		if($opt_rip || $opt_info || $opt_import || $opt_archive || $dump_iso) {
 			$access_device = true;
 			if(!$opt_wait) {
 				echo "[Access Device]\n";
@@ -375,7 +374,6 @@
 
 		require 'dart.info.php';
 		require 'dart.import.php';
-		require 'dart.ifo.php';
 		require 'dart.iso.php';
 		require 'dart.rip.php';
 
@@ -392,7 +390,7 @@
 
 		// If polling for a new disc, check to see if one is in the
 		// drive.  If there is, start over.
-		if($opt_wait && ($opt_rip || $opt_import || $opt_archive || $dump_iso || $opt_dump_ifo) && $device_is_hardware) {
+		if($opt_wait && ($opt_rip || $opt_import || $opt_archive || $dump_iso) && $device_is_hardware) {
 
 			// Only toggle devices if passed more than one
 			// Otherwise, just re-poll the original.
