@@ -71,21 +71,10 @@
 			// Dump the DVD contents to an ISO on the filesystem
 			if(!$target_iso_exists && $dump_iso && $access_device) {
 
-				if(!is_dir($isos_dir))
-					mkdir($isos_dir, 0755, true);
+				echo "* Dumping $device to ISO ... \n";
+				$dvd_dump_iso_success = $dvd->dump_iso($target_iso);
 
-				$tmpfname = $target_iso.".dd";
-
-				echo "* Dumping $device to ISO ... ";
-				$success = $dvd->dump_iso($tmpfname);
-
-				if(filesize($tmpfname)) {
-					$smap = $tmpfname.".smap";
-					if(file_exists($smap))
-						unlink($smap);
-					rename($tmpfname, $target_iso);
-					chmod($target_iso, 0644);
-					unset($tmpfname);
+				if($dvd_dump_iso_success) {
 					echo "* DVD copy successful. Ready for another :D\n";
 					$drive->open();
 				} else {

@@ -6,6 +6,7 @@
 		public $dvd_info;
 		public $is_iso;
 		public $debug;
+		public $dry_run;
 
 		public $opened;
 
@@ -66,10 +67,11 @@
 		public $cell_seconds;
 		public $cell_msecs;
 
-		function __construct($device = "/dev/dvd", $debug = false) {
+		function __construct($device = "/dev/dvd", $debug = false, $dry_run = false) {
 
 			$this->device = realpath($device);
 			$this->debug = boolval($debug);
+			$this->dry_run = boolval($dry_run);
 
 			if(!file_exists($this->device)) {
 				$this->opened = false;
@@ -172,25 +174,68 @@
 
 		}
 
-		public function dump_iso($target_dir) {
+		public function dump_iso($filename) {
+
+			$bool = false;
 
 			if(!$this->opened)
 				return null;
 
 			if($this->debug)
-				echo "* dvd->dump_iso($target_dir)\n";
+				echo "* dvd->dump_iso($filename)\n";
 
 			$arg_input = escapeshellarg($this->device);
-			$arg_output = escapeshellarg($target_dir);
-			$arg_name = $this->title;
+			$arg_output = escapeshellarg(dirname($filename));
+			$arg_name = escapeshellarg($this->title);
 
-			@mkdir($target_dir, 0755, true);
+			$target_dir = dirname($filename);
+
+			if(!is_dir($target_dir)) {
+
+				if($this->debug)
+					echo "* Making directory: $target_dir\n";
+
+				$bool = @mkdir($target_dir, 0755, true);
+
+				if(!$bool) {
+					echo "* Creating directory '$target_dir' FAILED!\n";
+					return false;
+				}
+
+			}
+
+			if($this->debug) {
+				echo "* input: $arg_input\n";
+				echo "* output: $arg_output\n";
+				echo "* name: $arg_name\n";
+			}
 
 			$cmd = "dvdbackup --mirror --input=$arg_input --output=$arg_output --name=$arg_name";
 			if($this->debug)
 				echo "* $cmd\n";
 
-			exec($cmd, $arr);
+			$success = true;
+			$retval = 0;
+
+			if(!$this->dry_run)
+				passthru($cmd, $retval);
+
+			if($this->debug)
+				echo "* dvdbackup return value: $retval\n";
+
+			if($retval !== 0)
+				$success = false;
+
+			if(!$this->dry_run)
+				$bool = rename($target_dir.'/'.$arg_name, $filename);
+
+			if($bool === false)
+				$success = false;
+
+			if($this->dry_run)
+				return false;
+
+			return $success;
 
 			// ddrescue README
 			// Since I've used dd in the past, ddrescue seems like a good
