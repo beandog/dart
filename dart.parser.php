@@ -60,6 +60,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_encode_info', array(
+		'long_name' => '--encode-info',
+		'description' => 'Display encoding instructions for a DVD',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('opt_dump_iso', array(
 		'long_name' => '--iso',
 		'description' => 'Copy the DVD filesystem to an ISO',
