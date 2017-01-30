@@ -35,8 +35,6 @@
 		public $grayscale;
 		public $h264_profile;
 		public $h264_profiles = array('auto', 'high', 'main', 'baseline');
-		public $h264_level;
-		public $h264_levels = array('auto', '1.0', '1.b', '1.1', '1.2', '1.3', '2.0', '2.1', '2.2', '3.0', '3.1', '3.2', '4.0', '4.1', '4.2', '5.0', '5.1', '5.2');
 		public $x264_preset;
 		public $x264_presets = array('ultrafast', 'superfast', 'veryfast', 'faster', 'fast', 'medium', 'slow', 'slower', 'veryslow', 'placebo');
 		public $x264_tune;
@@ -214,15 +212,6 @@
 			}
 		}
 
-		public function set_h264_level($str) {
-			if(in_array($str, $this->h264_levels)) {
-				$this->h264_level = $str;
-				return true;
-			} else {
-				return false;
-			}
-		}
-
 		public function set_x264_preset($str) {
 			if(in_array($str, $this->x264_presets)) {
 				$this->x264_preset = $str;
@@ -383,14 +372,6 @@
 					$args['--h264-profile'] = $this->h264_profile;
 				else
 					$args['--encoder-profile'] = $this->h264_profile;
-			}
-
-			// Set H.264 level
-			if(!is_null($this->h264_level)) {
-				if($this->version == '0.9.9')
-					$args['--h264-level'] = $this->h264_level;
-				else
-					$args['--encoder-level'] = $this->h264_level;
 			}
 
 			// Set x264 preset
