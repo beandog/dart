@@ -416,6 +416,5 @@
 	require 'dart.queue.php';
 	require 'dart.encode.php';
 	require 'dart.qa.php';
-	// require 'dart.ftp.php';
 
 ?>

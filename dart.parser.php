@@ -171,14 +171,6 @@
 		'action' => 'StoreString',
 		'default' => 'all',
 	));
-	/*
-	$parser->addOption('opt_ftp', array(
-		'long_name' => '--ftp',
-		'description' => 'FTP finished files',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
-	*/
 
 	try { $result = $parser->parse(); }
 	catch(PEAR_Exception $e) {
