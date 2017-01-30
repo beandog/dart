@@ -38,7 +38,7 @@ if($opt_encode && $episode_id) {
 	 */
 
 	$deinterlace = false;
-	$decomb = $detelecine = $autocrop = true;
+	$decomb = $detelecine = true;
 	$h264_profile = "baseline";
 
 	$handbrake = new Handbrake;
@@ -63,7 +63,6 @@ if($opt_encode && $episode_id) {
 	$handbrake->deinterlace($deinterlace);
 	$handbrake->decomb($decomb);
 	$handbrake->detelecine($detelecine);
-	$handbrake->autocrop($autocrop);
 	$handbrake->dvdnav(true);
 
 	/** Video **/
@@ -195,8 +194,6 @@ if($opt_encode && $episode_id) {
 	$arr_x264 = array();
 	$arr_audio = array();
 
-	if($autocrop)
-		$arr_video[] = "autocrop";
 	if($deinterlace)
 		$arr_video[] = "deinterlace";
 	if($decomb)

@@ -183,7 +183,6 @@
 	if($grain)
 		$x264_tune = 'grain';
 	$video_encoder = 'x264';
-	$autocrop = true;
 
 	require_once 'class.handbrake.php';
 
@@ -255,7 +254,6 @@
 		$hb->add_subtitle_track($subtitle_track);
 	elseif($subtitles && $has_closed_captioning)
 		$hb->add_subtitle_track($hb->get_closed_captioning_ix);
-	$hb->autocrop($autocrop);
 	$hb->decomb($decomb);
 	$hb->detelecine($detelecine);
 	$hb->deinterlace($deinterlace);
@@ -294,7 +292,6 @@
 	echo "* Detelecine: ".d_yes_no(intval($detelecine))."\n";
 	echo "* Grayscale: ".d_yes_no(intval($grayscale))."\n";
 	echo "* Animation: ".d_yes_no(intval($animation))."\n";
-	echo "* Autocrop: ".d_yes_no(intval($autocrop))."\n";
 	if($video_encoder == 'x264') {
 		echo "* H.264 profile: $h264_profile\n";
 		echo "* x264 preset: $x264_preset\n";

@@ -174,15 +174,6 @@
 			$this->audio = true;
 		}
 
-		public function autocrop($bool = true) {
-			$bool = (boolean)$bool;
-			if($bool)
-				$this->crop = null;
-			else
-				$this->crop = "0:0:0:0";
-			return true;
-		}
-
 		public function deinterlace($bool = true) {
 			$this->deinterlace = (boolean)$bool;
 		}
