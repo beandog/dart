@@ -373,6 +373,7 @@
 		}
 
 		require 'dart.info.php';
+		require 'dart.encode_info.php';
 		require 'dart.import.php';
 		require 'dart.iso.php';
 		require 'dart.rip.php';
