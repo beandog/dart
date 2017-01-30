@@ -39,7 +39,6 @@ if($opt_encode && $episode_id) {
 
 	$deinterlace = false;
 	$decomb = $detelecine = $autocrop = true;
-	$h264_level = "3.1";
 	$h264_profile = "high";
 
 	$handbrake = new Handbrake;
@@ -78,7 +77,6 @@ if($opt_encode && $episode_id) {
 
 	/** H.264 **/
 
-	$handbrake->set_h264_level('3.1');
 	$handbrake->set_h264_profile('high');
 
 	/** x264 **/
@@ -87,8 +85,6 @@ if($opt_encode && $episode_id) {
 	$series_x264opts = $series_model->get_x264opts();
 	if(strlen($series_x264opts))
 		$arr_x264_opts[] = $series_x264opts();
-	$arr_x264_opts[] = "keyint=30";
-	// $arr_x264_opts[] = "vbv-bufsize=1024:vbv-maxrate=1024";
 	$x264_opts = implode(":", $arr_x264_opts);
 	$handbrake->set_x264opts($x264_opts);
 	$x264_preset = $series_model->get_x264_preset();
@@ -206,7 +202,6 @@ if($opt_encode && $episode_id) {
 	if($detelecine)
 		$arr_video[] = "detelecine";
 	$arr_h264[] = "profile $h264_profile";
-	$arr_h264[] = "level $h264_level";
 	if($video_quality)
 		$arr_x264[] = "quality $video_quality";
 	$arr_x264[] = "$x264_preset preset";

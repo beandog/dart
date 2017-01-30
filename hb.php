@@ -176,7 +176,6 @@
 	$decomb = true;
 	$detelecine = true;
 	$h264_profile = 'high';
-	$h264_level = '3.1';
 	if($film)
 		$x264_tune = 'film';
 	if($animation)
@@ -200,7 +199,6 @@
 		$arr_fn[] = $video_quality."q";
 	if($video_encoder == 'x264') {
 		$arr_fn[] = $h264_profile;
-		$arr_fn[] = $h264_level;
 	}
 	if($grayscale)
 		$arr_fn[] = 'grayscale';
@@ -263,7 +261,6 @@
 	$hb->deinterlace($deinterlace);
 	$hb->grayscale($grayscale);
 	$hb->set_h264_profile($h264_profile);
-	$hb->set_h264_level($h264_level);
 	$hb->set_x264_preset($x264_preset);
 	if($x264_tune)
 		$hb->set_x264_tune($x264_tune);
@@ -300,7 +297,6 @@
 	echo "* Autocrop: ".d_yes_no(intval($autocrop))."\n";
 	if($video_encoder == 'x264') {
 		echo "* H.264 profile: $h264_profile\n";
-		echo "* H.264 level: $h264_level\n";
 		echo "* x264 preset: $x264_preset\n";
 		echo "* x264 tune: $x264_tune\n";
 	}
