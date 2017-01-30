@@ -27,7 +27,6 @@
 		public $video_encoder;
 		public $video_encoders = array('x264');
 		public $video_quality;
-		public $crop;
 		public $deinterlace;
 		public $decomb;
 		public $detelecine;
@@ -341,11 +340,6 @@
 			// Add video quality
 			if(!is_null($this->video_quality)) {
 				$args['--quality'] = $this->video_quality;
-			}
-
-			// Set cropping parameters
-			if(!is_null($this->crop)) {
-				$args['--crop'] = $this->crop;
 			}
 
 			// Set H.264 profile
