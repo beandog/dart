@@ -26,7 +26,7 @@
 
 		// Video
 		public $video_encoder;
-		public $video_encoders = array('x264', 'ffmpeg4', 'ffmpeg2', 'theora');
+		public $video_encoders = array('x264');
 		public $video_quality;
 		public $crop;
 		public $deinterlace;
@@ -34,11 +34,11 @@
 		public $detelecine;
 		public $grayscale;
 		public $h264_profile;
-		public $h264_profiles = array('auto', 'high', 'main', 'baseline');
+		public $h264_profiles = array('high', 'main', 'baseline');
 		public $x264_preset;
 		public $x264_presets = array('ultrafast', 'superfast', 'veryfast', 'faster', 'fast', 'medium', 'slow', 'slower', 'veryslow', 'placebo');
 		public $x264_tune;
-		public $x264_tuning_options = array('film', 'animation', 'grain', 'stillimage', 'psnr', 'ssim', 'fastdecode', 'zerolatency');
+		public $x264_tuning_options = array('film', 'animation', 'grain');
 		public $x264 = array();
 
 		// Audio
