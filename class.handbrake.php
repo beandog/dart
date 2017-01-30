@@ -115,7 +115,7 @@
 		}
 
 		public function set_video_encoder($str) {
-			if($str == 'x264' || $str == 'ffmpeg4' || $str == 'ffmpeg2' || $str == 'theora') {
+			if($str == 'x264') {
 				$this->video_encoder = $str;
 				return true;
 			} else {
