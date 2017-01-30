@@ -81,12 +81,14 @@ if($opt_encode && $episode_id) {
 
 	/** x264 **/
 
+	/*
 	$arr_x264_opts = array();
 	$series_x264opts = $series_model->get_x264opts();
 	if(strlen($series_x264opts))
 		$arr_x264_opts[] = $series_x264opts();
 	$x264_opts = implode(":", $arr_x264_opts);
 	$handbrake->set_x264opts($x264_opts);
+	*/
 	$x264_preset = $series_model->get_x264_preset();
 	if(!$x264_preset)
 		$x264_preset = 'medium';
