@@ -20,7 +20,6 @@
 
 	require_once 'class.dvd.php';
 	require_once 'class.dvddrive.php';
-	require_once 'class.dvdvob.php';
 	require_once 'class.matroska.php';
 	require_once 'class.handbrake.php';
 

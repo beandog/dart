@@ -185,14 +185,6 @@
 		'default' => false,
 	));
 	*/
-	/*
-	$parser->addOption('opt_dumpvob', array(
-		'long_name' => '--vob',
-		'description' => 'Dump stream to .vob file',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
-	*/
 
 	try { $result = $parser->parse(); }
 	catch(PEAR_Exception $e) {
