@@ -11,7 +11,7 @@ if($opt_encode && $episode_id) {
 
 	/**
 	 * Encoding specification requirements
-	 * Current version: dlna-ps4-plex-1 working spec
+	 * old version: dlna-ps4-plex-1 working spec
 	 *
 	 * Handbrake 0.10.2
 	 * mkvtoolnix 8.2.0
@@ -39,7 +39,7 @@ if($opt_encode && $episode_id) {
 
 	$deinterlace = false;
 	$decomb = $detelecine = $autocrop = true;
-	$h264_profile = "high";
+	$h264_profile = "baseline";
 
 	$handbrake = new Handbrake;
 	$handbrake->set_binary($handbrake_bin);
@@ -77,7 +77,7 @@ if($opt_encode && $episode_id) {
 
 	/** H.264 **/
 
-	$handbrake->set_h264_profile('high');
+	$handbrake->set_h264_profile($h264_profile);
 
 	/** x264 **/
 
