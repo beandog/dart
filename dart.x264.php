@@ -97,6 +97,7 @@ if($opt_encode && $episode_id) {
 	$animation = ($x264_tune == 'animation');
 	$handbrake->set_x264_preset($x264_preset);
 	$handbrake->set_x264_tune($x264_tune);
+	$handbrake->set_http_optimize();
 
 	/** Audio **/
 
