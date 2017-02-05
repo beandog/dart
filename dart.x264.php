@@ -39,7 +39,8 @@ if($opt_encode && $episode_id) {
 
 	$deinterlace = false;
 	$decomb = $detelecine = true;
-	$h264_profile = "baseline";
+	$h264_profile = "high";
+	$h264_level = "4.1";
 
 	$handbrake = new Handbrake;
 	$handbrake->set_binary($handbrake_bin);
