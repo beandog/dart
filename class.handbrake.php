@@ -12,6 +12,7 @@
 		public $dvdnav = true;
 		public $preset;
 		public $track;
+		public $http_optimize;
 		public $flags = array();
 		public $args = array();
 		public $scan_complete = false;
@@ -224,6 +225,10 @@
 			}
 		}
 
+		public function set_http_optimize($bool = true) {
+			$this->http_optimize = (bool)$bool;
+		}
+
 		// FIXME do checks for audio types
 		public function set_audio_fallback($str) {
 			$this->audio_fallback = $str;
@@ -310,6 +315,10 @@
 			// Check for no-dvdnav
 			if(!$this->dvdnav)
 				$options[] = "--no-dvdnav";
+
+			// Check for HTTP optimization
+			if($this->http_optimize)
+				$options[] = "--optimize";
 
 			return $options;
 
