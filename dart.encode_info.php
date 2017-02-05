@@ -13,9 +13,10 @@
 		foreach($dvd_episodes as $episode_id) {
 
 			$episodes_model = new Episodes_Model($episode_id);
+			$episode_metadata = $episodes_model->get_metadata();
 			$tracks_model = new Tracks_Model($episodes_model->track_id);
 			$episode['track_ix'] = $tracks_model->ix;
-			$display_name = $episodes_model->get_display_name();
+			$display_name = $episode_metadata['title'];
 			$queue_files['handbrake_output_filename'] = "$display_name.$container";
 			$series_model = new Series_Model($episodes_model->get_series_id());
 			$dvd_episode_iso = $device;
