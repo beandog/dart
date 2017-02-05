@@ -318,20 +318,6 @@
 				goto next_device;
 			}
 
-			$device_filesize = $dvd->size;
-			$display_filesize = number_format($device_filesize);
-			if(!$device_filesize) {
-				echo "* DVD size reported as zero! Aborting\n";
-				$access_device = false;
-
-				// This is a interruption to the workflow, so annoy the user
-				beep_error();
-
-				goto next_device;
-			}
-
-			echo "* Filesize:\t$display_filesize MB\n";
-
 			// Get the uniq ID for the disc
 			$dvdread_id = $dvd->dvdread_id;
 			$dvd_title = $dvd->title;
