@@ -201,6 +201,7 @@ if($opt_encode && $episode_id) {
 	if($detelecine)
 		$arr_video[] = "detelecine";
 	$arr_h264[] = "profile $h264_profile";
+	$arr_h264[] = "level 4.1";
 	if($video_quality)
 		$arr_x264[] = "quality $video_quality";
 	$arr_x264[] = "$x264_preset preset";
