@@ -111,6 +111,8 @@
 			echo " ";
 			echo "Chapters: ".str_pad($arr_title['dvd']['starting_chapter'], 2, 0, STR_PAD_LEFT)."-".str_pad($arr_title['dvd']['ending_chapter'], 2, 0, STR_PAD_LEFT);
 			echo " ";
+			echo "Index: ".str_pad($arr_title['metadata']['season'], 2, 0, STR_PAD_LEFT)."x".str_pad($arr_title['metadata']['index'], 2, 0, STR_PAD_LEFT);
+			echo " ";
 			echo "Episode: ".$arr_title['metadata']['name'];
 			echo "\n";
 		}
