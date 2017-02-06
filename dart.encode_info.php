@@ -26,7 +26,7 @@
 			$episode_title = $display_name;
 			$episode['starting_chapter'] = $episodes_model->starting_chapter;
 			$episode['ending_chapter'] = $episodes_model->ending_chapter;
-			$collection_title = 'Aquaman';
+			$collection_title = $series_model->get_collection_title();
 
 			echo "[Encode Info]\n";
 			echo "* Name:\t\t$display_name\n";
