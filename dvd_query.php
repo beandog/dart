@@ -61,8 +61,14 @@
 
 		$episodes_model = new Episodes_Model($episode_id);
 		$episode_metadata = $episodes_model->get_metadata();
-
 		$tracks_model = new Tracks_Model($episode_metadata['track_id']);
+
+		// Setting the episode number from the model, which does the correct
+		// job of getting the ultimate one
+		$episode_metadata['episode_number'] = $episodes_model->get_number();
+
+		// Get the long title, including the part number
+		$episode_metadata['long_title'] = $episodes_model->get_long_title();
 
 		$dvd_query['metadata']['series_title'] = $episode_metadata['series_title'];
 
@@ -90,11 +96,18 @@
 			),
 
 			'metadata' => array(
-				'name' => $episode_metadata['title'],
+				'name' => $episode_metadata['long_title'],
 				'volume' => $episode_metadata['volume'],
 				'season' => $episode_metadata['season'],
 				'part_number' => $episode_metadata['part'],
 				'index' => $episode_metadata['ix'],
+				'number' => $episode_metadata['episode_number'],
+			),
+
+			'database' => array(
+				'dvd' => $episode_metadata['dvd_id'],
+				'track' => $episode_metadata['track_id'],
+				'episode' => $episode_id,
 			),
 
 		);
@@ -111,7 +124,7 @@
 			echo " ";
 			echo "Chapters: ".str_pad($arr_title['dvd']['starting_chapter'], 2, 0, STR_PAD_LEFT)."-".str_pad($arr_title['dvd']['ending_chapter'], 2, 0, STR_PAD_LEFT);
 			echo " ";
-			echo "Index: ".str_pad($arr_title['metadata']['season'], 2, 0, STR_PAD_LEFT)."x".str_pad($arr_title['metadata']['index'], 2, 0, STR_PAD_LEFT);
+			echo "Index: ".str_pad($arr_title['metadata']['season'], 2, 0, STR_PAD_LEFT)."x".str_pad($arr_title['metadata']['number'], 2, 0, STR_PAD_LEFT);
 			echo " ";
 			echo "Episode: ".$arr_title['metadata']['name'];
 			echo "\n";
