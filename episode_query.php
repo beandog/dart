@@ -15,8 +15,8 @@
 	require_once 'Console/CommandLine.php';
 
 	$parser = new Console_CommandLine();
-	$parser->description = "DVD Query Tool";
-	$parser->addArgument('device', array('optional' => true, 'default' => '/dev/sr0'));
+	$parser->description = "Episode Query Tool";
+	$parser->addArgument('filename', array('required' => true));
 	$parser->addOption('opt_dirs', array(
 		'long_name' => '--dirs',
 		'description' => 'Display only directories',
@@ -47,11 +47,22 @@
 
 	/** Start everything **/
 
-	$str_elements = explode('.', $device);
+	$str_elements = explode('.', $filename);
+	
+	if(count($str_elements) < 3 || !file_exists($filename) || substr($filename, -1, strlen($extension)) != $container) {
+		echo "Invalid filename\n";
+		exit(1);
+	}
 
 	$episode_query = array();
 	$episode_id = intval($str_elements[3]);
 	$episodes_model = new Episodes_Model($episode_id);
+
+	if(!$episodes_model) {
+		echo "Couldn't find episode for filename $filename\n";
+		exit(1);
+	}
+
 	$episode_metadata = $episodes_model->get_metadata();
 
 	$series_dirname = preg_replace("/[^0-9A-Za-z \-_.]/", '', $episode_metadata['series_title']);
