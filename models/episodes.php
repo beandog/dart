@@ -124,8 +124,8 @@
 			// Check to see if it is manually set
 			$sql = "SELECT episode_number FROM episodes WHERE id = ".$this->id.";";
 			$var = $this->db->getOne($sql);
-
-			if(!is_null($var))
+			
+			if($var)
 				return $var;
 
 
