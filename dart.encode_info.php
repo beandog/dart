@@ -32,7 +32,12 @@
 			require 'dart.x264.php';
 
 			// Override the HandBrake output filename
-			$filename = $episode_metadata['epix'].".$container";
+			$filename = str_pad($dvds_model->get_collection_id(), 1, '0');
+			$filename .= ".".str_pad($dvds_model->get_series_id(), 3, '0', STR_PAD_LEFT);
+			$filename .= ".".str_pad($dvds_model->id, 4, '0', STR_PAD_LEFT);
+			$filename .= ".".str_pad($episode_id, 5, 0, STR_PAD_LEFT);
+			$filename .= ".".$episode_metadata['nsix'];
+			$filename .= ".$container";
 			$handbrake->output_filename($filename);
 
 			$handbrake_command  = $handbrake->get_executable_string();

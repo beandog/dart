@@ -53,6 +53,7 @@
 
 	$dvds_model = new Dvds_Model($dvds_model_id);
 	$dvd_query['dvd']['volname'] = $dvds_model->title;
+	$dvd_query['titles'] = array();
 	
 	$dvd_episodes = $dvds_model->get_episodes();
 
@@ -117,6 +118,11 @@
 
 		);
 
+	}
+
+	if(!count($dvd_query['titles'])) {
+		echo "No episodes listed for $device\n";
+		die;
 	}
 
 	if($opt_json)
