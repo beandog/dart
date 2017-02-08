@@ -35,6 +35,14 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_verbose', array(
+		'long_name' => '--verbose',
+		'short_name' => '-v',
+		'description' => 'Display episode title as well',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
+
 
 	try { $result = $parser->parse(); }
 	catch(PEAR_Exception $e) {
@@ -86,8 +94,13 @@
 	$filename .= str_pad($episode_metadata['season'], 2, 0, STR_PAD_LEFT);
 	$filename .= "e";
 	$filename .= str_pad($episodes_model->get_number(), 2, 0, STR_PAD_LEFT);
-	$filename .= ".".$container;
 
+	if($opt_verbose) {
+		$filename .= " - ";
+		$filename .= preg_replace("/[^0-9A-Za-z \-_.]/", '', $episode_metadata['title']);
+	}
+
+	$filename .= ".".$container;
 
 	if($opt_dirname)
 		echo $series_dirname."/".$season_dirname."/";
