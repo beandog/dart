@@ -100,10 +100,6 @@
 			$this->dry_run = (boolean)$bool;
 		}
 
-		public function output_format($str) {
-			$this->format = $str;
-		}
-
 		public function add_chapters($bool = true) {
 			$this->add_chapters = (boolean)$bool;
 		}
