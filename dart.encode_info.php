@@ -14,6 +14,7 @@
 
 			$episodes_model = new Episodes_Model($episode_id);
 			$episode_metadata = $episodes_model->get_metadata();
+			$episode_metadata['epix'] = $episode_metadata['nsix'].".".str_pad($episode_id, 5, 0, STR_PAD_LEFT);
 			$tracks_model = new Tracks_Model($episodes_model->track_id);
 			$episode['track_ix'] = $tracks_model->ix;
 			$display_name = $episode_metadata['title'];
@@ -37,17 +38,7 @@
 			require 'dart.x264.php';
 
 			// Override the HandBrake output filename
-			$filename = $episode_title;
-			$filename = str_replace(':', 'EECO', $filename);
-			$filename = str_replace('\'', 'EESQ', $filename);
-			$filename = str_replace('"', 'EEDQ', $filename);
-			$filename = str_replace('!', 'EEEM', $filename);
-			$filename = str_replace('$', 'EEDS', $filename);
-			$filename = str_replace('?', 'EEQM', $filename);
-			$filename = str_replace('/', 'EEBS', $filename);
-			$filename = str_replace('\\', 'EEFS', $filename);
-			$filename = str_replace('&', 'EEAM', $filename);
-			$filename .= ".$container";
+			$filename = $episode_metadata['epix'].".$container";
 			$handbrake->output_filename($filename);
 
 			$handbrake_command  = $handbrake->get_executable_string();
