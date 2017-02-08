@@ -29,12 +29,6 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_year', array(
-		'long_name' => '--year',
-		'description' => 'Include year in filenames',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
 
 	try { $result = $parser->parse(); }
 	catch(PEAR_Exception $e) {
@@ -67,15 +61,14 @@
 
 	$series_dirname = preg_replace("/[^0-9A-Za-z \-_.]/", '', $episode_metadata['series_title']);
 
-	if($opt_year) {
-		$series_dirname .= " ";
-		$series_dirname .= "(".$episode_metadata['production_year'].")";
-	}
+	$filename = $series_dirname;
+
+	$series_dirname .= " ";
+	$series_dirname .= "(".$episode_metadata['production_year'].")";
 
 	$season_dirname = "Season ";
 	$season_dirname .= str_pad($episode_metadata['season'], 2, 0, STR_PAD_LEFT);
 
-	$filename = $series_dirname;
 	$filename .= " - ";
 	$filename .= "s";
 	$filename .= str_pad($episode_metadata['season'], 2, 0, STR_PAD_LEFT);
