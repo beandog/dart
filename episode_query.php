@@ -17,15 +17,21 @@
 	$parser = new Console_CommandLine();
 	$parser->description = "Episode Query Tool";
 	$parser->addArgument('filename', array('required' => true));
-	$parser->addOption('opt_dirs', array(
-		'long_name' => '--dirs',
-		'description' => 'Display only directories',
+	$parser->addOption('opt_dirname', array(
+		'long_name' => '--dirname',
+		'description' => 'Display directory name',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
+	$parser->addOption('opt_filename', array(
+		'long_name' => '--filename',
+		'description' => 'Display filename',
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
 	$parser->addOption('opt_full', array(
 		'long_name' => '--full',
-		'description' => 'Include series and season directories',
+		'description' => 'Display directory and filename',
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
@@ -57,6 +63,12 @@
 		exit(1);
 	}
 
+	// If no options passed, simply pass the filename
+	if($opt_full) {
+		$opt_dirname = $opt_filename = true;
+	} elseif(!$opt_dirname && !$opt_filename)
+		$opt_filename = true;
+
 	$episode_metadata = $episodes_model->get_metadata();
 
 	$series_dirname = preg_replace("/[^0-9A-Za-z \-_.]/", '', $episode_metadata['series_title']);
@@ -76,9 +88,11 @@
 	$filename .= str_pad($episodes_model->get_number(), 2, 0, STR_PAD_LEFT);
 	$filename .= ".".$container;
 
-	if($opt_full)
-		echo $series_dirname."/".$season_dirname."/".$filename."\n";	
-	elseif($opt_dirs)
-		echo $series_dirname."/".$season_dirname."/\n";
-	else
-		echo "$filename\n";
+
+	if($opt_dirname)
+		echo $series_dirname."/".$season_dirname."/";
+	
+	if($opt_filename)
+		echo $filename;
+	
+	echo "\n";
