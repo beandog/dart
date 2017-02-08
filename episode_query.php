@@ -48,8 +48,8 @@
 	/** Start everything **/
 
 	$str_elements = explode('.', $filename);
-	
-	if(count($str_elements) < 3 || !file_exists($filename) || substr($filename, -1, strlen($extension)) != $container) {
+
+	if(count($str_elements) < 3 || !file_exists($filename) || substr($filename, strlen($extension) * -1) != $extension) {
 		echo "Invalid filename\n";
 		exit(1);
 	}
