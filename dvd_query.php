@@ -70,7 +70,11 @@
 		// Get the long title, including the part number
 		$episode_metadata['long_title'] = $episodes_model->get_long_title();
 
+		// Set the epix
+		$episode_metadata['epix'] = $episode_metadata['nsix'].".".str_pad($episode_id, 5, 0, STR_PAD_LEFT);
+
 		$dvd_query['metadata']['series_title'] = $episode_metadata['series_title'];
+		$dvd_query['metadata']['nsix'] = $episode_metadata['nsix'];
 
 		$dvd_query['titles'][] = array(
 
@@ -102,6 +106,7 @@
 				'part_number' => $episode_metadata['part'],
 				'index' => $episode_metadata['ix'],
 				'number' => $episode_metadata['episode_number'],
+				'epix' => $episode_metadata['epix'],
 			),
 
 			'database' => array(
@@ -124,7 +129,10 @@
 			echo " ";
 			echo "Chapters: ".str_pad($arr_title['dvd']['starting_chapter'], 2, 0, STR_PAD_LEFT)."-".str_pad($arr_title['dvd']['ending_chapter'], 2, 0, STR_PAD_LEFT);
 			echo " ";
-			echo "Index: ".str_pad($arr_title['metadata']['season'], 2, 0, STR_PAD_LEFT)."x".str_pad($arr_title['metadata']['number'], 2, 0, STR_PAD_LEFT);
+			echo "Index: ";
+			echo $arr_title['metadata']['epix'];
+			echo " ";
+			echo "Number: ".str_pad($arr_title['metadata']['season'], 2, 0, STR_PAD_LEFT)."x".str_pad($arr_title['metadata']['number'], 2, 0, STR_PAD_LEFT);
 			echo " ";
 			echo "Episode: ".$arr_title['metadata']['name'];
 			echo "\n";
