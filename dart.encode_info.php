@@ -29,12 +29,6 @@
 			$episode['ending_chapter'] = $episodes_model->ending_chapter;
 			$collection_title = $series_model->get_collection_title();
 
-			echo "[Encode Info]\n";
-			echo "* Name:\t\t$display_name\n";
-			echo "* DVD Track:\t".$tracks_model->ix."\n";
-			echo "* Episode ID:\t$episode_id\n";
-			echo "* Track ID:\t".$episodes_model->track_id."\n";
-
 			require 'dart.x264.php';
 
 			// Override the HandBrake output filename
@@ -44,8 +38,6 @@
 			$handbrake_command  = $handbrake->get_executable_string();
 
 			echo "\n$handbrake_command\n";
-
-			echo "*****************************************************\n";
 
 		}
 
