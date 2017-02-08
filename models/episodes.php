@@ -121,6 +121,14 @@
 
 		public function get_number() {
 
+			// Check to see if it is manually set
+			$sql = "SELECT episode_number FROM episodes WHERE id = ".$this->id.";";
+			$var = $this->db->getOne($sql);
+
+			if(!is_null($var))
+				return $var;
+
+
 			/**
 			 * I'm taking a different approach here.  Instead of trying to write one
 			 * massive query that checks all conditions, this one looks at three
