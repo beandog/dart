@@ -77,6 +77,15 @@
 		$dvd_query['metadata']['series_title'] = $episode_metadata['series_title'];
 		$dvd_query['metadata']['nsix'] = $episode_metadata['nsix'];
 
+		$filename = str_pad($dvds_model->get_collection_id(), 1, '0');
+		$filename .= ".".str_pad($dvds_model->get_series_id(), 3, '0', STR_PAD_LEFT);
+		$filename .= ".".str_pad($dvds_model->id, 4, '0', STR_PAD_LEFT);
+		$filename .= ".".str_pad($episode_id, 5, 0, STR_PAD_LEFT);
+		$filename .= ".".$episode_metadata['nsix'];
+		$filename .= ".$container";
+
+		$episode_metadata['filename'] = $filename;
+
 		$dvd_query['titles'][] = array(
 
 			'dvd' => array(
@@ -114,6 +123,7 @@
 				'dvd' => $episode_metadata['dvd_id'],
 				'track' => $episode_metadata['track_id'],
 				'episode' => $episode_id,
+				'filename' => $episode_metadata['filename'],
 			),
 
 		);
@@ -131,14 +141,13 @@
 
 		echo "Disc Title: ".$dvd_query['dvd']['volname']."\n";
 		foreach($dvd_query['titles'] as $arr_title) {
+			echo $arr_title['database']['filename'];
+			echo " ";
 			echo "Track: ".str_pad($arr_title['dvd']['track'], 2, 0, STR_PAD_LEFT);
 			echo " ";
 			echo "Chapters: ".str_pad($arr_title['dvd']['starting_chapter'], 2, 0, STR_PAD_LEFT)."-".str_pad($arr_title['dvd']['ending_chapter'], 2, 0, STR_PAD_LEFT);
 			echo " ";
-			echo "Index: ";
-			echo $arr_title['metadata']['epix'];
-			echo " ";
-			echo "Number: ".str_pad($arr_title['metadata']['season'], 2, 0, STR_PAD_LEFT)."x".str_pad($arr_title['metadata']['number'], 2, 0, STR_PAD_LEFT);
+			echo "Season: ".str_pad($arr_title['metadata']['season'], 2, 0, STR_PAD_LEFT)."x".str_pad($arr_title['metadata']['number'], 2, 0, STR_PAD_LEFT);
 			echo " ";
 			echo "Episode: ".$arr_title['metadata']['name'];
 			echo "\n";

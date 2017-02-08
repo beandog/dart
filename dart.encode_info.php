@@ -14,7 +14,6 @@
 
 			$episodes_model = new Episodes_Model($episode_id);
 			$episode_metadata = $episodes_model->get_metadata();
-			$episode_metadata['epix'] = $episode_metadata['nsix'].".".str_pad($episode_id, 5, 0, STR_PAD_LEFT);
 			$tracks_model = new Tracks_Model($episodes_model->track_id);
 			$episode['track_ix'] = $tracks_model->ix;
 			$display_name = $episode_metadata['title'];
