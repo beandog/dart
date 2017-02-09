@@ -111,24 +111,8 @@
 	if(!count($devices) && ($opt_rip || $opt_info || $opt_encode_info || $dump_iso || $opt_import || $opt_archive))
 		$devices = $all_devices;
 
-	// Manage queue
-	$queue_model = new Queue_Model;
-	$queue_model->set_hostname($hostname);
-	if($opt_remove_queue)
-		$queue_model->remove();
-	if($arg_queue_series_id)
-		$queue_model->set_series_id($arg_queue_series_id);
-	if($arg_queue_dvd_id)
-		$queue_model->set_dvd_id($arg_queue_dvd_id);
-	if($arg_queue_track_id)
-		$queue_model->set_track_id($arg_queue_track_id);
-	if($arg_queue_episode_id)
-		$queue_model->set_episode_id($arg_queue_episode_id);
-
 	// General boolean for various items
 	$first_run = true;
-
-	$arr_queue_status = array('ready', 'in progress', 'passed', 'failed');
 
 	$num_encoded = 0;
 
@@ -416,7 +400,7 @@
 
 	}
 
-	require 'dart.queue.php';
+	// require 'dart.queue.php';
 	require 'dart.encode.php';
 
 ?>

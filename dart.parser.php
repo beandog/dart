@@ -105,53 +105,6 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_queue', array(
-		'short_name' => '-q',
-		'long_name' => '--queue',
-		'description' => 'Display the episodes in the queue to be encoded',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
-	$parser->addOption('opt_remove_queue', array(
-		'long_name' => '--remove',
-		'description' => 'Remove all episodes from the queue',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
-	$parser->addOption('opt_resume', array(
-		'long_name' => '--resume',
-		'description' => 'Resume encoding episodes in queue',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
-	$parser->addOption('arg_queue_series_id', array(
-		'long_name' => '--series',
-		'description' => 'Limit queue to series id',
-		'action' => 'StoreInt',
-		'default' => 0,
-		'help_name' => 'id',
-	));
-	$parser->addOption('arg_queue_dvd_id', array(
-		'long_name' => '--dvd',
-		'description' => 'Limit queue to DVD id',
-		'action' => 'StoreInt',
-		'default' => 0,
-		'help_name' => 'id',
-	));
-	$parser->addOption('arg_queue_track_id', array(
-		'long_name' => '--track',
-		'description' => 'Limit queue to track id',
-		'action' => 'StoreInt',
-		'default' => 0,
-		'help_name' => 'id',
-	));
-	$parser->addOption('arg_queue_episode_id', array(
-		'short_name' => '-p',
-		'description' => 'Limit queue to episode id',
-		'action' => 'StoreInt',
-		'default' => 0,
-		'help_name' => 'episode',
-	));
 	$parser->addOption('opt_open_trays', array(
 		'long_name' => '--open',
 		'description' => 'Open all DVD trays',
