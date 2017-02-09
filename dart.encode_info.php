@@ -28,9 +28,6 @@
 			$episode['ending_chapter'] = $episodes_model->ending_chapter;
 			$collection_title = $series_model->get_collection_title();
 
-			require 'dart.x264.php';
-
-			// Override the HandBrake output filename
 			$filename = str_pad($dvds_model->get_collection_id(), 1, '0');
 			$filename .= ".".str_pad($dvds_model->get_series_id(), 3, '0', STR_PAD_LEFT);
 			$filename .= ".".str_pad($dvds_model->id, 4, '0', STR_PAD_LEFT);
@@ -38,10 +35,12 @@
 			$filename .= ".".$episode_metadata['nsix'];
 			$filename .= ".$container";
 
-			if(file_exists($filename) && $debug)
-				echo "File exists: $filename ... skipping!\n";
+			// if(file_exists($filename))
+			//	fwrite(STDERR, "$filename - skipping existing file\n");
 
-			if($opt_skip_existing && !file_exists($filename)) {
+			if(!($opt_skip_existing && file_exists($filename))) {
+
+				require 'dart.x264.php';
 
 				$handbrake->output_filename($filename);
 
