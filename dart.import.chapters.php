@@ -42,13 +42,5 @@
 			}
 		}
 
-		$chapters_model_startcell = intval($chapters_model->startcell);
-		if($chapters_model_startcell != $dvd->chapter_startcell) {
-			$chapters_model->startcell = $dvd->chapter_startcell;
-			if($debug) {
-				echo "* Updating starting cell: $chapters_model_startcell -> ".$dvd->chapter_startcell."\n";
-			}
-		}
-
 	}
 

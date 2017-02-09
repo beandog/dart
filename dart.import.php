@@ -12,7 +12,6 @@
 	$new_audio_tracks = 0;
 	$new_subtitle_tracks = 0;
 	$new_chapters = 0;
-	$new_cells = 0;
 
 	$missing_dvd_metadata = false;
 	$missing_dvd_tracks_metadata = false;
@@ -76,8 +75,6 @@
 			echo "* New subtitle tracks: $new_subtitle_tracks\n";
 		if($new_chapters)
 			echo "* New chapters: $new_chapters\n";
-		if($new_cells)
-			echo "* New cells: $new_cells\n";
 
 	}
 

@@ -140,7 +140,6 @@
 		require 'dart.import.audio.php';
 		require 'dart.import.subtitles.php';
 		require 'dart.import.chapters.php';
-		require 'dart.import.cells.php';
 
 	}
 

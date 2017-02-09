@@ -27,7 +27,6 @@
 		public $title_track_vts;
 		public $title_track_ttn;
 		public $title_track_chapters;
-		public $title_track_cells;
 		public $title_track_audio_tracks;
 		public $title_track_subtitle_tracks;
 
@@ -59,13 +58,6 @@
 		public $chapter_length;
 		public $chapter_seconds;
 		public $chapter_msecs;
-		public $chapter_startcell;
-
-		// DVD Cell
-		public $cell;
-		public $cell_length;
-		public $cell_seconds;
-		public $cell_msecs;
 
 		function __construct($device = "/dev/dvd", $debug = false, $dry_run = false) {
 
@@ -515,7 +507,6 @@
 			$this->title_track_vts = $this->title_track_vts();
 			$this->title_track_ttn = $this->title_track_ttn();
 			$this->title_track_chapters = $this->title_track_chapters();
-			$this->title_track_cells = $this->title_track_cells();
 			$this->title_track_audio_tracks = $this->title_track_audio_tracks();
 			$this->title_track_subtitle_tracks = $this->title_track_subtitle_tracks();
 
@@ -582,15 +573,6 @@
 				return 0;
 
 			return count($this->title_track_info['chapters']);
-
-		}
-
-		private function title_track_cells() {
-
-			if(!array_key_exists('cells', $this->title_track_info))
-				return 0;
-
-			return count($this->title_track_info['cells']);
 
 		}
 
@@ -732,7 +714,6 @@
 			$this->chapter_length = $this->chapter_length();
 			$this->chapter_msecs = $this->chapter_msecs();
 			$this->chapter_seconds = $this->chapter_seconds();
-			$this->chapter_startcell = $this->chapter_startcell();
 
 			return true;
 
@@ -757,55 +738,6 @@
 
 		}
 
-		private function chapter_startcell() {
-			return $this->dvd_info_number($this->chapter_info, 'startcell');
-		}
-
-		/** DVD Cell **/
-
-		public function load_cell($title_track, $cell) {
-
-			$title_track = abs(intval($title_track));
-			$cell = abs(intval($cell));
-
-			$title_track_loaded = $this->load_title_track($title_track);
-
-			if(!$title_track_loaded || $cell === 0 || $cell > $this->title_track_cells) {
-
-				return false;
-			}
-
-			$title_track_index = $this->title_track_index[$title_track];
-
-			$this->cell = $cell;
-			$this->cell_info = $this->dvd_info['tracks'][$title_track_index]['cells'][$this->cell - 1];
-
-			$this->cell_length = $this->cell_length();
-			$this->cell_msecs = $this->cell_msecs();
-			$this->cell_seconds = $this->cell_seconds();
-
-			return true;
-
-		}
-
-		private function cell_length() {
-			return $this->dvd_info_string($this->cell_info, 'length');
-		}
-
-		private function cell_msecs() {
-			return $this->dvd_info_number($this->cell_info, 'msecs');
-		}
-
-		private function cell_seconds() {
-
-			$msecs = abs(intval($this->cell_msecs()));
-			$seconds = 0;
-			if($msecs)
-				$seconds = floatval(bcdiv($msecs, 1000, 3));
-
-			return $seconds;
-
-		}
 
 	}
 
