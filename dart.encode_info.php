@@ -53,6 +53,5 @@
 
 		$opt_encode = false;
 
-		exit;
 
 	}
