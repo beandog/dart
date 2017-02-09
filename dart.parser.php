@@ -40,13 +40,6 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_encode', array(
-		'short_name' => '-e',
-		'long_name' => '--encode',
-		'description' => 'Encode episodes in the queue',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
 	$parser->addOption('opt_dry_run', array(
 		'short_name' => '-n',
 		'long_name' => '--dry-run',
@@ -77,20 +70,6 @@
 		'description' => 'Copy the DVD filesystem to an ISO',
 		'action' => 'StoreTrue',
 		'default' => false,
-	));
-	$parser->addOption('arg_max', array(
-		'short_name' => '-m',
-		'long_name' => '--max',
-		'description' => 'Max # of episodes to rip or encode',
-		'action' => 'StoreInt',
-		'default' => 0,
-	));
-	$parser->addOption('arg_skip', array(
-		'short_name' => '-s',
-		'long_name' => '--skip',
-		'description' => 'Skip the number of episodes to rip or encode',
-		'action' => 'StoreInt',
-		'default' => 0,
 	));
 	$parser->addOption('opt_skip_existing', array(
 		'long_name' => '--skip-existing',

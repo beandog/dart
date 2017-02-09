@@ -48,17 +48,7 @@
 	else
 		$dry_run = false;
 
-	$arg_max = abs($arg_max);
-	if($arg_max)
-		$max = $arg_max;
-	else
-		$max = 0;
-
-	$arg_skip = abs($arg_skip);
-	if($arg_skip)
-		$skip = $arg_skip;
-	else
-		$skip = 0;
+	$skip = 0;
 
 	// Dumping the ISO may be necessary at some point in the encode process,
 	// so handle the request and the action separately.
@@ -399,6 +389,6 @@
 
 	}
 
-	require 'dart.encode.php';
+	// require 'dart.encode.php';
 
 ?>
