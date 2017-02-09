@@ -217,19 +217,21 @@ if($opt_encode && $episode_id) {
 	$d_audio = implode(", ", $arr_audio);
 	$d_preset = $series_model->get_preset_name();
 
-	echo "Collection:\t$collection_title\n";
-	echo "Series:\t\t$series_title\n";
-	echo "Episode:\t$episode_title\n";
-	echo "Source:\t\t$dvd_episode_iso\n";
-	echo "Target:\t\t".basename($target_files['episode_mkv'])."\n";
-	if($debug || $dry_run) {
-		echo "Episode ID:\t".$episode_id."\n";
+	if(!$batch_mode) {
+		echo "Collection:\t$collection_title\n";
+		echo "Series:\t\t$series_title\n";
+		echo "Episode:\t$episode_title\n";
+		echo "Source:\t\t$dvd_episode_iso\n";
+		echo "Target:\t\t".basename($target_files['episode_mkv'])."\n";
+		if($debug || $dry_run) {
+			echo "Episode ID:\t".$episode_id."\n";
+		}
+		echo "Preset:\t\t$d_preset\n";
+		echo "Handbrake:\t$d_video\n";
+		echo "Video:\t\t$d_x264\n";
+		echo "Audio:\t\t$d_audio\n";
+		echo "Subtitles:\t$d_subtitles\n";
 	}
-	echo "Preset:\t\t$d_preset\n";
-	echo "Handbrake:\t$d_video\n";
-	echo "Video:\t\t$d_x264\n";
-	echo "Audio:\t\t$d_audio\n";
-	echo "Subtitles:\t$d_subtitles\n";
 
 	$handbrake_command = $handbrake->get_executable_string();
 

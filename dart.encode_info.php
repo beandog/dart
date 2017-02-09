@@ -41,7 +41,7 @@
 
 			$handbrake_command  = $handbrake->get_executable_string();
 
-			echo "\n$handbrake_command\n";
+			echo "$handbrake_command\n";
 
 		}
 
