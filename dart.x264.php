@@ -60,7 +60,8 @@ if($opt_encode && $episode_id) {
 	$handbrake->deinterlace($deinterlace);
 	$handbrake->decomb($decomb);
 	$handbrake->detelecine($detelecine);
-	$handbrake->dvdnav(true);
+	if($opt_no_dvdnav)
+		$handbrake->dvdnav(false);
 
 	/** Video **/
 

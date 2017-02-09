@@ -66,6 +66,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_no_dvdnav', array(
+		'long_name' => '--no-dvdnav',
+		'description' => 'Tell HandBrake not to use libdvdnav',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('opt_dump_iso', array(
 		'long_name' => '--iso',
 		'description' => 'Copy the DVD filesystem to an ISO',
