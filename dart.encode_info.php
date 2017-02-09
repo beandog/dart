@@ -37,11 +37,18 @@
 			$filename .= ".".str_pad($episode_id, 5, 0, STR_PAD_LEFT);
 			$filename .= ".".$episode_metadata['nsix'];
 			$filename .= ".$container";
-			$handbrake->output_filename($filename);
 
-			$handbrake_command  = $handbrake->get_executable_string();
+			if(file_exists($filename) && $debug)
+				echo "File exists: $filename ... skipping!\n";
 
-			echo "$handbrake_command\n";
+			if($opt_skip_existing && !file_exists($filename)) {
+
+				$handbrake->output_filename($filename);
+
+				$handbrake_command  = $handbrake->get_executable_string();
+
+				echo "$handbrake_command\n";
+			}
 
 		}
 

@@ -86,6 +86,12 @@
 		'action' => 'StoreInt',
 		'default' => 0,
 	));
+	$parser->addOption('opt_skip_existing', array(
+		'long_name' => '--skip-existing',
+		'description' => 'Skip writing to existing files',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('opt_wait', array(
 		'short_name' => '-w',
 		'long_name' => '--wait',
