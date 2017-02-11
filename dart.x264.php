@@ -52,7 +52,6 @@ if($opt_encode && $episode_id) {
 
 	$handbrake->input_filename($dvd_source_iso);
 	$handbrake->input_track($episode['track_ix']);
-	$handbrake->output_filename($queue_files['handbrake_output_filename']);
 
 	/** Encoding **/
 
@@ -160,33 +159,6 @@ if($opt_encode && $episode_id) {
 
 	$handbrake->set_chapters($episode['starting_chapter'], $episode['ending_chapter']);
 	$handbrake->add_chapters();
-
-	/*
-	if($opt_dumpvob) {
-
-		$vob = "$episode_filename.vob";
-
-		if(!file_exists($vob)) {
-
-			$tmpfname = tempnam(dirname($episode_filename), "vob.$episode_id.");
-			$dvdtrack = new DvdTrack($track_number, $iso, $debug);
-			$dvdtrack->getNumAudioTracks();
-			$dvdtrack->setVerbose($verbose);
-			$dvdtrack->setBasename($tmpfname);
-			$dvdtrack->setStartingChapter($episode_starting_chapter);
-			$dvdtrack->setEndingChapter($episode_ending_chapter);
-			$dvdtrack->setAudioStreamID($default_audio_streamid);
-			unlink($tmpfname);
-			$dvdtrack->dumpStream();
-
-			rename($tmpfname.vob, $vob);
-
-		}
-
-		$handbrake->input_filename($episode->queue_iso_symlink);
-
-	}
-	*/
 
 	$arr_video = array();
 	$arr_h264 = array();
