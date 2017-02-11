@@ -388,6 +388,5 @@
 
 	}
 
-	// require 'dart.encode.php';
 
 ?>
