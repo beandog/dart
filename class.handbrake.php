@@ -15,6 +15,7 @@
 		public $scan_complete = false;
 		public $do_not_scan = false;
 		public $dry_run = false;
+		public $output;
 
 		// DVD source
 		public $dvd;
