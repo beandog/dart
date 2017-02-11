@@ -81,7 +81,7 @@
 
 		public function get_episodes() {
 
-			$sql = "SELECT e.id FROM dart_series_episodes e INNER JOIN tracks t ON e.track_id = t.id INNER JOIN dvds d ON t.dvd_id = d.id WHERE d.id = ".$this->db->quote($this->id)." ORDER BY e.season, e.track_ix;";
+			$sql = "SELECT e.id FROM dart_series_episodes e INNER JOIN tracks t ON e.track_id = t.id INNER JOIN dvds d ON t.dvd_id = d.id WHERE d.id = ".$this->db->quote($this->id)." ORDER BY e.season, e.episode_number, e.ix;";
 
 			$arr = $this->db->getCol($sql);
 
