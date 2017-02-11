@@ -96,7 +96,7 @@
 	if($opt_encode_info)
 		$batch_mode = true;
 
-	if(!count($devices) && ($opt_rip || $opt_info || $opt_encode_info || $dump_iso || $opt_import || $opt_archive))
+	if(!count($devices) && ($opt_info || $opt_encode_info || $dump_iso || $opt_import || $opt_archive))
 		$devices = $all_devices;
 
 	// General boolean for various items
@@ -171,7 +171,7 @@
 			$display_device = basename($device);
 
 		// Determine whether we are reading the device
-		if($opt_rip || $opt_info || $opt_encode_info || $opt_import || $opt_archive || $dump_iso) {
+		if($opt_info || $opt_encode_info || $opt_import || $opt_archive || $dump_iso) {
 			$access_device = true;
 			if(!$opt_wait) {
 				if(!$batch_mode) {
@@ -367,7 +367,7 @@
 
 		// If polling for a new disc, check to see if one is in the
 		// drive.  If there is, start over.
-		if($opt_wait && ($opt_rip || $opt_import || $opt_archive || $dump_iso) && $device_is_hardware) {
+		if($opt_wait && ($opt_import || $opt_archive || $dump_iso) && $device_is_hardware) {
 
 			// Only toggle devices if passed more than one
 			// Otherwise, just re-poll the original.
