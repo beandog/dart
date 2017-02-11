@@ -10,16 +10,7 @@ if($opt_encode && $episode_id) {
 	 */
 
 	/**
-	 * Encoding specification requirements
-	 * old version: dlna-ps4-plex-1 working spec
-	 *
-	 * Handbrake 0.10.2
-	 * mkvtoolnix 8.2.0
-	 * libebml 1.3.2
-	 * libmatroska 1.4.2
-	 * libdvdread 5.0.x
-	 * libdvdnav 5.0.x
-	 * libdvdcss 1.3.0
+	 * Encoding specification Blu-ray friendly
 	 * use dvdnav over dvdread
 	 * chapters
 	 * decomb
@@ -32,9 +23,8 @@ if($opt_encode && $episode_id) {
 	 * x264 preset medium
 	 * x264 tune animation, film or grain
 	 * x264 optional grayscale
-	 * x264 options: keyint=30
 	 * H.264 profile high
-	 * H.264 level 3.1
+	 * H.264 level 4.1
 	 */
 
 	$deinterlace = false;
