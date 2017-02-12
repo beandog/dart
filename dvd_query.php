@@ -17,7 +17,7 @@
 
 	$parser = new Console_CommandLine();
 	$parser->description = "DVD Query Tool";
-	$parser->addArgument('device', array('optional' => true, 'default' => '/dev/sr0'));
+	$parser->addArgument('devices', array('optional' => true, 'default' => '/dev/sr0', 'multiple' => true));
 	$parser->addOption('opt_json', array(
 		'long_name' => '--json',
 		'short_name' => '-j',
@@ -36,6 +36,10 @@
 	extract($result->options);
 
 	/** Start everything **/
+
+	start:
+
+	$device = array_shift($devices);
 
 	$dvd_query = array();
 
@@ -154,3 +158,7 @@
 		}
 
 	}
+
+	// The ghosts of monolithic code haunt me. :)
+	if(count($devices))
+		goto start;
