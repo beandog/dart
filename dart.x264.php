@@ -41,7 +41,7 @@ if($opt_encode_info && $episode_id) {
 	/** Files **/
 
 	$handbrake->input_filename($device);
-	$handbrake->input_track($episode['track_ix']);
+	$handbrake->input_track($tracks_model->ix);
 
 	/** Encoding **/
 
@@ -147,7 +147,7 @@ if($opt_encode_info && $episode_id) {
 
 	/** Chapters **/
 
-	$handbrake->set_chapters($episode['starting_chapter'], $episode['ending_chapter']);
+	$handbrake->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
 	$handbrake->add_chapters();
 
 	$arr_video = array();

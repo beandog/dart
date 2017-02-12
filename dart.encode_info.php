@@ -13,12 +13,9 @@
 			$series_model = new Series_Model($episodes_model->get_series_id());
 
 			$episode_metadata = $episodes_model->get_metadata();
-			$episode['track_ix'] = $tracks_model->ix;
 			$target_files['episode_mkv'] = safe_filename_title($episode_metadata['title']).".$container";
 
 			// placeholders
-			$episode['starting_chapter'] = $episodes_model->starting_chapter;
-			$episode['ending_chapter'] = $episodes_model->ending_chapter;
 			$collection_title = $series_model->get_collection_title();
 
 			$filename = str_pad($dvds_model->get_collection_id(), 1, '0');
