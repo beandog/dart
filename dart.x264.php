@@ -40,7 +40,7 @@ if($opt_encode && $episode_id) {
 
 	/** Files **/
 
-	$handbrake->input_filename($dvd_source_iso);
+	$handbrake->input_filename($device);
 	$handbrake->input_track($episode['track_ix']);
 
 	/** Encoding **/

@@ -3,8 +3,6 @@
 	// Display encode instructions about a disc
 	if($opt_encode_info) {
 
-		$dvd_source_iso = $device;
-
 		$opt_encode = true;
 
 		$dvd_episodes = $dvds_model->get_episodes();
