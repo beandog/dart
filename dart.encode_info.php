@@ -3,8 +3,6 @@
 	// Display encode instructions about a disc
 	if($opt_encode_info) {
 
-		$opt_encode = true;
-
 		$dvd_episodes = $dvds_model->get_episodes();
 
 		// Display the episode names
@@ -47,8 +45,5 @@
 			}
 
 		}
-
-		$opt_encode = false;
-
 
 	}
