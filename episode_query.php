@@ -16,7 +16,7 @@
 
 	$parser = new Console_CommandLine();
 	$parser->description = "Episode Query Tool";
-	$parser->addArgument('filename', array('required' => true));
+	$parser->addArgument('filenames', array('required' => true, 'multiple' => true));
 	$parser->addOption('opt_dirname', array(
 		'long_name' => '--dirname',
 		'description' => 'Display directory name',
@@ -54,6 +54,11 @@
 	extract($result->options);
 
 	/** Start everything **/
+
+	start:
+
+	$filename = array_shift($filenames);
+
 
 	$realpath = realpath($filename);
 	$dirname = dirname($realpath);
@@ -113,3 +118,7 @@
 		echo $filename;
 	
 	echo "\n";
+
+	// The ghosts of monolithic code haunt me. :)
+	if(count($filenames))
+		goto start;
