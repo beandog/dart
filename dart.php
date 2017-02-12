@@ -55,7 +55,11 @@
 		$dump_iso = true;
 	else
 		$dump_iso = false;
-	
+
+	foreach($devices as $key => $value) {
+		$devices[$key] = realpath($value);
+	}
+
 	if($opt_iso_filename) {
 
 		foreach($devices as $device) {
