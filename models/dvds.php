@@ -160,5 +160,17 @@
 
 		}
 
+		function load_dvdread_id($dvdread_id) {
+
+			if(!$dvdread_id)
+				return false;
+
+			$sql = "SELECT id FROM dvds WHERE dvdread_id = ".$this->db->quote($dvdread_id).";";
+			$this->id = intval($this->db->getOne($sql));
+
+			return $this->id;
+
+		}
+
 	}
 ?>
