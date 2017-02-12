@@ -67,6 +67,16 @@
 
 	}
 
+	if($opt_rename_iso) {
+
+		foreach($devices as $device) {
+			rename_iso($device);
+		}
+
+		exit(0);
+
+	}
+
 	// Handle arguments to force stages, and do logic here instead of later
 	$force_encode = false;
 	$force_metadata = false;

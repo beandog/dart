@@ -89,9 +89,22 @@
 		$filename = str_pad($dvds_model->get_collection_id(), 1, '0');
 		$filename .= ".".str_pad($dvds_model->get_series_id(), 3, '0', STR_PAD_LEFT);
 		$filename .= ".".str_pad($dvds_model->id, 4, '0', STR_PAD_LEFT);
-		$filename .= ".".strtoupper(safe_filename_title($dvds_model->get_series_title()));
+		$filename .= ".".$series_model->nsix;
 		$filename .= ".iso";
 		return $filename;
+
+	}
+
+	function rename_iso($source) {
+
+		$dvd_iso_filename = get_dvd_iso_filename($source);
+		$bool = true;
+
+		if(!file_exists($dvd_iso_filename)) {
+			$bool = rename($source, $dvd_iso_filename);
+		}
+
+		return $bool;
 
 	}
 

@@ -108,6 +108,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_rename_iso', array(
+		'long_name' => '--rename-iso',
+		'description' => 'Rename ISO to correct syntax',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 
 	try { $result = $parser->parse(); }
 	catch(PEAR_Exception $e) {
