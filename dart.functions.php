@@ -76,4 +76,20 @@
 
 	}
 
+	function get_dvd_iso_filename($dvd_model_id) {
+
+		require_once 'models/dvds.php';
+		require_once 'models/series.php';
+
+		$dvds_model = new Dvds_Model($dvd_model_id);
+		$series_model = new Series_Model($dvds_model->get_series_id());
+		$filename = str_pad($dvds_model->get_collection_id(), 1, '0');
+		$filename .= ".".str_pad($dvds_model->get_series_id(), 3, '0', STR_PAD_LEFT);
+		$filename .= ".".str_pad($dvds_model->id, 4, '0', STR_PAD_LEFT);
+		$filename .= ".".strtoupper(safe_filename_title($dvds_model->get_series_title()));
+		$filename .= ".iso";
+		return $filename;
+
+	}
+
 ?>
