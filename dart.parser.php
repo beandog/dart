@@ -102,6 +102,12 @@
 		'action' => 'StoreString',
 		'default' => 'all',
 	));
+	$parser->addOption('opt_iso_filename', array(
+		'long_name' => '--iso-filename',
+		'description' => 'Display ISO filename',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 
 	try { $result = $parser->parse(); }
 	catch(PEAR_Exception $e) {

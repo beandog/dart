@@ -55,6 +55,17 @@
 		$dump_iso = true;
 	else
 		$dump_iso = false;
+	
+	if($opt_iso_filename) {
+
+		foreach($devices as $device) {
+			echo get_dvd_iso_filename($device);
+			echo "\n";
+		}
+
+		exit(0);
+
+	}
 
 	// Handle arguments to force stages, and do logic here instead of later
 	$force_encode = false;
