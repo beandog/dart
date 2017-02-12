@@ -14,11 +14,9 @@
 
 			$episode_metadata = $episodes_model->get_metadata();
 			$episode['track_ix'] = $tracks_model->ix;
-			$display_name = $episode_metadata['title'];
-			$target_files['episode_mkv'] = safe_filename_title($display_name).".$container";
+			$target_files['episode_mkv'] = safe_filename_title($episode_metadata['title']).".$container";
 
 			// placeholders
-			$episode_title = $display_name;
 			$episode['starting_chapter'] = $episodes_model->starting_chapter;
 			$episode['ending_chapter'] = $episodes_model->ending_chapter;
 			$collection_title = $series_model->get_collection_title();
