@@ -56,10 +56,6 @@
 	else
 		$dump_iso = false;
 
-	foreach($devices as $key => $value) {
-		$devices[$key] = realpath($value);
-	}
-
 	if($opt_iso_filename) {
 
 		foreach($devices as $device) {
@@ -171,11 +167,8 @@
 		// Making a run for it! :)
 		$first_run = false;
 
-		// Get the real path of the device (no symlinks, full dirname)
-		$device_realpath = realpath($device);
-
 		// Check if source filename is a block device or not
-		$device_dirname = dirname($device_realpath);
+		$device_dirname = dirname(realpath($device));
 		if($device_dirname == "/dev") {
 			$device_is_hardware = true;
 			$device_is_iso = false;
@@ -204,7 +197,7 @@
 					echo "* Reading $display_device\n";
 				}
 				if($debug)
-					echo "* Reading $device_realpath\n";
+					echo "* Reading ".realpath($device)."\n";
 			}
 		}
 

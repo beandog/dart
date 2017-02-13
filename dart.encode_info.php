@@ -14,7 +14,9 @@
 
 			$filename = get_episode_filename($episode_id, $container);
 
-			if(is_file($device))
+			if(is_link($device))
+				$dirname = realpath(".")."/";
+			elseif(is_file($device))
 				$dirname = realpath($device)."/";
 			elseif(is_dir($device))
 				$dirname = realpath($device."/../")."/";
