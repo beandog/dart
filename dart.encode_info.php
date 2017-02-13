@@ -14,26 +14,14 @@
 
 			$filename = get_episode_filename($episode_id, $container);
 
-			if(is_link($device))
-				$dirname = realpath(".")."/";
-			elseif(is_file($device))
-				$dirname = realpath($device)."/";
-			elseif(is_dir($device))
-				$dirname = realpath($device."/../")."/";
-			else
-				$dirname = realpath(".")."/";
-
-			$filename = $dirname.$filename;
-
 			if(!($opt_skip_existing && file_exists($filename))) {
 
 				require 'dart.x264.php';
-
+				$handbrake->input_filename(realpath($device));
 				$handbrake->output_filename($filename);
-
 				$handbrake_command  = $handbrake->get_executable_string();
-
 				echo "$handbrake_command\n";
+
 			}
 
 		}
