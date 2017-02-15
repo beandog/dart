@@ -88,6 +88,14 @@
 
 	$episode_metadata = $episodes_model->get_metadata();
 
+	// An episode can override series title if it is in format (Series Title)
+	if(substr($episode_metadata['title'], 0, 1) == "(") {
+
+
+		$episode_metadata['series_title'] = substr($episode_metadata['title'], 1, strpos($episode_metadata['title'], ")"));
+
+	}
+
 	$series_dirname = preg_replace("/[^0-9A-Za-z \-_.]/", '', $episode_metadata['series_title']);
 
 	$filename = $series_dirname;
@@ -102,7 +110,13 @@
 	$filename .= "s";
 	$filename .= str_pad($episode_metadata['season'], 2, 0, STR_PAD_LEFT);
 	$filename .= "e";
-	$filename .= str_pad($episodes_model->get_number(), 2, 0, STR_PAD_LEFT);
+	$episode_number = $episodes_model->get_number();
+
+	while($episode_number > 100)
+		$episode_number -= 100;
+
+	// An episode number also being over 100 is an indicator that it's another series
+	$filename .= str_pad($episode_number, 2, 0, STR_PAD_LEFT);
 
 	if($opt_verbose) {
 		$filename .= " - ";
