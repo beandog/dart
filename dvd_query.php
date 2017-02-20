@@ -25,6 +25,13 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_display_filenames', array(
+		'long_name' => '--filenames',
+		'short_name' => '-f',
+		'description' => 'Display episode filenames',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('opt_num_episodes', array(
 		'long_name' => '--num-episodes',
 		'short_name' => '-n',
@@ -113,6 +120,11 @@
 
 		$episode_metadata['filename'] = $filename;
 
+		if($opt_display_filenames) {
+			echo $episode_metadata['filename'];
+			echo "\n";
+		}
+
 		if($opt_num_encoded && file_exists($episode_metadata['filename']))
 			$num_encoded++;
 
@@ -173,6 +185,8 @@
 		echo "\n";
 		exit(0);
 		
+	} elseif($opt_display_filenames) {
+		exit(0);
 	} else {
 
 		echo "Disc Title: ".$dvd_query['dvd']['volname']."\n";
