@@ -28,21 +28,28 @@
 	$parser->addOption('opt_display_filenames', array(
 		'long_name' => '--filenames',
 		'short_name' => '-f',
-		'description' => 'Display episode filenames',
+		'description' => 'Display episode filenames instead of info',
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_num_episodes', array(
-		'long_name' => '--num-episodes',
+	$parser->addOption('opt_num', array(
+		'long_name' => '--num',
 		'short_name' => '-n',
 		'description' => 'Display # of episodes',
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_num_encoded', array(
-		'long_name' => '--num-encoded',
+	$parser->addOption('opt_encoded', array(
+		'long_name' => '--encoded',
 		'short_name' => '-e',
-		'description' => 'Display # of episodes encoded',
+		'description' => 'Display episodes encoded',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
+	$parser->addOption('opt_not', array(
+		'long_name' => '--not',
+		'short_name' => '-x',
+		'description' => 'Display opposite',
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
@@ -58,6 +65,20 @@
 
 	/** Start everything **/
 
+	$opt_info = true;
+
+	if($opt_json || $opt_display_filenames || $opt_num)
+		$opt_info = false;
+	
+	$num_episodes = 0;
+	$num_encoded = 0;
+	$num_not_encoded = 0;
+	$episode_filenames[] = array();
+	$episodes_encoded = array();
+	$episodes_not_encoded = array();
+	$episode_encoded = false;
+	$display_episode = '';
+
 	start:
 
 	$device = array_shift($devices);
@@ -71,9 +92,10 @@
 	$dvd_query['dvd']['dvdread_id'] = $dvd->dvdread_id();
 	$dvds_model_id = $dvds_model->find_dvdread_id($dvd_query['dvd']['dvdread_id']);
 
-	if(!$dvds_model_id) {
-		echo "DVD not found\n";
-		die(1);
+	if(!$dvds_model_id && $opt_info) {
+		echo "Disc Title: Not found -- needs import\n";
+		if(count($devices))
+			goto start;
 	}
 
 	$dvds_model = new Dvds_Model($dvds_model_id);
@@ -82,14 +104,7 @@
 	
 	$dvd_episodes = $dvds_model->get_episodes();
 
-	if($opt_num_episodes) {
-		echo count($dvd_episodes);
-		echo "\n";
-		exit(0);
-	}
-
-	if($opt_num_encoded)
-		$num_encoded = 0;
+	$num_episodes = count($dvd_episodes);
 
 	// Display the episode names
 	foreach($dvd_episodes as $episode_id) {
@@ -120,13 +135,7 @@
 
 		$episode_metadata['filename'] = $filename;
 
-		if($opt_display_filenames) {
-			echo $episode_metadata['filename'];
-			echo "\n";
-		}
-
-		if($opt_num_encoded && file_exists($episode_metadata['filename']))
-			$num_encoded++;
+		$episode_filenames[] = $episode_metadata['filename'];
 
 		$dvd_query['titles'][] = array(
 
@@ -170,6 +179,21 @@
 
 		);
 
+		if($opt_display_filenames) {
+			echo $episode_metadata['filename'];
+			echo "\n";
+		}
+
+		if(file_exists($episode_metadata['filename'])) {
+			$num_encoded++;
+			$episodes_encoded[] = $episode_metadata['filename'];
+			$episode_encoded = true;
+		} else {
+			$num_not_encoded++;
+			$episodes_not_encoded[] = $episode_metadata['filename'];
+			$episode_encoded = false;
+		}
+
 	}
 
 	if(!count($dvd_query['titles'])) {
@@ -179,28 +203,32 @@
 
 	if($opt_json)
 		echo json_encode($dvd_query, JSON_PRETTY_PRINT)."\n";
-	elseif($opt_num_encoded) {
-
-		echo $num_encoded;
-		echo "\n";
-		exit(0);
-		
-	} elseif($opt_display_filenames) {
-		exit(0);
-	} else {
+	
+	if($opt_info) {
 
 		echo "Disc Title: ".$dvd_query['dvd']['volname']."\n";
+
 		foreach($dvd_query['titles'] as $arr_title) {
-			echo $arr_title['database']['filename'];
-			echo " ";
-			echo "Track: ".str_pad($arr_title['dvd']['track'], 2, 0, STR_PAD_LEFT);
-			echo " ";
-			echo "Chapters: ".str_pad($arr_title['dvd']['starting_chapter'], 2, 0, STR_PAD_LEFT)."-".str_pad($arr_title['dvd']['ending_chapter'], 2, 0, STR_PAD_LEFT);
-			echo " ";
-			echo "Season: ".str_pad($arr_title['metadata']['season'], 2, 0, STR_PAD_LEFT)."x".str_pad($arr_title['metadata']['number'], 2, 0, STR_PAD_LEFT);
-			echo " ";
-			echo "Episode: ".$arr_title['metadata']['name'];
-			echo "\n";
+			$display_episode = $arr_title['database']['filename'];
+			$display_episode .= " ";
+			$display_episode .= "Track: ".str_pad($arr_title['dvd']['track'], 2, 0, STR_PAD_LEFT);
+			$display_episode .= " ";
+			$display_episode .= "Chapters: ".str_pad($arr_title['dvd']['starting_chapter'], 2, 0, STR_PAD_LEFT)."-".str_pad($arr_title['dvd']['ending_chapter'], 2, 0, STR_PAD_LEFT);
+			$display_episode .= " ";
+			$display_episode .= "Season: ".str_pad($arr_title['metadata']['season'], 2, 0, STR_PAD_LEFT)."x".str_pad($arr_title['metadata']['number'], 2, 0, STR_PAD_LEFT);
+			$display_episode .= " ";
+			$display_episode .= "Episode: ".$arr_title['metadata']['name'];
+			$display_episode .= "\n";
+
+			if(!$opt_encoded)
+				echo $display_episode;
+
+			if($opt_encoded && !$opt_not && $episode_encoded)
+				echo $display_episode;
+			
+			if($opt_encoded && $opt_not && !$episode_encoded)
+				echo $display_episode;
+
 		}
 
 	}
@@ -208,3 +236,20 @@
 	// The ghosts of monolithic code haunt me. :)
 	if(count($devices))
 		goto start;
+	
+	if($opt_num && $opt_encoded && !$opt_not) {
+		echo $num_encoded;
+		echo "\n";
+		exit(0);
+	}
+
+	if($opt_num && $opt_encoded && $opt_not) {
+		echo $num_not_encoded;
+		echo "\n";
+		exit(0);
+	}
+
+	if($opt_num) {
+		echo $num_episodes;
+		echo "\n";
+	}
