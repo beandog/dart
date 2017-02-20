@@ -73,7 +73,7 @@
 	$num_episodes = 0;
 	$num_encoded = 0;
 	$num_not_encoded = 0;
-	$episode_filenames[] = array();
+	$episode_filenames = array();
 	$episodes_encoded = array();
 	$episodes_not_encoded = array();
 	$episode_encoded = false;
@@ -104,7 +104,7 @@
 	
 	$dvd_episodes = $dvds_model->get_episodes();
 
-	$num_episodes = count($dvd_episodes);
+	$num_episodes += count($dvd_episodes);
 
 	// Display the episode names
 	foreach($dvd_episodes as $episode_id) {
@@ -179,19 +179,27 @@
 
 		);
 
-		if($opt_display_filenames) {
-			echo $episode_metadata['filename'];
-			echo "\n";
-		}
 
 		if(file_exists($episode_metadata['filename'])) {
 			$num_encoded++;
 			$episodes_encoded[] = $episode_metadata['filename'];
 			$episode_encoded = true;
-		} else {
+		}
+		
+		if(!file_exists($episode_metadata['filename'])) {
 			$num_not_encoded++;
 			$episodes_not_encoded[] = $episode_metadata['filename'];
 			$episode_encoded = false;
+		}
+
+		if($opt_display_filenames && $opt_encoded && !$opt_not && $episode_encoded) {
+			echo $episode_metadata['filename'];
+			echo "\n";
+		}
+
+		if($opt_display_filenames && $opt_encoded && $opt_not && !$episode_encoded) {
+			echo $episode_metadata['filename'];
+			echo "\n";
 		}
 
 	}
