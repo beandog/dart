@@ -236,6 +236,12 @@
 	// The ghosts of monolithic code haunt me. :)
 	if(count($devices))
 		goto start;
+
+	if($opt_num && !$opt_encoded) {
+		echo $num_episodes;
+		echo "\n";
+		exit(0);
+	}
 	
 	if($opt_num && $opt_encoded && !$opt_not) {
 		echo $num_encoded;
@@ -249,7 +255,3 @@
 		exit(0);
 	}
 
-	if($opt_num) {
-		echo $num_episodes;
-		echo "\n";
-	}
