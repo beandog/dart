@@ -6,6 +6,7 @@
 
 	require_once 'inc.mdb2.php';
 
+	require_once 'dart.functions.php';
 	require_once 'class.dvd.php';
 
 	require_once 'models/dbtable.php';
@@ -120,7 +121,7 @@
 	foreach($dvd_episodes as $episode_id) {
 
 		$episodes_model = new Episodes_Model($episode_id);
-		$episodes_iso = $episodes_model->get_iso();
+		$episodes_iso = get_dvd_iso_filename($device);
 		$episode_metadata = $episodes_model->get_metadata();
 		$tracks_model = new Tracks_Model($episode_metadata['track_id']);
 
