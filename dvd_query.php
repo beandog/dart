@@ -53,6 +53,13 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_display_iso', array(
+		'long_name' => '--iso',
+		'short_name' => '-i',
+		'description' => 'Display ISO filename',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 
 	try { $result = $parser->parse(); }
 	catch(PEAR_Exception $e) {
@@ -67,7 +74,7 @@
 
 	$opt_info = true;
 
-	if($opt_json || $opt_display_filenames || $opt_num)
+	if($opt_json || $opt_display_filenames || $opt_num || $opt_display_iso)
 		$opt_info = false;
 	
 	$num_episodes = 0;
@@ -78,6 +85,7 @@
 	$episodes_not_encoded = array();
 	$episode_encoded = false;
 	$display_episode = '';
+	$episodes_isos = array();
 
 	start:
 
@@ -106,12 +114,18 @@
 
 	$num_episodes += count($dvd_episodes);
 
+	$iso_displayed = false;
+
 	// Display the episode names
 	foreach($dvd_episodes as $episode_id) {
 
 		$episodes_model = new Episodes_Model($episode_id);
+		$episodes_iso = $episodes_model->get_iso();
 		$episode_metadata = $episodes_model->get_metadata();
 		$tracks_model = new Tracks_Model($episode_metadata['track_id']);
+
+		if(!in_array($episodes_iso, $episodes_isos))
+			$episodes_isos[] = $episodes_iso;
 
 		// Setting the episode number from the model, which does the correct
 		// job of getting the ultimate one
@@ -179,7 +193,6 @@
 
 		);
 
-
 		if(file_exists($episode_metadata['filename'])) {
 			$num_encoded++;
 			$episodes_encoded[] = $episode_metadata['filename'];
@@ -192,8 +205,26 @@
 			$episode_encoded = false;
 		}
 
+		if($opt_display_iso && !$opt_encoded && !$iso_displayed) {
+			$iso_displayed = true;
+			echo $episodes_iso;
+			echo "\n";
+		}
+
+		if($opt_encoded && !$opt_not && $episode_encoded && $opt_display_iso && !$iso_displayed) {
+			$iso_displayed = true;
+			echo $episodes_iso;
+			echo "\n";
+		}
+
 		if($opt_display_filenames && $opt_encoded && !$opt_not && $episode_encoded) {
 			echo $episode_metadata['filename'];
+			echo "\n";
+		}
+
+		if($opt_encoded && $opt_not && !$episode_encoded && $opt_display_iso && !$iso_displayed) {
+			$iso_displayed = true;
+			echo $episodes_iso;
 			echo "\n";
 		}
 
