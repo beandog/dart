@@ -217,6 +217,11 @@
 			echo "\n";
 		}
 
+		if($opt_display_filenames && !$opt_encoded) {
+			echo $episode_metadata['filename'];
+			echo "\n";
+		}
+
 		if($opt_display_filenames && $opt_encoded && !$opt_not && $episode_encoded) {
 			echo $episode_metadata['filename'];
 			echo "\n";
