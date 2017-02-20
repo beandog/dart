@@ -25,6 +25,20 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_num_episodes', array(
+		'long_name' => '--num-episodes',
+		'short_name' => '-n',
+		'description' => 'Display # of episodes',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
+	$parser->addOption('opt_num_encoded', array(
+		'long_name' => '--num-encoded',
+		'short_name' => '-e',
+		'description' => 'Display # of episodes encoded',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 
 	try { $result = $parser->parse(); }
 	catch(PEAR_Exception $e) {
@@ -61,6 +75,15 @@
 	
 	$dvd_episodes = $dvds_model->get_episodes();
 
+	if($opt_num_episodes) {
+		echo count($dvd_episodes);
+		echo "\n";
+		exit(0);
+	}
+
+	if($opt_num_encoded)
+		$num_encoded = 0;
+
 	// Display the episode names
 	foreach($dvd_episodes as $episode_id) {
 
@@ -89,6 +112,9 @@
 		$filename .= ".$container";
 
 		$episode_metadata['filename'] = $filename;
+
+		if($opt_num_encoded && file_exists($episode_metadata['filename']))
+			$num_encoded++;
 
 		$dvd_query['titles'][] = array(
 
@@ -141,7 +167,13 @@
 
 	if($opt_json)
 		echo json_encode($dvd_query, JSON_PRETTY_PRINT)."\n";
-	else {
+	elseif($opt_num_encoded) {
+
+		echo $num_encoded;
+		echo "\n";
+		exit(0);
+		
+	} else {
 
 		echo "Disc Title: ".$dvd_query['dvd']['volname']."\n";
 		foreach($dvd_query['titles'] as $arr_title) {
