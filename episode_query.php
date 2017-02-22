@@ -100,8 +100,10 @@
 
 	$filename = $series_dirname;
 
-	$series_dirname .= " ";
-	$series_dirname .= "(".$episode_metadata['production_year'].")";
+	if($episode_metadata['production_year']) {
+		$series_dirname .= " ";
+		$series_dirname .= "(".$episode_metadata['production_year'].")";
+	}
 
 	$season_dirname = "Season ";
 	$season_dirname .= str_pad($episode_metadata['season'], 2, 0, STR_PAD_LEFT);
