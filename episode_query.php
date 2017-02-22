@@ -114,10 +114,6 @@
 	$filename .= "e";
 	$episode_number = $episodes_model->get_number();
 
-	while($episode_number > 100)
-		$episode_number -= 100;
-
-	// An episode number also being over 100 is an indicator that it's another series
 	$filename .= str_pad($episode_number, 2, 0, STR_PAD_LEFT);
 
 	if($opt_verbose) {
