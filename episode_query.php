@@ -5,6 +5,7 @@
 
 	require_once 'inc.mdb2.php';
 
+	require_once 'dart.functions.php';
 	require_once 'class.dvd.php';
 
 	require_once 'models/dbtable.php';
@@ -32,6 +33,18 @@
 	$parser->addOption('opt_full', array(
 		'long_name' => '--full',
 		'description' => 'Display directory and filename',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
+	$parser->addOption('opt_episode_filename', array(
+		'long_name' => '--episode-filename',
+		'description' => 'Return the episode filename from database',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
+	$parser->addOption('opt_qa', array(
+		'long_name' => '--qa',
+		'description' => 'Add QA checks to the options',
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
@@ -78,6 +91,22 @@
 	if(!$episodes_model) {
 		echo "Couldn't find episode for filename $filename\n";
 		exit(1);
+	}
+
+	// Check if the filename is correct
+	if($opt_episode_filename) {
+		$episode_filename = get_episode_filename($episode_id);
+		echo "$episode_filename";
+		echo "\n";
+		if($opt_qa) {
+			$episode_basename = basename(realpath($episode_filename));
+			if($episode_filename != $episode_basename) {
+				fwrite(STDERR, "$episode_basename should be $episode_filename");
+				fwrite(STDERR, "\n");
+				exit(1);
+			}
+		}
+		exit;
 	}
 
 	// If no options passed, simply pass the filename
