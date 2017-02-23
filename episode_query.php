@@ -99,9 +99,9 @@
 		echo "$episode_filename";
 		echo "\n";
 		if($opt_qa) {
-			$episode_basename = basename(realpath($episode_filename));
-			if($episode_filename != $episode_basename) {
-				fwrite(STDERR, "$episode_basename should be $episode_filename");
+			$filename = basename(realpath($filename));
+			if($episode_filename != $filename) {
+				fwrite(STDERR, "$filename should be $episode_filename");
 				fwrite(STDERR, "\n");
 			}
 		}
