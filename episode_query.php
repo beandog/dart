@@ -103,10 +103,9 @@
 			if($episode_filename != $episode_basename) {
 				fwrite(STDERR, "$episode_basename should be $episode_filename");
 				fwrite(STDERR, "\n");
-				exit(1);
 			}
 		}
-		exit;
+		goto next_episode;
 	}
 
 	// If no options passed, simply pass the filename
@@ -161,5 +160,6 @@
 	echo "\n";
 
 	// The ghosts of monolithic code haunt me. :)
+	next_episode:
 	if(count($filenames))
 		goto start;
