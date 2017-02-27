@@ -146,6 +146,24 @@ class MP3 {
 
 	}
 
+	public function set_title($str) {
+
+		$str = trim($str);
+		$arg_title = escapeshellarg($str);
+
+		$arg_source = escapeshellarg($this->source);
+
+		$cmd = "id3tag --song=$arg_title $arg_source &> /dev/null";
+
+		exec($cmd, $arr, $retval);
+		
+		if($retval)
+			return false;
+		else
+			return true;
+
+	}
+
 	public function set_artist($str) {
 
 		$str = trim($str);

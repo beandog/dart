@@ -13,6 +13,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_title', array(
+		'long_name' => '--title',
+		'description' => 'MP3 track title',
+		'action' => 'StoreString',
+		'help_name' => 'Title',
+	));
 	$parser->addOption('opt_artist', array(
 		'long_name' => '--artist',
 		'description' => 'MP3 artist',
@@ -68,6 +74,10 @@
 
 		if($opt_remove_metadata) {
 			$mp3->remove_metadata();
+		}
+
+		if($opt_title) {
+			$mp3->set_title($opt_title);
 		}
 
 		if($opt_artist) {
