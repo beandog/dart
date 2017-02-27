@@ -133,16 +133,21 @@ class MP3 {
 
 	public function strip_metadata() {
 
+
 		$arg_source = escapeshellarg($this->source);
 
-		$cmd = "id3convert --strip $arg_source &> /dev/null";
+		$tmpfile = tempnam("/tmp", "encode_").".mp3";
+
+		$cmd = "avconv -y -i $arg_source -vn -acodec copy -write_xing 0 -id3v2_version 0 -map_metadata -1 $tmpfile &> /dev/null";
 
 		exec($cmd, $arr, $retval);
 		
 		if($retval)
 			return false;
-		else
-			return true;
+
+		$bool = rename($tmpfile, $this->source);
+
+		return $bool;
 
 	}
 
