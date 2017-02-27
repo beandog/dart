@@ -1,6 +1,10 @@
 #!/usr/bin/php
 <?php
 
+	/**
+	 * Requires id3lib installed - see http://id3lib.sourceforge.net/
+	 */
+
 	require_once 'class.mp3.php';
 	require_once 'Console/CommandLine.php';
 
