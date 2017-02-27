@@ -7,8 +7,8 @@
 	$parser = new Console_CommandLine();
 	$parser->description = "MP3 Encoder and Metadata Tools";
 	$parser->addArgument('input_files', array('optional' => false, 'multiple' => true));
-	$parser->addOption('opt_remove_metadata', array(
-		'long_name' => '--remove-metadata',
+	$parser->addOption('opt_strip_metadata', array(
+		'long_name' => '--strip-metadata',
 		'description' => 'Remove all metadata',
 		'action' => 'StoreTrue',
 		'default' => false,
@@ -72,8 +72,8 @@
 
 		$mp3 = new MP3($input_file);
 
-		if($opt_remove_metadata) {
-			$mp3->remove_metadata();
+		if($opt_strip_metadata) {
+			$mp3->strip_metadata();
 		}
 
 		if($opt_title) {

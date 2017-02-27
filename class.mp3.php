@@ -131,7 +131,7 @@ class MP3 {
 
 	}
 
-	public function remove_metadata() {
+	public function strip_metadata() {
 
 		$arg_source = escapeshellarg($this->source);
 
