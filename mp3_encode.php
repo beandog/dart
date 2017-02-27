@@ -12,46 +12,46 @@
 	$parser->description = "MP3 Encoder and Metadata Tools";
 	$parser->addArgument('input_files', array('optional' => false, 'multiple' => true));
 	$parser->addOption('opt_strip_metadata', array(
-		'long_name' => '--strip-metadata',
+		'short_name' => '-z',
 		'description' => 'Remove all metadata',
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
 	$parser->addOption('opt_title', array(
-		'long_name' => '--title',
+		'short_name' => '-t',
 		'description' => 'MP3 track title',
 		'action' => 'StoreString',
 		'help_name' => 'Title',
 	));
 	$parser->addOption('opt_artist', array(
-		'long_name' => '--artist',
+		'short_name' => '-a',
 		'description' => 'MP3 artist',
 		'action' => 'StoreString',
-		'help_name' => 'Artist Name',
+		'help_name' => 'Artist',
 	));
 	$parser->addOption('opt_album', array(
-		'long_name' => '--album',
+		'short_name' => '-l',
 		'description' => 'MP3 album',
 		'action' => 'StoreString',
-		'help_name' => 'Album Title',
+		'help_name' => 'Album',
 	));
 	$parser->addOption('opt_track', array(
-		'long_name' => '--track',
+		'short_name' => '-n',
 		'description' => 'MP3 track number',
 		'action' => 'StoreInt',
-		'help_name' => 1,
+		'help_name' => 'Track',
 	));
 	$parser->addOption('opt_year', array(
-		'long_name' => '--year',
+		'short_name' => '-y',
 		'description' => 'MP3 year',
 		'action' => 'StoreInt',
-		'help_name' => 1976,
+		'help_name' => 'Year',
 	));
 	$parser->addOption('opt_album_art', array(
-		'long_name' => '--album-art',
+		'short_name' => '-r',
 		'description' => 'MP3 album art',
 		'action' => 'StoreString',
-		'help_name' => 'cover.png',
+		'help_name' => 'cover.jpg',
 	));
 
 	try { $result = $parser->parse(); }
