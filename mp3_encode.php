@@ -53,6 +53,7 @@
 		'help_name' => 'Year',
 	));
 	$parser->addOption('opt_album_art', array(
+		'long_name' => '--album-art',
 		'short_name' => '-r',
 		'description' => 'MP3 album art',
 		'action' => 'StoreString',
