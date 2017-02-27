@@ -4,6 +4,7 @@ class MP3 {
 
 	// Filenames
 	public $source;
+	public $output;
 	public $basename;
 	public $dirname;
 	public $mp3;
@@ -127,6 +128,117 @@ class MP3 {
 		$params = implode(',', $arr);
 
 		return $params;
+
+	}
+
+	public function remove_metadata() {
+
+		$arg_source = escapeshellarg($this->source);
+
+		$cmd = "id3convert --strip $arg_source &> /dev/null";
+
+		exec($cmd, $arr, $retval);
+		
+		if($retval)
+			return false;
+		else
+			return true;
+
+	}
+
+	public function set_artist($str) {
+
+		$str = trim($str);
+		$arg_artist = escapeshellarg($str);
+
+		$arg_source = escapeshellarg($this->source);
+
+		$cmd = "id3tag --artist=$arg_artist $arg_source &> /dev/null";
+
+		exec($cmd, $arr, $retval);
+		
+		if($retval)
+			return false;
+		else
+			return true;
+
+	}
+
+	public function set_album($str) {
+
+		$str = trim($str);
+		$arg_album = escapeshellarg($str);
+
+		$arg_source = escapeshellarg($this->source);
+
+		$cmd = "id3tag --album=$arg_album $arg_source &> /dev/null";
+
+		exec($cmd, $arr, $retval);
+		
+		if($retval)
+			return false;
+		else
+			return true;
+
+	}
+
+	public function set_track($num) {
+
+		$track = abs(intval($num));
+
+		$arg_source = escapeshellarg($this->source);
+
+		$cmd = "id3tag --track=$track $arg_source &> /dev/null";
+
+		exec($cmd, $arr, $retval);
+		
+		if($retval)
+			return false;
+		else
+			return true;
+
+	}
+
+	public function set_year($num) {
+
+		$year = abs(intval($num));
+
+		$arg_source = escapeshellarg($this->source);
+
+		$cmd = "id3tag --year=$year $arg_source &> /dev/null";
+
+		exec($cmd, $arr, $retval);
+		
+		if($retval)
+			return false;
+		else
+			return true;
+
+	}
+
+	public function set_album_art($album_art) {
+
+		if(!file_exists($album_art))
+			return false;
+
+		$arg_source = escapeshellarg($this->source);
+		$arg_album_art = escapeshellarg(realpath($album_art));
+		$extra_args = '';
+
+		$tmpfile = tempnam("/tmp", "encode_").".mp3";
+
+		if(pathinfo($arg_album_art, PATHINFO_EXTENSION) == '.png')
+			$extra_args = '-vcodec copy';
+
+		$cmd = "avconv -y -i $arg_source -i $arg_album_art $extra_args -acodec copy $tmpfile -map 0:0 -map 1:0 &> /dev/null";
+
+		exec($cmd, $arr, $retval);
+		
+		if($retval)
+			return false;
+
+		$bool = rename($tmpfile, $this->source);
+		return $bool;
 
 	}
 
