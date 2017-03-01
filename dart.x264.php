@@ -13,10 +13,6 @@ if($opt_encode_info && $episode_id) {
 	 * Encoding specification Blu-ray friendly
 	 * use dvdnav over dvdread
 	 * chapters
-	 * decomb
-	 * detelecine
-	 * two-pass
-	 * turbo first pass
 	 * no fixed video, audio codec bitrate
 	 * audio codec fdk_aac
 	 * fallback audio ac3,dts copy
@@ -28,7 +24,8 @@ if($opt_encode_info && $episode_id) {
 	 */
 
 	$deinterlace = false;
-	$decomb = $detelecine = true;
+	$decomb = false;
+	$detelecine = false;
 	$h264_profile = "high";
 	$h264_level = "4.1";
 
