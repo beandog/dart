@@ -147,36 +147,6 @@ if($opt_encode_info && $episode_id) {
 	$handbrake->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
 	$handbrake->add_chapters();
 
-	$arr_video = array();
-	$arr_h264 = array();
-	$arr_x264 = array();
-	$arr_audio = array();
-
-	if($deinterlace)
-		$arr_video[] = "deinterlace";
-	if($decomb)
-		$arr_video[] = "decomb";
-	if($detelecine)
-		$arr_video[] = "detelecine";
-	$arr_h264[] = "profile $h264_profile";
-	$arr_h264[] = "level 4.1";
-	if($video_quality)
-		$arr_x264[] = "quality $video_quality";
-	$arr_x264[] = "$x264_preset preset";
-	$arr_x264[] = "$x264_tune";
-	if($grayscale)
-		$arr_x264[] = "grayscale";
-	if($audio_encoder == "copy")
-		$arr_audio[] = $display_audio_passthrough;
-	else
-		$arr_audio[] = strtoupper($audio_encoder)." ${audio_bitrate}k";
-
-	$d_video = implode(", ", $arr_video);
-	$d_h264 = implode(", ", $arr_h264);
-	$d_x264 = implode(", ", $arr_x264);
-	$d_audio = implode(", ", $arr_audio);
-	$d_preset = $series_model->get_preset_name();
-
 	$handbrake_command = $handbrake->get_executable_string();
 
 }
