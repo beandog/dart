@@ -81,6 +81,9 @@ if($opt_encode_info && $episode_id) {
 	$handbrake->set_x264_preset($x264_preset);
 	$handbrake->set_x264_tune($x264_tune);
 	$handbrake->set_http_optimize();
+	$handbrake->deinterlace($series_model->get_preset_deinterlace());
+	$handbrake->decomb($series_model->get_preset_decomb());
+	$handbrake->detelecine($series_model->get_preset_detelecine());
 
 	/** Audio **/
 
