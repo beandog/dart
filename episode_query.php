@@ -78,8 +78,7 @@
 	$query_filename = str_replace($dirname.'/', '', $realpath);
 	$str_elements = explode('.', $query_filename);
 
-	if(count($str_elements) < 3 || !file_exists($realpath) || substr($query_filename, strlen($extension) * -1) != $extension) {
-		print_r($realpath);
+	if(count($str_elements) < 3 || !file_exists($realpath)) {
 		echo "Invalid filename\n";
 		exit(1);
 	}
