@@ -26,5 +26,10 @@
 		$cmd = "avconv -y -i ".escapeshellarg($mkv)." -vcodec copy -acodec copy -scodec copy -map 0 ".escapeshellarg($mp4);
 
 		exec($cmd, $output, $retval);
+
+		if($retval) {
+			$cmd = "avconv -y -i ".escapeshellarg($mkv)." -vcodec copy -acodec copy -sn ".escapeshellarg($mp4);
+			exec($cmd, $output, $retval);
+		}
 	
 	}
