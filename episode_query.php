@@ -72,15 +72,14 @@
 
 	$filename = array_shift($filenames);
 
-
 	$realpath = realpath($filename);
-	$dirname = dirname($realpath);
-	$query_filename = str_replace($dirname.'/', '', $realpath);
-	$str_elements = explode('.', $query_filename);
-
-	if(count($str_elements) < 3 || !file_exists($realpath)) {
-		echo "Invalid filename\n";
-		exit(1);
+	$pathinfo = pathinfo($realpath);
+	$movie = false;
+	if(substr($pathinfo['basename'], 0, 1) == '4')
+		$movie = true;
+	$str_elements = explode('.', $pathinfo['basename']);
+	if(count($str_elements) < 3 || !file_exists($realpath) || !($pathinfo['extension'] == 'mkv' || $pathinfo['extension'] == 'mp4')) {
+		goto next_episode;
 	}
 
 	$episode_query = array();
@@ -88,8 +87,7 @@
 	$episodes_model = new Episodes_Model($episode_id);
 
 	if(!$episodes_model) {
-		echo "Couldn't find episode for filename $filename\n";
-		exit(1);
+		goto next_episode;
 	}
 
 	// Check if the filename is correct
@@ -135,23 +133,26 @@
 	$season_dirname = "Season ";
 	$season_dirname .= str_pad($episode_metadata['season'], 2, 0, STR_PAD_LEFT);
 
-	$filename .= " - ";
-	$filename .= "s";
-	$filename .= str_pad($episode_metadata['season'], 2, 0, STR_PAD_LEFT);
-	$filename .= "e";
-	$episode_number = $episodes_model->get_number();
+	if(!$movie) {
+		$filename .= " - ";
+		$filename .= "s";
+		$filename .= str_pad($episode_metadata['season'], 2, 0, STR_PAD_LEFT);
+		$filename .= "e";
+		$episode_number = $episodes_model->get_number();
+		$filename .= str_pad($episode_number, 2, 0, STR_PAD_LEFT);
+	}
 
-	$filename .= str_pad($episode_number, 2, 0, STR_PAD_LEFT);
-
-	if($opt_verbose) {
+	if($opt_verbose && !$movie) {
 		$filename .= " - ";
 		$filename .= preg_replace("/[^0-9A-Za-z \-_.]/", '', $episode_metadata['title']);
 	}
 
-	$filename .= ".".$container;
+	$filename .= ".".$pathinfo['extension'];
 
 	if($opt_dirname)
-		echo $series_dirname."/".$season_dirname."/";
+		echo $series_dirname."/";
+	if(!$movie && $opt_dirname)
+		$season_dirname."/";
 	
 	if($opt_filename)
 		echo $filename;
