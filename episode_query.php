@@ -152,7 +152,7 @@
 	if($opt_dirname)
 		echo $series_dirname."/";
 	if(!$movie && $opt_dirname)
-		$season_dirname."/";
+		echo $season_dirname."/";
 	
 	if($opt_filename)
 		echo $filename;
