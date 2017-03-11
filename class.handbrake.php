@@ -82,12 +82,7 @@
 
 		public function input_track($str) {
 			$track = abs(intval($str));
-			if($track) {
-				$this->track = $track;
-				return true;
-			} else {
-				return false;
-			}
+			$this->track = $track;
 		}
 
 		public function set_dry_run($bool = true) {
