@@ -514,6 +514,15 @@
 
 			$options = '';
 
+			$this->dvd['streams']['audio'] = array();
+			$this->dvd['streams']['subtitle'] = array();
+
+			$stream_ix['audio'] = 1;
+			$stream_ix['subtitle'] = 1;
+
+			$this->dvd_num_audio_tracks = count($this->dvd['streams']['audio']);
+			$this->dvd_num_subtitles = count($this->dvd['streams']['subtitle']);
+
 			if($this->track)
 				$options = "--title ".$this->track;
 
@@ -580,12 +589,6 @@
 			// Find all the lines that list the audio and subtitle streams
 			$arr_scan_streams = array_merge(preg_grep("/^id=0/", $arr));
 
-			$this->dvd['streams']['audio'] = array();
-			$this->dvd['streams']['subtitle'] = array();
-
-			$stream_ix['audio'] = 1;
-			$stream_ix['subtitle'] = 1;
-
 			foreach($arr_scan_streams as $scan_stream) {
 
 				$tmp = explode(" ", $scan_stream);
@@ -616,9 +619,6 @@
 				$stream_ix[$stream_type]++;
 
 			}
-
-			$this->dvd_num_audio_tracks = count($this->dvd['streams']['audio']);
-			$this->dvd_num_subtitles = count($this->dvd['streams']['subtitle']);
 
 			// Sample source string: Closed Captions (iso639-2: eng) (Text)(CC)
 			$closed_captioning = preg_grep("/.*Closed Captions.*eng.*/", $arr);
