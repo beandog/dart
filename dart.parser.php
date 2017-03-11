@@ -114,6 +114,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_makemkv', array(
+		'long_name' => '--makemkv',
+		'description' => 'Use MakeMKV where possible',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 
 	try { $result = $parser->parse(); }
 	catch(PEAR_Exception $e) {
