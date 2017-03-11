@@ -88,6 +88,9 @@
 	$display_episode = '';
 	$episodes_isos = array();
 
+	if(is_string($devices))
+		$devices = array($devices);
+
 	start:
 
 	$device = array_shift($devices);
