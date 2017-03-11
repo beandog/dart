@@ -40,6 +40,10 @@ if($opt_encode_info && $episode_id) {
 	$handbrake->input_filename($device);
 	$handbrake->input_track($tracks_model->ix);
 
+	// If using MakeMKV, don't pass a track number
+	if($opt_makemkv)
+		$handbrake->input_track(0);
+
 	/** Encoding **/
 
 	$handbrake->set_video_encoder('x264');
