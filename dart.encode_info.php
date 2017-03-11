@@ -14,10 +14,17 @@
 
 			$filename = get_episode_filename($episode_id, $container);
 
+			$input_filename = realpath($device);
+
+			// If using MakeMKV to manually extract the tracks, change the source to match its naming scheme
+			if($opt_makemkv) {
+				$input_filename = dirname(realpath($device))."/title".str_pad($tracks_model->ix - 1, 2, 0, STR_PAD_LEFT).".mkv";
+			}
+
 			if(!($opt_skip_existing && file_exists($filename))) {
 
 				require 'dart.x264.php';
-				$handbrake->input_filename(realpath($device));
+				$handbrake->input_filename($input_filename);
 				$handbrake->output_filename($filename);
 				$handbrake_command  = $handbrake->get_executable_string();
 				echo "$handbrake_command\n";
