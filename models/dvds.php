@@ -36,6 +36,12 @@
 
 			$dvd_id = abs(intval($this->id));
 
+			// Check for empty filesize
+			$sql = "SELECT filesize FROM dvds WHERE id = $dvd_id;";
+			$filesize = abs(intval($this->db->getOne($sql)));
+			if(!$filesize)
+				return true;
+
 			$max_metadata_spec_id = $this->max_metadata_spec();
 
 			$sql = "SELECT COUNT(1) FROM dvds d WHERE id = $dvd_id AND metadata_spec < $max_metadata_spec_id;";
