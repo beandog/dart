@@ -5,6 +5,10 @@
 
 		$dvd_episodes = $dvds_model->get_episodes();
 
+		// On QA run, only encode the first one
+		if($opt_qa)
+			$dvd_episodes = array(current($dvd_episodes));
+
 		// Display the episode names
 		foreach($dvd_episodes as $episode_id) {
 
