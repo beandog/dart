@@ -599,16 +599,11 @@
 				$stream_data = explode(', ', $scan_stream);
 				$stream_id = substr($stream_data[0], 3);
 				$stream_lang = substr($stream_data[1], 5);
-				$tmp = explode(' ', end($stream_data));
-				$stream_3cc = substr($tmp[0], 4);
-				$stream_ext = substr($tmp[1], 4);
 
 				$this->dvd['streams'][$stream_type][] = array(
 					'track' => $stream_ix[$stream_type],
 					'id' => $stream_id,
 					'lang' => $stream_lang,
-					'3cc' => $stream_3cc,
-					'ext' => $stream_ext,
 				);
 
 				$stream_ix[$stream_type]++;
