@@ -46,15 +46,12 @@ if($opt_encode_info && $episode_id) {
 
 	/** Encoding **/
 
-	$handbrake->set_video_encoder('x264');
-	$handbrake->deinterlace($deinterlace);
-	$handbrake->decomb($decomb);
-	$handbrake->detelecine($detelecine);
 	if($opt_no_dvdnav)
 		$handbrake->dvdnav(false);
 
 	/** Video **/
 
+	$handbrake->set_video_encoder('x264');
 	$video_quality = $series_model->get_crf();
 	$grayscale = $series_model->grayscale;
 	$handbrake->grayscale($grayscale);
