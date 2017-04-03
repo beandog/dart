@@ -95,6 +95,9 @@
 
 	$device = array_shift($devices);
 
+	if(!is_dvd($device))
+		goto next_device;
+
 	$dvd_query = array();
 
 	$dvds_model = new Dvds_Model;
@@ -280,6 +283,8 @@
 		}
 
 	}
+
+	next_device:
 
 	// The ghosts of monolithic code haunt me. :)
 	if(count($devices))
