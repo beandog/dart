@@ -204,6 +204,8 @@
 
 			$this->metadata['subtitle_tracks']++;
 
+			$arr = array();
+
 			if($arr_text['Format'] == 'VobSub') {
 				$arr['format'] = 'vobsub';
 				$this->metadata['vobsub'] = true;
