@@ -10,6 +10,18 @@
 	}
 	pcntl_signal(SIGINT, 'master_crash');
 
+	// Check source
+	function is_dvd($device) {
+
+		$arr_devices = array('/dev/bluray', '/dev/dvd', '/dev/sr0', '/dev/sr1');
+
+		if(!in_array($device, $arr_devices) && pathinfo($device, PATHINFO_EXTENSION) != "iso")
+			return false;
+
+		return true;
+
+	}
+
 	// Switch to the next device
 	function toggle_device($all, $current) {
 
