@@ -176,7 +176,7 @@
 			if($b_adapt == 2 && $direct == 3 && $me == 'umh' && $rc_lookahead == 60 && $subme == 9 && $trellis == 2)
 				$arr['x264_preset'] = 'slower';
 
-			if($b_adapt == 2 && $bframes == 8 && $direct == 3 && $me == 'umh' && $me_range == 24 && $subme == 10 && $trellis == 2 && $rc_lookahead == 60)
+			if($b_adapt == 2 && $bframes == 10 && $direct == 3 && $me == 'umh' && $me_range == 24 && $subme == 10 && $trellis == 2 && $rc_lookahead == 60)
 				$arr['x264_preset'] = 'veryslow';
 
 			if($b_adapt == 2 && $bframes == 16 && $direct == 3 && $me == 'tesa' && $me_range == 24 && $rc_lookahead == 60 && $subme == 11 && $trellis == 2)
