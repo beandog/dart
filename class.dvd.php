@@ -102,7 +102,7 @@
 		private function dvd_info() {
 
 			$arg_device = escapeshellarg($this->device);
-			$cmd = "dvd_info --json $arg_device 2> /dev/null";
+			$cmd = "dvd_json $arg_device 2> /dev/null";
 
 			if($this->debug)
 				echo "* Executing: $cmd\n";
