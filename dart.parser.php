@@ -126,6 +126,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('arg_hardware', array(
+		'long_name' => '--hardware',
+		'description' => 'Override target hardware',
+		'action' => 'StoreString',
+		'default' => 'main',
+	));
 
 	try { $result = $parser->parse(); }
 	catch(PEAR_Exception $e) {

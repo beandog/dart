@@ -26,14 +26,47 @@ if($opt_encode_info && $episode_id) {
 	$deinterlace = false;
 	$decomb = false;
 	$detelecine = false;
-	$h264_profile = "high";
-	$h264_level = "4.1";
+	$h264_profile = 'high';
+	$h264_level = '4.1';
+	$subs_support = true;
+	$chapters_support = true;
+	$optimize_support = true;
+	$force_preset = false;
 
 	$handbrake = new Handbrake;
 	$handbrake->set_binary($handbrake_bin);
 	$handbrake->verbose($verbose);
 	$handbrake->debug($debug);
 	$handbrake->set_dry_run($dry_run);
+
+	switch($arg_hardware) {
+
+		case 'psp':
+			$h264_profile = 'main';
+			$h264_level = '2.1';
+			$subs_support = false;
+			$chapters_support = false;
+			$optimize_support = false;
+			$force_preset = 'medium';
+			$handbrake->set_x264opts('bframes=1');
+			$handbrake->set_max_width(480);
+			$handbrake->set_max_height(272);
+			$handbrake->set_audio_downmix('stereo');
+			break;
+
+		case 'gravity2':
+			$h264_profile = 'baseline';
+			$h264_level = '1b';
+			$subs_support = false;
+			$chapters_support = false;
+			$optimize_support = false;
+			$force_preset = 'medium';
+			$handbrake->set_video_framerate(15);
+			$handbrake->set_max_width(176);
+			$handbrake->set_max_height(144);
+			break;
+
+	}
 
 	/** Files **/
 
@@ -77,14 +110,17 @@ if($opt_encode_info && $episode_id) {
 	$x264_preset = $series_model->get_x264_preset();
 	if(!$x264_preset)
 		$x264_preset = 'medium';
+	if($force_preset)
+		$x264_preset = $force_preset;
 	$x264_tune = $series_model->get_x264_tune();
 	$animation = ($x264_tune == 'animation');
 	$handbrake->set_x264_preset($x264_preset);
 	$handbrake->set_x264_tune($x264_tune);
-	$handbrake->set_http_optimize();
 	$handbrake->deinterlace($series_model->get_preset_deinterlace());
 	$handbrake->decomb($series_model->get_preset_decomb());
 	$handbrake->detelecine($series_model->get_preset_detelecine());
+	if($optimize_support)
+		$handbrake->set_http_optimize();
 
 	/** Audio **/
 
@@ -132,24 +168,30 @@ if($opt_encode_info && $episode_id) {
 	/** Subtitles **/
 
 	// Check for a subtitle track
-	$subp_ix = $tracks_model->get_first_english_subp();
+	if($subs_support) {
 
-	// If we have a VobSub one, add it
-	// Otherwise, check for a CC stream, and add that
-	if($subp_ix) {
-		$handbrake->add_subtitle_track($subp_ix);
-		$d_subtitles = "VOBSUB";
-	} elseif($handbrake->closed_captioning) {
-		$handbrake->add_subtitle_track($handbrake->closed_captioning_ix);
-		$d_subtitles = "Closed Captioning";
-	} else {
-		$d_subtitles = "None :(";
+		$subp_ix = $tracks_model->get_first_english_subp();
+
+		// If we have a VobSub one, add it
+		// Otherwise, check for a CC stream, and add that
+		if($subp_ix) {
+			$handbrake->add_subtitle_track($subp_ix);
+			$d_subtitles = "VOBSUB";
+		} elseif($handbrake->closed_captioning) {
+			$handbrake->add_subtitle_track($handbrake->closed_captioning_ix);
+			$d_subtitles = "Closed Captioning";
+		} else {
+			$d_subtitles = "None :(";
+		}
+	
 	}
 
 	/** Chapters **/
 
-	$handbrake->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
-	$handbrake->add_chapters();
+	if($chapters_support) {
+		$handbrake->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
+		$handbrake->add_chapters();
+	}
 
 	$handbrake_command = $handbrake->get_executable_string();
 

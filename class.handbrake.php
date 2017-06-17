@@ -26,10 +26,13 @@
 		public $video_encoder;
 		public $video_encoders = array('x264');
 		public $video_quality;
+		public $video_framerate;
 		public $deinterlace;
 		public $decomb;
 		public $detelecine;
 		public $grayscale;
+		public $max_height;
+		public $max_width;
 		public $h264_profile;
 		public $h264_profiles = array('high', 'main', 'baseline');
 		public $h264_level;
@@ -45,6 +48,7 @@
 		public $audio_tracks = array();
 		public $audio_streams = array();
 		public $audio_bitrate;
+		public $audio_mixdown;
 		public $audio_fallback;
 
 		// Container
@@ -99,6 +103,14 @@
 				$this->audio_bitrate = $int;
 		}
 
+		public function set_audio_downmix($str) {
+
+			$str = trim($str);
+			if(strlen($str))
+				$this->audio_mixdown = $str;
+
+		}
+
 		public function set_video_encoder($str) {
 			if($str == 'x264') {
 				$this->video_encoder = $str;
@@ -112,6 +124,12 @@
 			$int = abs(intval($int));
 			if($int)
 				$this->video_quality = $int;
+		}
+
+		public function set_video_framerate($int) {
+			$int = abs(intval($int));
+			if($int)
+				$this->video_framerate = $int;
 		}
 
 		public function add_audio_track($int) {
@@ -177,6 +195,22 @@
 
 		public function grayscale($bool = true) {
 			$this->grayscale = (boolean)$bool;
+		}
+
+		public function set_max_height($int) {
+
+			$int = abs(intval($int));
+			if($int)
+				$this->max_height = $int;
+
+		}
+
+		public function set_max_width($int) {
+
+			$int = abs(intval($int));
+			if($int)
+				$this->max_width = $int;
+
 		}
 
 		public function set_h264_profile($str) {
@@ -337,6 +371,19 @@
 				$args['--quality'] = $this->video_quality;
 			}
 
+			// Set max and width and height
+			if(!is_null($this->max_width)) {
+				$args['--maxWidth'] = $this->max_width;
+			}
+			if(!is_null($this->max_height)) {
+				$args['--maxHeight'] = $this->max_height;
+			}
+
+			// Set video framerate
+			if(!is_null($this->video_framerate)) {
+				$args['--rate'] = $this->video_framerate;
+			}
+
 			// Set H.264 profile
 			if(!is_null($this->h264_profile)) {
 				$args['--encoder-profile'] = $this->h264_profile;
@@ -393,6 +440,11 @@
 
 				if($this->audio_bitrate) {
 					$args['--ab'] = $this->audio_bitrate;
+				}
+
+				if($this->audio_mixdown) {
+					$args['--mixdown'] = $this->audio_mixdown;
+
 				}
 
 			} else {
