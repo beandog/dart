@@ -92,7 +92,7 @@
 
 	// Check if the filename is correct
 	if($opt_episode_filename) {
-		$episode_filename = get_episode_filename($episode_id);
+		$episode_filename = get_episode_filename($episode_id, $pathinfo['extension']);
 		echo "$episode_filename";
 		echo "\n";
 		if($opt_qa) {
