@@ -20,25 +20,44 @@
 	$parser->addArgument('filenames', array('required' => true, 'multiple' => true));
 	$parser->addOption('opt_dirname', array(
 		'long_name' => '--dirname',
-		'description' => 'Display directory name',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
-	$parser->addOption('opt_filename', array(
-		'long_name' => '--filename',
-		'description' => 'Display filename',
+		'description' => '\'Series Name (Year)/Season XX/\'',
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
 	$parser->addOption('opt_full', array(
 		'long_name' => '--full',
-		'description' => 'Display directory and filename',
+		'description' => '\'Series Name (Year)/Season XX/Series Name - sXXeXX\'',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
+	$parser->addOption('opt_filename', array(
+		'long_name' => '--filename',
+		'description' => '\'Series Name - sXXeXX\' (default)',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
+	$parser->addOption('opt_verbose', array(
+		'long_name' => '--verbose',
+		'short_name' => '-v',
+		'description' => '\'Series Name - sXXeXX - Episode Title\'',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
+	$parser->addOption('opt_series_episode', array(
+		'long_name' => '--series-episode',
+		'description' => '\'Series Name - Episode Title\'',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
+	$parser->addOption('opt_episode_titles', array(
+		'long_name' => '--episode',
+		'description' => '\'Episode Title\'',
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
 	$parser->addOption('opt_episode_filename', array(
 		'long_name' => '--episode-filename',
-		'description' => 'Return the episode filename from database',
+		'description' => '\'0.000.0000.00000.ABCDE.mp4\'',
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
@@ -48,14 +67,6 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_verbose', array(
-		'long_name' => '--verbose',
-		'short_name' => '-v',
-		'description' => 'Display episode title as well',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
-
 
 	try { $result = $parser->parse(); }
 	catch(PEAR_Exception $e) {
@@ -108,7 +119,7 @@
 	// If no options passed, simply pass the filename
 	if($opt_full) {
 		$opt_dirname = $opt_filename = true;
-	} elseif(!$opt_dirname && !$opt_filename)
+	} elseif(!$opt_dirname && !$opt_filename && !$opt_series_episode)
 		$opt_filename = true;
 
 	$episode_metadata = $episodes_model->get_metadata();
@@ -133,18 +144,22 @@
 	$season_dirname = "Season ";
 	$season_dirname .= str_pad($episode_metadata['season'], 2, 0, STR_PAD_LEFT);
 
-	if(!$movie) {
-		$filename .= " - ";
-		$filename .= "s";
-		$filename .= str_pad($episode_metadata['season'], 2, 0, STR_PAD_LEFT);
-		$filename .= "e";
-		$episode_number = $episodes_model->get_number();
-		$filename .= str_pad($episode_number, 2, 0, STR_PAD_LEFT);
+	$season_filename = " - ";
+	$season_filename .= "s";
+	$season_filename .= str_pad($episode_metadata['season'], 2, 0, STR_PAD_LEFT);
+	$season_filename .= "e";
+	$episode_number = $episodes_model->get_number();
+	$season_filename .= str_pad($episode_number, 2, 0, STR_PAD_LEFT);
+
+	if(!$movie && !$opt_series_episode) {
+		$filename .= $season_filename;
 	}
 
-	if($opt_verbose && !$movie) {
+	$episode_title = preg_replace("/[^0-9A-Za-z \-_.]/", '', $episode_metadata['title']);
+
+	if(($opt_verbose || $opt_series_episode) && !$movie) {
 		$filename .= " - ";
-		$filename .= preg_replace("/[^0-9A-Za-z \-_.]/", '', $episode_metadata['title']);
+		$filename .= $episode_title;
 	}
 
 	$filename .= ".".$pathinfo['extension'];
@@ -153,8 +168,9 @@
 		echo $series_dirname."/";
 	if(!$movie && $opt_dirname)
 		echo $season_dirname."/";
-	
 	if($opt_filename)
+		echo $filename;
+	if($opt_series_episode)
 		echo $filename;
 	
 	echo "\n";
