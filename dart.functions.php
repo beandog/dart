@@ -120,7 +120,7 @@
 
 	}
 
-	function get_episode_filename($episode_id, $container = 'mkv') {
+	function get_episode_filename($episode_id, $container = 'mkv', $hardware = 'main') {
 
 		require_once 'models/dvds.php';
 		require_once 'models/tracks.php';
@@ -134,12 +134,30 @@
 		$tracks_model = new Tracks_Model($episodes_model->track_id);
 		$series_model = new Series_Model($episodes_model->get_series_id());
 
-		$filename = str_pad($dvds_model->get_collection_id(), 1, '0');
-		$filename .= ".".str_pad($dvds_model->get_series_id(), 3, '0', STR_PAD_LEFT);
-		$filename .= ".".str_pad($dvds_model->id, 4, '0', STR_PAD_LEFT);
-		$filename .= ".".str_pad($episode_id, 5, 0, STR_PAD_LEFT);
-		$filename .= ".".$series_model->nsix;
-		$filename .= ".$container";
+		switch($hardware) {
+
+			case 'psp':
+			case 'sansa':
+			case 'vfat':
+			$filename = $episode_metadata['series_title'];
+			$filename .= " - ";
+			$filename .= $episode_metadata['title'];
+			if($episode_metadata['part']) {
+				$filename .= ", Part ".$episode_metadata['part'];
+			}
+			$filename .= ".$container";
+			break;
+
+			default:
+			$filename = str_pad($dvds_model->get_collection_id(), 1, '0');
+			$filename .= ".".str_pad($dvds_model->get_series_id(), 3, '0', STR_PAD_LEFT);
+			$filename .= ".".str_pad($dvds_model->id, 4, '0', STR_PAD_LEFT);
+			$filename .= ".".str_pad($episode_id, 5, 0, STR_PAD_LEFT);
+			$filename .= ".".$series_model->nsix;
+			$filename .= ".$container";
+			break;
+
+		}
 
 		return $filename;
 
