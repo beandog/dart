@@ -49,7 +49,7 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_episode_titles', array(
+	$parser->addOption('opt_episode_title', array(
 		'long_name' => '--episode',
 		'description' => '\'Episode Title\'',
 		'action' => 'StoreTrue',
@@ -58,6 +58,12 @@
 	$parser->addOption('opt_episode_filename', array(
 		'long_name' => '--episode-filename',
 		'description' => '\'0.000.0000.00000.ABCDE.mp4\'',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
+	$parser->addOption('opt_vfat', array(
+		'long_name' => '--vfat',
+		'description' => 'Filenames for removable media (PSP, Sansa)',
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
@@ -77,6 +83,13 @@
 	extract($result->args);
 	extract($result->options);
 
+	$hardware = 'main';
+
+	if($opt_vfat) {
+		$hardware = 'vfat';
+		$opt_episode_filename = true;
+	}
+
 	/** Start everything **/
 
 	start:
@@ -89,7 +102,7 @@
 	if(substr($pathinfo['basename'], 0, 1) == '4')
 		$movie = true;
 	$str_elements = explode('.', $pathinfo['basename']);
-	if(count($str_elements) < 3 || !file_exists($realpath) || !($pathinfo['extension'] == 'mkv' || $pathinfo['extension'] == 'mp4')) {
+	if(count($str_elements) < 3 || !file_exists($realpath) || !($pathinfo['extension'] == 'mkv' || ($pathinfo['extension'] == 'mp4' || $pathinfo['extension'] == 'mpg'))) {
 		goto next_episode;
 	}
 
@@ -103,7 +116,7 @@
 
 	// Check if the filename is correct
 	if($opt_episode_filename) {
-		$episode_filename = get_episode_filename($episode_id, $pathinfo['extension']);
+		$episode_filename = get_episode_filename($episode_id, $pathinfo['extension'], $hardware);
 		echo "$episode_filename";
 		echo "\n";
 		if($opt_qa) {
@@ -119,7 +132,7 @@
 	// If no options passed, simply pass the filename
 	if($opt_full) {
 		$opt_dirname = $opt_filename = true;
-	} elseif(!$opt_dirname && !$opt_filename && !$opt_series_episode)
+	} elseif(!$opt_dirname && !$opt_filename && !$opt_series_episode && !$opt_episode_title)
 		$opt_filename = true;
 
 	$episode_metadata = $episodes_model->get_metadata();
@@ -163,6 +176,7 @@
 	}
 
 	$filename .= ".".$pathinfo['extension'];
+	$episode_title .= ".".$pathinfo['extension'];
 
 	if($opt_dirname)
 		echo $series_dirname."/";
@@ -171,7 +185,9 @@
 	if($opt_filename)
 		echo $filename;
 	if($opt_series_episode)
-		echo $filename;
+		echo $filename; 
+	if($opt_episode_title)
+		echo $episode_title;
 	
 	echo "\n";
 
