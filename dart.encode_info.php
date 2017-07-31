@@ -16,7 +16,7 @@
 			$tracks_model = new Tracks_Model($episodes_model->track_id);
 			$series_model = new Series_Model($episodes_model->get_series_id());
 
-			$filename = get_episode_filename($episode_id, $container);
+			$filename = get_episode_filename($episode_id, $container, $arg_hardware);
 
 			$input_filename = realpath($device);
 
