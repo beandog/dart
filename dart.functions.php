@@ -139,12 +139,18 @@
 			case 'psp':
 			case 'sansa':
 			case 'vfat':
+			// An episode can override series title if it is in format (Series Title)
+			if(substr($episode_metadata['title'], 0, 1) == "(") {
+				$episode_metadata['series_title'] = substr($episode_metadata['title'], 1, strpos($episode_metadata['title'], ")"));
+				$episode_metadata['title'] = substr($episode_metadata['title'], strpos($episode_metadata['title'], ')') + 2);
+			}
 			$filename = $episode_metadata['series_title'];
 			$filename .= " - ";
 			$filename .= $episode_metadata['title'];
 			if($episode_metadata['part']) {
-				$filename .= ", Part ".$episode_metadata['part'];
+				$filename .= " - Part ".$episode_metadata['part'];
 			}
+			$filename = preg_replace('/[^0-9A-Za-z \-_.]/', '', $filename);
 			$filename .= ".$container";
 			break;
 
