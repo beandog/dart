@@ -144,9 +144,19 @@
 				$episode_metadata['series_title'] = substr($episode_metadata['title'], 1, strpos($episode_metadata['title'], ")"));
 				$episode_metadata['title'] = substr($episode_metadata['title'], strpos($episode_metadata['title'], ')') + 2);
 			}
-			$filename = $episode_metadata['series_title'];
-			$filename .= " - ";
-			$filename .= $episode_metadata['title'];
+			$filename = '';
+			if($episode_metadata['series_title'] != $episode_metadata['title'] && $episode_metadata['season']) {
+				$filename = $episode_metadata['series_title'];
+				$filename .= " - ";
+				$filename .= "s";
+				$filename .= str_pad($episode_metadata['season'], 2, 0, STR_PAD_LEFT);
+				$filename .= "e";
+				$filename .= str_pad($episodes_model->get_number(), 2, 0, STR_PAD_LEFT);
+			}
+			if($episode_metadata['title']) {
+				$filename .= " - ";
+				$filename .= $episode_metadata['title'];
+			}
 			if($episode_metadata['part']) {
 				$filename .= " - Part ".$episode_metadata['part'];
 			}
