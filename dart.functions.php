@@ -154,7 +154,8 @@
 				$filename .= str_pad($episodes_model->get_number(), 2, 0, STR_PAD_LEFT);
 			}
 			if($episode_metadata['title']) {
-				$filename .= " - ";
+				if($filename)
+					$filename .= " - ";
 				$filename .= $episode_metadata['title'];
 			}
 			if($episode_metadata['part']) {
