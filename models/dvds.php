@@ -81,6 +81,12 @@
 			if(!$count)
 				return true;
 
+			// See if there are zero audio tracks total
+			$sql = "SELECT COUNT(1) FROM audio a JOIN tracks t ON a.track_id = t.id WHERE t.dvd_id = $dvd_id;";
+			$count = intval($this->db->getOne($sql));
+			if(!$count)
+				return true;
+
 			return false;
 
 		}
