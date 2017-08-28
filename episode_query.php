@@ -102,7 +102,7 @@
 	if(substr($pathinfo['basename'], 0, 1) == '4' || substr($pathinfo['basename'], 0, 1) == '8')
 		$movie = true;
 	$str_elements = explode('.', $pathinfo['basename']);
-	if(count($str_elements) < 3 || !file_exists($realpath) || !($pathinfo['extension'] == 'mkv' || ($pathinfo['extension'] == 'mp4' || $pathinfo['extension'] == 'mpg'))) {
+	if(count($str_elements) < 3 || !file_exists($realpath) || !($pathinfo['extension'] == 'mkv' || ($pathinfo['extension'] == 'mp4' || $pathinfo['extension'] == 'mpg' || $pathinfo['extension'] == 'vob'))) {
 		goto next_episode;
 	}
 
