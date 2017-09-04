@@ -120,15 +120,19 @@
 	$episode_number = $episodes_model->get_number();
 	$season_filename .= str_pad($episode_number, 2, 0, STR_PAD_LEFT);
 
-	if(!$movie) {
-		$filename .= $season_filename;
-	}
-
 	$episode_title = preg_replace("/[^0-9A-Za-z \-_.]/", '', $episode_metadata['title']);
 
-	if(($opt_verbose) && !$movie) {
-		$filename .= " - ";
-		$filename .= $episode_title;
+	if($movie) {
+		
+		$filename = $episode_title;
+
+	} else {
+
+		$filename .= $season_filename;
+		if(($opt_verbose)) {
+			$filename .= " - ";
+			$filename .= $episode_title;
+		}
 	}
 
 	$filename .= ".".$pathinfo['extension'];
