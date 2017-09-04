@@ -24,12 +24,6 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_full', array(
-		'long_name' => '--full',
-		'description' => '\'Series Name (Year)/Season XX/Series Name - sXXeXX\'',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
 	$parser->addOption('opt_filename', array(
 		'long_name' => '--filename',
 		'description' => '\'Series Name - sXXeXX\' (default)',
@@ -43,36 +37,14 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_series_episode', array(
-		'long_name' => '--series-episode',
-		'description' => '\'Series Name - Episode Title\'',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
-	$parser->addOption('opt_episode_title', array(
-		'long_name' => '--episode',
-		'description' => '\'Episode Title\'',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
-	$parser->addOption('opt_episode_filename', array(
-		'long_name' => '--episode-filename',
-		'description' => '\'0.000.0000.00000.ABCDE.mp4\'',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
+	/*
 	$parser->addOption('opt_vfat', array(
 		'long_name' => '--vfat',
 		'description' => 'Filenames for removable media (PSP, Sansa)',
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_qa', array(
-		'long_name' => '--qa',
-		'description' => 'Add QA checks to the options',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
+	*/
 
 	try { $result = $parser->parse(); }
 	catch(PEAR_Exception $e) {
@@ -83,12 +55,13 @@
 	extract($result->args);
 	extract($result->options);
 
+	/*
 	$hardware = 'main';
 
 	if($opt_vfat) {
 		$hardware = 'vfat';
-		$opt_episode_filename = true;
 	}
+	*/
 
 	/** Start everything **/
 
@@ -114,25 +87,8 @@
 		goto next_episode;
 	}
 
-	// Check if the filename is correct
-	if($opt_episode_filename) {
-		$episode_filename = get_episode_filename($episode_id, $pathinfo['extension'], $hardware);
-		echo "$episode_filename";
-		echo "\n";
-		if($opt_qa) {
-			$filename = basename(realpath($filename));
-			if($episode_filename != $filename) {
-				fwrite(STDERR, "$filename should be $episode_filename");
-				fwrite(STDERR, "\n");
-			}
-		}
-		goto next_episode;
-	}
-
 	// If no options passed, simply pass the filename
-	if($opt_full) {
-		$opt_dirname = $opt_filename = true;
-	} elseif(!$opt_dirname && !$opt_filename && !$opt_series_episode && !$opt_episode_title)
+	if(!$opt_dirname && !$opt_filename)
 		$opt_filename = true;
 
 	$episode_metadata = $episodes_model->get_metadata();
@@ -164,13 +120,13 @@
 	$episode_number = $episodes_model->get_number();
 	$season_filename .= str_pad($episode_number, 2, 0, STR_PAD_LEFT);
 
-	if(!$movie && !$opt_series_episode) {
+	if(!$movie) {
 		$filename .= $season_filename;
 	}
 
 	$episode_title = preg_replace("/[^0-9A-Za-z \-_.]/", '', $episode_metadata['title']);
 
-	if(($opt_verbose || $opt_series_episode) && !$movie) {
+	if(($opt_verbose) && !$movie) {
 		$filename .= " - ";
 		$filename .= $episode_title;
 	}
@@ -184,10 +140,6 @@
 		echo $season_dirname."/";
 	if($opt_filename)
 		echo $filename;
-	if($opt_series_episode)
-		echo $filename; 
-	if($opt_episode_title)
-		echo $episode_title;
 	
 	echo "\n";
 
