@@ -33,6 +33,9 @@
 		public $grayscale;
 		public $max_height;
 		public $max_width;
+		public $height;
+		public $width;
+		public $auto_anamorphic;
 		public $h264_profile;
 		public $h264_profiles = array('high', 'main', 'baseline');
 		public $h264_level;
@@ -213,6 +216,14 @@
 
 		}
 
+		public function set_height($int) {
+			$this->height = abs(intval($int));
+		}
+
+		public function set_width($int) {
+			$this->width = abs(intval($int));
+		}
+
 		public function set_h264_profile($str) {
 			if(in_array($str, $this->h264_profiles)) {
 				$this->h264_profile = $str;
@@ -331,6 +342,10 @@
 			if($this->grayscale)
 				$options[] = "--grayscale";
 
+			// Check for auto anamorphic
+			if($this->auto_anamorphic)
+				$options[] = "--auto-anamorphic";
+
 			// Check for no-dvdnav
 			if(!$this->dvdnav)
 				$options[] = "--no-dvdnav";
@@ -377,6 +392,14 @@
 			}
 			if(!is_null($this->max_height)) {
 				$args['--maxHeight'] = $this->max_height;
+			}
+
+			// Set custom width and height
+			if(!is_null($this->width)) {
+				$args['--width'] = $this->width;
+			}
+			if(!is_null($this->height)) {
+				$args['--height'] = $this->height;
 			}
 
 			// Set video framerate

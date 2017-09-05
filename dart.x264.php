@@ -119,6 +119,11 @@ if($opt_encode_info && $episode_id) {
 	$handbrake->deinterlace($series_model->get_preset_deinterlace());
 	$handbrake->decomb($series_model->get_preset_decomb());
 	$handbrake->detelecine($series_model->get_preset_detelecine());
+	if($series_model->get_preset_upscale()) {
+		$handbrake->width = 1920;
+		$handbrake->height = 1080;
+		$handbrake->auto_anamorphic = true;
+	}
 	if($optimize_support)
 		$handbrake->set_http_optimize();
 
