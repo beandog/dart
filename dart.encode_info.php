@@ -15,6 +15,7 @@
 			$episodes_model = new Episodes_Model($episode_id);
 			$tracks_model = new Tracks_Model($episodes_model->track_id);
 			$series_model = new Series_Model($episodes_model->get_series_id());
+			$container = $series_model->get_preset_format();
 
 			$filename = get_episode_filename($episode_id, $container, $arg_hardware);
 
