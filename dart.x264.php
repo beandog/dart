@@ -120,9 +120,10 @@ if($opt_encode_info && $episode_id) {
 	$handbrake->decomb($series_model->get_preset_decomb());
 	$handbrake->detelecine($series_model->get_preset_detelecine());
 	if($series_model->get_preset_upscale()) {
-		$handbrake->width = 1920;
-		$handbrake->height = 1080;
+		$handbrake->width = 720;
+		$handbrake->height = 480;
 		$handbrake->auto_anamorphic = true;
+		$handbrake->set_video_framerate(60);
 	}
 	if($optimize_support)
 		$handbrake->set_http_optimize();

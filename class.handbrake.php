@@ -354,6 +354,11 @@
 			if($this->http_optimize)
 				$options[] = "--optimize";
 
+			// Set constant framerate
+			if(!is_null($this->video_framerate)) {
+				$options[] = '--cfr';
+			}
+
 			return $options;
 
 		}
