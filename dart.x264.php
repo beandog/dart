@@ -119,11 +119,24 @@ if($opt_encode_info && $episode_id) {
 	$handbrake->deinterlace($series_model->get_preset_deinterlace());
 	$handbrake->decomb($series_model->get_preset_decomb());
 	$handbrake->detelecine($series_model->get_preset_detelecine());
-	if($series_model->get_preset_upscale()) {
+	switch($series_model->get_preset_upscale()) {
+		case  '480p':
 		$handbrake->width = 720;
 		$handbrake->height = 480;
 		$handbrake->auto_anamorphic = true;
-		$handbrake->set_video_framerate(60);
+		break;
+
+		case '720p':
+		$handbrake->width = 1280;
+		$handbrake->height = 720;
+		$handbrake->auto_anamorphic = true;
+		break;
+
+		case '1080p':
+		$handbrake->width = 1920;
+		$handbrake->height = 1080;
+		$handbrake->auto_anamorphic = true;
+		break;
 	}
 	if($optimize_support)
 		$handbrake->set_http_optimize();
