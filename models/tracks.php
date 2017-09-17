@@ -101,38 +101,6 @@
 
 		}
 
-		public function get_tags() {
-
-			$sql = "SELECT tg.name FROM tracks t INNER JOIN tags_tracks tt ON t.id = tt.track_id INNER JOIN tags tg ON tt.tag_id = tg.id WHERE t.id = ".$this->db->quote($this->id).";";
-			$arr = $this->db->getCol($sql);
-
-			return $arr;
-
-		}
-
-		public function tag_track($tag_name) {
-
-			$track_id = intval($this->id);
-
-			if(!$track_id)
-				return false;
-
-			$sql = "SELECT id FROM tags WHERE name = ".$this->db->quote($tag_name).";";
-			$tag_id = intval($this->db->getOne($sql));
-
-			if(!$tag_id)
-				return false;
-
-			$sql = "DELETE FROM tags_tracks WHERE tag_id = $tag_id AND track_id = $track_id;";
-			$this->db->query($sql);
-
-			$sql = "INSERT INTO tags_tracks (tag_id, track_id) VALUES ($tag_id, $track_id);";
-			$this->db->query($sql);
-
-			return true;
-
-		}
-
 		function get_audio_details($audio_stream_id) {
 
 			$track_id = intval($this->id);

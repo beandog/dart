@@ -14,9 +14,6 @@
 		$broken_dvd = true;
 		echo "? No tracks? No good!!!!\n";
 
-		echo "* Flagging DVD as broken in database\n";
-		$dvds_model->tag_dvd('dvd_no_tracks');
-
 		// BEEP!
 		beep_error();
 
@@ -65,9 +62,6 @@
 			echo "\n";
 			echo "* Opening $device track number $title_track FAILED\n";
 
-			// Tag the track as broken in the database
-			$tracks_model->tag_track('track_open_fail');
-
 			// Set some of the data so it won't trigger false positives on
 			// missing metadata.
 			$tracks_model->length = 0;
@@ -78,9 +72,6 @@
 
 			continue;
 		}
-
-		// Check the database to see if any tags / anomalies are reported
-		$arr_tags = $tracks_model->get_tags();
 
 		// Database model returns a string
 		$tracks_model_length = floatval($tracks_model->length);
@@ -103,36 +94,25 @@
 				echo "* Updating aspect ratio: ".$dvd->video_aspect_ratio."\n";
 		}
 
-		// Handbrake (0.9.9) sometimes fails to scan DVDs with certain tracks.
-		// If that's the case, skip over them.
-		if(in_array('track_no_handbrake_scan', $arr_tags)) {
-			// Default to false, so we don't depend on it.
-			$tracks_model->closed_captioning = 0;
-		} else {
+		if(is_null($tracks_model->closed_captioning)) {
 
-			if(is_null($tracks_model->closed_captioning)) {
+			$handbrake = new Handbrake;
+			$handbrake->set_binary($handbrake_bin);
+			$handbrake->input_filename($device);
+			$handbrake->input_track($title_track);
 
-				$handbrake = new Handbrake;
-				$handbrake->set_binary($handbrake_bin);
-				$handbrake->input_filename($device);
-				$handbrake->input_track($title_track);
+			$scan = $handbrake->scan();
 
-				$scan = $handbrake->scan();
-
-				if(!$scan) {
-					if($debug) {
-						echo "* Handbrake scan failed\n";
-						echo "* Tagging track\n";
-					}
-					$tracks_model->tag_track('track_no_handbrake_scan');
-				} else {
-					if($debug) {
-						echo "* Closed captioning: ".($handbrake->closed_captioning? 'yes' : 'no')."\n";
-
-					}
-					$tracks_model->closed_captioning = intval($handbrake->closed_captioning);
+			if(!$scan) {
+				if($debug) {
+					echo "* Handbrake scan failed\n";
 				}
+			} else {
+				if($debug) {
+					echo "* Closed captioning: ".($handbrake->closed_captioning? 'yes' : 'no')."\n";
 
+				}
+				$tracks_model->closed_captioning = intval($handbrake->closed_captioning);
 			}
 
 		}

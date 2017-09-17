@@ -149,29 +149,6 @@
 
 		}
 
-		public function tag_dvd($tag_name) {
-
-			$dvd_id = intval($this->id);
-
-			if(!$dvd_id)
-				return false;
-
-			$sql = "SELECT id FROM tags WHERE name = ".$this->db->quote($tag_name).";";
-			$tag_id = intval($this->db->getOne($sql));
-
-			if(!$tag_id)
-				return false;
-
-			$sql = "DELETE FROM tags_dvds WHERE tag_id = $tag_id AND dvd_id = $dvd_id;";
-			$this->db->query($sql);
-
-			$sql = "INSERT INTO tags_dvds (tag_id, dvd_id) VALUES ($tag_id, $dvd_id);";
-			$this->db->query($sql);
-
-			return true;
-
-		}
-
 		function load_dvdread_id($dvdread_id) {
 
 			if(!$dvdread_id)
