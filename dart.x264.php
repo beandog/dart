@@ -138,6 +138,9 @@ if($opt_encode_info && $episode_id) {
 		$handbrake->auto_anamorphic = true;
 		break;
 	}
+	$fps = $series_model->get_preset_fps();
+	if($fps)
+		$handbrake->set_video_framerate($fps);
 	if($optimize_support)
 		$handbrake->set_http_optimize();
 

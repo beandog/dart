@@ -159,5 +159,15 @@
 
 		}
 
+		function get_preset_fps() {
+
+			$sql = "SELECT presets.fps FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->db->quote($this->id).";";
+
+			$var = $this->db->getOne($sql);
+
+			return $var;
+
+		}
+
 	}
 ?>
