@@ -13,6 +13,7 @@
 	require_once 'models/dvds.php';
 	require_once 'models/episodes.php';
 	require_once 'models/tracks.php';
+	require_once 'models/series.php';
 
 	require_once 'Console/CommandLine.php';
 
@@ -114,8 +115,11 @@
 	}
 
 	$dvds_model = new Dvds_Model($dvds_model_id);
+	$series_id = $dvds_model->get_series_id();
+	$series_model = new Series_Model($series_id);
 	$dvd_query['dvd']['volname'] = $dvds_model->title;
 	$dvd_query['titles'] = array();
+	$container = $series_model->get_preset_format();
 	
 	$dvd_episodes = $dvds_model->get_episodes();
 
@@ -148,7 +152,7 @@
 		$dvd_query['metadata']['nsix'] = $episode_metadata['nsix'];
 
 		$filename = str_pad($dvds_model->get_collection_id(), 1, '0');
-		$filename .= ".".str_pad($dvds_model->get_series_id(), 3, '0', STR_PAD_LEFT);
+		$filename .= ".".str_pad($series_id, 3, '0', STR_PAD_LEFT);
 		$filename .= ".".str_pad($dvds_model->id, 4, '0', STR_PAD_LEFT);
 		$filename .= ".".str_pad($episode_id, 5, 0, STR_PAD_LEFT);
 		$filename .= ".".$episode_metadata['nsix'];
