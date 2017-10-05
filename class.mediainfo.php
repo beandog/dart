@@ -231,6 +231,8 @@
 
 			$arr = preg_grep('/.*Chapter.*/', $arr_menu);
 
+			$chapters = array();
+
 			// Original format is "_00_04_01841", change to "00:04:01.841"
 			foreach($arr as $key => $value) {
 
