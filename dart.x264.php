@@ -181,6 +181,12 @@ if($opt_encode_info && $episode_id) {
 		$handbrake->add_audio_encoder('fdk_aac');
 		if($audio_bitrate)
 			$handbrake->set_audio_bitrate($audio_bitrate);
+	} elseif($audio_encoder == 'fdk_aac,copy') {
+		$handbrake->add_audio_encoder('fdk_aac');
+		if($audio_bitrate)
+			$handbrake->set_audio_bitrate($audio_bitrate);
+		$handbrake->add_audio_stream($audio_stream_id);
+		$handbrake->add_audio_encoder('copy');
 	} elseif($audio_encoder == 'copy') {
 		$handbrake->add_audio_encoder('copy');
 	} else {
