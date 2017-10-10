@@ -141,7 +141,7 @@ if($opt_encode_info && $episode_id) {
 	$fps = $series_model->get_preset_fps();
 	if($fps)
 		$handbrake->set_video_framerate($fps);
-	if($optimize_support)
+	if($container == 'mp4' && $optimize_support)
 		$handbrake->set_http_optimize();
 
 	/** Audio **/
@@ -177,8 +177,8 @@ if($opt_encode_info && $episode_id) {
 
 	$audio_encoder = $series_model->get_audio_encoder();
 	$audio_bitrate = $series_model->get_audio_bitrate();
-	if($audio_encoder == 'fdk_aac') {
-		$handbrake->add_audio_encoder('fdk_aac');
+	if($audio_encoder == 'fdk_aac' || $audio_encoder == 'mp3') {
+		$handbrake->add_audio_encoder($audio_encoder);
 		if($audio_bitrate)
 			$handbrake->set_audio_bitrate($audio_bitrate);
 	} elseif($audio_encoder == 'fdk_aac,copy') {
