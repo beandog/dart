@@ -192,7 +192,8 @@
 			$this->metadata['audio_tracks']++;
 
 			$arr['audio_format'] = $arr_audio['Format'];
-			$arr['audio_bitrate'] = current(explode(' ', $arr_audio['Bit_rate']));
+			if(array_key_exists('Bit_rate', $arr_audio))
+				$arr['audio_bitrate'] = current(explode(' ', $arr_audio['Bit_rate']));
 			$arr['audio_channels'] = current(explode(' ', $arr_audio['Channel_s_']));
 
 			$this->metadata['audio'][] = $arr;
