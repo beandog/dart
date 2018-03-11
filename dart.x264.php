@@ -21,6 +21,7 @@ if($opt_encode_info && $episode_id) {
 	 * x264 optional grayscale
 	 * H.264 profile high
 	 * H.264 level 4.1
+	 * NTSC color
 	 */
 
 	$deinterlace = false;
@@ -32,12 +33,14 @@ if($opt_encode_info && $episode_id) {
 	$chapters_support = true;
 	$optimize_support = true;
 	$force_preset = false;
+	$x264opts = 'colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m';
 
 	$handbrake = new Handbrake;
 	$handbrake->set_binary($handbrake_bin);
 	$handbrake->verbose($verbose);
 	$handbrake->debug($debug);
 	$handbrake->set_dry_run($dry_run);
+	$handbrake->set_x264opts($x264opts);
 
 	switch($arg_hardware) {
 
@@ -48,7 +51,7 @@ if($opt_encode_info && $episode_id) {
 			$chapters_support = false;
 			$optimize_support = false;
 			$force_preset = 'medium';
-			$handbrake->set_x264opts('bframes=1');
+			$handbrake->set_x264opts($x264opts.':bframes=1');
 			$handbrake->set_max_width(480);
 			$handbrake->set_max_height(272);
 			$handbrake->set_audio_downmix('stereo');
