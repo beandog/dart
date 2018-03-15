@@ -357,7 +357,7 @@
 			// If audio is enabled and no tracks have been specifically selected,
 			// then choose the first English one
 			if($this->audio && !count($this->audio_tracks))
-				$options[] = "--audio-lang-list 'eng' --first-audio";
+				$options[] = "--first-audio";
 
 			// Set constant framerate
 			if(!is_null($this->video_framerate)) {
@@ -451,11 +451,14 @@
 			// Add audio tracks
 			if($this->audio) {
 
-				// Select audio streams to encode.
+				// Select audio streams to encode, default to English if no
+				// streams are specified.
 				if(count($this->audio_tracks)) {
 					$str = implode(",", $this->audio_tracks);
 					$args['--audio'] = $str;
-				} 
+				} else {
+					$args['--audio-lang-list'] = 'eng';
+				}
 
 				// Add audio encoders
 				if(count($this->audio_encoders)) {
