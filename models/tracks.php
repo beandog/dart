@@ -39,7 +39,7 @@
 
 		public function get_best_quality_audio_streamid() {
 
-			$sql = "SELECT COALESCE(streamid, '0x80') FROM audio WHERE track_id = ".$this->db->quote($this->id)." AND langcode = 'en' AND active = 1 AND channels = (SELECT MAX(channels) FROM audio WHERE track_id = ".$this->db->quote($this->id).") ORDER BY CASE WHEN format = 'dts' THEN 0 ELSE 1 END, streamid LIMIT 1;";
+			$sql = "SELECT COALESCE(streamid, '0x80') FROM audio WHERE track_id = ".$this->db->quote($this->id)." AND langcode = 'en' AND active = 1 AND channels = (SELECT MAX(channels) FROM audio WHERE track_id = ".$this->db->quote($this->id)." AND active = 1) ORDER BY CASE WHEN format = 'dts' THEN 0 ELSE 1 END, streamid LIMIT 1;";
 
 			$var = $this->db->getOne($sql);
 
@@ -63,6 +63,18 @@
 
 			$var = $this->db->getOne($sql);
 
+			return $var;
+
+		}
+
+		public function get_num_active_audio_tracks($lang = '') {
+
+			$sql = "SELECT COUNT(1) FROM audio WHERE track_id = ".$this->db->quote($this->id)." AND active = 1";
+			if(strlen($lang) == 2)
+				$sql .= " AND langcode = ".$this->db->quote($lang);
+
+			$sql .= ";";
+			$var = $this->db->getOne($sql);
 			return $var;
 
 		}
