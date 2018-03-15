@@ -354,6 +354,11 @@
 			if($this->http_optimize)
 				$options[] = "--optimize";
 
+			// If audio is enabled and no tracks have been specifically selected,
+			// then choose the first English one
+			if($this->audio && !count($this->audio_tracks))
+				$options[] = "--audio-lang-list 'eng' --first-audio";
+
 			// Set constant framerate
 			if(!is_null($this->video_framerate)) {
 				$options[] = '--cfr';
@@ -446,13 +451,11 @@
 			// Add audio tracks
 			if($this->audio) {
 
-				// Select audio streams to encode.  If none are specified,
-				// just use the first one.
+				// Select audio streams to encode.
 				if(count($this->audio_tracks)) {
 					$str = implode(",", $this->audio_tracks);
 					$args['--audio'] = $str;
-				} else
-					$args['--audio'] = 1;
+				} 
 
 				// Add audio encoders
 				if(count($this->audio_encoders)) {
