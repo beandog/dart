@@ -149,34 +149,37 @@ if($opt_encode_info && $episode_id) {
 
 	/** Audio **/
 
-	// Find the audio track to use
-	$best_quality_audio_streamid = $tracks_model->get_best_quality_audio_streamid();
-	$first_english_streamid = $tracks_model->get_first_english_streamid();
+	// The HandBrake class will pass options to find the first English audio track if
+	// no specific streams are given it. If there is only one stream, add that. If there
+	// is more than one stream and only one English audio track, then default to letting
+	// Handbrake select it. If there are more than two active English audio tracks,
+	// however, a scan will be run to see which one is highest quality -- this is not
+	// common on non-movie DVDs, so the scans should be quite infrequent.
 
-	// Major FIXME -- The audio stream should never be guessed at this point in
-	// the encode.  A *proper* call to the database should fetch it, and then
-	// set the *track number*.
+	$scan_audio_tracks = false;
+	$num_active_audio_tracks = $tracks_model->get_num_active_audio_tracks();
+	$num_active_en_audio_tracks = $tracks_model->get_num_active_audio_tracks('en');
 
-	$audio_stream_id = "0x80";
+	// Specifically pick the first track. If none are selected at all, then HandBrake
+	// will pick the first English one. However, there may be only one, which is undefined,
+	// in which case it would be skipped. This also works around that.
+	if($num_active_audio_tracks == 1)
+		$handbrake->add_audio_track(1);
+
+	if($num_active_en_audio_tracks > 1)
+		$scan_audio_tracks = true;
 
 	// Do a a check for a dry run here, because HandBrake scans the source directly
 	// which can take some time.
-	if(!$dry_run) {
+	if(!$dry_run && $scan_audio_tracks) {
 
-		if($handbrake->dvd_has_audio_stream_id($best_quality_audio_streamid)) {
-			$handbrake->add_audio_stream($best_quality_audio_streamid);
-			$audio_stream_id = $best_quality_audio_streamid;
-		} elseif($handbrake->dvd_has_audio_stream_id($first_english_streamid)) {
-			$handbrake->add_audio_stream($first_english_streamid);
-			$audio_stream_id = $first_english_streamid;
-		} else {
-			$handbrake->add_audio_stream("0x80");
-		}
+		$best_quality_audio_streamid = $tracks_model->get_best_quality_audio_streamid();
+
+		echo basename($device)." - track: ".str_pad($tracks_model->ix, 2, 0, STR_PAD_LEFT)." audio tracks: $num_active_audio_tracks en tracks: $num_active_en_audio_tracks best: $best_quality_audio_streamid\n";
+
+		$handbrake->add_audio_stream($best_quality_audio_streamid);
 
 	}
-
-	$audio_details = $tracks_model->get_audio_details($audio_stream_id);
-	$display_audio_passthrough = display_audio($audio_details['format'], $audio_details['channels']);
 
 	$audio_encoder = $series_model->get_audio_encoder();
 	$audio_bitrate = $series_model->get_audio_bitrate();
@@ -188,9 +191,7 @@ if($opt_encode_info && $episode_id) {
 		$handbrake->add_audio_encoder('fdk_aac');
 		if($audio_bitrate)
 			$handbrake->set_audio_bitrate($audio_bitrate);
-		$handbrake->add_audio_stream($audio_stream_id);
 		$handbrake->add_audio_encoder('copy');
-	} elseif($audio_encoder == 'copy') {
 		$handbrake->add_audio_encoder('copy');
 	} else {
 		$handbrake->add_audio_encoder('copy');
