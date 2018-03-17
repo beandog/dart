@@ -48,3 +48,26 @@
 		}
 
 	}
+
+	if(is_null($tracks_model->closed_captioning)) {
+
+		$handbrake = new Handbrake;
+		$handbrake->set_binary($handbrake_bin);
+		$handbrake->input_filename($device);
+		$handbrake->input_track($title_track);
+
+		$scan = $handbrake->scan();
+
+		if(!$scan) {
+			if($debug) {
+				echo "* Handbrake scan failed\n";
+			}
+		} else {
+			if($debug) {
+				echo "* Closed captioning: ".($handbrake->closed_captioning? 'yes' : 'no')."\n";
+
+			}
+			$tracks_model->closed_captioning = intval($handbrake->closed_captioning);
+		}
+
+	}
