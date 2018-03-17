@@ -149,37 +149,7 @@ if($opt_encode_info && $episode_id) {
 
 	/** Audio **/
 
-	// The HandBrake class will pass options to find the first English audio track if
-	// no specific streams are given it. If there is only one stream, add that. If there
-	// is more than one stream and only one English audio track, then default to letting
-	// Handbrake select it. If there are more than two active English audio tracks,
-	// however, a scan will be run to see which one is highest quality -- this is not
-	// common on non-movie DVDs, so the scans should be quite infrequent.
-
-	$scan_audio_tracks = false;
-	$num_active_audio_tracks = $tracks_model->get_num_active_audio_tracks();
-	$num_active_en_audio_tracks = $tracks_model->get_num_active_audio_tracks('en');
-
-	// Specifically pick the first track. If none are selected at all, then HandBrake
-	// will pick the first English one. However, there may be only one, which is undefined,
-	// in which case it would be skipped. This also works around that.
-	if($num_active_audio_tracks == 1)
-		$handbrake->add_audio_track(1);
-
-	if($num_active_en_audio_tracks > 1)
-		$scan_audio_tracks = true;
-
-	// Do a a check for a dry run here, because HandBrake scans the source directly
-	// which can take some time.
-	if(!$dry_run && $scan_audio_tracks) {
-
-		$best_quality_audio_streamid = $tracks_model->get_best_quality_audio_streamid();
-
-		echo basename($device)." - track: ".str_pad($tracks_model->ix, 2, 0, STR_PAD_LEFT)." audio tracks: $num_active_audio_tracks en tracks: $num_active_en_audio_tracks best: $best_quality_audio_streamid\n";
-
-		$handbrake->add_audio_stream($best_quality_audio_streamid);
-
-	}
+	$handbrake->add_audio_track($tracks_model->audio_ix);
 
 	$audio_encoder = $series_model->get_audio_encoder();
 	$audio_bitrate = $series_model->get_audio_bitrate();
@@ -199,6 +169,13 @@ if($opt_encode_info && $episode_id) {
 
 	/** Subtitles **/
 
+	$scan_subp_tracks = false;
+
+	$has_closed_captioning = $tracks_model->has_closed_captioning();
+	$num_subp_tracks = $tracks_model->get_num_subp_tracks();
+	$num_active_subp_tracks = $tracks_model->get_num_active_subp_tracks();
+	$num_active_en_subp_tracks = $tracks_model->get_num_active_subp_tracks('en');
+
 	// Check for a subtitle track
 	if($subs_support) {
 
@@ -209,8 +186,9 @@ if($opt_encode_info && $episode_id) {
 		if($subp_ix) {
 			$handbrake->add_subtitle_track($subp_ix);
 			$d_subtitles = "VOBSUB";
-		} elseif($handbrake->closed_captioning) {
-			$handbrake->add_subtitle_track($handbrake->closed_captioning_ix);
+		} elseif($has_closed_captioning) {
+			$closed_captioning_ix = $num_subp_tracks + 1;
+			$handbrake->add_subtitle_track($closed_captioning_ix);
 			$d_subtitles = "Closed Captioning";
 		} else {
 			$d_subtitles = "None :(";
