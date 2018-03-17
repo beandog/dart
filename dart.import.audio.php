@@ -62,3 +62,14 @@
 		}
 
 	}
+
+	// Set the default audio track.
+	if(is_null($tracks_model->audio_ix)) {
+		if($audio_tracks) {
+			$audio_ix = $tracks_model->audio_ix = $tracks_model->get_best_quality_audio_ix();
+			if(!$audio_ix)
+				$tracks_model->audio_ix = 1;
+		} else {
+			$tracks_model->audio_ix = 0;
+		}
+	}
