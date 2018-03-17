@@ -77,14 +77,26 @@
 			// Verify tracks are existent
 			$sql = "SELECT COUNT(1) FROM tracks WHERE dvd_id = $dvd_id;";
 			$count = intval($this->db->getOne($sql));
-
 			if(!$count)
 				return true;
 
-			// See if there are zero audio tracks total
-			$sql = "SELECT COUNT(1) FROM audio a JOIN tracks t ON a.track_id = t.id WHERE t.dvd_id = $dvd_id;";
+			// Check if an audio track hasn't been set
+			$sql = "SELECT COUNT(1) FROM tracks WHERE dvd_id = $dvd_id AND audio_ix IS NULL;";
 			$count = intval($this->db->getOne($sql));
-			if(!$count)
+			if($count)
+				return true;
+
+
+			// Check if any subtitle tracks have not been tracked as active or not
+			$sql = "SELECT COUNT(1) FROM subp s JOIN tracks t ON s.track_id = t.id WHERE t.dvd_id = $dvd_id AND active IS NULL;";
+			$count = intval($this->db->getOne($sql));
+			if($count)
+				return true;
+
+			// Check if closed captioning is not flagged
+			$sql = "SELECT COUNT(1) FROM tracks WHERE dvd_id = $dvd_id AND closed_captioning IS NULL;";
+			$count = intval($this->db->getOne($sql));
+			if($count)
 				return true;
 
 			return false;

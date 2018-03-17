@@ -47,9 +47,9 @@
 
 		}
 
-		public function get_first_english_streamid() {
+		public function get_best_quality_audio_ix() {
 
-			$sql = "SELECT COALESCE(streamid, '0x80') FROM audio WHERE track_id = ".$this->db->quote($this->id)." AND langcode = 'en' AND active = 1 ORDER BY streamid LIMIT 1;";
+			$sql = "SELECT COALESCE(ix, 1) FROM audio WHERE track_id = ".$this->db->quote($this->id)." AND langcode = 'en' AND active = 1 AND channels = (SELECT MAX(channels) FROM audio WHERE track_id = ".$this->db->quote($this->id)." AND active = 1) ORDER BY CASE WHEN format = 'dts' THEN 0 ELSE 1 END, streamid LIMIT 1;";
 
 			$var = $this->db->getOne($sql);
 
@@ -57,9 +57,9 @@
 
 		}
 
-		public function get_first_english_subp() {
+		public function get_first_english_streamid() {
 
-			$sql = "SELECT ix FROM subp WHERE track_id = ".$this->db->quote($this->id)." AND langcode = 'en' AND active = 1 ORDER BY ix LIMIT 1;";
+			$sql = "SELECT COALESCE(streamid, '0x80') FROM audio WHERE track_id = ".$this->db->quote($this->id)." AND langcode = 'en' AND active = 1 ORDER BY streamid LIMIT 1;";
 
 			$var = $this->db->getOne($sql);
 
@@ -75,6 +75,51 @@
 
 			$sql .= ";";
 			$var = $this->db->getOne($sql);
+			return $var;
+
+		}
+
+		public function has_closed_captioning() {
+
+			$sql = "SELECT closed_captioning FROM tracks WHERE id = ".$this->db->quote($this->id).";";
+			$var = $this->db->getOne($sql);
+			if($var)
+				return true;
+			else
+				return false;
+
+		}
+
+		public function get_num_subp_tracks($lang = '') {
+
+			$sql = "SELECT COUNT(1) FROM subp WHERE track_id = ".$this->db->quote($this->id);
+			if(strlen($lang) == 2)
+				$sql .= " AND langcode = ".$this->db->quote($lang);
+
+			$sql .= ";";
+			$var = $this->db->getOne($sql);
+			return $var;
+
+		}
+
+		public function get_num_active_subp_tracks($lang = '') {
+
+			$sql = "SELECT COUNT(1) FROM subp WHERE track_id = ".$this->db->quote($this->id)." AND active = 1";
+			if(strlen($lang) == 2)
+				$sql .= " AND langcode = ".$this->db->quote($lang);
+
+			$sql .= ";";
+			$var = $this->db->getOne($sql);
+			return $var;
+
+		}
+
+		public function get_first_english_subp() {
+
+			$sql = "SELECT ix FROM subp WHERE track_id = ".$this->db->quote($this->id)." AND langcode = 'en' AND active = 1 ORDER BY ix LIMIT 1;";
+
+			$var = $this->db->getOne($sql);
+
 			return $var;
 
 		}
