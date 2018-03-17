@@ -137,7 +137,8 @@
 
 		public function add_audio_track($int) {
 			$int = abs(intval($int));
-			$this->audio_tracks[] = $int;
+			if($int)
+				$this->audio_tracks[] = $int;
 		}
 
 		/**
@@ -697,7 +698,10 @@
 			}
 
 			// Sample source string: Closed Captions (iso639-2: eng) (Text)(CC)
-			$closed_captioning = preg_grep("/.*Closed Captions.*eng.*/", $arr);
+			// Avoid false positives: "English (Closed Caption) (iso639-2: eng) (Bitmap)(VOBSUB)"
+			// I have seen *one* DVD where the language is und for the CC, the rest
+			// all being eng. I'm not going to scan for language. :)
+			$closed_captioning = preg_grep("/.*Closed Captions.*Text.*CC*/", $arr);
 
 			if(count($closed_captioning)) {
 				$this->closed_captioning = true;
