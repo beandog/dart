@@ -153,7 +153,7 @@ if($opt_encode_info && $episode_id) {
 
 	$audio_encoder = $series_model->get_audio_encoder();
 	$audio_bitrate = $series_model->get_audio_bitrate();
-	if($audio_encoder == 'fdk_aac' || $audio_encoder == 'mp3') {
+	if($audio_encoder == 'fdk_aac' || $audio_encoder == 'mp3' || $audio_encoder == 'ac3' || $audio_encoder == 'eac3') {
 		$handbrake->add_audio_encoder($audio_encoder);
 		if($audio_bitrate)
 			$handbrake->set_audio_bitrate($audio_bitrate);
@@ -161,7 +161,6 @@ if($opt_encode_info && $episode_id) {
 		$handbrake->add_audio_encoder('fdk_aac');
 		if($audio_bitrate)
 			$handbrake->set_audio_bitrate($audio_bitrate);
-		$handbrake->add_audio_encoder('copy');
 		$handbrake->add_audio_encoder('copy');
 	} else {
 		$handbrake->add_audio_encoder('copy');
