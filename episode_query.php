@@ -37,6 +37,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_kodi', array(
+		'long_name' => '--kodi',
+		'description' => '\'Series Name (Year)/\'',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	/*
 	$parser->addOption('opt_vfat', array(
 		'long_name' => '--vfat',
@@ -140,7 +146,7 @@
 
 	if($opt_dirname)
 		echo $series_dirname."/";
-	if(!$movie && $opt_dirname)
+	if(!$movie && $opt_dirname && !$opt_kodi)
 		echo $season_dirname."/";
 	if($opt_filename)
 		echo $filename;
