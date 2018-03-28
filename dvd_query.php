@@ -208,9 +208,7 @@
 			$num_encoded++;
 			$episodes_encoded[] = $episode_metadata['filename'];
 			$episode_encoded = true;
-		}
-		
-		if(!file_exists($episode_metadata['filename'])) {
+		} else {
 			$num_not_encoded++;
 			$episodes_not_encoded[] = $episode_metadata['filename'];
 			$episode_encoded = false;
