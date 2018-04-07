@@ -10,7 +10,7 @@ if($opt_encode_info && $episode_id) {
 	 */
 
 	/**
-	 * Encoding specification Blu-ray friendly
+	 * Encoding specification up to 1080p60
 	 * use dvdnav over dvdread
 	 * chapters
 	 * no fixed video, audio codec bitrate
@@ -20,7 +20,7 @@ if($opt_encode_info && $episode_id) {
 	 * x264 tune animation, film or grain
 	 * x264 optional grayscale
 	 * H.264 profile high
-	 * H.264 level 4.1
+	 * H.264 level 5.0
 	 * NTSC color
 	 */
 
@@ -28,7 +28,7 @@ if($opt_encode_info && $episode_id) {
 	$decomb = false;
 	$detelecine = false;
 	$h264_profile = 'high';
-	$h264_level = '4.1';
+	$h264_level = '5.0';
 	$subs_support = true;
 	$chapters_support = true;
 	$optimize_support = true;
