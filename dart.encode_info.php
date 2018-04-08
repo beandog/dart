@@ -28,11 +28,23 @@
 
 			if(!($opt_skip_existing && file_exists($filename))) {
 
-				require 'dart.x264.php';
-				$handbrake->input_filename($input_filename);
-				$handbrake->output_filename($filename);
-				$handbrake_command  = $handbrake->get_executable_string();
-				echo "$handbrake_command\n";
+				if($container == 'mkv' || $container == 'mp4') {
+
+					require 'dart.x264.php';
+					$handbrake->input_filename($input_filename);
+					$handbrake->output_filename($filename);
+					$handbrake_command  = $handbrake->get_executable_string();
+					echo "$handbrake_command\n";
+
+				} else if($container == 'vob') {
+
+					require 'dart.dvd_copy.php';
+					$dvd_copy->input_filename($input_filename);
+					$dvd_copy->output_filename($filename);
+					$dvd_copy_command = $dvd_copy->get_executable_string();
+					echo "$dvd_copy_command\n";
+
+				}
 
 			}
 

@@ -22,6 +22,7 @@
 	require_once 'class.dvddrive.php';
 	require_once 'class.matroska.php';
 	require_once 'class.handbrake.php';
+	require_once 'class.dvd_copy.php';
 
 	require_once 'models/dbtable.php';
 	require_once 'models/dvds.php';
