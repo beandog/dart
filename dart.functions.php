@@ -1,15 +1,5 @@
 <?php
 
-	// Capture SIGINT
-	declare(ticks = 1);
-	function master_crash($signo) {
-		echo "\n";
-		echo "Captured SIGINT, oh noes!!\n";
-		echo "Crashing gracefully ... *boom*\n";
-		exit(1);
-	}
-	pcntl_signal(SIGINT, 'master_crash');
-
 	// Check source
 	function is_dvd($device) {
 
