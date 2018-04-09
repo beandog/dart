@@ -16,8 +16,6 @@
 	require_once 'inc.mdb2.php';
 	require_once 'dart.functions.php';
 
-	require_once 'Console/ProgressBar.php';
-
 	require_once 'class.dvd.php';
 	require_once 'class.dvddrive.php';
 	require_once 'class.matroska.php';
@@ -191,6 +189,8 @@
 
 		// Determine whether we are reading the device
 		if($opt_info || $opt_encode_info || $opt_import || $opt_archive || $dump_iso) {
+			if($debug)
+				echo "* Info / Import / Archive / ISO: Enabling device access\n";
 			$access_device = true;
 			if(!$opt_wait) {
 				if(!$batch_mode) {
@@ -223,10 +223,16 @@
 			// Check if drive is open.
 			$tray_open = $drive->is_open();
 
+			if($debug)
+				echo "* Tray open: ".($tray_open ? "yes" : "no" )."\n";
+
 			// Check if drive has media if it's closed
 			if(!$tray_open) {
 				$tray_has_media = $drive->has_media();
 			}
+
+			if($debug)
+				echo "* Has media: ".($tray_has_media ? "yes" : "no" )."\n";
 
 			if($debug) {
 				if($opt_wait)
@@ -258,6 +264,8 @@
 				// the tray if there is no media in there.
 				$drive->open();
 				$access_device = false;
+				if($debug)
+					echo "* Opening drive: Disabling device access\n";
 			}
 
 			// If waiting and the drive is closed and has no media, go to the next device

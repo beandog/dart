@@ -7,6 +7,7 @@
 		public $is_iso;
 		public $debug;
 		public $dry_run;
+		public $binary = '/usr/bin/dvd_info';
 
 		public $opened;
 
@@ -101,8 +102,11 @@
 
 		private function dvd_info() {
 
+			if(file_exists("/usr/local/bin/dvd_info"))
+				$this->binary = "/usr/local/bin/dvd_info";
+
 			$arg_device = escapeshellarg($this->device);
-			$cmd = "dvd_info --json $arg_device 2> /dev/null";
+			$cmd = $this->binary." --json $arg_device 2> /dev/null";
 
 			if($this->debug)
 				echo "* Executing: $cmd\n";
