@@ -20,7 +20,7 @@ if($opt_encode_info && $episode_id) {
 	 * x264 tune animation, film or grain
 	 * x264 optional grayscale
 	 * H.264 profile high
-	 * H.264 level 5.0
+	 * H.264 level 4.1 default (5.0 for 720p and higher)
 	 * NTSC color
 	 */
 
@@ -28,7 +28,7 @@ if($opt_encode_info && $episode_id) {
 	$decomb = false;
 	$detelecine = false;
 	$h264_profile = 'high';
-	$h264_level = '5.0';
+	$h264_level = '4.1';
 	$subs_support = true;
 	$chapters_support = true;
 	$optimize_support = true;
@@ -102,14 +102,6 @@ if($opt_encode_info && $episode_id) {
 
 	/** x264 **/
 
-	/*
-	$arr_x264_opts = array();
-	$series_x264opts = $series_model->get_x264opts();
-	if(strlen($series_x264opts))
-		$arr_x264_opts[] = $series_x264opts();
-	$x264_opts = implode(":", $arr_x264_opts);
-	$handbrake->set_x264opts($x264_opts);
-	*/
 	$x264_preset = $series_model->get_x264_preset();
 	if(!$x264_preset)
 		$x264_preset = 'medium';
@@ -124,21 +116,17 @@ if($opt_encode_info && $episode_id) {
 	$handbrake->detelecine($series_model->get_preset_detelecine());
 	switch($series_model->get_preset_upscale()) {
 		case  '480p':
-		$handbrake->width = 720;
 		$handbrake->height = 480;
-		$handbrake->auto_anamorphic = true;
 		break;
 
 		case '720p':
-		$handbrake->width = 1280;
 		$handbrake->height = 720;
-		$handbrake->auto_anamorphic = true;
+		$handbrake->set_h264_level('5.0');
 		break;
 
 		case '1080p':
-		$handbrake->width = 1920;
 		$handbrake->height = 1080;
-		$handbrake->auto_anamorphic = true;
+		$handbrake->set_h264_level('5.0');
 		break;
 	}
 	$fps = $series_model->get_preset_fps();
