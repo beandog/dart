@@ -372,8 +372,6 @@
 				}
 			}
 
-			echo "* Target ISO:\t".get_dvd_iso_filename($device)."\n";
-
 		}
 
 		require 'dart.info.php';
