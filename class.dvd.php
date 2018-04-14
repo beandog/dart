@@ -170,22 +170,29 @@
 
 		}
 
-		public function dump_iso($filename) {
+		public function dvdbackup($filename, $logfile = '/dev/null') {
 
 			$bool = false;
 
 			if(!$this->opened)
 				return null;
 
-			if($this->debug)
-				echo "* dvd->dump_iso($filename)\n";
+			$logfile = realpath($logfile);
+
+			if($this->debug) {
+				echo "* dvd->dvdbackup($filename)\n";
+				echo "* Logging to $logfile\n";
+			}
 
 			$arg_input = escapeshellarg($this->device);
-			$arg_output = escapeshellarg(dirname($filename));
-			$arg_name = escapeshellarg($this->title);
+			$arg_logfile = escapeshellarg($logfile);
 
 			$target_dir = dirname($filename);
+			$target_rip = $target_dir."/".basename($filename, '.iso').".R1p";
+			$arg_name = basename($target_rip);
+			$arg_output = escapeshellarg(dirname($filename));
 
+			/*
 			if(!is_dir($target_dir)) {
 
 				if($this->debug)
@@ -199,6 +206,7 @@
 				}
 
 			}
+			*/
 
 			if($this->debug) {
 				echo "* input: $arg_input\n";
@@ -206,9 +214,9 @@
 				echo "* name: $arg_name\n";
 			}
 
-			$cmd = "dvdbackup --mirror --input=$arg_input --output=$arg_output --name=$arg_name";
+			$cmd = "dvdbackup -M -p -i $arg_input -o $arg_output -n $arg_name 2>&1 | tee $logfile";
 			if($this->debug)
-				echo "* $cmd\n";
+				echo "* Executing: $cmd\n";
 
 			$success = true;
 			$retval = 0;
