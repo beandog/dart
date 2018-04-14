@@ -43,7 +43,7 @@
 	// If only creating the ISO is requested, then skip import.  This is
 	// common when there are problems accessing the DVD, and import is
 	// expected to fail.
-	if($dump_iso && (!$opt_import && !$opt_archive))
+	if($opt_dump_iso && (!$opt_import && !$opt_archive))
 		$allow_import = false;
 
 	// Start import

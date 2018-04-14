@@ -48,21 +48,15 @@
 
 	$skip = 0;
 
-	// Dumping the ISO may be necessary at some point in the encode process,
-	// so handle the request and the action separately.
-	if($opt_dump_iso)
-		$dump_iso = true;
-	else
-		$dump_iso = false;
-
 	// --rip is basically a shortcut for ripping an ISO and importing it plus
 	// setting it in batch mode so it will eject the disc after finished.
 	// Designed for use with a udev trigger so that discs will auto-rip
 	if($opt_rip) {
-		$opt_iso = true;
+		$opt_dump_iso = true;
 		$opt_import = true;
 		$batch_mode = true;
 		$backup_dir = $batch_dir;
+		$access_device = true;
 	}
 
 	if($opt_iso_filename) {
@@ -126,7 +120,7 @@
 	if($opt_encode_info)
 		$batch_mode = true;
 
-	if(!count($devices) && ($opt_info || $opt_encode_info || $dump_iso || $opt_import || $opt_archive))
+	if(!count($devices) && ($opt_info || $opt_encode_info || $opt_dump_iso || $opt_import || $opt_archive))
 		$devices = $all_devices;
 
 	// General boolean for various items
@@ -198,7 +192,7 @@
 			$display_device = basename($device);
 
 		// Determine whether we are reading the device
-		if($opt_info || $opt_encode_info || $opt_import || $opt_archive || $dump_iso) {
+		if($opt_info || $opt_encode_info || $opt_import || $opt_archive || $opt_dump_iso) {
 			if($debug)
 				echo "* Info / Import / Archive / ISO: Enabling device access\n";
 			$access_device = true;
@@ -388,6 +382,7 @@
 		require 'dart.encode_info.php';
 		require 'dart.import.php';
 		require 'dart.iso.php';
+		require 'dart.rip.php';
 
 		// goto point for next device -- skip here for any reason that the initial
 		// dart calls failed to acess the DVD or device, and it needs to move on.
@@ -403,7 +398,7 @@
 
 		// If polling for a new disc, check to see if one is in the
 		// drive.  If there is, start over.
-		if($opt_wait && ($opt_import || $opt_archive || $dump_iso) && $device_is_hardware) {
+		if($opt_wait && ($opt_import || $opt_archive || $opt_dump_iso) && $device_is_hardware) {
 
 			// Only toggle devices if passed more than one
 			// Otherwise, just re-poll the original.

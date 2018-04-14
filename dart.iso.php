@@ -7,7 +7,7 @@
 
 	// Continue if we can access the device (source file)
 	// and it has a database record.
-	if($access_device && $dvds_model_id && $dump_iso && !$broken_dvd) {
+	if($access_device && $dvds_model_id && $opt_dump_iso && !$broken_dvd) {
 
 		/** ISO Information **/
 		echo "[ISO]\n";
@@ -80,7 +80,7 @@
 			// If we have access to the device, and we
 			// are trying to dump it, and the output filename
 			// already exists, just eject the drive.
-			if($target_iso_exists && $dump_iso) {
+			if($target_iso_exists && $opt_dump_iso) {
 				echo "* Filename: $display_iso exists\n";
 				if($batch_mode) {
 					if($debug) {
@@ -97,7 +97,7 @@
 			}
 
 			// Dump the DVD contents to an ISO on the filesystem
-			if(!$target_iso_exists && !$is_ripping && $dump_iso && $access_device) {
+			if(!$target_iso_exists && !$is_ripping && $opt_dump_iso && $access_device) {
 
 				$logfile = "/tmp/dvdbackup.log";
 
