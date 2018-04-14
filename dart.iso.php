@@ -80,9 +80,20 @@
 			// If we have access to the device, and we
 			// are trying to dump it, and the output filename
 			// already exists, just eject the drive.
-			if($target_iso_exists && $dump_iso && $access_drive) {
-				echo "* File exists, ejecting drive\n";
-				$drive->open();
+			if($target_iso_exists && $dump_iso) {
+				echo "* Filename: $display_iso exists\n";
+				if($batch_mode) {
+					if($debug) {
+						echo "* Batch mode: enabled\n";
+						echo "* Ejecting disk\n";
+					}
+					$drive->open();
+				} else {
+					if($debug) {
+						echo "* Batch mode: disabled\n";
+						echo "* Not ejecting disk\n";
+					}
+				}
 			}
 
 			// Dump the DVD contents to an ISO on the filesystem
@@ -95,7 +106,8 @@
 
 				if($dvd_dump_iso_success) {
 					echo "* DVD copy successful. Ready for another :D\n";
-					rename_iso($target_rip);
+					if(file_exists($target_rip) && !file_exists($target_iso))
+						rename($target_rip, $target_iso);
 					$drive->open();
 				} else {
 					echo "* DVD extraction failed :(\n";
