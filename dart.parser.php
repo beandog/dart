@@ -64,6 +64,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_rip', array(
+		'long_name' => '--rip',
+		'description' => 'Rip to an ISO in batch mode',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('opt_skip_existing', array(
 		'long_name' => '--skip-existing',
 		'description' => 'Skip writing to existing files',

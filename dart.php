@@ -55,6 +55,16 @@
 	else
 		$dump_iso = false;
 
+	// --rip is basically a shortcut for ripping an ISO and importing it plus
+	// setting it in batch mode so it will eject the disc after finished.
+	// Designed for use with a udev trigger so that discs will auto-rip
+	if($opt_rip) {
+		$opt_iso = true;
+		$opt_import = true;
+		$batch_mode = true;
+		$backup_dir = $batch_dir;
+	}
+
 	if($opt_iso_filename) {
 
 		foreach($devices as $device) {
