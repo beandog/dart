@@ -170,5 +170,37 @@
 
 		}
 
+		function has_handbrake_scan() {
+
+			$track_id = abs(intval($this->id));
+
+			$sql = "SELECT COUNT(1) FROM track_scans WHERE track_id = $track_id;";
+			$count = $this->get_one($sql);
+			if($count)
+				return true;
+			else
+				return false;
+		}
+
+		function set_handbrake_scan($hb_version, $hb_output) {
+
+			$track_id = intval($this->id);
+			$sql = "SELECT id FROM track_scans WHERE track_id = $track_id;";
+			$track_scan_id = $this->get_one($sql);
+			$hb_version = $this->db->quote($hb_version);
+			$hb_output = $this->db->quote($hb_output);
+
+			if($track_scan_id) {
+				$sql = "UPDATE track_scans SET hb_version = $hb_version, scan_output = $hb_output WHERE id = $track_scan_id;";
+				$this->db->query($sql);
+			} else {
+				$sql = "INSERT INTO track_scans (track_id, hb_version, scan_output) VALUES ($track_id, $hb_version, $hb_output);";
+				$this->db->query($sql);
+			}
+
+			return true;
+
+		}
+
 	}
 ?>
