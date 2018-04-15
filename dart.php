@@ -60,6 +60,7 @@
 	}
 
 	// Data import scans
+	$opt_scan = false;
 	if($arg_scan) {
 		$opt_scan = true;
 		$opt_import = true;
