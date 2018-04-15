@@ -30,6 +30,21 @@
 
 		}
 
+		// Check a DVD to see if it has scanned data
+		public function dvd_scanned_tracks() {
+
+			$dvd_id = abs(intval($this->id));
+
+			$sql = "SELECT COUNT(1) FROM dvds d JOIN tracks t ON d.id = t.dvd_id LEFT OUTER JOIN track_scans ts ON ts.track_id = t.id WHERE d.id = $dvd_id AND ts.id IS NULL;";
+			$count = $this->get_one($sql);
+
+			if($count)
+				return false;
+			else
+				return true;
+
+		}
+
 		// Check a DVD record to see if it is missing
 		// metadata somewhere.
 		public function dvd_missing_metadata() {

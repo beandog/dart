@@ -5,17 +5,20 @@
 	if($opt_scan && $arg_scan == 'tracks') {
 
 		$dvd_title_tracks = $dvd->title_tracks;
+		$tracks_model = new Tracks_Model;
+
+		if($dvds_model->dvd_scanned_tracks())
+			goto tracks_scanned;
 
 		echo "* HandBrake:\t";
 
 		for($title_track = 1; $title_track < $dvd_title_tracks + 1; $title_track++) {
 
+
 			echo "$title_track ";
 
-			$title_track_loaded = $dvd->load_title_track($title_track);
-
 			// Lookup the database tracks.id
-			$tracks_model = new Tracks_Model;
+			$title_track_loaded = $dvd->load_title_track($title_track);
 			$tracks_model_id = $tracks_model->find_track_id($dvds_model_id, $title_track);
 			$tracks_model->load($tracks_model_id);
 
@@ -43,3 +46,5 @@
 		echo "\n";
 
 	}
+
+	tracks_scanned:
