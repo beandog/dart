@@ -88,10 +88,14 @@
 		$dvds_model = new Dvds_Model();
 		$dvds_model->load_dvdread_id($dvd->dvdread_id);
 		$series_model = new Series_Model($dvds_model->get_series_id());
+		if($series_model)
+			$nsix = $series_model->nsix;
+		else
+			$nsix = 'NSIX';
 		$filename = str_pad($dvds_model->get_collection_id(), 1, '0');
 		$filename .= ".".str_pad($dvds_model->get_series_id(), 3, '0', STR_PAD_LEFT);
 		$filename .= ".".str_pad($dvds_model->id, 4, '0', STR_PAD_LEFT);
-		$filename .= ".".$series_model->nsix;
+		$filename .= ".$nsix";
 		$filename .= ".iso";
 		return $filename;
 
