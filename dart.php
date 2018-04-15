@@ -382,7 +382,6 @@
 		require 'dart.encode_info.php';
 		require 'dart.import.php';
 		require 'dart.iso.php';
-		require 'dart.rip.php';
 
 		// goto point for next device -- skip here for any reason that the initial
 		// dart calls failed to acess the DVD or device, and it needs to move on.
