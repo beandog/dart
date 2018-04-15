@@ -172,6 +172,14 @@
 				echo "* drive::open(".$this->device.")\n";
 
 			$arg_device = escapeshellarg($this->device);
+
+			// dvd_eject has a race condition if tray is closed, immediately mounted, and then ejected.
+			// It will also check if it's mounted, but do it here so it skips that
+			// process completely.
+			// This is a workaround until I can debug the race condition in dvd_eject
+			$cmd = "umount $arg_device &> /dev/null";
+			exec($cmd);
+
 			$cmd = $this->dvd_eject_binary." $arg_device";
 			passthru($cmd, $retval);
 
