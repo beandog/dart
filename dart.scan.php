@@ -6,7 +6,7 @@
 
 		$dvd_title_tracks = $dvd->title_tracks;
 
-		echo "* HandBrake track metadata: ";
+		echo "* HandBrake:\t";
 
 		for($title_track = 1; $title_track < $dvd_title_tracks + 1; $title_track++) {
 
@@ -34,7 +34,8 @@
 
 			$output = array();
 			exec("HandBrakeCLI -i $device --scan -t $title_track 2>&1", $output, $retval); 
-			$hb_output = trim(implode("\n", $output));
+			$hb_output = trim(implode("\n", ($output)));
+			$hb_output = utf8_encode($hb_output);
 			$tracks_model->set_handbrake_scan($hb_scan_version, $hb_output);
 
 		}
