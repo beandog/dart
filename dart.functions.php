@@ -88,9 +88,7 @@
 		$dvds_model = new Dvds_Model();
 		$dvds_model->load_dvdread_id($dvd->dvdread_id);
 		$series_model = new Series_Model($dvds_model->get_series_id());
-		if($series_model)
-			$nsix = $series_model->nsix;
-		else
+		if(!$series_model->nsix)
 			$nsix = 'NSIX';
 		$filename = str_pad($dvds_model->get_collection_id(), 1, '0');
 		$filename .= ".".str_pad($dvds_model->get_series_id(), 3, '0', STR_PAD_LEFT);
@@ -105,8 +103,12 @@
 
 		$dvd_iso_filename = get_dvd_iso_filename($source);
 		$bool = true;
+		// PHP will complain if source is a directory, so make it look like a file
+		$source = dirname($source)."/".basename($source);
 
 		if(!file_exists($dvd_iso_filename)) {
+			var_dump($source);
+			var_dump($dvd_iso_filename);
 			$bool = rename($source, $dvd_iso_filename);
 		}
 
