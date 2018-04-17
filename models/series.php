@@ -69,18 +69,6 @@
 
 		}
 
-		function get_audio_bitrate() {
-
-			$sql = "SELECT presets.acodec_bitrate FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->db->quote($this->id).";";
-
-			$var = $this->db->getOne($sql);
-
-			$var = abs(intval($var));
-
-			return $var;
-
-		}
-
 		function get_crf() {
 
 			$sql = "SELECT presets.crf FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->db->quote($this->id).";";
