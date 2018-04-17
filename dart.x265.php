@@ -1,6 +1,6 @@
 <?php
 
-if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
+if($opt_encode_info && $episode_id && $video_encoder == 'x265') {
 
 	/**
 	 * Handbrake
@@ -14,71 +14,31 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 	 * use dvdnav over dvdread
 	 * chapters
 	 * no fixed video, audio codec bitrate
-	 * audio codec fdk_aac
-	 * fallback audio ac3,dts copy
-	 * x264 preset medium
-	 * x264 tune animation, film or grain
-	 * x264 optional grayscale
-	 * H.264 profile high
-	 * H.264 level 4.1 default (5.0 for 720p and higher)
+	 * audio codec copy
+	 * x265 defaults for preset and profile
 	 * NTSC color
 	 */
 
 	$deinterlace = false;
 	$decomb = false;
 	$detelecine = false;
-	$h264_profile = 'high';
-	$h264_level = '4.1';
 	$subs_support = true;
 	$chapters_support = true;
 	$optimize_support = true;
 	$force_preset = false;
-	$x264opts = 'colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m';
+	$x265opts = 'colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m';
 
 	$handbrake = new Handbrake;
 	$handbrake->set_binary($handbrake_bin);
 	$handbrake->verbose($verbose);
 	$handbrake->debug($debug);
 	$handbrake->set_dry_run($dry_run);
-	$handbrake->set_x264opts($x264opts);
-
-	switch($arg_hardware) {
-
-		case 'psp':
-			$h264_profile = 'main';
-			$h264_level = '2.1';
-			$subs_support = false;
-			$chapters_support = false;
-			$optimize_support = false;
-			$force_preset = 'medium';
-			$handbrake->set_x264opts($x264opts.':bframes=1');
-			$handbrake->set_max_width(480);
-			$handbrake->set_max_height(272);
-			$handbrake->set_audio_downmix('stereo');
-			break;
-
-		case 'gravity2':
-			$h264_profile = 'baseline';
-			$h264_level = '1b';
-			$subs_support = false;
-			$chapters_support = false;
-			$optimize_support = false;
-			$force_preset = 'medium';
-			$handbrake->set_video_framerate(15);
-			$handbrake->set_max_width(176);
-			$handbrake->set_max_height(144);
-			break;
-
-	}
+	$handbrake->set_x264opts($x265opts);
 
 	/** Files **/
 
 	$handbrake->input_filename($device);
 	$handbrake->input_track($tracks_model->ix);
-
-	// If using MakeMKV, don't pass a track number
-	if($opt_makemkv)
-		$handbrake->input_track(0);
 
 	/** Encoding **/
 
@@ -87,30 +47,17 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 
 	/** Video **/
 
-	$handbrake->set_video_encoder('x264');
+	$handbrake->set_video_encoder('x265');
 	$video_quality = $series_model->get_crf();
-	$grayscale = $series_model->grayscale;
-	$handbrake->grayscale($grayscale);
 
 	if($video_quality)
 		$handbrake->set_video_quality($video_quality);
 
-	/** H.264 **/
+	/** x265 **/
 
-	$handbrake->set_h264_profile($h264_profile);
-	$handbrake->set_h264_level($h264_level);
-
-	/** x264 **/
-
-	$x264_preset = $series_model->get_x264_preset();
-	if(!$x264_preset)
-		$x264_preset = 'medium';
-	if($force_preset)
-		$x264_preset = $force_preset;
-	$x264_tune = $series_model->get_x264_tune();
-	$animation = ($x264_tune == 'animation');
-	$handbrake->set_x264_preset($x264_preset);
-	$handbrake->set_x264_tune($x264_tune);
+	$x265_preset = $series_model->get_x264_preset();
+	if($x265_preset != 'medium')
+		$handbrake->set_x264_preset($x265_preset);
 	$handbrake->deinterlace($series_model->get_preset_deinterlace());
 	$handbrake->decomb($series_model->get_preset_decomb());
 	$handbrake->detelecine($series_model->get_preset_detelecine());
@@ -121,12 +68,10 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 
 		case '720p':
 		$handbrake->height = 720;
-		$handbrake->set_h264_level('5.0');
 		break;
 
 		case '1080p':
 		$handbrake->height = 1080;
-		$handbrake->set_h264_level('5.0');
 		break;
 	}
 	$fps = $series_model->get_preset_fps();
@@ -188,17 +133,6 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 	if($chapters_support) {
 		$handbrake->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
 		$handbrake->add_chapters();
-	}
-
-	// Lossless video support
-	if($video_quality === 0) {
-		$handbrake->set_video_quality(0);
-		$handbrake->set_x264opts('');
-		$handbrake->set_h264_profile('high444');
-		$handbrake->set_x264_preset('');
-		$handbrake->enable_audio(false);
-		$handbrake->subtitle_tracks = array();
-		$handbrake->add_chapters(false);
 	}
 
 	$handbrake_command = $handbrake->get_executable_string();

@@ -24,7 +24,7 @@
 
 		// Video
 		public $video_encoder;
-		public $video_encoders = array('x264');
+		public $video_encoders = array('x264', 'x265');
 		public $video_quality;
 		public $video_framerate;
 		public $deinterlace;
@@ -115,12 +115,7 @@
 		}
 
 		public function set_video_encoder($str) {
-			if($str == 'x264') {
-				$this->video_encoder = $str;
-				return true;
-			} else {
-				return false;
-			}
+			$this->video_encoder = $str;
 		}
 
 		public function set_video_quality($int) {

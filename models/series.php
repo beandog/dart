@@ -42,6 +42,23 @@
 
 		}
 
+		function get_video_encoder() {
+
+			$series_id = abs(intval($this->id));
+
+			$sql = "SELECT x265 FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = $series_id;";
+
+			$var = $this->db->getOne($sql);
+
+			if($var)
+				return 'x265';
+			else
+				return 'x264';
+
+			return $var;
+
+		}
+
 		function get_audio_encoder() {
 
 			$sql = "SELECT presets.acodec FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->db->quote($this->id).";";

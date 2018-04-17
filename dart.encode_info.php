@@ -16,6 +16,7 @@
 			$tracks_model = new Tracks_Model($episodes_model->track_id);
 			$series_model = new Series_Model($episodes_model->get_series_id());
 			$container = $series_model->get_preset_format();
+			$video_encoder = $series_model->get_video_encoder();
 
 			$filename = get_episode_filename($episode_id, $container, $arg_hardware);
 
@@ -31,6 +32,7 @@
 				if($container == 'mkv' || $container == 'mp4') {
 
 					require 'dart.x264.php';
+					require 'dart.x265.php';
 					$handbrake->input_filename($input_filename);
 					$handbrake->output_filename($filename);
 					$handbrake_command  = $handbrake->get_executable_string();
