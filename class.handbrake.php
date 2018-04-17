@@ -37,7 +37,7 @@
 		public $width;
 		public $auto_anamorphic;
 		public $h264_profile;
-		public $h264_profiles = array('high', 'main', 'baseline');
+		public $h264_profiles = array('auto', 'high444', 'high', 'main', 'baseline');
 		public $h264_level;
 		public $x264_preset;
 		public $x264_presets = array('ultrafast', 'superfast', 'veryfast', 'faster', 'fast', 'medium', 'slow', 'slower', 'veryslow', 'placebo');
@@ -125,8 +125,7 @@
 
 		public function set_video_quality($int) {
 			$int = abs(intval($int));
-			if($int)
-				$this->video_quality = $int;
+			$this->video_quality = $int;
 		}
 
 		public function set_video_framerate($int) {
@@ -177,8 +176,8 @@
 				$this->audio_encoders[] = $str;
 		}
 
-		public function enable_audio() {
-			$this->audio = true;
+		public function enable_audio($bool = true) {
+			$this->audio = (boolean)$bool;
 		}
 
 		public function deinterlace($bool = true) {
@@ -243,6 +242,7 @@
 				$this->x264_preset = $str;
 				return true;
 			} else {
+				$this->x264_preset = '';
 				return false;
 			}
 		}
@@ -378,7 +378,7 @@
 			 **/
 
 			// Add preset
-			if(!is_null($this->preset))
+			if($this->preset)
 				$args['--encoder-preset'] = $this->preset;
 
 			// Set track #
@@ -429,7 +429,7 @@
 			}
 
 			// Set x264 preset
-			if(!is_null($this->x264_preset)) {
+			if($this->x264_preset) {
 				$args['--encoder-preset'] = $this->x264_preset;
 			}
 
@@ -482,8 +482,6 @@
 
 				}
 
-			} else {
-				$args['--audio'] = 1;
 			}
 
 
@@ -554,6 +552,11 @@
 		}
 
 		public function set_x264opts($str) {
+
+			if(!$str) {
+				$this->x264 = array();
+				return;
+			}
 
 			$arr = explode(":", $str);
 

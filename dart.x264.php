@@ -190,6 +190,17 @@ if($opt_encode_info && $episode_id) {
 		$handbrake->add_chapters();
 	}
 
+	// Lossless video support
+	if($video_quality === 0) {
+		$handbrake->set_video_quality(0);
+		$handbrake->set_x264opts('');
+		$handbrake->set_h264_profile('high444');
+		$handbrake->set_x264_preset('');
+		$handbrake->enable_audio(false);
+		$handbrake->subtitle_tracks = array();
+		$handbrake->add_chapters(false);
+	}
+
 	$handbrake_command = $handbrake->get_executable_string();
 
 }
