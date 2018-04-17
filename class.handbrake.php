@@ -24,7 +24,6 @@
 
 		// Video
 		public $video_encoder;
-		public $video_encoders = array('x264', 'x265');
 		public $video_quality;
 		public $video_framerate;
 		public $deinterlace;
@@ -37,12 +36,9 @@
 		public $width;
 		public $auto_anamorphic;
 		public $h264_profile;
-		public $h264_profiles = array('auto', 'high444', 'high', 'main', 'baseline');
 		public $h264_level;
 		public $x264_preset;
-		public $x264_presets = array('ultrafast', 'superfast', 'veryfast', 'faster', 'fast', 'medium', 'slow', 'slower', 'veryslow', 'placebo');
 		public $x264_tune;
-		public $x264_tuning_options = array('film', 'animation', 'grain');
 		public $x264 = array();
 
 		// Audio
@@ -220,12 +216,7 @@
 		}
 
 		public function set_h264_profile($str) {
-			if(in_array($str, $this->h264_profiles)) {
-				$this->h264_profile = $str;
-				return true;
-			} else {
-				return false;
-			}
+			$this->h264_profile = $str;
 		}
 
 		public function set_h264_level($str) {
@@ -233,22 +224,11 @@
 		}
 
 		public function set_x264_preset($str) {
-			if(in_array($str, $this->x264_presets)) {
-				$this->x264_preset = $str;
-				return true;
-			} else {
-				$this->x264_preset = '';
-				return false;
-			}
+			$this->x264_preset = $str;
 		}
 
 		public function set_x264_tune($str) {
-			if(in_array($str, $this->x264_tuning_options)) {
-				$this->x264_tune = $str;
-				return true;
-			} else {
-				return false;
-			}
+			$this->x264_tune = $str;
 		}
 
 		public function set_http_optimize($bool = true) {
