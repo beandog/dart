@@ -36,7 +36,10 @@
 					$handbrake->input_filename($input_filename);
 					$handbrake->output_filename($filename);
 					$handbrake_command  = $handbrake->get_executable_string();
-					echo "$handbrake_command\n";
+					if($episodes_model->skip)
+						echo "# $handbrake_command # skipped\n";
+					else
+						echo "$handbrake_command\n";
 
 				} else if($container == 'vob') {
 
