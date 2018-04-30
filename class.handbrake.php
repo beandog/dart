@@ -675,11 +675,13 @@
 
 			}
 
-			// Sample source string: Closed Captions (iso639-2: eng) (Text)(CC)
+			// Sample source strings:
+			// Closed Captions (iso639-2: eng) (Text)(CC)
+			// Closed Caption [CC608]
 			// Avoid false positives: "English (Closed Caption) (iso639-2: eng) (Bitmap)(VOBSUB)"
 			// I have seen *one* DVD where the language is und for the CC, the rest
 			// all being eng. I'm not going to scan for language. :)
-			$closed_captioning = preg_grep("/.*Closed Captions.*Text.*CC*/", $arr);
+			$closed_captioning = preg_grep("/.*Closed Caption(\s.*CC608|s?.*Text.*CC*)/", $arr);
 
 			if(count($closed_captioning)) {
 				$this->closed_captioning = true;
