@@ -45,6 +45,12 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x265') {
 	if($opt_no_dvdnav)
 		$handbrake->dvdnav(false);
 
+	$ssim = false;
+	if($series_model->get_x264_tune() == 'ssim') {
+		$ssim = true;
+		$handbrake->set_x264_tune('ssim');
+	}
+
 	/** Video **/
 
 	$handbrake->set_video_encoder('x265');
@@ -94,6 +100,9 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x265') {
 		$handbrake->add_audio_encoder('copy');
 	}
 
+	if($ssim)
+		$handbrake->audio = false;
+
 	/** Subtitles **/
 
 	$scan_subp_tracks = false;
@@ -102,6 +111,9 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x265') {
 	$num_subp_tracks = $tracks_model->get_num_subp_tracks();
 	$num_active_subp_tracks = $tracks_model->get_num_active_subp_tracks();
 	$num_active_en_subp_tracks = $tracks_model->get_num_active_subp_tracks('en');
+
+	if($ssim)
+		$subs_support = false;
 
 	// Check for a subtitle track
 	if($subs_support) {
@@ -114,7 +126,7 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x265') {
 			$handbrake->add_subtitle_track($subp_ix);
 			$d_subtitles = "VOBSUB";
 		} elseif($has_closed_captioning) {
-			$closed_captioning_ix = $num_subp_tracks + 1;
+			$closed_captioning_ix = $num_active_subp_tracks + 1;
 			$handbrake->add_subtitle_track($closed_captioning_ix);
 			$d_subtitles = "Closed Captioning";
 		} else {
@@ -129,7 +141,5 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x265') {
 		$handbrake->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
 		$handbrake->add_chapters();
 	}
-
-	$handbrake_command = $handbrake->get_executable_string();
 
 }
