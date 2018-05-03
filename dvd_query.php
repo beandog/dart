@@ -251,7 +251,7 @@
 
 	if(!count($dvd_query['titles'])) {
 		echo "No episodes listed for $device\n";
-		die;
+		exit(2);
 	}
 
 	if($opt_json)
