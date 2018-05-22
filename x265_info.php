@@ -51,6 +51,9 @@
 		$container = $formats[0];
 		$codec = $formats[1];
 
+		if($codec != 'HEVC')
+			return 1;
+
 		$encoding_settings = $mediainfo['Encoding settings'];
 		$arr_encoding_settings = explode('/', $encoding_settings);
 
