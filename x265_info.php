@@ -21,7 +21,7 @@
 		$mediainfo_out = exec($str_exec, $arr_output, $retval);
 
 		if($retval)
-			return 1;
+			continue;
 
 		$arr_options = array();
 		$mediainfo = array();
@@ -52,7 +52,7 @@
 		$video_codec = $formats[1];
 
 		if($video_codec != 'HEVC')
-			return 1;
+			continue;
 
 		$encoding_settings = $mediainfo['Encoding settings'];
 		$arr_encoding_settings = explode('/', $encoding_settings);
