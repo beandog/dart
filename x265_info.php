@@ -12,14 +12,9 @@
 
 		$filename = realpath($filename);
 		$basename = basename($filename);
-		$arr_exec = array('mediainfo');
-		$arr_exec[] = escapeshellarg($filename);
-		$arr_exec[] = '|';
-		$arr_exec[] = 'grep';
-		$arr_exec[] = escapeshellarg('^Encoding settings');
-		$retval = -1;
+		$arr_exec = array('mediainfo', escapeshellarg($filename));
 		$arr_output = array();
-		$arr_options = array();
+		$retval = 1;
 
 		$str_exec = implode(' ', $arr_exec);
 
@@ -28,9 +23,36 @@
 		if($retval)
 			return 1;
 
-		$mediainfo_out = preg_replace('/Encoding settings\s+\:/', '', $mediainfo_out);
+		$arr_options = array();
+		$mediainfo = array();
+		$formats = array();
 
-		$arr_encoding_settings = explode('/', $mediainfo_out);
+		foreach($arr_output as $line) {
+
+			$line = trim($line);
+
+			if(strlen($line) == 0 || strpos($line, ':') === false)
+				continue;
+
+			$arr = explode(' : ', $line);
+
+			$key = array_shift($arr);
+			$key = trim($key);
+			$value = implode(' : ', $arr);
+			$value = trim($value);
+
+			if($key == 'Format')
+				$formats[] = $value;
+			else
+				$mediainfo[$key] = $value;
+
+		}
+
+		$container = $formats[0];
+		$codec = $formats[1];
+
+		$encoding_settings = $mediainfo['Encoding settings'];
+		$arr_encoding_settings = explode('/', $encoding_settings);
 
 		foreach($arr_encoding_settings as $str) {
 
@@ -45,6 +67,7 @@
 			} else {
 				$x265[$str] = 1;
 			}
+
 		}
 
 		// Start at baseline
@@ -56,8 +79,8 @@
 		if($x265['bframes'] == 4 && $x265['rc-lookahead'] == 15)
 			$preset = 'veryfast';
 
-		if($x265['bframes'] == 4 && $x265['rc-lookahead'] == 15 && $x265['subme'] == 2)
-			$preset == 'faster';
+		if($x265['subme'] == 2)
+			$preset = 'faster';
 
 		if($x265['ref'] == 3 && $x265['no-early-skip'] == 1)
 			$preset = 'fast';
