@@ -23,7 +23,10 @@
 
 		$str_exec = implode(' ', $arr_exec);
 
-		$mediainfo_out = exec($str_exec, $retval, $arr_output);
+		$mediainfo_out = exec($str_exec, $arr_output, $retval);
+
+		if($retval)
+			return 1;
 
 		$mediainfo_out = preg_replace('/Encoding settings\s+\:/', '', $mediainfo_out);
 
