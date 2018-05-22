@@ -62,7 +62,7 @@
 		if($x265['b-adapt'] == 2 && $x265['rd'] == 3)
 			$preset = 'medium';
 
-		if($x265['lookahead-slices'] == 4 && $x265['ref'] == 4 && $x265['subme'] == 3)
+		if($x265['ref'] == 4 && $x265['subme'] == 3)
 			$preset = 'slow';
 
 		if($x265['bframes'] == 8 && $x265['rc-lookahead'] == 30 && $x265['limit-refs'] == 2)
