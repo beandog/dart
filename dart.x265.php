@@ -62,8 +62,7 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x265') {
 	/** x265 **/
 
 	$x265_preset = $series_model->get_x264_preset();
-	if($x265_preset != 'medium')
-		$handbrake->set_x264_preset($x265_preset);
+	$handbrake->set_x264_preset($x265_preset);
 	$handbrake->deinterlace($series_model->get_preset_deinterlace());
 	$handbrake->decomb($series_model->get_preset_decomb());
 	$handbrake->detelecine($series_model->get_preset_detelecine());
@@ -132,7 +131,7 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x265') {
 		} else {
 			$d_subtitles = "None :(";
 		}
-	
+
 	}
 
 	/** Chapters **/
