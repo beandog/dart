@@ -49,9 +49,9 @@
 		}
 
 		$container = $formats[0];
-		$codec = $formats[1];
+		$video_codec = $formats[1];
 
-		if($codec != 'HEVC')
+		if($video_codec != 'HEVC')
 			return 1;
 
 		$encoding_settings = $mediainfo['Encoding settings'];
@@ -66,9 +66,9 @@
 
 			if(strpos($str, '=') !== false) {
 				$arr = explode('=', $str);
-				$x265[$arr[0]] = $arr[1];
+				$codec[$arr[0]] = $arr[1];
 			} else {
-				$x265[$str] = 1;
+				$codec[$str] = 1;
 			}
 
 		}
@@ -76,33 +76,33 @@
 		// Start at baseline
 		$preset = 'ultrafast';
 
-		if($x265['min-cu-size'] == 8 && $x265['rc-lookahead'] == 10)
+		if($codec['min-cu-size'] == 8 && $codec['rc-lookahead'] == 10)
 			$preset = 'superfast';
 
-		if($x265['bframes'] == 4 && $x265['rc-lookahead'] == 15)
+		if($codec['bframes'] == 4 && $codec['rc-lookahead'] == 15)
 			$preset = 'veryfast';
 
-		if($x265['subme'] == 2)
+		if($codec['subme'] == 2)
 			$preset = 'faster';
 
-		if($x265['ref'] == 3 && $x265['no-early-skip'] == 1)
+		if($codec['ref'] == 3 && $codec['no-early-skip'] == 1)
 			$preset = 'fast';
 
-		if($x265['b-adapt'] == 2 && $x265['rd'] == 3)
+		if($codec['b-adapt'] == 2 && $codec['rd'] == 3)
 			$preset = 'medium';
 
-		if($x265['ref'] == 4 && $x265['subme'] == 3)
+		if($codec['ref'] == 4 && $codec['subme'] == 3)
 			$preset = 'slow';
 
-		if($x265['bframes'] == 8 && $x265['rc-lookahead'] == 30 && $x265['limit-refs'] == 2)
+		if($codec['bframes'] == 8 && $codec['rc-lookahead'] == 30 && $codec['limit-refs'] == 2)
 			$preset = 'slower';
 
-		if($x265['rc-lookahead'] == 40)
+		if($codec['rc-lookahead'] == 40)
 			$preset = 'veryslow';
 
-		if($x265['rc-lookahead'] == 60)
+		if($codec['rc-lookahead'] == 60)
 			$preset = 'placebo';
 
-		echo "$basename: $preset\n";
+		echo "$basename: $video_codec $preset\n";
 
 	}
