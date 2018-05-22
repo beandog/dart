@@ -108,8 +108,6 @@
 		$source = dirname($source)."/".basename($source);
 
 		if(!file_exists($dvd_iso_filename)) {
-			var_dump($source);
-			var_dump($dvd_iso_filename);
 			$bool = rename($source, $dvd_iso_filename);
 		}
 
