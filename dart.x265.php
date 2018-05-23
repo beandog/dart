@@ -26,14 +26,12 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x265') {
 	$chapters_support = true;
 	$optimize_support = true;
 	$force_preset = false;
-	$x265opts = 'colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m';
 
 	$handbrake = new Handbrake;
 	$handbrake->set_binary($handbrake_bin);
 	$handbrake->verbose($verbose);
 	$handbrake->debug($debug);
 	$handbrake->set_dry_run($dry_run);
-	$handbrake->set_x264opts($x265opts);
 
 	/** Files **/
 
@@ -63,6 +61,27 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x265') {
 
 	$x265_preset = $series_model->get_x264_preset();
 	$handbrake->set_x264_preset($x265_preset);
+
+	$x265_opts = 'colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m';
+
+	if($video_quality <= 14)
+		$preset_opts = 'level-idc=52';
+	elseif($video_quality <= 16)
+		$preset_opts = 'level-idc=51';
+	elseif($video_quality <= 18)
+		$preset_opts = 'level-idc=50';
+	elseif($video_quality <= 24)
+		$preset_opts = 'level-idc=41';
+	elseif($video_quality <= 26)
+		$preset_opts = 'level-idc=40';
+	else
+		$preset_opts = '';
+
+	if($preset_opts)
+		$x265_opts = "$preset_opts:$x265_opts";
+
+	$handbrake->set_x264opts($x265_opts);
+
 	$handbrake->deinterlace($series_model->get_preset_deinterlace());
 	$handbrake->decomb($series_model->get_preset_decomb());
 	$handbrake->detelecine($series_model->get_preset_detelecine());
