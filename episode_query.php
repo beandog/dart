@@ -129,7 +129,7 @@
 	$episode_title = preg_replace("/[^0-9A-Za-z \-_.]/", '', $episode_metadata['title']);
 
 	if($movie) {
-		
+
 		$filename = $episode_title;
 
 	} else {
@@ -150,7 +150,7 @@
 		echo $season_dirname."/";
 	if($opt_filename)
 		echo $filename;
-	
+
 	echo "\n";
 
 	// The ghosts of monolithic code haunt me. :)
