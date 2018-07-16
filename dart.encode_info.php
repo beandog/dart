@@ -37,6 +37,8 @@
 					require 'dart.x264.php';
 					require 'dart.x265.php';
 					$handbrake->input_filename($input_filename);
+					if($opt_vob)
+						$handbrake->input_filename(get_episode_filename($episode_id, 'vob', $arg_hardware));
 					$handbrake->output_filename($filename);
 					if($ssim)
 						$handbrake->output_filename('/dev/null');
