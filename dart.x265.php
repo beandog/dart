@@ -40,7 +40,7 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x265') {
 
 	/** Encoding **/
 
-	if($opt_no_dvdnav)
+	if($opt_no_dvdnav || $series_model->dvdnav == 0)
 		$handbrake->dvdnav(false);
 
 	$ssim = false;
