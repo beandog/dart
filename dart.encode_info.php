@@ -1,7 +1,7 @@
 <?php
 
 	// Display encode instructions about a disc
-	if($opt_encode_info) {
+	if($opt_encode_info || $opt_copy_info) {
 
 		$dvd_episodes = $dvds_model->get_episodes();
 
@@ -17,6 +17,9 @@
 			$series_model = new Series_Model($episodes_model->get_series_id());
 			$container = $series_model->get_preset_format();
 			$video_encoder = $series_model->get_video_encoder();
+
+			if($opt_copy_info)
+				$container = 'vob';
 
 			$filename = get_episode_filename($episode_id, $container, $arg_hardware);
 

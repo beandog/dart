@@ -124,10 +124,10 @@
 		}
 	}
 
-	if($opt_encode_info)
+	if($opt_encode_info || $opt_copy_info)
 		$batch_mode = true;
 
-	if(!count($devices) && ($opt_info || $opt_encode_info || $opt_dump_iso || $opt_import || $opt_archive))
+	if(!count($devices) && ($opt_info || $opt_encode_info || $opt_copy_info || $opt_dump_iso || $opt_import || $opt_archive))
 		$devices = $all_devices;
 
 	// General boolean for various items
@@ -199,7 +199,7 @@
 			$display_device = basename($device);
 
 		// Determine whether we are reading the device
-		if($opt_info || $opt_encode_info || $opt_import || $opt_archive || $opt_dump_iso) {
+		if($opt_info || $opt_encode_info || $opt_copy_info || $opt_import || $opt_archive || $opt_dump_iso) {
 			if($debug)
 				echo "* Info / Import / Archive / ISO: Enabling device access\n";
 			$access_device = true;
@@ -341,7 +341,7 @@
 			// Get the uniq ID for the disc
 			$dvdread_id = $dvd->dvdread_id;
 			$dvd_title = $dvd->title;
-			
+
 			if(!$batch_mode) {
 				echo "* Title:\t$dvd_title\n";
 				echo "* dvdread id:\t$dvdread_id\n";
@@ -373,7 +373,7 @@
 
 			// Only need to display if it's imported if requesting import or
 			// getting DVD info.
-			if($opt_import || $opt_info || $opt_encode_info) {
+			if($opt_import || $opt_info || $opt_encode_info || $opt_copy_info) {
 				if(!$batch_mode) {
 					if($disc_indexed) {
 						echo "* Imported:\tYes\n";

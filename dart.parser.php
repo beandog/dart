@@ -52,6 +52,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_copy_info', array(
+		'long_name' => '--copy-info',
+		'description' => 'Display dvd_copy instructions for a DVD',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('opt_no_dvdnav', array(
 		'long_name' => '--no-dvdnav',
 		'description' => 'Tell HandBrake not to use libdvdnav',
