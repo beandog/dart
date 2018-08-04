@@ -115,7 +115,7 @@
 				return true;
 
 			// Check if VTS or TTN is not imported
-			$sql = "SELECT COUNT(1) from tracks WHERE dvd_id = $dvd_id AND vts IS NULL OR ttn IS NULL;";
+			$sql = "SELECT COUNT(1) from tracks WHERE dvd_id = $dvd_id AND (vts IS NULL OR ttn IS NULL);";
 			$count = intval($this->db->getOne($sql));
 			if($count)
 				return true;
