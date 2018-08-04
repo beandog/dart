@@ -114,6 +114,18 @@
 			if($count)
 				return true;
 
+			// Check if VTS or TTN is not imported
+			$sql = "SELECT COUNT(1) from tracks WHERE dvd_id = $dvd_id AND vts IS NULL OR ttn IS NULL;";
+			$count = intval($this->db->getOne($sql));
+			if($count)
+				return true;
+
+			// Check if cells have been imported
+			$sql = "SELECT COUNT(1) FROM cells c JOIN tracks t ON c.track_id = t.id JOIN dvds d ON t.dvd_id = d.id WHERE d.id = $dvd_id;";
+			$count = intval($this->db->getOne($sql));
+			if(!$count)
+				return true;
+
 			return false;
 
 		}
