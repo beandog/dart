@@ -94,6 +94,18 @@
 				echo "* Updating aspect ratio: ".$dvd->video_aspect_ratio."\n";
 		}
 
+		if($tracks_model->vts != $dvd->title_track_vts) {
+			$tracks_model->vts = $dvd->title_track_vts;
+			if($debug)
+				echo "* Updating VTS: ".$dvd->title_track_vts."\n";
+		}
+
+		if($tracks_model->ttn != $dvd->title_track_ttn) {
+			$tracks_model->ttn = $dvd->title_track_ttn;
+			if($debug)
+				echo "* Updating TTN: ".$dvd->title_track_ttn."\n";
+		}
+
 		require 'dart.import.audio.php';
 		require 'dart.import.subtitles.php';
 		require 'dart.import.chapters.php';
