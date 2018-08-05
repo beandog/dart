@@ -114,6 +114,17 @@
 			if($count)
 				return true;
 
+			if($this->dvd_tracks_missing_cells())
+				return true;
+
+			return false;
+
+		}
+
+		public function dvd_tracks_missing_cells() {
+
+			$dvd_id = abs(intval($this->id));
+
 			// Check if VTS or TTN is not imported
 			$sql = "SELECT COUNT(1) from tracks WHERE dvd_id = $dvd_id AND (vts IS NULL OR ttn IS NULL);";
 			$count = intval($this->db->getOne($sql));
