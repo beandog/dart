@@ -64,6 +64,8 @@
 	// Metadata meets spec v3.1: dvd_info database
 	if($missing_dvd_metadata || $missing_dvd_tracks_metadata) {
 
+		echo "[Import]\n";
+
 		$missing_dvd_metadata = false;
 		$missing_dvd_tracks_metadata = false;
 		$dvds_model->metadata_spec = $dvds_model->max_metadata_spec();
