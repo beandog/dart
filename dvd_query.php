@@ -62,6 +62,13 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_display_bugs', array(
+		'long_name' => '--bugs',
+		'short_name' => '-b',
+		'description' => 'Display documented bugs',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 
 	try { $result = $parser->parse(); }
 	catch(PEAR_Exception $e) {
@@ -126,6 +133,29 @@
 	$num_episodes += count($dvd_episodes);
 
 	$iso_displayed = false;
+
+	if($opt_display_bugs) {
+
+		$arr_bugs = array();
+
+		$dvd_has_max_tracks = $dvds_model->has_max_tracks();
+		$dvd_has_bugs = $dvds_model->has_bugs();
+		$dvd_bugs = $dvds_model->get_bugs();
+
+		if($dvd_has_max_tracks)
+			$arr_bugs[] = '99 tracks';
+		if($dvd_bugs)
+			$arr_bugs[] = $dvd_bugs;
+
+		if(count($arr_bugs))
+			echo $dvd_query['dvd']['volname']." - ".implode(', ', $arr_bugs)."\n";
+
+		if(count($devices))
+			goto start;
+		else
+			exit;
+
+	}
 
 	// Display the episode names
 	foreach($dvd_episodes as $episode_id) {

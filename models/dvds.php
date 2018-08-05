@@ -183,6 +183,36 @@
 			return $var;
 		}
 
+		public function has_max_tracks() {
+
+			$sql = "SELECT MAX(ix) FROM tracks WHERE dvd_id = ".$this->db->quote($this->id).";";
+			$var = $this->db->getOne($sql);
+			if($var == 99)
+				return true;
+			else
+				return false;
+
+		}
+
+		public function has_bugs() {
+
+			$sql = "SELECT LENGTH(TRIM(bugs)) FROM dvds WHERE id = ".$this->db->quote($this->id).";";
+			$var = $this->db->getOne($sql);
+			if($var)
+				return true;
+			else
+				return false;
+
+		}
+
+		public function get_bugs() {
+
+			$sql = "SELECT bugs FROM dvds WHERE id = ".$this->db->quote($this->id).";";
+			$var = $this->db->getOne($sql);
+			return $var;
+
+		}
+
 		public function find_dvdread_id($dvdread_id) {
 
 			$dvdread_id = trim($dvdread_id);
