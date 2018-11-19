@@ -13,6 +13,11 @@
 
 	$device = realpath($device);
 
+	if(!is_dir($device)) {
+		echo "Importing from device only supported right now\n";
+		exit(1);
+	}
+
 	exec("bluray_info --json $device 2> /dev/null", $output, $retval);
 	$contents = implode("\n", $output);
 
@@ -26,25 +31,6 @@
 	$disc_id = strtolower($json['bluray']['disc id']);
 	$disc_title = $json['bluray']['disc title'];
 
-	echo "[Blu-ray]\n";
-	echo "Title:	$disc_title\n";
-
-	$pdo_dsn = "pgsql:host=dlna;dbname=dvds;user=steve";
-	$pg = new PDO($pdo_dsn);
-	$pg->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-
-	$sql = "SELECT id FROM dvds WHERE dvdread_id = '$disc_id' AND title = ".$pg->quote($disc_title).";";
-	$rs = $pg->query($sql);
-	$dvd_id = $rs->fetchColumn();
-	if(!$dvd_id) {
-		$sql = "INSERT INTO dvds (dvdread_id, title, side, bluray) VALUES (".$pg->quote($disc_id).", ".$pg->quote($disc_title).", 1, 1);";
-		$pg->query($sql);
-		$rs = $pg->query("SELECT id FROM dvds WHERE dvdread_id = '$disc_id' AND title = ".$pg->quote($disc_title).";");
-		$dvd_id = $rs->fetchColumn();
-	}
-
-	$main_playlist = $json['bluray']['main playlist'];
-
 	$bluray_filesize_mbs = 0;
 
 	if(is_dir($device)) {
@@ -52,6 +38,25 @@
 		$bluray_filesize_mbs = intval(current(explode(' ', $arr)));
 		$bluray_filesize_mbs = round($bluray_filesize_mbs / 1024);
 	}
+
+	echo "[Blu-ray]\n";
+	echo "Title:	$disc_title\n";
+
+	$pdo_dsn = "pgsql:host=dlna;dbname=dvds;user=steve";
+	$pg = new PDO($pdo_dsn);
+	$pg->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+
+	$sql = "SELECT id FROM dvds WHERE title = ".$pg->quote($disc_title)." AND filesize = $bluray_filesize_mbs;";
+	$rs = $pg->query($sql);
+	$dvd_id = $rs->fetchColumn();
+	if(!$dvd_id) {
+		$sql = "INSERT INTO dvds (dvdread_id, title, side, bluray) VALUES (".$pg->quote($disc_id).", ".$pg->quote($disc_title).", 1, 1);";
+		$pg->query($sql);
+		$sql = "SELECT id FROM dvds WHERE title = ".$pg->quote($disc_title)." AND filesize = $bluray_filesize_mbs;";
+		$dvd_id = $rs->fetchColumn();
+	}
+
+	$main_playlist = $json['bluray']['main playlist'];
 
 	$sql = "UPDATE dvds SET filesize = $bluray_filesize_mbs WHERE id = $dvd_id;";
 	$pg->query($sql);
