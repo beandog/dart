@@ -11,6 +11,8 @@
 	if($argc == 2)
 		$device = $argv[1];
 
+	$device = realpath($device);
+
 	exec("bluray_info --json $device", $output, $retval);
 	$contents = implode("\n", $output);
 
@@ -46,6 +48,12 @@
 
 	$bluray_filesize_mbs = 0;
 
+	if(is_dir($device)) {
+		$arr = exec("du -s $device 2> /dev/null");
+		$bluray_filesize_mbs = intval(current(explode(' ', $arr)));
+		$bluray_filesize_mbs = round($bluray_filesize_mbs / 1024);
+	}
+
 	echo "[Titles]\n";
 
 	foreach($json['titles'] as $arr_title) {
@@ -54,7 +62,9 @@
 
 		extract($arr_title);
 
-		echo "Playlist:	$playlist:	Length: $length Filesize: $filesize\n";
+		$d_playlist = str_pad($playlist, 3, 0, STR_PAD_RIGHT);
+
+		echo "Playlist $d_playlist: Length: $length Filesize: $filesize\n";
 
 		$sql = "SELECT id FROM tracks WHERE dvd_id = $dvd_id AND ix = $playlist;";
 		$rs = $pg->query($sql);
@@ -63,7 +73,6 @@
 		$seconds = abs(intval($msecs / 100));
 
 		$filesize_mbs = $filesize / 1024;
-		$bluray_filesize_mbs += $filesize_mbs;
 
 		$video_codec = $video[0]['codec'];
 		$aspect_ratio = $video[0]['aspect ratio'];
