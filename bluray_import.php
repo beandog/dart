@@ -50,9 +50,10 @@
 	$rs = $pg->query($sql);
 	$dvd_id = $rs->fetchColumn();
 	if(!$dvd_id) {
-		$sql = "INSERT INTO dvds (dvdread_id, title, side, bluray) VALUES (".$pg->quote($disc_id).", ".$pg->quote($disc_title).", 1, 1);";
+		$sql = "INSERT INTO dvds (dvdread_id, title, side, filesize, bluray) VALUES (".$pg->quote($disc_id).", ".$pg->quote($disc_title).", 1, $bluray_filesize_mbs, 1);";
 		$pg->query($sql);
 		$sql = "SELECT id FROM dvds WHERE title = ".$pg->quote($disc_title)." AND filesize = $bluray_filesize_mbs;";
+		$rs = $pg->query($sql);
 		$dvd_id = $rs->fetchColumn();
 	}
 
