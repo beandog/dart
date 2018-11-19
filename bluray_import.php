@@ -27,7 +27,7 @@
 	$disc_title = $json['bluray']['disc title'];
 
 	echo "[Blu-ray]\n";
-	echo "Title:		$disc_title\n";
+	echo "Title:	$disc_title\n";
 	echo "Disc id:	$disc_id\n";
 
 	$pdo_dsn = "pgsql:host=dlna;dbname=dvds;user=steve";
