@@ -172,7 +172,7 @@
 				$str = $rs->fetchColumn();
 				if($str == 0 && $channels) {
 					$sql = "UPDATE audio SET channels = $channels WHERE id = $audio_id;";
-					echo "$sql\n";
+					// echo "$sql\n";
 					$pg->query($sql);
 				}
 
@@ -182,7 +182,7 @@
 				continue;
 
 			$sql = "INSERT INTO audio (track_id, ix, langcode, format, channels, streamid, active) VALUES ($track_id, $track, ".$pg->quote($language).", ".$pg->quote($codec).", $channels, ".$pg->quote($stream).", 1);";
-			echo "$sql\n";
+			// echo "$sql\n";
 			$pg->query($sql);
 
 		}
@@ -215,7 +215,7 @@
 				continue;
 
 			$sql = "INSERT INTO chapters (track_id, ix, length, startcell) VALUES ($track_id, $chapter, ".($msecs / 100).", $chapter);";
-			echo "$sql\n";
+			// echo "$sql\n";
 			$pg->query($sql);
 
 		}
