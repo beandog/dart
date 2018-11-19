@@ -54,9 +54,9 @@
 	$rs = $pg->query($sql);
 	$dvd_id = $rs->fetchColumn();
 	if(!$dvd_id) {
-		$sql = "INSERT INTO dvds (dvdread_id, title, side) VALUES (".$pg->quote($disc_id).", ".$pg->quote($disc_title).", 1);";
+		$sql = "INSERT INTO dvds (dvdread_id, title, side, bluray) VALUES (".$pg->quote($disc_id).", ".$pg->quote($disc_title).", 1, 1);";
 		$pg->query($sql);
-		$rs = $pg->query("SELECT id FROM dvds WHERE dvdread_id = '$disc_id';");
+		$rs = $pg->query("SELECT id FROM dvds WHERE dvdread_id = '$disc_id' AND title = ".$pg->quote($disc_title).";");
 		$dvd_id = $rs->fetchColumn();
 	}
 
@@ -72,9 +72,9 @@
 
 		extract($arr_title);
 
-		echo "Title $title:	Length: $length Filesize: $filesize\n";
+		echo "Playlist:	$playlist:	Length: $length Filesize: $filesize\n";
 
-		$sql = "SELECT id FROM tracks WHERE dvd_id = $dvd_id AND ix = $title;";
+		$sql = "SELECT id FROM tracks WHERE dvd_id = $dvd_id AND ix = $playlist;";
 		$rs = $pg->query($sql);
 		$track_id = $rs->fetchColumn();
 
@@ -92,9 +92,9 @@
 			$tag = 'main';
 
 		if(!$track_id) {
-			$sql = "INSERT INTO tracks (dvd_id, ix, length, aspect, valid, codec, filesize, closed_captioning, tag, playlist) VALUES ($dvd_id, $title, $seconds, ".$pg->quote($aspect_ratio).", 1, ".$pg->quote($video_codec).", $filesize_mbs, 0, '$tag', $playlist);";
+			$sql = "INSERT INTO tracks (dvd_id, ix, length, aspect, valid, codec, filesize, closed_captioning, tag) VALUES ($dvd_id, $playlist, $seconds, ".$pg->quote($aspect_ratio).", 1, ".$pg->quote($video_codec).", $filesize_mbs, 0, '$tag');";
 			$rs = $pg->query($sql);
-			$sql = "SELECT id FROM tracks WHERE dvd_id = $dvd_id AND ix = $title;";
+			$sql = "SELECT id FROM tracks WHERE dvd_id = $dvd_id AND ix = $playlist;";
 			$rs = $pg->query($sql);
 			$track_id = $rs->fetchColumn();
 		}
@@ -230,6 +230,6 @@
 	}
 
 	if($bluray_filesize_mbs) {
-		$sql = "UPDATE dvds SET filesize = $bluray_filesize_mbs WHERE dvdread_id = ".$pg->quote($disc_id).";";
+		$sql = "UPDATE dvds SET filesize = $bluray_filesize_mbs WHERE id = $dvd_id;";
 		$pg->query($sql);
 	}
