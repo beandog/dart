@@ -13,7 +13,7 @@
 
 	$device = realpath($device);
 
-	exec("bluray_info --json $device", $output, $retval);
+	exec("bluray_info --json $device 2> /dev/null", $output, $retval);
 	$contents = implode("\n", $output);
 
 	$json = json_decode($contents, true);
@@ -28,7 +28,6 @@
 
 	echo "[Blu-ray]\n";
 	echo "Title:	$disc_title\n";
-	echo "Disc id:	$disc_id\n";
 
 	$pdo_dsn = "pgsql:host=dlna;dbname=dvds;user=steve";
 	$pg = new PDO($pdo_dsn);
@@ -54,7 +53,10 @@
 		$bluray_filesize_mbs = round($bluray_filesize_mbs / 1024);
 	}
 
-	echo "[Titles]\n";
+	$sql = "UPDATE dvds SET filesize = $bluray_filesize_mbs WHERE id = $dvd_id;";
+	$pg->query($sql);
+
+	echo "[Playlists]\n";
 
 	foreach($json['titles'] as $arr_title) {
 
@@ -222,7 +224,3 @@
 
 	}
 
-	if($bluray_filesize_mbs) {
-		$sql = "UPDATE dvds SET filesize = $bluray_filesize_mbs WHERE id = $dvd_id;";
-		$pg->query($sql);
-	}
