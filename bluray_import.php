@@ -64,7 +64,9 @@
 
 		$d_playlist = str_pad($playlist, 3, 0, STR_PAD_RIGHT);
 
-		echo "Playlist $d_playlist: Length: $length Filesize: $filesize\n";
+		$d_filesize = str_pad(round($filesize / 1024 / 1024), 5, ' ', STR_PAD_LEFT). " MBs";
+
+		echo "Playlist $d_playlist: Length: $length Filesize: $d_filesize\n";
 
 		$sql = "SELECT id FROM tracks WHERE dvd_id = $dvd_id AND ix = $playlist;";
 		$rs = $pg->query($sql);
