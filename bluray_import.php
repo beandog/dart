@@ -1,36 +1,18 @@
 #!/usr/bin/php
 <?php
 
-	if($argc == 1) {
-
-		if(!file_exists('bluray_json')) {
-
-			echo "Need bluray_json file\n";
-			exit(1);
-
-			/*
-			exec('bluray_info --json', $output, $retval);
-
-			if($retval !== 0) {
-				echo "bluray_info failed\n";
-				exit(1);
-			}
-			*/
-
-			$contents = implode("\n", $output);
-
-		}
-
-	} else {
-
-		if(!file_exists($argv[1])) {
-			echo "Filename ".$argv[1]." does not exist\n";
-			exit(1);
-		}
-
-		$contents = file_get_contents($argv[1]);
-
+	if($argc > 2) {
+		echo "Syntax: bluray_import [device]\n";
+		exit(1);
 	}
+
+	$device = "/dev/sr0";
+
+	if($argc == 2)
+		$device = $argv[1];
+
+	exec("bluray_info --json $device", $output, $retval);
+	$contents = implode("\n", $output);
 
 	$json = json_decode($contents, true);
 
