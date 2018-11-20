@@ -70,7 +70,7 @@
 
 		extract($arr_title);
 
-		$d_playlist = str_pad($playlist, 4, 0, STR_PAD_RIGHT);
+		$d_playlist = str_pad($playlist, 4, 0, STR_PAD_LEFT);
 
 		$d_filesize = str_pad(round($filesize / 1024 / 1024), 5, ' ', STR_PAD_LEFT). " MBs";
 
