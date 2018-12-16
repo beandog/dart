@@ -18,7 +18,12 @@
 		exit(1);
 	}
 
-	exec("bluray_info --json $device 2> /dev/null", $output, $retval);
+	$bluray_info = "bluray_info --json $device";
+
+	echo "[Blu-ray]\n";
+	echo "- $bluray_info\n";
+
+	exec("$bluray_info 2> /dev/null", $output, $retval);
 	$contents = implode("\n", $output);
 
 	$json = json_decode($contents, true);
@@ -111,6 +116,7 @@
 			$tag = 'main';
 
 		if(!$track_id) {
+			echo "- Inserting new playlist $playlist.mpls\n";
 			$sql = "INSERT INTO tracks (dvd_id, ix, length, aspect, valid, codec, filesize, closed_captioning, tag) VALUES ($dvd_id, $playlist, $seconds, ".$pg->quote($aspect_ratio).", 1, ".$pg->quote($video_codec).", $filesize_mbs, 0, '$tag');";
 			$rs = $pg->query($sql);
 			$sql = "SELECT id FROM tracks WHERE dvd_id = $dvd_id AND ix = $playlist;";
@@ -123,6 +129,7 @@
 		$rs = $pg->query($sql);
 		$str = $rs->fetchColumn();
 		if(!$str) {
+			echo "- Updating aspect ratio $aspect_ratio\n";
 			$sql = "UPDATE tracks SET aspect = ".$pg->quote($aspect_ratio)." WHERE id = $track_id;";
 			$pg->query($sql);
 		}
@@ -131,6 +138,7 @@
 		$rs = $pg->query($sql);
 		$str = $rs->fetchColumn();
 		if(!$str) {
+			echo "- Updating video codec $video_codec\n";
 			$sql = "UPDATE tracks SET codec = ".$pg->quote($video_codec)." WHERE id = $track_id;";
 			$pg->query($sql);
 		}
@@ -139,6 +147,7 @@
 		$rs = $pg->query($sql);
 		$str = $rs->fetchColumn();
 		if(!$str) {
+			echo "- Updating resolution $resolution\n";
 			$sql = "UPDATE tracks SET resolution = ".$pg->quote($resolution)." WHERE id = $track_id;";
 			$pg->query($sql);
 		}
@@ -147,6 +156,7 @@
 		$rs = $pg->query($sql);
 		$str = $rs->fetchColumn();
 		if(!$str) {
+			echo "- Updating filesize ".number_format($filesize)." MBs\n";
 			$sql = "UPDATE tracks SET filesize = $filesize WHERE id = $track_id;";
 			$pg->query($sql);
 		}
@@ -155,6 +165,7 @@
 		$rs = $pg->query($sql);
 		$str = $rs->fetchColumn();
 		if(!$str && ($playlist == $main_playlist)) {
+			echo "- Flagging as main playlist\n";
 			$sql = "UPDATE tracks SET tag = 'main' WHERE id = $track_id;";
 			$pg->query($sql);
 		}
@@ -189,6 +200,7 @@
 				$rs = $pg->query($sql);
 				$str = $rs->fetchColumn();
 				if(!$str) {
+					echo "- Updating audio stream ix\n";
 					$sql = "UPDATE audio SET streamid = ".$pg->quote($stream)." WHERE id = $audio_id;";
 					$pg->query($sql);
 				}
@@ -197,6 +209,7 @@
 				$rs = $pg->query($sql);
 				$str = $rs->fetchColumn();
 				if($str == 0 && $channels) {
+					echo "- Updating audio channels\n";
 					$sql = "UPDATE audio SET channels = $channels WHERE id = $audio_id;";
 					$pg->query($sql);
 				}
@@ -206,6 +219,7 @@
 			if($audio_id)
 				continue;
 
+			echo "- Inserting audio track\n";
 			$sql = "INSERT INTO audio (track_id, ix, langcode, format, channels, streamid, active) VALUES ($track_id, $track, ".$pg->quote($language).", ".$pg->quote($codec).", $channels, ".$pg->quote($stream).", 1);";
 			$pg->query($sql);
 
@@ -222,6 +236,7 @@
 			if($subp_id)
 				continue;
 
+			echo "- Inserting PGS\n";
 			$sql = "INSERT INTO subp (track_id, ix, langcode, streamid, active) VALUES ($track_id, $track, ".$pg->quote($language).", ".$pg->quote($stream).", 1);";
 			$pg->query($sql);
 
@@ -238,6 +253,7 @@
 			if($chapter_id)
 				continue;
 
+			echo "- Inserting chapter\n";
 			$sql = "INSERT INTO chapters (track_id, ix, length, startcell) VALUES ($track_id, $chapter, ".($msecs / 100).", $chapter);";
 			// echo "$sql\n";
 			$pg->query($sql);
