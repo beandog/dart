@@ -70,13 +70,33 @@
 	$rs = $pg->query($sql);
 	$dvd_id = $rs->fetchColumn();
 	if(!$dvd_id) {
-		echo "Import:\tImporting new disc\n";
-		$sql = "INSERT INTO dvds (dvdread_id, title, side, filesize, bluray, metadata_spec) VALUES ($q_bluray_xml_id, ".$pg->quote($disc_title).", 1, $bluray_filesize_mbs, 1, 1);";
-		$rs = $pg->query($sql);
-		$sql = "SELECT id FROM dvds WHERE dvdread_id = $q_bluray_xml_id";
+
+		// See if the original disc exists
+		$q_old_dvdread_id = $pg->quote(strtolower($json['bluray']['disc id']));
+		$sql = "SELECT id FROM dvds WHERE dvdread_id = $q_old_dvdread_id;";
 		$rs = $pg->query($sql);
 		$dvd_id = $rs->fetchColumn();
-		$metadata_spec = 1;
+
+		$q_disc_title = $pg->quote($disc_title);
+
+		if($dvd_id) {
+
+			echo "- Updating legacy metadata\n";
+			$sql = "UPDATE dvds SET dvdread_id = $q_bluray_xml_id, title = $q_disc_title, filesize = $bluray_filesize_mbs, metadata_spec = 1 WHERE id = $dvd_id;";
+			$pg->query($sql);
+			$metadata_spec = 1;
+
+		} else {
+
+			echo "Import:\tImporting new disc\n";
+			$sql = "INSERT INTO dvds (dvdread_id, title, side, filesize, bluray, metadata_spec) VALUES ($q_bluray_xml_id, ".$pg->quote($disc_title).", 1, $bluray_filesize_mbs, 1, 1);";
+			$rs = $pg->query($sql);
+			$sql = "SELECT id FROM dvds WHERE dvdread_id = $q_bluray_xml_id";
+			$rs = $pg->query($sql);
+			$dvd_id = $rs->fetchColumn();
+			$metadata_spec = 1;
+
+		}
 	} else {
 		echo "Disc:\t$dvd_id\n";
 		$sql = "SELECT metadata_spec FROM dvds WHERE id = $dvd_id;";
