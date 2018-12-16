@@ -28,8 +28,21 @@
 		exit(1);
 	}
 
-	$disc_id = strtolower($json['bluray']['disc id']);
 	$disc_title = $json['bluray']['disc title'];
+
+	// Reference using XML md5sums
+	$eng_xml_file = "$device/BDMV/META/DL/bdmt_eng.xml";
+	$mcmf_xml_file = "$device/MAKEMKV/AACS/mcmf.xml";
+	$bdmv_index_file = "$device/BDMV/index.bdmv";
+
+	$bluray_xml_id = '';
+
+	if(file_exists($eng_xml_file))
+		$bluray_xml_id = md5_file($eng_xml_file);
+	elseif(file_exists($mcmf_xml_file))
+		$bluray_xml_id = md5_file($mcmf_xml_file);
+	elseif(file_exists($bdmv_index_file))
+		$bluray_xml_id = md5_file($bdmv_index_file);
 
 	$bluray_filesize_mbs = 0;
 
@@ -41,20 +54,25 @@
 
 	echo "[Blu-ray]\n";
 	echo "Title:	$disc_title\n";
+	echo "XML id:\t$bluray_xml_id\n";
 
 	$pdo_dsn = "pgsql:host=dlna;dbname=dvds;user=steve";
 	$pg = new PDO($pdo_dsn);
 	$pg->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 
-	$sql = "SELECT id FROM dvds WHERE title = ".$pg->quote($disc_title)." AND filesize = $bluray_filesize_mbs;";
+	$q_bluray_xml_id = $pg->quote($bluray_xml_id);
+	$sql = "SELECT id FROM dvds WHERE dvdread_id = $q_bluray_xml_id;";
 	$rs = $pg->query($sql);
 	$dvd_id = $rs->fetchColumn();
 	if(!$dvd_id) {
-		$sql = "INSERT INTO dvds (dvdread_id, title, side, filesize, bluray) VALUES (".$pg->quote($disc_id).", ".$pg->quote($disc_title).", 1, $bluray_filesize_mbs, 1);";
-		$pg->query($sql);
-		$sql = "SELECT id FROM dvds WHERE title = ".$pg->quote($disc_title)." AND filesize = $bluray_filesize_mbs;";
+		echo "Import:\tImporting new disc\n";
+		$sql = "INSERT INTO dvds (dvdread_id, title, side, filesize, bluray) VALUES ($q_bluray_xml_id, ".$pg->quote($disc_title).", 1, $bluray_filesize_mbs, 1);";
+		$rs = $pg->query($sql);
+		$sql = "SELECT id FROM dvds WHERE dvdread_id = $q_bluray_xml_id";
 		$rs = $pg->query($sql);
 		$dvd_id = $rs->fetchColumn();
+	} else {
+		echo "Disc:\t$dvd_id\n";
 	}
 
 	$main_playlist = $json['bluray']['main playlist'];
@@ -180,7 +198,6 @@
 				$str = $rs->fetchColumn();
 				if($str == 0 && $channels) {
 					$sql = "UPDATE audio SET channels = $channels WHERE id = $audio_id;";
-					// echo "$sql\n";
 					$pg->query($sql);
 				}
 
@@ -190,7 +207,6 @@
 				continue;
 
 			$sql = "INSERT INTO audio (track_id, ix, langcode, format, channels, streamid, active) VALUES ($track_id, $track, ".$pg->quote($language).", ".$pg->quote($codec).", $channels, ".$pg->quote($stream).", 1);";
-			// echo "$sql\n";
 			$pg->query($sql);
 
 		}
