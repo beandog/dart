@@ -71,13 +71,17 @@
 	$dvd_id = $rs->fetchColumn();
 	if(!$dvd_id) {
 		echo "Import:\tImporting new disc\n";
-		$sql = "INSERT INTO dvds (dvdread_id, title, side, filesize, bluray) VALUES ($q_bluray_xml_id, ".$pg->quote($disc_title).", 1, $bluray_filesize_mbs, 1);";
+		$sql = "INSERT INTO dvds (dvdread_id, title, side, filesize, bluray, metadata_spec) VALUES ($q_bluray_xml_id, ".$pg->quote($disc_title).", 1, $bluray_filesize_mbs, 1, 1);";
 		$rs = $pg->query($sql);
 		$sql = "SELECT id FROM dvds WHERE dvdread_id = $q_bluray_xml_id";
 		$rs = $pg->query($sql);
 		$dvd_id = $rs->fetchColumn();
+		$metadata_spec = 1;
 	} else {
 		echo "Disc:\t$dvd_id\n";
+		$sql = "SELECT metadata_spec FROM dvds WHERE id = $dvd_id;";
+		$rs = $pg->query($sql);
+		$metadata_spec = $rs->fetchColumn();
 	}
 
 	$main_playlist = $json['bluray']['main playlist'];
@@ -250,15 +254,35 @@
 			$rs = $pg->query($sql);
 			$chapter_id = $rs->fetchColumn();
 
-			if($chapter_id)
+			if($chapter_id) {
+				if($metadata_spec == 0) {
+					$sql = "SELECT length FROM chapters WHERE id = $chapter_id;";
+					$rs = $pg->query($sql);
+					$length = $rs->fetchColumn();
+
+					if($length != ($duration / 100)) {
+						$sql = "UPDATE chapters SET length = ".($duration / 100)." WHERE id = $chapter_id;";
+						echo "$sql\n";
+						$pg->query($sql);
+						echo "- Updating legacy metadata - chapter length\n";
+					}
+				}
 				continue;
+			}
 
 			echo "- Inserting chapter\n";
-			$sql = "INSERT INTO chapters (track_id, ix, length, startcell) VALUES ($track_id, $chapter, ".($msecs / 100).", $chapter);";
+			$sql = "INSERT INTO chapters (track_id, ix, length, startcell) VALUES ($track_id, $chapter, ".($duration / 100).", $chapter);";
 			// echo "$sql\n";
 			$pg->query($sql);
 
 		}
+
+	}
+
+	if($metadata_spec == 0) {
+
+		$sql = "UPDATE dvds SET metadata_spec = 1 WHERE id = $dvd_id;";
+		$pg->query($sql);
 
 	}
 
