@@ -1,6 +1,12 @@
 #!/usr/bin/php
 <?php
 
+	require_once 'config.local.php';
+	require_once 'inc.mdb2.php';
+	require_once 'models/dbtable.php';
+	require_once 'models/blurays.php';
+	$blurays_model = new Blurays_Model;
+
 	if($argc > 2) {
 		echo "Syntax: bluray_import [device]\n";
 		exit(1);
@@ -13,10 +19,10 @@
 
 	$device = realpath($device);
 
-	if(!is_dir($device)) {
-		echo "Importing from device only supported right now\n";
-		exit(1);
-	}
+	$bluray_drive = true;
+
+	if(is_dir($device))
+		$bluray_drive = false;
 
 	$bluray_info = "bluray_info --json $device";
 
@@ -33,6 +39,13 @@
 		exit(1);
 	}
 
+
+	// Cleanup JSON
+	$json['bluray']['udf title'] = trim($json['bluray']['udf title']);
+
+	$dvd_id = null;
+	$bluray_id = null;
+
 	$disc_title = $json['bluray']['disc title'];
 
 	// Reference using XML md5sums
@@ -41,13 +54,101 @@
 	$bdmv_index_file = "$device/BDMV/index.bdmv";
 
 	$bluray_xml_id = '';
+	$eng_xml_md5 = '';
+	$mcmf_xml_md5 = '';
+	$bdmv_index_md5 = '';
 
-	if(file_exists($eng_xml_file))
-		$bluray_xml_id = md5_file($eng_xml_file);
-	elseif(file_exists($mcmf_xml_file))
-		$bluray_xml_id = md5_file($mcmf_xml_file);
-	elseif(file_exists($bdmv_index_file))
-		$bluray_xml_id = md5_file($bdmv_index_file);
+	if(file_exists($eng_xml_file)) {
+		$eng_xml_md5 = md5_file($eng_xml_file);
+		$bluray_xml_id = $eng_xml_md5;
+	}
+	if(file_exists($mcmf_xml_file)) {
+		$mcmf_xml_md5 = md5_file($mcmf_xml_file);
+		if(!$bluray_xml_id)
+			$bluray_xml_id = $mcmf_xml_md5;
+	}
+	if(file_exists($bdmv_index_file)) {
+		$bdmv_index_md5 = md5_file($bdmv_index_file);
+		if(!$bluray_xml_id)
+			$bluray_xml_id = $bdmv_index_md5;
+	}
+
+	$volname = trim($json['bluray']['udf title']);
+	$volname_id = null;
+
+	// Insert new metadata
+
+	// Find existing entry
+	$legacy_md5_id = $blurays_model->load_legacy_md5($bluray_xml_id);
+	if($bluray_drive)
+		$volname_id = $blurays_model->load_volname($volname);
+	$disc_title_id = $blurays_model->load_disc_title($disc_title);
+
+	echo "[Metadata]\n";
+
+	// Prefer legacy MD5 id
+	if($legacy_md5_id) {
+		echo "* Using legacy MD5 hash for lookup $bluray_xml_id\n";
+		$bluray_id = $legacy_md5_id;
+	} elseif($volname_id) {
+		echo "* Using volume name for lookup\n";
+		$bluray_id = $volname_id;
+	} elseif($disc_title_id) {
+		echo "* Using disc title for lookup\n";
+		$bluray_id = $disc_title_id;
+	}
+
+	if(!$bluray_id)
+		echo "Creating a new Blu-ray and DVD ids at the same time not supported yet\n";
+		// $bluray_id = $blurays_model->new_from_dvd_id($dvd_id);
+		exit(1);
+	}
+
+	echo "* Bluray ID: $bluray_id\n":
+
+	$blurays_model->load_id($bluray_id);
+
+	if($bluray_drive && $json['bluray']['disc id'] && !$blurays_model->disc_id)
+		$blurays_model->disc_id = strtolower($json['bluray']['disc id']);
+
+	if($bluray_drive && $json['bluray']['udf title'] && !$blurays_model->volname)
+		$blurays_model->volname = $json['bluray']['udf title'];
+
+	if($eng_xml_md5 && !$blurays_model->eng_xml_md5)
+		$blurays_model->eng_xml_md5 = $eng_xml_md5;
+
+	if($mcmf_xml_md5 && !$blurays_model->mcmf_xml_md5)
+		$blurays_model->mcmf_xml_md5 = $mcmf_xml_md5;
+
+	if($bdmv_index_md5 && !$blurays_model->bdmv_index_md5)
+		$blurays_model->bdmv_index_md5 = $bdmv_index_md5;
+
+	if(is_null($blurays_model->first_play_supported))
+		$blurays_model->first_play_supported = intval($json['bluray']['first play supported']);
+
+	if(is_null($blurays_model->top_menu_supported))
+		$blurays_model->top_menu_supported = intval($json['bluray']['top menu supported']);
+
+	if(is_null($blurays_model->has_3d_content))
+		$blurays_model->has_3d_content = intval($json['bluray']['3D content']);
+
+	if(is_null($blurays_model->bdinfo_titles))
+		$blurays_model->bdinfo_titles = intval($json['bluray']['bdinfo titles']);
+
+	if(is_null($blurays_model->bdj_titles))
+		$blurays_model->bdj_titles = intval($json['bluray']['bdj titles']);
+
+	if(is_null($blurays_model->hdmv_titles))
+		$blurays_model->hdmv_titles = intval($json['bluray']['hdmv titles']);
+
+	$dvd_id = $blurays_model->dvd_id;
+
+	if(!$dvd_id) {
+
+		echo "No DVD id exists, create a new one\n";
+		exit(1);
+
+	}
 
 	$bluray_filesize_mbs = 0;
 
@@ -65,49 +166,22 @@
 	$pg = new PDO($pdo_dsn);
 	$pg->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 
-	$q_bluray_xml_id = $pg->quote($bluray_xml_id);
-	$sql = "SELECT id FROM dvds WHERE dvdread_id = $q_bluray_xml_id;";
+	/*
+	echo "Import:\tImporting new disc\n";
+	$sql = "INSERT INTO dvds (dvdread_id, title, side, filesize, bluray, metadata_spec) VALUES ($q_bluray_xml_id, ".$pg->quote($disc_title).", 1, $bluray_filesize_mbs, 1, 1);";
+	$rs = $pg->query($sql);
+	$sql = "SELECT id FROM dvds WHERE dvdread_id = $q_bluray_xml_id";
 	$rs = $pg->query($sql);
 	$dvd_id = $rs->fetchColumn();
-	if(!$dvd_id) {
-
-		// See if the original disc exists
-		$q_old_dvdread_id = $pg->quote(strtolower($json['bluray']['disc id']));
-		$sql = "SELECT id FROM dvds WHERE dvdread_id = $q_old_dvdread_id;";
-		$rs = $pg->query($sql);
-		$dvd_id = $rs->fetchColumn();
-
-		$q_disc_title = $pg->quote($disc_title);
-
-		if($dvd_id) {
-
-			echo "- Updating legacy metadata\n";
-			$sql = "UPDATE dvds SET dvdread_id = $q_bluray_xml_id, title = $q_disc_title, filesize = $bluray_filesize_mbs, metadata_spec = 1 WHERE id = $dvd_id;";
-			$pg->query($sql);
-			$metadata_spec = 1;
-
-		} else {
-
-			echo "Import:\tImporting new disc\n";
-			$sql = "INSERT INTO dvds (dvdread_id, title, side, filesize, bluray, metadata_spec) VALUES ($q_bluray_xml_id, ".$pg->quote($disc_title).", 1, $bluray_filesize_mbs, 1, 1);";
-			$rs = $pg->query($sql);
-			$sql = "SELECT id FROM dvds WHERE dvdread_id = $q_bluray_xml_id";
-			$rs = $pg->query($sql);
-			$dvd_id = $rs->fetchColumn();
-			$metadata_spec = 1;
-
-		}
-	} else {
-		echo "Disc:\t$dvd_id\n";
-		$sql = "SELECT metadata_spec FROM dvds WHERE id = $dvd_id;";
-		$rs = $pg->query($sql);
-		$metadata_spec = $rs->fetchColumn();
-	}
+	$metadata_spec = 1;
+	*/
 
 	$main_playlist = $json['bluray']['main playlist'];
 
-	$sql = "UPDATE dvds SET filesize = $bluray_filesize_mbs WHERE id = $dvd_id;";
-	$pg->query($sql);
+	if($bluray_filesize_mbs) {
+		$sql = "UPDATE dvds SET filesize = $bluray_filesize_mbs WHERE id = $dvd_id;";
+		$pg->query($sql);
+	}
 
 	echo "[Playlists]\n";
 
