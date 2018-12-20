@@ -41,7 +41,7 @@
 
 
 	// Cleanup JSON
-	$json['bluray']['udf title'] = trim($json['bluray']['udf title']);
+	$json['bluray']['udf title'] = $json['bluray']['udf title'];
 
 	$dvd_id = null;
 	$bluray_id = null;
@@ -73,7 +73,7 @@
 			$bluray_xml_id = $bdmv_index_md5;
 	}
 
-	$volname = trim($json['bluray']['udf title']);
+	$volname = $json['bluray']['udf title'];
 	$volname_id = null;
 
 	// Insert new metadata
