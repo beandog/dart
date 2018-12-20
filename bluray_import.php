@@ -74,28 +74,23 @@
 	}
 
 	$volname = $json['bluray']['udf title'];
-	$volname_id = null;
+	$disc_id = strtolower($json['bluray']['disc id']);
 
 	// Insert new metadata
 
 	// Find existing entry
 	$legacy_md5_id = $blurays_model->load_legacy_md5($bluray_xml_id);
-	if($bluray_drive)
-		$volname_id = $blurays_model->load_volname($volname);
-	$disc_title_id = $blurays_model->load_disc_title($disc_title);
+	$disc_id_id = $blurays_model->load_disc_id($disc_id);
 
 	echo "[Metadata]\n";
 
-	// Prefer legacy MD5 id
+	// Prefer legacy MD5 id for mounted, and disc id for everything else
 	if($legacy_md5_id) {
 		echo "* Using legacy MD5 hash for lookup $bluray_xml_id\n";
 		$bluray_id = $legacy_md5_id;
-	} elseif($volname_id) {
-		echo "* Using volume name for lookup\n";
-		$bluray_id = $volname_id;
-	} elseif($disc_title_id) {
-		echo "* Using disc title for lookup\n";
-		$bluray_id = $disc_title_id;
+	} elseif($disc_id_id) {
+		echo "* Using disc id for lookup: '$disc_id'\n";
+		$bluray_id = $disc_id_id;
 	}
 
 	if(!$bluray_id) {
@@ -108,35 +103,37 @@
 
 	$blurays_model->load($bluray_id);
 
-	if($disc_title && !$blurays_model->disc_title) {
-		echo "* Updating disc title: $disc_title\n";
+	$latest_metatadata_spec = 3;
+
+	if($blurays_model->metadata_spec < 3) {
+		echo "* Updating disc title: '$disc_title'\n";
 		$blurays_model->disc_title = $disc_title;
 	}
 
-	if($bluray_drive && $json['bluray']['disc id'] && !$blurays_model->disc_id) {
+	if($json['bluray']['disc id'] && !$blurays_model->disc_id) {
 		$disc_id = strtolower($json['bluray']['disc id']);
-		echo "* Updating disc ID: $disc_id\n";
+		echo "* Updating disc ID: '$disc_id'\n";
 		$blurays_model->disc_id = $disc_id;
 	}
 
-	if($bluray_drive && $json['bluray']['udf title'] && !$blurays_model->volname) {
+	if($blurays_model->metadata_spec < 3 && $bluray_drive) {
 		$udf_title = $json['bluray']['udf title'];
-		echo "* Updating volname: $udf_title\n";
+		echo "* Updating volname: '$udf_title'\n";
 		$blurays_model->volname = $udf_title;
 	}
 
 	if($eng_xml_md5 && !$blurays_model->eng_xml_md5) {
-		echo "* Updating eng_xml_md5: $eng_xml_md5\n";
+		echo "* Updating eng_xml_md5: '$eng_xml_md5'\n";
 		$blurays_model->eng_xml_md5 = $eng_xml_md5;
 	}
 
 	if($mcmf_xml_md5 && !$blurays_model->mcmf_xml_md5) {
-		echo "* Updating mcmf_xml_md5: $mcmf_xml_md5\n";
+		echo "* Updating mcmf_xml_md5: '$mcmf_xml_md5'\n";
 		$blurays_model->mcmf_xml_md5 = $mcmf_xml_md5;
 	}
 
 	if($bdmv_index_md5 && !$blurays_model->bdmv_index_md5) {
-		echo "* Updating bdmv_index_md5: $bdmv_index_md5\n";
+		echo "* Updating bdmv_index_md5: '$bdmv_index_md5'\n";
 		$blurays_model->bdmv_index_md5 = $bdmv_index_md5;
 	}
 
@@ -190,8 +187,9 @@
 	}
 
 	echo "[Blu-ray]\n";
-	echo "Title:	$disc_title\n";
-	echo "XML id:\t$bluray_xml_id\n";
+	echo "Title:	'$disc_title'\n";
+	if(!$bluray_drive)
+		echo "XML id:\t'$bluray_xml_id'\n";
 
 	$pdo_dsn = "pgsql:host=dlna;dbname=dvds;user=steve";
 	$pg = new PDO($pdo_dsn);
@@ -404,10 +402,4 @@
 
 	}
 
-	if($metadata_spec < 2) {
-
-		$sql = "UPDATE dvds SET metadata_spec = 2 WHERE id = $dvd_id;";
-		$pg->query($sql);
-
-	}
-
+	$blurays_model->metadata_spec = 3;
