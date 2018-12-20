@@ -401,7 +401,4 @@
 
 	}
 
-	if($blurays_model->volname)
-		$blurays_model->metadata_spec = 3;
-	else
-		$blurays_model->metadata_spec = 2;
+	$blurays_model->metadata_spec = 3;
