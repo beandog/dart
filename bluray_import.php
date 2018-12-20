@@ -84,13 +84,13 @@
 
 	echo "[Metadata]\n";
 
-	// Prefer legacy MD5 id for mounted, and disc id for everything else
-	if($legacy_md5_id) {
-		echo "* Using legacy MD5 hash for lookup $bluray_xml_id\n";
-		$bluray_id = $legacy_md5_id;
-	} elseif($disc_id_id) {
+	// Prefer disc ID first, then legacy md5 hash
+	if($disc_id_id) {
 		echo "* Using disc id for lookup: '$disc_id'\n";
 		$bluray_id = $disc_id_id;
+	} elseif($legacy_md5_id) {
+		echo "* Using legacy MD5 hash for lookup $bluray_xml_id\n";
+		$bluray_id = $legacy_md5_id;
 	}
 
 	if(!$bluray_id) {
@@ -402,4 +402,7 @@
 
 	}
 
-	$blurays_model->metadata_spec = 3;
+	if($blurays_model->volname)
+		$blurays_model->metadata_spec = 3;
+	else
+		$blurays_model->metadata_spec = 2;
