@@ -98,13 +98,13 @@
 		$bluray_id = $disc_title_id;
 	}
 
-	if(!$bluray_id)
+	if(!$bluray_id) {
 		echo "Creating a new Blu-ray and DVD ids at the same time not supported yet\n";
 		// $bluray_id = $blurays_model->new_from_dvd_id($dvd_id);
 		exit(1);
 	}
 
-	echo "* Bluray ID: $bluray_id\n":
+	echo "* Bluray ID: $bluray_id\n";
 
 	$blurays_model->load_id($bluray_id);
 
