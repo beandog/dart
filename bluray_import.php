@@ -106,40 +106,69 @@
 
 	echo "* Bluray ID: $bluray_id\n";
 
-	$blurays_model->load_id($bluray_id);
+	$blurays_model->load($bluray_id);
 
-	if($bluray_drive && $json['bluray']['disc id'] && !$blurays_model->disc_id)
-		$blurays_model->disc_id = strtolower($json['bluray']['disc id']);
+	if($disc_title && !$blurays_model->disc_title) {
+		echo "* Updating disc title: $disc_title\n";
+		$blurays_model->disc_title = $disc_title;
+	}
 
-	if($bluray_drive && $json['bluray']['udf title'] && !$blurays_model->volname)
-		$blurays_model->volname = $json['bluray']['udf title'];
+	if($bluray_drive && $json['bluray']['disc id'] && !$blurays_model->disc_id) {
+		$disc_id = strtolower($json['bluray']['disc id']);
+		echo "* Updating disc ID: $disc_id\n";
+		$blurays_model->disc_id = $disc_id;
+	}
 
-	if($eng_xml_md5 && !$blurays_model->eng_xml_md5)
+	if($bluray_drive && $json['bluray']['udf title'] && !$blurays_model->volname) {
+		$udf_title = $json['bluray']['udf title'];
+		echo "* Updating volname: $udf_title\n";
+		$blurays_model->volname = $udf_title;
+	}
+
+	if($eng_xml_md5 && !$blurays_model->eng_xml_md5) {
+		echo "* Updating eng_xml_md5: $eng_xml_md5\n";
 		$blurays_model->eng_xml_md5 = $eng_xml_md5;
+	}
 
-	if($mcmf_xml_md5 && !$blurays_model->mcmf_xml_md5)
+	if($mcmf_xml_md5 && !$blurays_model->mcmf_xml_md5) {
+		echo "* Updating mcmf_xml_md5: $mcmf_xml_md5\n";
 		$blurays_model->mcmf_xml_md5 = $mcmf_xml_md5;
+	}
 
-	if($bdmv_index_md5 && !$blurays_model->bdmv_index_md5)
+	if($bdmv_index_md5 && !$blurays_model->bdmv_index_md5) {
+		echo "* Updating bdmv_index_md5: $bdmv_index_md5\n";
 		$blurays_model->bdmv_index_md5 = $bdmv_index_md5;
+	}
 
-	if(is_null($blurays_model->first_play_supported))
+	if(is_null($blurays_model->first_play_supported)) {
+		echo "* Updating first play supported\n";
 		$blurays_model->first_play_supported = intval($json['bluray']['first play supported']);
+	}
 
-	if(is_null($blurays_model->top_menu_supported))
+	if(is_null($blurays_model->top_menu_supported)) {
+		echo "* Updating top menu supported\n";
 		$blurays_model->top_menu_supported = intval($json['bluray']['top menu supported']);
+	}
 
-	if(is_null($blurays_model->has_3d_content))
+	if(is_null($blurays_model->has_3d_content)) {
+		echo "* Updating 3D content\n";
 		$blurays_model->has_3d_content = intval($json['bluray']['3D content']);
+	}
 
-	if(is_null($blurays_model->bdinfo_titles))
+	if(is_null($blurays_model->bdinfo_titles)) {
+		echo "* Updating bdinfo titles\n";
 		$blurays_model->bdinfo_titles = intval($json['bluray']['bdinfo titles']);
+	}
 
-	if(is_null($blurays_model->bdj_titles))
+	if(is_null($blurays_model->bdj_titles)) {
+		echo "* Updating bdj titles\n";
 		$blurays_model->bdj_titles = intval($json['bluray']['bdj titles']);
+	}
 
-	if(is_null($blurays_model->hdmv_titles))
+	if(is_null($blurays_model->hdmv_titles)) {
+		echo "* Updating HDMV titles\n";
 		$blurays_model->hdmv_titles = intval($json['bluray']['hdmv titles']);
+	}
 
 	$dvd_id = $blurays_model->dvd_id;
 
@@ -149,6 +178,8 @@
 		exit(1);
 
 	}
+
+	echo "* DVD ID: $dvd_id\n";
 
 	$bluray_filesize_mbs = 0;
 
