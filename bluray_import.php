@@ -29,7 +29,7 @@
 	echo "[Blu-ray]\n";
 	echo "- $bluray_info\n";
 
-	exec("$bluray_info 2> /dev/null", $output, $retval);
+	exec($bluray_info, $output, $retval);
 	$contents = implode("\n", $output);
 
 	$json = json_decode($contents, true);
