@@ -73,7 +73,6 @@
 			$bluray_xml_id = $bdmv_index_md5;
 	}
 
-	$volname = $json['bluray']['udf title'];
 	$disc_id = strtolower($json['bluray']['disc id']);
 
 	// Insert new metadata
@@ -118,8 +117,8 @@
 
 	if($blurays_model->metadata_spec < 3 && $bluray_drive) {
 		$udf_title = $json['bluray']['udf title'];
-		echo "* Updating volname: '$udf_title'\n";
-		$blurays_model->volname = $udf_title;
+		echo "* Updating legacy volname: '$udf_title'\n";
+		$blurays_model->legacy_volname = $udf_title;
 	}
 
 	if($eng_xml_md5 && !$blurays_model->eng_xml_md5) {
