@@ -20,7 +20,7 @@
 		// changes are made to the schema, but they would not qualify as out of
 		// reference if the same source for providing the data remained the same.
 		// So, a FIXME is probably in order and metadata_spec should be changed or
-		// perhaps include  something like data_source, as well.
+		// perhaps include something like data_source, as well.
 		public function max_metadata_spec() {
 
 			$sql = "SELECT MAX(id) FROM specs WHERE metadata = 'database';";

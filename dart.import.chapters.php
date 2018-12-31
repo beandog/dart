@@ -7,7 +7,7 @@
 		$chapter_loaded = $dvd->load_chapter($title_track, $chapter);
 
 		if(!$chapter_loaded) {
-			echo "! Could not load chapter $chapter on title track $title_track.  Skipping\n";
+			echo "! Could not load chapter $chapter on title track $title_track. Skipping\n";
 			break;
 		}
 

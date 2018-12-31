@@ -5,7 +5,7 @@
 	$dvd_title_tracks = $dvd->title_tracks;
 
 	// If it comes to this point, there's probably an issue reading the DVD
-	// directly.  Either way, the import will still work, so it's debatable
+	// directly. Either way, the import will still work, so it's debatable
 	// whether this should die here now and kill the progress of the script
 	// or not. This is something where the dvd_debug program could come into play.
 	// Ideally, that would run first and flag anomalies for me directly.

@@ -43,7 +43,7 @@
 					$handbrake->output_filename($filename);
 					if($ssim)
 						$handbrake->output_filename('/dev/null');
-					$handbrake_command  = $handbrake->get_executable_string();
+					$handbrake_command = $handbrake->get_executable_string();
 					if($episodes_model->skip)
 						echo "# $handbrake_command # skipped\n";
 					else

@@ -564,7 +564,7 @@
 
 		/**
 		 * There are cases where HandBrakeCLI will fail on scanning a title for
-		 * some reason or another.  This uses proc_open() to cleanly run the
+		 * some reason or another. This uses proc_open() to cleanly run the
 		 * process, monitor it for timing out, and kill it if necessary.
 		 *
 		 * Default to 10 seconds, which is a generous amount of time.

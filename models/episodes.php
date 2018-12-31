@@ -124,15 +124,15 @@
 			// Check to see if it is manually set
 			$sql = "SELECT episode_number FROM episodes WHERE id = ".$this->id.";";
 			$var = $this->db->getOne($sql);
-			
+
 			if($var)
 				return $var;
 
 
 			/**
-			 * I'm taking a different approach here.  Instead of trying to write one
+			 * I'm taking a different approach here. Instead of trying to write one
 			 * massive query that checks all conditions, this one looks at three
-			 * separate conditions to get # episodes on PREVIOUS DISCS.  Then it
+			 * separate conditions to get # episodes on PREVIOUS DISCS. Then it
 			 * just adds them up and gets the count from the unique set of values.
 			 *
 			 * This is simpler because the queries can have overlapping results.
@@ -192,9 +192,9 @@
 
 			$count1 = count(array_unique($episodes));
 
-//  			echo "# episodes on PREVIOUS DISCS: $count1\n";
+// 			echo "# episodes on PREVIOUS DISCS: $count1\n";
 
-//   			echo "$sql\n";
+//  			echo "$sql\n";
 
 			// Find the # of episodes ON THE CURRENT DISC before this episode
 			// TESTING Added a check for complete-series DVDs, where the query
@@ -221,9 +221,9 @@
 				";";
  			$count2 = $this->db->getOne($sql);
 
-//  			echo "$count2\n";
+// 			echo "$count2\n";
 
-//  			echo "# PREVIOUS EPISODES on SAME DISC: $count2\n";
+// 			echo "# PREVIOUS EPISODES on SAME DISC: $count2\n";
 
  			// Add one because we start counting at 1, not 0
  			$count = $count1 + $count2 + 1;
