@@ -364,11 +364,6 @@
 				goto next_device;
 			}
 
-			if($disc_type == "bluray") {
-				require_once 'dart.bluray.php';
-				goto next_device;
-			}
-
 			// Get the uniq ID for the disc
 			$dvdread_id = $dvd->dvdread_id;
 			$dvd_title = $dvd->title;
