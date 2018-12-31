@@ -175,6 +175,10 @@
 		// Does the device tray have media
 		$has_media = false;
 
+		// Assume media is a DVD
+		$disc_type = 'dvd';
+		$disc_name = 'DVD';
+
 		// Making a run for it! :)
 		$first_run = false;
 
@@ -198,6 +202,12 @@
 		$display_device = $device;
 		if($device_is_iso)
 			$display_device = basename($device);
+
+		// Check if source is a Blu-ray
+		if($device_is_iso && is_dir("$device/BDMV")) {
+			$disc_type = 'bluray';
+			$disc_name = 'Blu-ray';
+		}
 
 		// Determine whether we are reading the device
 		if($opt_info || $opt_encode_info || $opt_copy_info || $opt_import || $opt_archive || $opt_dump_iso) {
@@ -308,7 +318,7 @@
 				if($tray_has_media) {
 					$access_drive = true;
 					if(!$batch_mode)
-						echo "* Found a DVD, ready to nom!\n";
+						echo "* Found a $disc_name, ready to nom!\n";
 				} else {
 					if(!$batch_mode)
 						echo "* Expected media, didn't find any!?\n";
@@ -329,8 +339,14 @@
 
 		if($access_device) {
 
+			$disc_type = $drive->disc_type();
+			if($disc_type == "bluray") {
+				require_once 'dart.bluray.php';
+				goto next_device;
+			}
+
 			if(!$batch_mode)
-				echo "[DVD]\n";
+				echo "[$disc_name]\n";
 
 			$dvd = new DVD($device, $debug);
 
@@ -354,7 +370,7 @@
 
 			// Found a new disc if it's not in the database!
 			if(!$dvds_model_id && !$batch_mode) {
-				echo "* DVD not found, ready to import!\n";
+				echo "* $disc_name not found, ready to import!\n";
 			}
 
 			if($dvds_model_id) {
@@ -364,7 +380,7 @@
 				$series_title = $dvds_model->get_series_title();
 
 				if(!$batch_mode) {
-					echo "* DVD ID:\t$dvds_model_id\n";
+					echo "* $disc_name ID:\t$dvds_model_id\n";
 					echo "* Series:\t$series_title\n";
 				}
 
