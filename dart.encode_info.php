@@ -30,7 +30,8 @@
 				$input_filename = dirname(realpath($device))."/title".str_pad($tracks_model->ix - 1, 2, 0, STR_PAD_LEFT).".mkv";
 			}
 
-			if(!($opt_skip_existing && file_exists($filename))) {
+			/** DVDs **/
+			if(!($opt_skip_existing && file_exists($filename)) && $disc_type == "dvd") {
 
 				if($container == 'mkv' || $container == 'mp4') {
 
@@ -57,6 +58,17 @@
 					echo "$dvd_copy_command\n";
 
 				}
+			}
+
+			/** Blu-rays **/
+			if(!($opt_skip_existing && file_exists($filename)) && $disc_type == "bluray") {
+
+				require 'dart.bluray_copy.php';
+				$bluray_copy->input_filename($input_filename);
+				$bluray_copy->output_filename($filename);
+				$bluray_copy_command = $bluray_copy->get_executable_string();
+				echo "$bluray_copy_command\n";
+
 
 			}
 
