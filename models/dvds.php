@@ -59,7 +59,7 @@
 
 			$max_metadata_spec_id = $this->max_metadata_spec();
 
-			$sql = "SELECT COUNT(1) FROM dvds d WHERE id = $dvd_id AND metadata_spec < $max_metadata_spec_id;";
+			$sql = "SELECT COUNT(1) FROM dvds d WHERE id = $dvd_id AND bluray = 0 AND metadata_spec < $max_metadata_spec_id;";
 			$count = abs(intval($this->db->getOne($sql)));
 
 			if($count)
