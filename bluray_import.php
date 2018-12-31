@@ -30,7 +30,7 @@
 	echo "- $bluray_info\n";
 
 	exec($bluray_info, $output, $retval);
-	$contents = implode("\n", $output);
+	$contents = implode(" ", $output);
 
 	$json = json_decode($contents, true);
 
