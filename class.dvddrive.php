@@ -22,6 +22,8 @@
 			if(file_exists('/usr/local/bin/dvd_eject'))
 				$this->dvd_eject_binary = '/usr/local/bin/dvd_eject';
 
+			$this->disc_type = '';
+
 		}
 
 		/** Hardware **/
