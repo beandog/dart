@@ -401,4 +401,4 @@
 
 	}
 
-	$blurays_model->metadata_spec = 3;
+	$blurays_model->metadata_spec = 2;
