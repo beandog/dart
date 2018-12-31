@@ -17,6 +17,7 @@
 	require_once 'dart.functions.php';
 
 	require_once 'class.dvd.php';
+	require_once 'class.bluray.php';
 	require_once 'class.dvddrive.php';
 	require_once 'class.matroska.php';
 	require_once 'class.handbrake.php';
@@ -353,15 +354,18 @@
 			if(!$batch_mode)
 				echo "[$disc_name]\n";
 
-			if($disc_type == "bluray") {
-				require_once 'dart.bluray.php';
-				goto next_device;
-			}
-
-			$dvd = new DVD($device, $debug);
+			if($disc_type == "dvd")
+				$dvd = new DVD($device, $debug);
+			elseif($disc_type == "bluray");
+				$dvd = new Bluray($device, $debug);
 
 			if(!$dvd->opened) {
 				echo "* Opening $device FAILED\n";
+				goto next_device;
+			}
+
+			if($disc_type == "bluray") {
+				require_once 'dart.bluray.php';
 				goto next_device;
 			}
 
