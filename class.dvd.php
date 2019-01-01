@@ -456,43 +456,6 @@
 
 		}
 
-		// Use serial number from HandBrake 0.9.9
-		public function serial_id() {
-
-			$arg_device = escapeshellarg($this->device);
-			$cmd = "HandBrakeCLI --scan -i $arg_device 2>&1";
-			exec($cmd, $arr, $retval);
-
-			if($retval !== 0) {
-				echo "* getSerialID(): HandBrakeCLI quit with exit code $retval\n";
-				return null;
-			}
-
-			$pattern = "/.*Serial.*/";
-			$match = preg_grep($pattern, $arr);
-
-			if(!count($match)) {
-				if($this->debug)
-					echo "* Couldn't find serial id. HandBrakeCLI did not have a line matching pattern $pattern\n";
-				return null;
-			}
-
-			$explode = explode(' ', current($match));
-
-			if(!count($explode)) {
-				if($this->debug)
-					echo "* Couldn't find a serial id\n";
-				return null;
-			}
-
-			$serial_id = end($explode);
-
-			$serial_id = trim($serial_id);
-
-			return $serial_id;
-
-		}
-
 		/** DVD Track **/
 
 		public function load_title_track($title_track) {
