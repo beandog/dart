@@ -357,7 +357,7 @@
 
 			if($disc_type == "dvd")
 				$dvd = new DVD($device, $debug);
-			elseif($disc_type == "bluray");
+			elseif($disc_type == "bluray")
 				$dvd = new Bluray($device, $debug);
 
 			if(!$dvd->opened) {
