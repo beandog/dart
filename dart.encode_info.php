@@ -41,8 +41,6 @@
 					if($opt_vob)
 						$handbrake->input_filename(get_episode_filename($episode_id, 'vob', $arg_hardware));
 					$handbrake->output_filename($filename);
-					if($ssim)
-						$handbrake->output_filename('/dev/null');
 					$handbrake_command = $handbrake->get_executable_string();
 					if($episodes_model->skip)
 						echo "# $handbrake_command # skipped\n";
