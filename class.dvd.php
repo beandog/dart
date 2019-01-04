@@ -320,7 +320,7 @@
 			if(!array_key_exists('tracks', $this->dvd_info)) {
 
 				if($this->debug) {
-					echo "* DVD has no tracks!!!  This is bad.\n";
+					echo "* DVD has no tracks!!! This is bad.\n";
 				}
 
 				return 0;
@@ -329,7 +329,7 @@
 
 			// dvd_info will skip over tracks that have invalid IFOs, so the
 			// number of array entries will not always equal the number of
-			// actual tracks in some cases.  Because of that, always use the
+			// actual tracks in some cases. Because of that, always use the
 			// number of tracks from the original DVD information, and do not
 			// simply count the number of tracks in the JSON array.
 			//
@@ -367,7 +367,7 @@
 			if(!array_key_exists('tracks', $this->dvd_info)) {
 
 				if($this->debug) {
-					echo "* DVD has no tracks!!!  This is bad.\n";
+					echo "* DVD has no tracks!!! This is bad.\n";
 				}
 
 				return null;
@@ -375,7 +375,7 @@
 			}
 
 			// Loop through all the lengths of the tracks, and set the one
-			// with the longest amount of msecs to the longest.  If a following
+			// with the longest amount of msecs to the longest. If a following
 			// one has equal length than an earlier one, then default to the first
 			// one with that maximum length.
 
@@ -456,43 +456,6 @@
 
 		}
 
-		// Use serial number from HandBrake 0.9.9
-		public function serial_id() {
-
-			$arg_device = escapeshellarg($this->device);
-			$cmd = "HandBrakeCLI --scan -i $arg_device 2>&1";
-			exec($cmd, $arr, $retval);
-
-			if($retval !== 0) {
-				echo "* getSerialID(): HandBrakeCLI quit with exit code $retval\n";
-				return null;
-			}
-
-			$pattern = "/.*Serial.*/";
-			$match = preg_grep($pattern, $arr);
-
-			if(!count($match)) {
-				if($this->debug)
-					echo "* Couldn't find serial id.  HandBrakeCLI did not have a line matching pattern $pattern\n";
-				return null;
-			}
-
-			$explode = explode(' ', current($match));
-
-			if(!count($explode)) {
-				if($this->debug)
-					echo "* Couldn't find a serial id\n";
-				return null;
-			}
-
-			$serial_id = end($explode);
-
-			$serial_id = trim($serial_id);
-
-			return $serial_id;
-
-		}
-
 		/** DVD Track **/
 
 		public function load_title_track($title_track) {
@@ -504,7 +467,7 @@
 			}
 
 			// dvd_info skips over title tracks that cannot be opened, but
-			// sets the 'track' value individually.  Check that variable to
+			// sets the 'track' value individually. Check that variable to
 			// see if we actually can open it.
 			$title_track_key = null;
 			foreach($this->dvd_info['tracks'] as $key => $arr) {

@@ -4,7 +4,7 @@
 	require_once 'MDB2.php';
 
 	$options = array(
-		'debug'       => 2,
+		'debug' => 2,
 		'portability' => MDB2_PORTABILITY_ALL ^ MDB2_PORTABILITY_EMPTY_TO_NULL,
 	);
 

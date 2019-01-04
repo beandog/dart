@@ -52,7 +52,7 @@
 
 		/** Filename and filesystem operations **/
 
-		// See if the target filename exists.  This
+		// See if the target filename exists. This
 		// is for the source regardless of whether it is
 		// a block device or an ISO.
 		clearstatcache();

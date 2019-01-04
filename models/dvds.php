@@ -20,7 +20,7 @@
 		// changes are made to the schema, but they would not qualify as out of
 		// reference if the same source for providing the data remained the same.
 		// So, a FIXME is probably in order and metadata_spec should be changed or
-		// perhaps include  something like data_source, as well.
+		// perhaps include something like data_source, as well.
 		public function max_metadata_spec() {
 
 			$sql = "SELECT MAX(id) FROM specs WHERE metadata = 'database';";
@@ -59,7 +59,7 @@
 
 			$max_metadata_spec_id = $this->max_metadata_spec();
 
-			$sql = "SELECT COUNT(1) FROM dvds d WHERE id = $dvd_id AND metadata_spec < $max_metadata_spec_id;";
+			$sql = "SELECT COUNT(1) FROM dvds d WHERE id = $dvd_id AND bluray = 0 AND metadata_spec < $max_metadata_spec_id;";
 			$count = abs(intval($this->db->getOne($sql)));
 
 			if($count)

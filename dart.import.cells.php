@@ -7,7 +7,7 @@
 		$cell_loaded = $dvd->load_cell($title_track, $cell);
 
 		if(!$cell_loaded) {
-			echo "! Could not load cell $cell on title track $title_track.  Skipping\n";
+			echo "! Could not load cell $cell on title track $title_track. Skipping\n";
 			break;
 		}
 

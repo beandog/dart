@@ -115,7 +115,7 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 	$handbrake->decomb($series_model->get_preset_decomb());
 	$handbrake->detelecine($series_model->get_preset_detelecine());
 	switch($series_model->get_preset_upscale()) {
-		case  '480p':
+		case '480p':
 		$handbrake->height = 480;
 		break;
 

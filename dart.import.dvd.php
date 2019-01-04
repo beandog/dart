@@ -43,7 +43,7 @@
 			$dvds_model->filesize = $dvd_filesize;
 		}
 
-		if(!$dvds_model->side) {
+		if(!$dvds_model->side && $disc_type == "dvd") {
 			echo "* DVD side:\t".$dvd->side."\n";
 			$dvds_model->side = $dvd->side;
 		}

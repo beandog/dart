@@ -17,10 +17,12 @@
 	require_once 'dart.functions.php';
 
 	require_once 'class.dvd.php';
+	require_once 'class.bluray.php';
 	require_once 'class.dvddrive.php';
 	require_once 'class.matroska.php';
 	require_once 'class.handbrake.php';
 	require_once 'class.dvd_copy.php';
+	require_once 'class.bluray_copy.php';
 
 	require_once 'models/dbtable.php';
 	require_once 'models/dvds.php';
@@ -175,6 +177,10 @@
 		// Does the device tray have media
 		$has_media = false;
 
+		// Assume media is a DVD
+		$disc_type = 'dvd';
+		$disc_name = 'DVD';
+
 		// Making a run for it! :)
 		$first_run = false;
 
@@ -215,7 +221,7 @@
 		}
 
 		// Look for any conditions where we there is access to the device, but
-		// we need to skip over it because there is no media.  Also open the tray
+		// we need to skip over it because there is no media. Also open the tray
 		// based on the wait switch that's passed.
 		if($device_is_hardware && $access_device) {
 
@@ -228,7 +234,7 @@
 			$drive->set_debug($debug);
 
 			// Poll the devices as few times as necessary to avoid hardware kernel
-			// complaints.  Set defaults.
+			// complaints. Set defaults.
 			$tray_open = false;
 			$tray_has_media = false;
 
@@ -255,20 +261,20 @@
 
 			/**
 			 * Writing all these logic checks independently makes it so my head
-			 * doesn't hurt while trying to parse multiple conditions.  However, each
+			 * doesn't hurt while trying to parse multiple conditions. However, each
 			 * conditional check needs to see if access to the device is disabled at
 			 * that point, since it's the one variable that is changed by the previous
 			 * checks.
 			 */
 
 			// What happens in a scenario where the user passes a command (rip, info,
-			// iso, etc. but there is no media in the tray.  Should the program assume
-			// that the user wants to put something in there, and so it opens up?  Or
-			// should it only quietly continue and ignore the device?  I'm going to go
+			// iso, etc.) but there is no media in the tray? Should the program assume
+			// that the user wants to put something in there, and so it opens up? Or
+			// should it only quietly continue and ignore the device? I'm going to go
 			// with the assumption for now that if dart is specifically told to access
-			// *this device*, then it is intended to have media in it.  If there's none
+			// *this device*, then it is intended to have media in it. If there's none
 			// in there, do the courtesy of opening the tray so that the user doesn't
-			// have to eject it manually.  A possible option is also to check for the
+			// have to eject it manually. A possible option is also to check for the
 			// --open option given, and only eject the tray in that case.
 			if(!$opt_wait && !$tray_open && !$tray_has_media && $access_device) {
 
@@ -308,7 +314,7 @@
 				if($tray_has_media) {
 					$access_drive = true;
 					if(!$batch_mode)
-						echo "* Found a DVD, ready to nom!\n";
+						echo "* Found a $disc_name, ready to nom!\n";
 				} else {
 					if(!$batch_mode)
 						echo "* Expected media, didn't find any!?\n";
@@ -317,7 +323,7 @@
 
 					// This is *possibly* a case where the DVD drive is closed,
 					// with media physically present, but the drive doesn't see
-					// it for whatever reason.  If that's the case, alert the
+					// it for whatever reason. If that's the case, alert the
 					// user to the anomaly.
 					beep_error();
 
@@ -329,10 +335,30 @@
 
 		if($access_device) {
 
-			if(!$batch_mode)
-				echo "[DVD]\n";
+			// Check if source is a Blu-ray
+			if($device_is_iso) {
+				if(is_dir("$device/BDMV")) {
+					$disc_type = 'bluray';
+					$disc_name = 'Blu-ray';
+				} elseif(is_dir("$device/VIDEO_TS")) {
+					$disc_type = "dvd";
+					$disc_name = "DVD";
+				}
+			} else {
+				$disc_type = $drive->disc_type();
+				if($disc_type == "dvd")
+					$disc_name = "DVD";
+				elseif($disc_type == "bluray")
+					$disc_name = "Blu-ray";
+			}
 
-			$dvd = new DVD($device, $debug);
+			if(!$batch_mode)
+				echo "[$disc_name]\n";
+
+			if($disc_type == "dvd")
+				$dvd = new DVD($device, $debug);
+			elseif($disc_type == "bluray")
+				$dvd = new Bluray($device, $debug);
 
 			if(!$dvd->opened) {
 				echo "* Opening $device FAILED\n";
@@ -354,7 +380,7 @@
 
 			// Found a new disc if it's not in the database!
 			if(!$dvds_model_id && !$batch_mode) {
-				echo "* DVD not found, ready to import!\n";
+				echo "* $disc_name not found, ready to import!\n";
 			}
 
 			if($dvds_model_id) {
@@ -364,7 +390,7 @@
 				$series_title = $dvds_model->get_series_title();
 
 				if(!$batch_mode) {
-					echo "* DVD ID:\t$dvds_model_id\n";
+					echo "* $disc_name ID:\t$dvds_model_id\n";
 					echo "* Series:\t$series_title\n";
 				}
 
@@ -405,7 +431,7 @@
 		}
 
 		// If polling for a new disc, check to see if one is in the
-		// drive.  If there is, start over.
+		// drive. If there is, start over.
 		if($opt_wait && ($opt_import || $opt_archive || $opt_dump_iso) && $device_is_hardware) {
 
 			// Only toggle devices if passed more than one

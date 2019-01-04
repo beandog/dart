@@ -7,6 +7,7 @@
 		public $binary = '/usr/bin/dvd_drive_status';
 		public $dvd_eject_binary = '/usr/bin/dvd_eject';
 		public $arr_drive_status;
+		public $disc_type;
 
 		function __construct($device = "/dev/dvd") {
 
@@ -20,6 +21,8 @@
 				$this->binary = '/usr/local/bin/dvd_drive_status';
 			if(file_exists('/usr/local/bin/dvd_eject'))
 				$this->dvd_eject_binary = '/usr/local/bin/dvd_eject';
+
+			$this->disc_type = '';
 
 		}
 
@@ -211,6 +214,29 @@
 				return false;
 
 		}
+
+		/**
+		 * Get the optical disc type - DVD or Blu-ray
+		 *
+		 */
+		 function disc_type() {
+
+			if($this->debug)
+				echo "* drive::disc_type(".$this->device.")\n";
+
+			$arg_device = escapeshellarg($this->device);
+			$command = "udevadm info $arg_device";
+			$return = 0;
+			exec($command, $arr, $return);
+
+			if(in_array("E: ID_CDROM_MEDIA_DVD=1", $arr))
+				$this->disc_type = "dvd";
+			elseif(in_array("E: ID_CDROM_MEDIA_BD=1", $arr))
+				$this->disc_type = "bluray";
+
+			return $this->disc_type;
+
+		 }
 
 	}
 
