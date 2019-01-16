@@ -43,12 +43,6 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x265') {
 	if($opt_no_dvdnav || $series_model->dvdnav == 0)
 		$handbrake->dvdnav(false);
 
-	$ssim = false;
-	if($series_model->get_x264_tune() == 'ssim') {
-		$ssim = true;
-		$handbrake->set_x264_tune('ssim');
-	}
-
 	/** Video **/
 
 	$handbrake->set_video_encoder('x265');
@@ -118,9 +112,6 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x265') {
 		$handbrake->add_audio_encoder('copy');
 	}
 
-	if($ssim)
-		$handbrake->audio = false;
-
 	/** Subtitles **/
 
 	$scan_subp_tracks = false;
@@ -129,9 +120,6 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x265') {
 	$num_subp_tracks = $tracks_model->get_num_subp_tracks();
 	$num_active_subp_tracks = $tracks_model->get_num_active_subp_tracks();
 	$num_active_en_subp_tracks = $tracks_model->get_num_active_subp_tracks('en');
-
-	if($ssim)
-		$subs_support = false;
 
 	// Check for a subtitle track
 	if($subs_support) {
