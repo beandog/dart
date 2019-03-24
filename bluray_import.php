@@ -297,14 +297,6 @@
 			$pg->query($sql);
 		}
 
-		$sql = "SELECT playlist FROM tracks WHERE id = $track_id;";
-		$rs = $pg->query($sql);
-		$str = $rs->fetchColumn();
-		if(is_null($str)) {
-			$sql = "UPDATE tracks SET playlist = $playlist WHERE id = $track_id;";
-			$pg->query($sql);
-		}
-
 		foreach($arr_title['audio'] as $arr_audio) {
 
 			extract($arr_audio);
