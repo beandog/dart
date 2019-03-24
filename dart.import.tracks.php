@@ -1,5 +1,10 @@
 <?php
 
+	if($disc_type == 'bluray') {
+		echo "Importing Blu-ray tracks not supported\n";
+		goto broken_dvd;
+	}
+
 	/** Tracks **/
 
 	$dvd_title_tracks = $dvd->title_tracks;
