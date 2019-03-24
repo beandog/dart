@@ -61,6 +61,8 @@
 			/** Blu-rays **/
 			if(!($opt_skip_existing && file_exists($filename)) && $disc_type == "bluray") {
 
+				$filename = substr($filename, 0, strlen($filename) - 3)."m2ts";
+
 				require 'dart.bluray_copy.php';
 				$bluray_copy->input_filename($input_filename);
 				$bluray_copy->output_filename($filename);
