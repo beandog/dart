@@ -7,7 +7,6 @@
 		public $debug;
 		public $dry_run;
 		public $binary = '/usr/bin/bluray_info';
-		public $binary_uniqid = '/usr/bin/bluray_uniqid';
 
 		public $opened;
 
