@@ -20,6 +20,12 @@
 		public $starting_chapter = null;
 		public $ending_chapter = null;
 
+		// Audio
+		public $audio_tracks = array();
+
+		// Subtitles
+		public $pgs_tracks = array();
+
 		public function debug($bool = true) {
 			$this->debug = $this->verbose = (boolean)$bool;
 		}
@@ -44,6 +50,14 @@
 		public function input_track($str) {
 			$track = abs(intval($str));
 			$this->track = $track;
+		}
+
+		public function add_audio_track($str) {
+			$this->audio_tracks[] = abs(intval($str));
+		}
+
+		public function add_pgs_track($str) {
+			$this->pgs_tracks[] = abs(intval($str));
 		}
 
 		public function set_dry_run($bool = true) {
