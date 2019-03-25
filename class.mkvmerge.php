@@ -74,7 +74,7 @@
 				$args['--audio-tracks'] = implode(',', $this->audio_tracks);
 
 			if(count($this->subtitle_tracks))
-				$args['--subtitle-tracks'] = implode(',', $this->audio_tracks);
+				$args['--subtitle-tracks'] = implode(',', $this->subtitle_tracks);
 
 			$args['--default-language'] = "eng";
 
