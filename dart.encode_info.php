@@ -61,15 +61,26 @@
 			/** Blu-rays **/
 
 			$bluray_m2ts = substr($filename, 0, strlen($filename) - 3)."m2ts";
+			$bluray_txt = substr($filename, 0, strlen($filename) - 3)."txt";
 			$bluray_mkv = substr($bluray_m2ts, 0, strlen($bluray_m2ts) - 4)."mkv";
 
 			if(!($opt_skip_existing && file_exists($bluray_m2ts)) && $disc_type == "bluray") {
 
-				require 'dart.bluray_copy.php';
+				require_once 'dart.bluray_copy.php';
 				$bluray_copy->input_filename($input_filename);
 				$bluray_copy->output_filename($bluray_m2ts);
 				$bluray_copy_command = $bluray_copy->get_executable_string();
 				echo "$bluray_copy_command\n";
+
+			}
+
+			if(!($opt_skip_existing && file_exists($bluray_txt)) && $disc_type == "bluray") {
+
+				require_once 'dart.bluray_copy.php';
+				$bluray_chapters->input_filename($input_filename);
+				$bluray_chapters->output_filename($bluray_txt);
+				$bluray_chapters_command = $bluray_chapters->get_executable_string();
+				echo "$bluray_chapters_command\n";
 
 			}
 
@@ -78,6 +89,7 @@
 				require 'dart.bluray_mkvmerge.php';
 				$mkvmerge->input_filename($bluray_m2ts);
 				$mkvmerge->output_filename($bluray_mkv);
+				$mkvmerge->add_chapters($bluray_txt);
 				$mkvmerge_command = $mkvmerge->get_executable_string();
 				echo "$mkvmerge_command\n";
 

@@ -8,6 +8,7 @@
 
 		// mkvmerge
 		public $binary = 'mkvmerge';
+		public $chapters = '';
 		public $mkvmerge_opts = '';
 		public $mkvmerge_output = '/dev/null';
 
@@ -57,6 +58,10 @@
 			$this->subtitle_tracks[] = abs(intval($str));
 		}
 
+		public function add_chapters($str) {
+			$this->chapters = $str;
+		}
+
 		public function set_dry_run($bool = true) {
 			$this->dry_run = (boolean)$bool;
 		}
@@ -75,6 +80,9 @@
 
 			if(count($this->subtitle_tracks))
 				$args['--subtitle-tracks'] = implode(',', $this->subtitle_tracks);
+
+			if(strlen($this->chapters))
+				$args['--chapters'] = $this->chapters;
 
 			$args['--default-language'] = "eng";
 
