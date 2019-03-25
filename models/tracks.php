@@ -116,7 +116,7 @@
 
 		public function get_first_english_subp() {
 
-			$sql = "SELECT ix FROM subp WHERE track_id = ".$this->db->quote($this->id)." AND langcode = 'en' AND active = 1 ORDER BY ix LIMIT 1;";
+			$sql = "SELECT ix FROM subp WHERE track_id = ".$this->db->quote($this->id)." AND (langcode = 'en' OR langcode = 'eng') AND active = 1 ORDER BY ix LIMIT 1;";
 
 			$var = $this->db->getOne($sql);
 
