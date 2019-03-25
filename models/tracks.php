@@ -47,9 +47,14 @@
 
 		}
 
-		public function get_best_quality_audio_ix() {
+		// For Blu-rays, order quality by my preferred codecs:
+		// LPCM - uncompressed, truhd - Dolby Atmos, DTS Master, DTS HD, DTS, Dolby Digital
+		public function get_best_quality_audio_ix($disc_type = 'dvd') {
 
-			$sql = "SELECT COALESCE(ix, 1) FROM audio WHERE track_id = ".$this->db->quote($this->id)." AND langcode = 'en' AND active = 1 AND channels = (SELECT MAX(channels) FROM audio WHERE track_id = ".$this->db->quote($this->id)." AND active = 1) ORDER BY CASE WHEN format = 'dts' THEN 0 ELSE 1 END, streamid LIMIT 1;";
+			if($disc_type == 'dvd')
+				$sql = "SELECT COALESCE(ix, 1) FROM audio WHERE track_id = ".$this->db->quote($this->id)." AND langcode = 'en' AND active = 1 AND channels = (SELECT MAX(channels) FROM audio WHERE track_id = ".$this->db->quote($this->id)." AND active = 1) ORDER BY CASE WHEN format = 'dts' THEN 0 ELSE 1 END, streamid LIMIT 1;";
+			elseif($disc_type == 'bluray')
+				$sql = "SELECT COALESCE(ix, 1) FROM audio WHERE track_id = ".$this->db->quote($this->id)." AND langcode = 'eng' AND active = 1 ORDER BY format = 'lpcm' DESC, format = 'truhd' DESC, format = 'dtshd-ma' DESC, format = 'dtshd' DESC, format = 'dts' DESC, format = 'ac3' DESC, ix;";
 
 			$var = $this->db->getOne($sql);
 
