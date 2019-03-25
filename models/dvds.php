@@ -21,12 +21,18 @@
 		// reference if the same source for providing the data remained the same.
 		// So, a FIXME is probably in order and metadata_spec should be changed or
 		// perhaps include something like data_source, as well.
-		public function max_metadata_spec() {
+		public function max_metadata_spec($disc_type = 'dvd') {
 
-			$sql = "SELECT MAX(id) FROM specs WHERE metadata = 'database';";
-			$max_metadata_spec_id = intval($this->db->getOne($sql));
+			if($disc_type == 'dvd')
+				$sql = "SELECT MAX(version) FROM specs WHERE metadata = 'database';";
+			elseif($disc_type == 'bluray')
+				$sql = "SELECT MAX(version) FROM specs WHERE metadata = 'bluray';";
+			else
+				return 0;
 
-			return $max_metadata_spec_id;
+			$max_metadata_spec = intval($this->db->getOne($sql));
+
+			return $max_metadata_spec;
 
 		}
 
