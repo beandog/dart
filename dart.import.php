@@ -6,6 +6,9 @@
 	 * Import a new DVD into the database or check for missing metadata
 	 */
 
+	if($disc_type == 'bluray')
+		goto next_disc;
+
 	// Keep track of some numbers for debugging or displaying when metadata
 	// is brought to spec
 	$new_title_tracks = 0;
@@ -82,4 +85,6 @@
 			echo "* New cells: $new_cells\n";
 
 	}
+
+	next_disc:
 
