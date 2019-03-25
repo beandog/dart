@@ -62,7 +62,7 @@
 
 			$bluray_m2ts = substr($filename, 0, strlen($filename) - 3)."m2ts";
 			$bluray_txt = substr($filename, 0, strlen($filename) - 3)."txt";
-			$bluray_mkv = substr($bluray_m2ts, 0, strlen($bluray_m2ts) - 4)."mkv";
+			$bluray_mkv = substr($filename, 0, strlen($filename) - 3)."mkv";
 
 			if(!($opt_skip_existing && file_exists($bluray_m2ts)) && $disc_type == "bluray") {
 
