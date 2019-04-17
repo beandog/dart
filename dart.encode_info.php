@@ -9,6 +9,27 @@
 		if($opt_qa)
 			$dvd_episodes = array(current($dvd_episodes));
 
+		if($disc_type == 'bluray') {
+
+			$bluray_copy = new BlurayCopy();
+			$bluray_copy->set_binary('bluray_copy');
+
+			if($debug)
+				$bluray_copy->debug();
+
+			if($verbose)
+				$bluray_copy->verbose();
+
+			if($dry_run)
+				$bluray_copy->dry_run();
+
+			$bluray_copy->input_filename($device);
+
+			$bluray_chapters = new BlurayChapters();
+			$bluray_chapters->input_filename($device);
+
+		}
+
 		// Display the episode names
 		foreach($dvd_episodes as $episode_id) {
 
@@ -64,10 +85,14 @@
 			$bluray_txt = substr($filename, 0, strlen($filename) - 3)."txt";
 			$bluray_mkv = substr($filename, 0, strlen($filename) - 3)."mkv";
 
+			$bluray_copy->input_track($tracks_model->ix);
+			$bluray_copy->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
+
+			$bluray_chapters->input_track($tracks_model->ix);
+			$bluray_chapters->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
+
 			if(!($opt_skip_existing && file_exists($bluray_m2ts)) && $disc_type == "bluray") {
 
-				require_once 'dart.bluray_copy.php';
-				$bluray_copy->input_filename($input_filename);
 				$bluray_copy->output_filename($bluray_m2ts);
 				$bluray_copy_command = $bluray_copy->get_executable_string();
 				echo "$bluray_copy_command\n";
@@ -76,8 +101,6 @@
 
 			if(!($opt_skip_existing && file_exists($bluray_txt)) && $disc_type == "bluray") {
 
-				require_once 'dart.bluray_copy.php';
-				$bluray_chapters->input_filename($input_filename);
 				$bluray_chapters->output_filename($bluray_txt);
 				$bluray_chapters_command = $bluray_chapters->get_executable_string();
 				echo "$bluray_chapters_command\n";
@@ -86,7 +109,24 @@
 
 			if(!($opt_skip_existing && file_exists($bluray_mkv)) && $disc_type == "bluray") {
 
-				require 'dart.bluray_mkvmerge.php';
+				$mkvmerge = new Mkvmerge();
+				$mkvmerge->add_video_track(0);
+
+				$num_pgs_tracks = $tracks_model->get_num_subp_tracks();
+				$num_active_pgs_tracks = $tracks_model->get_num_active_subp_tracks();
+				$num_active_en_pgs_tracks = $tracks_model->get_num_active_subp_tracks('eng');
+
+				$audio_ix = $tracks_model->get_best_quality_audio_ix('bluray');
+
+				$mkvmerge->add_audio_track($audio_ix);
+
+				if($num_pgs_tracks) {
+					$pgs_ix = 0;
+					$pgs_ix += count($tracks_model->get_audio_streams());
+					$pgs_ix += $tracks_model->get_first_english_subp();
+					$mkvmerge->add_subtitle_track($pgs_ix);
+				}
+
 				$mkvmerge->input_filename($bluray_m2ts);
 				$mkvmerge->output_filename($bluray_mkv);
 				$mkvmerge->add_chapters($bluray_txt);
