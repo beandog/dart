@@ -103,6 +103,9 @@
 				$cmd[] = "$key $arg_value";
 			}
 
+			if(!count($this->subtitle_tracks))
+				$cmd[] = "--no-subtitles";
+
 			if($this->verbose)
 				$cmd[] = "-v";
 
