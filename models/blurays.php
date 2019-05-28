@@ -26,12 +26,6 @@
 
 		}
 
-		function load_titles($str, $bdinfo_titles, $bdj_titles, $hdmv_titles) {
-
-			$sql = "SELECT id FROM blurays WHERE;";
-
-		}
-
 		function load_dvdread_id($str) {
 
 			if(!$str)

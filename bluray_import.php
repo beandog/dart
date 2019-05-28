@@ -161,11 +161,6 @@
 		$blurays_model->has_3d_content = intval($json['bluray']['3D content']);
 	}
 
-	if(is_null($blurays_model->bdinfo_titles)) {
-		echo "* Updating bdinfo titles\n";
-		$blurays_model->bdinfo_titles = intval($json['bluray']['bdinfo titles']);
-	}
-
 	if(is_null($blurays_model->bdj_titles)) {
 		echo "* Updating bdj titles\n";
 		$blurays_model->bdj_titles = intval($json['bluray']['bdj titles']);
