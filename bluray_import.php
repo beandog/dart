@@ -53,7 +53,7 @@
 	$dvd_id = null;
 	$bluray_id = null;
 
-	$disc_title = $json['bluray']['disc title'];
+	$disc_title = $json['bluray']['disc name'];
 
 	// Reference using XML md5sums
 	$eng_xml_file = "$device/BDMV/META/DL/bdmt_eng.xml";
