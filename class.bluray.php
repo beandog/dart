@@ -180,7 +180,7 @@
 			if(!$this->opened)
 				return null;
 
-			$title = $this->dvd_info['bluray']['disc title'];
+			$title = $this->dvd_info['bluray']['disc name'];
 
 			$title = trim($title);
 
