@@ -40,7 +40,7 @@
 			$video_encoder = $series_model->get_video_encoder();
 
 			if($opt_copy_info)
-				$container = 'vob';
+				$container = 'mpg';
 
 			$filename = get_episode_filename($episode_id, $container, $arg_hardware);
 
@@ -68,7 +68,7 @@
 					else
 						echo "$handbrake_command\n";
 
-				} else if($container == 'vob') {
+				} else if($container == 'mpg') {
 
 					require 'dart.dvd_copy.php';
 					$dvd_copy->input_filename($input_filename);

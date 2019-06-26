@@ -18,7 +18,7 @@
 
 		// DVD source
 		public $input_filename = '/dev/sr0';
-		public $output_filename = 'dvd_copy.vob';
+		public $output_filename = 'dvd_copy.mpg';
 
 		// Video
 		public $track = null;
