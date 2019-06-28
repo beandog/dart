@@ -58,6 +58,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_rip_info', array(
+		'long_name' => '--rip-info',
+		'description' => 'Display dvd_copy + ffmpeg instructions for a DVD',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('opt_no_dvdnav', array(
 		'long_name' => '--no-dvdnav',
 		'description' => 'Tell HandBrake not to use libdvdnav',
@@ -70,9 +76,9 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_rip', array(
-		'long_name' => '--rip',
-		'description' => 'Rip to an ISO in batch mode',
+	$parser->addOption('opt_backup', array(
+		'long_name' => '--backup',
+		'description' => 'Backup to an ISO in batch mode',
 		'action' => 'StoreTrue',
 		'default' => false,
 	));

@@ -24,6 +24,7 @@
 	require_once 'class.dvd_copy.php';
 	require_once 'class.bluray_copy.php';
 	require_once 'class.mkvmerge.php';
+	require_once 'class.ffmpeg.php';
 
 	require_once 'models/dbtable.php';
 	require_once 'models/dvds.php';
@@ -52,14 +53,13 @@
 
 	$skip = 0;
 
-	// --rip is basically a shortcut for ripping an ISO and importing it plus
+	// --backup is basically a shortcut for ripping an ISO and importing it plus
 	// setting it in batch mode so it will eject the disc after finished.
 	// Designed for use with a udev trigger so that discs will auto-rip
-	if($opt_rip) {
+	if($opt_backup) {
 		$opt_dump_iso = true;
 		$opt_import = true;
 		$batch_mode = true;
-		$backup_dir = $batch_dir;
 		$access_device = true;
 	}
 
@@ -128,10 +128,10 @@
 		}
 	}
 
-	if($opt_encode_info || $opt_copy_info)
+	if($opt_encode_info || $opt_copy_info || $opt_rip_info)
 		$batch_mode = true;
 
-	if(!count($devices) && ($opt_info || $opt_encode_info || $opt_copy_info || $opt_dump_iso || $opt_import || $opt_archive))
+	if(!count($devices) && ($opt_info || $opt_encode_info || $opt_copy_info || $opt_rip_info || $opt_dump_iso || $opt_import || $opt_archive))
 		$devices = $all_devices;
 
 	// General boolean for various items
@@ -207,7 +207,7 @@
 			$display_device = basename($device);
 
 		// Determine whether we are reading the device
-		if($opt_info || $opt_encode_info || $opt_copy_info || $opt_import || $opt_archive || $opt_dump_iso) {
+		if($opt_info || $opt_encode_info || $opt_copy_info || $opt_rip_info || $opt_import || $opt_archive || $opt_dump_iso) {
 			if($debug)
 				echo "* Info / Import / Archive / ISO: Enabling device access\n";
 			$access_device = true;
@@ -401,7 +401,7 @@
 
 			// Only need to display if it's imported if requesting import or
 			// getting DVD info.
-			if($opt_import || $opt_info || $opt_encode_info || $opt_copy_info) {
+			if($opt_import || $opt_info || $opt_encode_info || $opt_copy_info || $opt_rip_info) {
 				if(!$batch_mode) {
 					if($disc_indexed) {
 						echo "* Imported:\tYes\n";
