@@ -29,7 +29,7 @@ if($opt_rip_info && $episode_id) {
 		$ffmpeg_opts = "-x265-params '$ffmpeg_opts'";
 	}
 
-	$ffmpeg->add_video_filter('bwdif');
+	$ffmpeg->add_video_filter('bwdif,fps=fps=60');
 
 	$ffmpeg->set_acodec('copy');
 
