@@ -29,11 +29,17 @@ if($opt_rip_info && $episode_id) {
 		$ffmpeg_opts = "-x265-params '$ffmpeg_opts'";
 	}
 
-	$ffmpeg->add_opts($ffmpeg_opts);
-
 	$ffmpeg->add_video_filter('bwdif');
 
 	$ffmpeg->set_acodec('copy');
+
+	$audio_streamid = $tracks_model->get_first_english_streamid();
+	if($audio_streamid)
+		$ffmpeg->add_audio_stream($audio_streamid);
+
+	$ffmpeg_opts .= " -metadata:s:a:0 'language=eng'";
+
+	$ffmpeg->add_opts($ffmpeg_opts);
 
 	$ffmpeg_command = $ffmpeg->get_executable_string();
 

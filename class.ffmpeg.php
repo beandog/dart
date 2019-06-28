@@ -141,15 +141,15 @@
 				$cmd[] = "-sn";
 			}
 
-			if($this->ffmpeg_opts)
-				$cmd[] = $this->ffmpeg_opts;
-
 			$args = $this->get_ffmpeg_arguments();
 
 			foreach($args as $key => $value) {
 				$arg_value = escapeshellarg($value);
 				$cmd[] = "-$key $arg_value";
 			}
+
+			if($this->ffmpeg_opts)
+				$cmd[] = $this->ffmpeg_opts;
 
 			if($this->output_filename == "-")
 				$cmd[] = "-f 'null'";
