@@ -21,12 +21,18 @@ if($opt_rip_info && $episode_id) {
 
 	$ffmpeg_opts = "crf=$video_quality:$preset_opts:colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m";
 
+	$x264_tune = $series_model->get_x264_tune();
+
 	if($video_encoder == 'x264') {
 		$ffmpeg->set_vcodec('libx264');
 		$ffmpeg_opts = "-x264-params '$ffmpeg_opts'";
+		if($x264_tune)
+			$ffmpeg_opts .= " -tune $x264_tune";
 	} else if($video_encoder == 'x265') {
 		$ffmpeg->set_vcodec('libx265');
 		$ffmpeg_opts = "-x265-params '$ffmpeg_opts'";
+		if($x264_tune == 'animation')
+			$ffmpeg_opts .= " -tune 'animation'";
 	}
 
 	$ffmpeg->add_video_filter('bwdif,fps=fps=60');
