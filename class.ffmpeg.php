@@ -120,6 +120,8 @@
 
 			$cmd[] = $this->binary;
 			$cmd[] = "-hide_banner";
+			if($this->verbose)
+				$cmd[] = "-report";
 			$arg_input = escapeshellarg($this->input_filename);
 			$cmd[] = "-i $arg_input";
 			$cmd[] = "-map '0:v'";

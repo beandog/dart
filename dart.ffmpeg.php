@@ -19,10 +19,6 @@ if($opt_rip_info && $episode_id) {
 
 	$video_quality = $series_model->get_crf();
 
-	// Improve video quality when using ffmpeg + x265
-	if($video_encoder == 'x265')
-		$video_quality -= 2;
-
 	$ffmpeg_opts = "crf=$video_quality:$preset_opts:colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m";
 
 	$x264_tune = $series_model->get_x264_tune();
