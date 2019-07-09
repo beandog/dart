@@ -6,9 +6,6 @@
 	 * Import a new DVD into the database or check for missing metadata
 	 */
 
-	if($disc_type == 'bluray')
-		goto next_disc;
-
 	// Keep track of some numbers for debugging or displaying when metadata
 	// is brought to spec
 	$new_title_tracks = 0;
@@ -17,15 +14,8 @@
 	$new_chapters = 0;
 	$new_cells = 0;
 
-	$missing_dvd_metadata = false;
-	$missing_dvd_tracks_metadata = false;
-
-	if($dvds_model->dvd_missing_metadata()) {
-		$missing_dvd_metadata = true;
-	}
-	if($dvds_model->dvd_tracks_missing_metadata()) {
-		$missing_dvd_tracks_metadata = true;
-	}
+	$missing_dvd_metadata = $dvds_model->dvd_missing_metadata($disc_type);
+	$missing_dvd_tracks_metadata = $dvds_model->dvd_tracks_missing_metadata($disc_type);
 
 	if($opt_archive && !$missing_dvd_metadata && !$missing_dvd_tracks_metadata) {
 		echo "* Archive:\tNo legacy metadata! :D\n";
@@ -53,8 +43,11 @@
 	// Start import
 	if($access_device && $allow_import) {
 
-		if($new_dvd || $missing_dvd_metadata)
+		if(($new_dvd || $missing_dvd_metadata) && $disc_type == 'dvd')
 			require 'dart.import.dvd.php';
+
+		if(($new_dvd || $missing_dvd_metadata) && $disc_type == 'bluray')
+			require 'dart.import.bluray.php';
 
 		if($new_dvd || $missing_dvd_tracks_metadata)
 			require 'dart.import.tracks.php';
@@ -84,7 +77,13 @@
 		if($new_cells)
 			echo "* New cells: $new_cells\n";
 
+		if(!$new_dvd)
+			echo "* Updated metadata to latest spec! :D\n";
+
 	}
 
 	next_disc:
+
+	if($disc_type == 'bluray')
+		exit;
 

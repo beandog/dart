@@ -14,25 +14,26 @@
 		public $dvdread_id;
 		public $title;
 		public $title_tracks;
+		public $bd_playlists;
 		public $playlists;
 		public $longest_playlist;
 		public $main_playlist;
 		public $size;
 
 		// Bluray Playlist
-		public $playlist_track;
-		public $playlist_track_filesize;
-		public $playlist_track_length;
-		public $playlist_track_msecs;
-		public $playlist_track_seconds;
-		public $playlist_track_chapters;
-		public $playlist_track_audio_tracks;
-		public $playlist_track_subtitle_tracks;
+		public $playlist;
+		public $playlist_filesize;
+		public $playlist_length;
+		public $playlist_msecs;
+		public $playlist_seconds;
+		public $title_track_chapters;
+		public $title_track_audio_tracks;
+		public $title_track_subtitle_tracks;
 
 		// Bluray Video
 		public $video_track;
 		public $video_stream;
-		public $video_format;
+		public $video_resolution;
 		public $video_aspect_ratio;
 		public $video_fps;
 
@@ -47,7 +48,7 @@
 		// Bluray Subtitle
 		public $subtitle_track;
 		public $subtitle_stream;
-		public $subplaylist_track_lang_code;
+		public $subtitle_track_lang_code;
 
 		// Bluray Chapter
 		public $chapter;
@@ -56,7 +57,7 @@
 		public $chapter_msecs;
 
 		// All
-		public $playlist_track_info;
+		public $playlist_info;
 
 		function __construct($device = "/dev/bluray", $debug = false, $dry_run = false) {
 
@@ -86,10 +87,9 @@
 			$this->title = $this->title();
 			$this->longest_playlist = $this->longest_playlist();
 			$this->main_playlist = $this->main_playlist();
-			$this->playlist_tracks = $this->playlist_tracks();
-			$this->playlists = count($this->playlist_tracks);
+			$this->playlists = $this->playlists();
 			$this->title_tracks = $this->title_tracks();
-			// $this->size = $this->size();
+			$this->size = $this->size();
 
 			return true;
 
@@ -236,7 +236,7 @@
 		}
 
 		/** Tracks **/
-		private function playlist_tracks() {
+		private function playlists() {
 
 			$this->dvd_info['playlists'] = array();
 
@@ -253,6 +253,7 @@
 
 			foreach($this->dvd_info['titles'] as $arr) {
 				$this->dvd_info['playlists'][$arr['playlist']] = $arr;
+				$this->bd_playlists[] = $arr['playlist'];
 			}
 
 			// Completely move from titles to playlists
@@ -260,20 +261,37 @@
 
 			ksort($this->dvd_info['playlists'], SORT_NATURAL);
 
+			sort($this->bd_playlists);
+
 			return $this->dvd_info['playlists'];
 
 		}
 
 		/**
-		 * Get the size of the filesystem on the dev
+		 * Get the size of the filesystem on the device
+		 */
+		public function size() {
+
+			// Running stat on a single image file not supported right now
+			$kb_size = 0;
+
+			$dirname = dirname($this->device);
+			if($dirname == "/dev") {
+
+				$block_device = basename($this->device, "/dev/");
 				$num_sectors = file_get_contents("/sys/block/$block_device/size");
 				$b_size = $num_sectors * 512;
+				$kb_size = $b_size / 1024;
+
+			} elseif(is_dir($this->device)) {
+
+				exec("du -s ".$this->device, $output, $retval);
+
+				if($retval == 0)
+					$kb_size = intval(current(preg_split("/\s/", current($output))));
+
 			}
 
-			if(!$b_size)
-				return 0;
-
-			$kb_size = $b_size / 1024;
 			$mb_size = intval($kb_size / 1024);
 
 			return $mb_size;
@@ -282,25 +300,25 @@
 
 		/** DVD Track **/
 
-		public function load_playlist_track($playlist) {
+		public function load_playlist($playlist) {
 
 			$playlist = abs(intval($playlist));
 
-			$this->playlist_track = $playlist;
-			$this->playlist_track_info = $this->dvd_info['playlists'][$playlist];
+			$this->playlist = $playlist;
+			$this->playlist_info = $this->dvd_info['playlists'][$playlist];
 
-			$this->playlist_track_length = $this->playlist_track_length();
-			$this->playlist_track_msecs = $this->playlist_track_msecs();
-			$this->playlist_track_seconds = $this->playlist_track_seconds();
-			$this->playlist_track_filesize = $this->playlist_track_filesize();
+			$this->playlist_length = $this->playlist_length();
+			$this->playlist_msecs = $this->playlist_msecs();
+			$this->playlist_seconds = $this->playlist_seconds();
+			$this->playlist_filesize = $this->playlist_filesize();
 
-			$this->playlist_track_chapters = $this->playlist_track_chapters();
-			$this->playlist_track_audio_tracks = $this->playlist_track_audio_tracks();
-			$this->playlist_track_subtitle_tracks = $this->playlist_track_subtitle_tracks();
+			$this->title_track_chapters = $this->title_track_chapters();
+			$this->title_track_audio_tracks = $this->title_track_audio_tracks();
+			$this->title_track_subtitle_tracks = $this->title_track_subtitle_tracks();
 
 			$this->video_codec = $this->video_codec();
 			$this->video_stream = $this->video_stream();
-			$this->video_format = $this->video_format();
+			$this->video_resolution = $this->video_resolution();
 			$this->video_aspect_ratio = $this->video_aspect_ratio();
 			$this->video_fps = $this->video_fps();
 
@@ -308,87 +326,88 @@
 
 		}
 
-		private function playlist_track_length() {
-			return $this->playlist_track_info['length'];
+		private function playlist_length() {
+			return $this->playlist_info['length'];
 		}
 
-		private function playlist_track_msecs() {
-			return $this->dvd_info_number($this->playlist_track_info, 'msecs');
+		private function playlist_msecs() {
+			return $this->dvd_info_number($this->playlist_info, 'msecs');
 		}
 
-		private function playlist_track_seconds() {
+		private function playlist_seconds() {
 
-			$msecs = abs(intval($this->playlist_track_msecs()));
+			$msecs = abs(intval($this->playlist_msecs()));
 			$seconds = 0;
+			// Should be div by 1000, current bug in bluray_info
 			if($msecs)
-				$seconds = floatval(bcdiv($msecs, 1000, 3));
+				$seconds = floatval(bcdiv($msecs, 100, 3));
 
 			return $seconds;
 
 		}
 
-		private function playlist_track_filesize() {
-			return $this->dvd_info_number($this->playlist_track_info, 'filesize');
+		private function playlist_filesize() {
+			return $this->dvd_info_number($this->playlist_info, 'filesize');
 		}
 
-		private function playlist_track_audio_tracks() {
+		private function title_track_audio_tracks() {
 
-			if(!array_key_exists('audio', $this->playlist_track_info))
+			if(!array_key_exists('audio', $this->playlist_info))
 				return 0;
 
-			return count($this->playlist_track_info['audio']);
-
-		}
-
-		private function playlist_track_subtitle_tracks() {
-
-			if(!array_key_exists('subtitles', $this->playlist_track_info))
-				return 0;
-
-			return count($this->playlist_track_info['subtitles']);
+			return count($this->playlist_info['audio']);
 
 		}
 
-		private function playlist_track_chapters() {
+		private function title_track_subtitle_tracks() {
 
-			if(!array_key_exists('chapters', $this->playlist_track_info))
+			if(!array_key_exists('subtitles', $this->playlist_info))
 				return 0;
 
-			return count($this->playlist_track_info['chapters']);
+			return count($this->playlist_info['subtitles']);
+
+		}
+
+		private function title_track_chapters() {
+
+			if(!array_key_exists('chapters', $this->playlist_info))
+				return 0;
+
+			return count($this->playlist_info['chapters']);
 
 		}
 
 		private function video_codec() {
-			if(count($this->playlist_track_info['video']))
-				return strval($this->playlist_track_info['video'][0]['codec']);
+			if(count($this->playlist_info['video']))
+				return strval($this->playlist_info['video'][0]['codec']);
 			else
 				return '';
 		}
 
 		private function video_stream() {
-			if(count($this->playlist_track_info['video']))
-				return strval($this->playlist_track_info['video'][0]['stream']);
+			if(count($this->playlist_info['video']))
+				return strval($this->playlist_info['video'][0]['stream']);
 			else
 				return '';
 		}
 
-		private function video_format() {
-			if(count($this->playlist_track_info['video']))
-				return strval($this->playlist_track_info['video'][0]['format']);
+		private function video_resolution() {
+			if(count($this->playlist_info['video']))
+				return strval($this->playlist_info['video'][0]['format']);
 			else
 				return '';
 		}
 
 		private function video_aspect_ratio() {
-			if(count($this->playlist_track_info['video']))
-				return strval($this->playlist_track_info['video'][0]['aspect ratio']);
+			if(count($this->playlist_info['video']))
+				return strval($this->playlist_info['video'][0]['aspect ratio']);
 			else
 				return '';
 		}
 
 		private function video_fps() {
-			if(count($this->playlist_track_info['video']))
-				return strval($this->playlist_track_info['video'][0]['framerate']);
+			if(count($this->playlist_info['video']))
+				return strval($this->playlist_info['video'][0]['framerate']);
 			else
 				return '';
 		}
@@ -400,29 +419,25 @@
 			$playlist = abs(intval($playlist));
 			$audio_track = abs(intval($audio_track));
 
-			$playlist_loaded = $this->load_playlist_track($playlist);
-
-			if(!$playlist_loaded || $audio_track === 0 || $audio_track > $this->playlist_track_audio_tracks) {
-
-				return false;
-			}
+			$this->load_playlist($playlist);
 
 			$this->audio_track = $audio_track;
-			$this->audio_track_active = $this->audio_track_active();
-			$this->audio_track_lang_code = $this->audio_track_lang_code();
-			$this->audio_track_codec = $this->audio_track_codec();
-			$this->audio_track_channels = $this->audio_track_channels();
+			$this->audio_track_info = $this->playlist_info['audio'][$this->audio_track - 1];
+			$this->audio_track_active = 1;
+			$this->audio_track_lang_code = $this->audio_track_info['language'];
+			$this->audio_track_codec = $this->audio_track_info['codec'];
+			$this->audio_track_stream_id = $this->audio_track_info['stream'];
+
+			// bluray_info doesn't detect # audio channels above stereo
+			if($this->audio_track_info['format'] == 'mono')
+				$this->audio_track_channels = 1;
+			else if($this->audio_track_info['format'] == 'stereo')
+				$this->audio_track_channels = 2;
+			else
+				$this->audio_track_channels = 0;
 
 			return true;
 
-		}
-
-		private function audio_track_lang_code() {
-			return $this->audio_track_info['language'];
-		}
-
-		private function audio_track_codec() {
-			return $this->audio_track_info['codec'];
 		}
 
 		/** DVD Subtitle Track **/
@@ -432,23 +447,17 @@
 			$playlist = abs(intval($playlist));
 			$subtitle_track = abs(intval($subtitle_track));
 
-			$playlist_loaded = $this->load_playlist_track($playlist);
-
-			if(!$playlist_loaded || $subtitle_track === 0 || $subtitle_track > $this->playlist_track_subtitle_tracks) {
-
-				return false;
-			}
+			$this->load_playlist($playlist);
 
 			$this->subtitle_track = $subtitle_track;
-			$this->subplaylist_track_active = $this->subplaylist_track_active();
-			$this->subplaylist_track_lang_code = $this->subplaylist_track_lang_code();
+			$this->subtitle_track_info = $this->playlist_info['subtitles'][$this->subtitle_track - 1];
+			$this->subtitle_track = $subtitle_track;
+			$this->subtitle_track_active = 1;
+			$this->subtitle_track_lang_code = $this->subtitle_track_info['language'];
+			$this->subtitle_track_stream_id = $this->subtitle_track_info['stream'];
 
 			return true;
 
-		}
-
-		private function subplaylist_track_lang_code() {
-			return $$this->subplaylist_track_info['language'];
 		}
 
 		/** DVD Chapter **/
@@ -458,38 +467,18 @@
 			$playlist = abs(intval($playlist));
 			$chapter = abs(intval($chapter));
 
-			$playlist_loaded = $this->load_playlist_track($playlist);
+			$playlist_loaded = $this->load_playlist($playlist);
 
-			if(!$playlist_loaded || $chapter === 0 || $chapter > $this->playlist_track_chapters) {
+			if(!$playlist_loaded || $chapter === 0 || $chapter > $this->title_track_chapters) {
 
 				return false;
 			}
 
 			$this->chapter = $chapter;
-			$this->chapter_length = $this->chapter_length();
-			$this->chapter_msecs = $this->chapter_msecs();
-			$this->chapter_seconds = $this->chapter_seconds();
+			$this->chapter_info = $this->playlist_info['chapters'][$this->chapter - 1];
+			$this->chapter_seconds = floatval(bcdiv($this->chapter_info['duration'], 100, 2));
 
 			return true;
-
-		}
-
-		private function chapter_length() {
-			return $this->chapter_info['length'];
-		}
-
-		private function chapter_msecs() {
-			return $this->dvd_info_number($this->chapter_info, 'msecs');
-		}
-
-		private function chapter_seconds() {
-
-			$msecs = abs(intval($this->chapter_msecs()));
-			$seconds = 0;
-			if($msecs)
-				$seconds = floatval(bcdiv($msecs, 1000, 3));
-
-			return $seconds;
 
 		}
 

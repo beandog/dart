@@ -49,7 +49,7 @@
 
 	}
 
-	if(is_null($tracks_model->closed_captioning)) {
+	if(is_null($tracks_model->closed_captioning) && $disc_type == 'dvd') {
 
 		$handbrake = new Handbrake;
 		$handbrake->set_binary($handbrake_bin);

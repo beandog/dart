@@ -53,7 +53,7 @@
 
 		// Check a DVD record to see if it is missing
 		// metadata somewhere.
-		public function dvd_missing_metadata() {
+		public function dvd_missing_metadata($disc_type = 'dvd') {
 
 			$dvd_id = abs(intval($this->id));
 
@@ -63,20 +63,41 @@
 			if(!$filesize)
 				return true;
 
-			$max_metadata_spec_id = $this->max_metadata_spec();
+			if($disc_type == 'dvd') {
 
-			$sql = "SELECT COUNT(1) FROM dvds d WHERE id = $dvd_id AND bluray = 0 AND metadata_spec < $max_metadata_spec_id;";
-			$count = abs(intval($this->db->getOne($sql)));
+				$max_metadata_spec_id = $this->max_metadata_spec();
 
-			if($count)
-				return true;
+				$sql = "SELECT COUNT(1) FROM dvds d WHERE id = $dvd_id AND bluray = 0 AND metadata_spec < $max_metadata_spec_id;";
+				$count = abs(intval($this->db->getOne($sql)));
 
-			// Check if the DVD doesn't have the side set
-			$sql = "SELECT COUNT(1) FROM dvds WHERE id = $dvd_id AND side IS NULL;";
-			$count = abs(intval($this->db->getOne($sql)));
+				if($count)
+					return true;
 
-			if($count)
-				return true;
+				// Check if the DVD doesn't have the side set
+				$sql = "SELECT COUNT(1) FROM dvds WHERE id = $dvd_id AND bluray = 0 AND side IS NULL;";
+				$count = abs(intval($this->db->getOne($sql)));
+
+				if($count)
+					return true;
+
+			}
+
+			if($disc_type == 'bluray') {
+
+				// Check for old metadata spec
+				$max_metadata_spec_id = $this->max_metadata_spec('bluray');
+				$sql = "SELECT COUNT(1) FROM dvds d WHERE id = $dvd_id AND bluray = 1 AND metadata_spec < $max_metadata_spec_id;";
+				$count = abs(intval($this->db->getOne($sql)));
+				if($count)
+					return true;
+
+				// Check for missing title
+				$sql = "SELECT COUNT(1) FROM dvds WHERE id = $dvd_id AND TRIM(title) = '';";
+				$count = abs(intval($this->db->getOne($sql)));
+				if($count)
+					return true;
+
+			}
 
 			return false;
 
@@ -84,16 +105,9 @@
 
 		// Check if any of the tracks on the DVD are missing metadata, regardless
 		// of spec.
-		public function dvd_tracks_missing_metadata() {
+		public function dvd_tracks_missing_metadata($disc_type = 'dvd') {
 
 			$dvd_id = abs(intval($this->id));
-
-			// Check if any of the tracks are missing an active flag
-			$sql = "SELECT COUNT(1) FROM tracks t JOIN dvds d ON d.id = t.dvd_id JOIN audio a ON a.track_id = t.id JOIN subp s ON s.track_id = t.id WHERE d.id = $dvd_id AND (s.active IS NULL OR a.active IS NULL OR closed_captioning IS NULL);";
-			$count = $this->get_one($sql);
-
-			if($count)
-				return true;
 
 			// Verify tracks are existent
 			$sql = "SELECT COUNT(1) FROM tracks WHERE dvd_id = $dvd_id;";
@@ -101,27 +115,83 @@
 			if(!$count)
 				return true;
 
-			// Check if an audio track hasn't been set
-			$sql = "SELECT COUNT(1) FROM tracks WHERE dvd_id = $dvd_id AND audio_ix IS NULL;";
-			$count = intval($this->db->getOne($sql));
-			if($count)
-				return true;
+			if($disc_type == 'dvd') {
 
+				// Check if any of the tracks are missing an active flag
+				$sql = "SELECT COUNT(1) FROM tracks t JOIN dvds d ON d.id = t.dvd_id JOIN audio a ON a.track_id = t.id JOIN subp s ON s.track_id = t.id WHERE d.id = $dvd_id AND (s.active IS NULL OR a.active IS NULL OR closed_captioning IS NULL);";
+				$count = $this->get_one($sql);
 
-			// Check if any subtitle tracks have not been tracked as active or not
-			$sql = "SELECT COUNT(1) FROM subp s JOIN tracks t ON s.track_id = t.id WHERE t.dvd_id = $dvd_id AND active IS NULL;";
-			$count = intval($this->db->getOne($sql));
-			if($count)
-				return true;
+				if($count)
+					return true;
 
-			// Check if closed captioning is not flagged
-			$sql = "SELECT COUNT(1) FROM tracks WHERE dvd_id = $dvd_id AND closed_captioning IS NULL;";
-			$count = intval($this->db->getOne($sql));
-			if($count)
-				return true;
+				// Check if an audio track hasn't been set
+				$sql = "SELECT COUNT(1) FROM tracks WHERE dvd_id = $dvd_id AND audio_ix IS NULL;";
+				$count = intval($this->db->getOne($sql));
+				if($count)
+					return true;
 
-			if($this->dvd_tracks_missing_cells())
-				return true;
+				// Check if any subtitle tracks have not been tracked as active or not
+				$sql = "SELECT COUNT(1) FROM subp s JOIN tracks t ON s.track_id = t.id WHERE t.dvd_id = $dvd_id AND active IS NULL;";
+				$count = intval($this->db->getOne($sql));
+				if($count)
+					return true;
+
+				// Check if closed captioning is not flagged
+				$sql = "SELECT COUNT(1) FROM tracks WHERE dvd_id = $dvd_id AND closed_captioning IS NULL;";
+				$count = intval($this->db->getOne($sql));
+				if($count)
+					return true;
+
+				if($this->dvd_tracks_missing_cells())
+					return true;
+
+			}
+
+			if($disc_type == 'bluray') {
+
+				// Check if there are zero audio tracks
+				$sql = "SELECT COUNT(1) FROM audio a JOIN tracks t ON a.track_id = t.id WHERE t.dvd_id = $dvd_id;";
+				$count = intval($this->db->getOne($sql));
+				if(!$count)
+					return true;
+
+				// Check if any audio tracks are missing language
+				$sql = "SELECT COUNT(1) FROM audio a JOIN tracks t ON a.track_id = t.id WHERE t.dvd_id = $dvd_id AND langcode = '';";
+				$count = intval($this->db->getOne($sql));
+				if($count)
+					return true;
+
+				// Check if any audio tracks are missing stream id
+				$sql = "SELECT COUNT(1) FROM audio a JOIN tracks t ON a.track_id = t.id WHERE t.dvd_id = $dvd_id AND streamid = '';";
+				$count = intval($this->db->getOne($sql));
+				if($count)
+					return true;
+
+				// Check if there are zero subtitles
+				$sql = "SELECT COUNT(1) FROM subp s JOIN tracks t ON s.track_id = t.id WHERE t.dvd_id = $dvd_id;";
+				$count = intval($this->db->getOne($sql));
+				if(!$count)
+					return true;
+
+				// Check if any subtitles are missing language
+				$sql = "SELECT COUNT(1) FROM subp s JOIN tracks t ON s.track_id = t.id WHERE t.dvd_id = $dvd_id AND langcode = '';";
+				$count = intval($this->db->getOne($sql));
+				if($count)
+					return true;
+
+				// Check if any subtitles are missing stream id
+				$sql = "SELECT COUNT(1) FROM subp s JOIN tracks t ON s.track_id = t.id WHERE t.dvd_id = $dvd_id AND streamid = '';";
+				$count = intval($this->db->getOne($sql));
+				if($count)
+					return true;
+
+				// Check if there are zero chapters
+				$sql = "SELECT COUNT(1) FROM chapters c JOIN tracks t ON c.track_id = t.id WHERE t.dvd_id = $dvd_id;";
+				$count = intval($this->db->getOne($sql));
+				if(!$count)
+					return true;
+
+			}
 
 			return false;
 

@@ -1,11 +1,9 @@
 <?php
 
-	if($disc_type == 'bluray') {
-		echo "Importing Blu-ray tracks not supported\n";
-		goto broken_dvd;
-	}
-
 	/** Tracks **/
+
+	if($disc_type == 'bluray')
+		goto bluray_disc;
 
 	$dvd_title_tracks = $dvd->title_tracks;
 
@@ -22,7 +20,7 @@
 		// BEEP!
 		beep_error();
 
-		goto broken_dvd;
+		goto next_disc;
 
 	}
 
@@ -118,8 +116,139 @@
 
 	}
 
-	// Close off the newline that the track count was displaying
-	echo "\n";
+	if($disc_type == 'dvd')
+		goto next_disc;
+
+	bluray_disc:
+
+	$bd_playlists = $dvd->bd_playlists;
+	$num_playlists = count($bd_playlists);
+
+	// If it comes to this point, there's probably an issue reading the DVD
+	// directly. Either way, the import will still work, so it's debatable
+	// whether this should die here now and kill the progress of the script
+	// or not. This is something where the dvd_debug program could come into play.
+	// Ideally, that would run first and flag anomalies for me directly.
+	if(!$num_playlists) {
+
+		$broken_dvd = true;
+		echo "? No playlists? No good!!!!\n";
+
+		// BEEP!
+		beep_error();
+
+		goto next_disc;
+
+	}
+
+	if($missing_dvd_tracks_metadata && !$new_dvd)
+		echo "* Updating BD playlists metadata: ";
+	elseif($opt_archive && !$new_dvd)
+		echo "* Checking playlists for full archival: ";
+	elseif($opt_import && $new_dvd)
+		echo "* Importing $num_playlists tracks: ";
+
+	foreach($bd_playlists as $playlist) {
+
+		// reference
+		$title_track = $playlist;
+
+		echo "$playlist ";
+
+		$playlist_loaded = $dvd->load_playlist($playlist);
+
+		// Lookup the database tracks.id
+		$tracks_model = new Tracks_Model;
+		$tracks_model_id = $tracks_model->find_track_id($dvds_model_id, $playlist);
+
+		// Create new database entry
+		if(!$tracks_model_id) {
+
+			$tracks_model_id = $tracks_model->create_new();
+
+			if($debug)
+				echo "* Created new track id: $tracks_model_id\n";
+
+			$new_title_tracks++;
+
+			$tracks_model->dvd_id = $dvds_model_id;
+			$tracks_model->ix = $playlist;
+			$tracks_model->closed_captioning = 0;
+
+		} else {
+
+			$tracks_model->load($tracks_model_id);
+
+		}
+
+		// Handle broken tracks! :D
+		if(!$playlist_loaded) {
+			echo "\n";
+			echo "* Opening $device playlist $playlist FAILED\n";
+
+			// Set some of the data so it won't trigger false positives on
+			// missing metadata.
+			$tracks_model->length = 0;
+			$tracks_model->closed_captioning = 0;
+
+			// BOOP!
+			beep_error();
+
+			continue;
+		}
+
+		// Database model returns a string
+		$tracks_model_length = floatval($tracks_model->length);
+
+		if($tracks_model_length != $dvd->playlist_seconds) {
+			$tracks_model->length = $dvd->playlist_seconds;
+			if($debug)
+				echo "* Updating playlist length (msecs): $tracks_model_length -> ".$dvd->playlist_seconds."\n";
+		}
+
+		if($tracks_model->resolution != $dvd->video_resolution) {
+			$tracks_model->resolution = $dvd->video_resolution;
+			if($debug)
+				echo "* Updating video resolution: ".$dvd->video_resolution."\n";
+		}
+
+		if($tracks_model->aspect != $dvd->video_aspect_ratio) {
+			$tracks_model->aspect = $dvd->video_aspect_ratio;
+			if($debug)
+				echo "* Updating aspect ratio: ".$dvd->video_aspect_ratio."\n";
+		}
+
+		if($tracks_model->codec != $dvd->video_codec) {
+			$tracks_model->codec = $dvd->video_codec;
+			if($debug)
+				echo "* Updating video codec: ".$dvd->video_codec."\n";
+		}
+
+		if($tracks_model->fps != $dvd->video_fps) {
+			$tracks_model->fps = $dvd->video_fps;
+			if($debug)
+				echo "* Updating video FPS: ".$dvd->video_fps."\n";
+		}
+
+		$filesize = 0;
+		$playlist_filesize = $dvd->playlist_filesize;
+		if($playlist_filesize) {
+			$filesize = ceil($playlist_filesize / 1048576);
+		}
+		if($tracks_model->filesize != $filesize && $filesize) {
+			$tracks_model->filesize = $filesize;
+			if($debug)
+				echo "* Updating playlist filesize: $filesize\n";
+		}
+
+		require 'dart.import.audio.php';
+		require 'dart.import.subtitles.php';
+		require 'dart.import.chapters.php';
+
+	}
 
 	// Moving right along ...
-	broken_dvd:
+	next_disc:
+
+	// Close off the newline that the track count was displaying
+	echo "\n";

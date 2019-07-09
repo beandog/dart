@@ -97,7 +97,6 @@
 		$dvds_model->dvdread_id = $dvdread_id;
 		$dvds_model->title = $disc_title;
 		$dvds_model->bluray = 1;
-		$dvds_model->main_ix = $main_playlist;
 	}
 
 	echo "* DVD ID: $dvd_id\n";
@@ -227,7 +226,7 @@
 		if(!$track_id) {
 			echo "Playlist $d_playlist: Length: $length Filesize: $d_filesize\n";
 			echo "- Inserting new playlist $playlist.mpls\n";
-			$sql = "INSERT INTO tracks (dvd_id, ix, length, aspect, valid, codec, filesize, closed_captioning, tag) VALUES ($dvd_id, $playlist, $seconds, ".$pg->quote($aspect_ratio).", 1, ".$pg->quote($video_codec).", $filesize_mbs, 0, '$tag');";
+			$sql = "INSERT INTO tracks (dvd_id, ix, length, aspect, valid, codec, filesize, closed_captioning) VALUES ($dvd_id, $playlist, $seconds, ".$pg->quote($aspect_ratio).", 1, ".$pg->quote($video_codec).", $filesize_mbs, 0);";
 			$rs = $pg->query($sql);
 			$sql = "SELECT id FROM tracks WHERE dvd_id = $dvd_id AND ix = $playlist;";
 			$rs = $pg->query($sql);
@@ -268,15 +267,6 @@
 		if(!$str) {
 			echo "- Updating playlist $d_playlist filesize ".number_format($filesize)." MBs\n";
 			$sql = "UPDATE tracks SET filesize = $filesize WHERE id = $track_id;";
-			$pg->query($sql);
-		}
-
-		$sql = "SELECT tag FROM tracks WHERE id = $track_id;";
-		$rs = $pg->query($sql);
-		$str = $rs->fetchColumn();
-		if(!$str && ($playlist == $main_playlist)) {
-			echo "- Flagging playlist $d_playlist as main\n";
-			$sql = "UPDATE tracks SET tag = 'main' WHERE id = $track_id;";
 			$pg->query($sql);
 		}
 
