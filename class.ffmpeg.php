@@ -10,6 +10,7 @@
 		public $ffmpeg = 'ffmpeg';
 		public $ffmpeg_output = '/dev/null';
 		public $ffmpeg_opts = '';
+		public $input_opts = '';
 
 		// DVD source
 		public $input_filename = '-';
@@ -48,6 +49,10 @@
 
 		public function output_filename($str) {
 			$this->output_filename = $str;
+		}
+
+		public function input_opts($str) {
+			$this->input_opts = $str;
 		}
 
 		public function set_dry_run($bool = true) {
@@ -122,6 +127,8 @@
 			$cmd[] = "-hide_banner";
 			if($this->verbose)
 				$cmd[] = "-report";
+			if($this->input_opts)
+				$cmd[] = $this->input_opts;
 			$arg_input = escapeshellarg($this->input_filename);
 			$cmd[] = "-i $arg_input";
 			$cmd[] = "-map '0:v'";

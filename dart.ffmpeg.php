@@ -14,12 +14,15 @@ if($opt_rip_info && $episode_id) {
 	if($dry_run)
 		$ffmpeg->dry_run();
 
+	// $ffmpeg->input_opts("-probesize '67108864' -analyzeduration '60000000'");
 	$ffmpeg->input_filename('-');
 	$ffmpeg->output_filename($filename);
 
 	$video_quality = $series_model->get_crf();
 
-	$ffmpeg_opts = "crf=$video_quality:$preset_opts:colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m";
+	$ffmpeg_opts = "crf=$video_quality:colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m";
+	if($preset_opts)
+		$ffmpeg_opts .= ":$preset_opts";
 
 	$x264_tune = $series_model->get_x264_tune();
 
