@@ -304,7 +304,7 @@
 
 			// Check for deinterlacing filter
 			if($this->deinterlace)
-				$options[] = "--deinterlace";
+				$options[] = "--deinterlace=bob";
 
 			// Check for decombing filter
 			if($this->decomb)
