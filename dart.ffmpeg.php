@@ -21,8 +21,8 @@ if($opt_rip_info && $episode_id) {
 	$video_quality = $series_model->get_crf();
 
 	$ffmpeg_opts = "crf=$video_quality:colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m";
-	if($preset_opts)
-		$ffmpeg_opts .= ":$preset_opts";
+	// if($preset_opts)
+	//	$ffmpeg_opts .= ":$preset_opts";
 
 	$x264_tune = $series_model->get_x264_tune();
 
@@ -37,6 +37,10 @@ if($opt_rip_info && $episode_id) {
 		if($x264_tune == 'animation')
 			$ffmpeg_opts .= " -tune 'animation'";
 	}
+
+	$x264_preset = $series_model->get_x264_preset();
+	if($x264_preset != 'medium' && strlen($x264_preset))
+		$ffmpeg_opts .= " -preset '$x264_preset'";
 
 	$ffmpeg->add_video_filter('bwdif,fps=fps=60');
 
