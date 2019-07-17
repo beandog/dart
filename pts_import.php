@@ -32,6 +32,8 @@
 		if($fd === false)
 			continue;
 
+		echo "$basename: ";
+
 		$progressive = 0;
 		$top_field = 0;
 		$bottom_field = 0;
@@ -115,6 +117,6 @@
 		$episodes_model->bottom_field = $bottom_field;
 		$episodes_model->crop = $crop;
 
-		echo "$basename: progressive: $progressive top-field: $top_field bottom-field: $bottom_field\n";
+		echo "progressive: $progressive top-field: $top_field bottom-field: $bottom_field\n";
 
 	}
