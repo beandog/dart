@@ -40,6 +40,7 @@
 		$crop = '';
 
 		$arr_frame = array('n' => null);
+		$arr_frames = array();
 
 		$arr_crop_count = array();
 
