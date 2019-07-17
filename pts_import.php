@@ -75,7 +75,7 @@
 					$progressive++;
 				elseif($arr_frame['i'] == 'T')
 					$top_field++;
-				elseif($arr_frames['i'] == 'B')
+				elseif($arr_frame['i'] == 'B')
 					$bottom_field++;
 
 				$count++;
