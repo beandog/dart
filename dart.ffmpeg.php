@@ -1,59 +1,93 @@
 <?php
 
-if($opt_rip_info && $episode_id) {
+if(($opt_rip_info || $opt_pts_info) && $episode_id) {
 
-	$ffmpeg = new FFMpeg();
-	$ffmpeg->set_binary('ffmpeg');
+	if($opt_rip_info) {
 
-	if($debug)
-		$ffmpeg->debug();
+		$ffmpeg = new FFMpeg();
+		$ffmpeg->set_binary('ffmpeg');
 
-	if($verbose)
-		$ffmpeg->verbose();
+		if($debug)
+			$ffmpeg->debug();
 
-	if($dry_run)
-		$ffmpeg->dry_run();
+		if($verbose)
+			$ffmpeg->verbose();
 
-	// $ffmpeg->input_opts("-probesize '67108864' -analyzeduration '60000000'");
-	$ffmpeg->input_filename('-');
-	$ffmpeg->output_filename($filename);
+		if($dry_run)
+			$ffmpeg->dry_run();
 
-	$video_quality = $series_model->get_crf();
+		// $ffmpeg->input_opts("-probesize '67108864' -analyzeduration '60000000'");
+		$ffmpeg->input_filename('-');
+		$ffmpeg->output_filename($filename);
 
-	$ffmpeg_opts = "crf=$video_quality:colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m";
-	// if($preset_opts)
-	//	$ffmpeg_opts .= ":$preset_opts";
+		$video_quality = $series_model->get_crf();
 
-	$x264_tune = $series_model->get_x264_tune();
+		$ffmpeg_opts = "crf=$video_quality:colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m";
+		// if($preset_opts)
+		//	$ffmpeg_opts .= ":$preset_opts";
 
-	if($video_encoder == 'x264') {
-		$ffmpeg->set_vcodec('libx264');
-		$ffmpeg_opts = "-x264-params '$ffmpeg_opts'";
-		if($x264_tune)
-			$ffmpeg_opts .= " -tune $x264_tune";
-	} else if($video_encoder == 'x265') {
-		$ffmpeg->set_vcodec('libx265');
-		$ffmpeg_opts = "-x265-params '$ffmpeg_opts'";
-		if($x264_tune == 'animation')
-			$ffmpeg_opts .= " -tune 'animation'";
+		$x264_tune = $series_model->get_x264_tune();
+
+		if($video_encoder == 'x264') {
+			$ffmpeg->set_vcodec('libx264');
+			$ffmpeg_opts = "-x264-params '$ffmpeg_opts'";
+			if($x264_tune)
+				$ffmpeg_opts .= " -tune $x264_tune";
+		} else if($video_encoder == 'x265') {
+			$ffmpeg->set_vcodec('libx265');
+			$ffmpeg_opts = "-x265-params '$ffmpeg_opts'";
+			if($x264_tune == 'animation')
+				$ffmpeg_opts .= " -tune 'animation'";
+		}
+
+		$x264_preset = $series_model->get_x264_preset();
+		if($x264_preset != 'medium' && strlen($x264_preset))
+			$ffmpeg_opts .= " -preset '$x264_preset'";
+
+		$ffmpeg->add_video_filter('bwdif,fps=fps=60');
+
+		$ffmpeg->set_acodec('copy');
+
+		$audio_streamid = $tracks_model->get_first_english_streamid();
+		if($audio_streamid)
+			$ffmpeg->add_audio_stream($audio_streamid);
+
+		$ffmpeg_opts .= " -metadata:s:a:0 'language=eng'";
+
+		$ffmpeg->add_opts($ffmpeg_opts);
+
+		$ffmpeg_command = $ffmpeg->get_executable_string();
+
 	}
 
-	$x264_preset = $series_model->get_x264_preset();
-	if($x264_preset != 'medium' && strlen($x264_preset))
-		$ffmpeg_opts .= " -preset '$x264_preset'";
+	if($opt_pts_info) {
 
-	$ffmpeg->add_video_filter('bwdif,fps=fps=60');
+		$ffmpeg = new FFMpeg();
+		$ffmpeg->set_binary('ffmpeg');
 
-	$ffmpeg->set_acodec('copy');
+		if($debug)
+			$ffmpeg->debug();
 
-	$audio_streamid = $tracks_model->get_first_english_streamid();
-	if($audio_streamid)
-		$ffmpeg->add_audio_stream($audio_streamid);
+		if($verbose)
+			$ffmpeg->verbose();
 
-	$ffmpeg_opts .= " -metadata:s:a:0 'language=eng'";
+		if($dry_run)
+			$ffmpeg->dry_run();
 
-	$ffmpeg->add_opts($ffmpeg_opts);
+		// $ffmpeg->input_opts("-probesize '67108864' -analyzeduration '60000000'");
+		$ffmpeg->input_filename('-');
+		$ffmpeg->output_filename('-');
 
-	$ffmpeg_command = $ffmpeg->get_executable_string();
+		$ffmpeg->add_video_filter('showinfo,blackframe,cropdetect');
+
+		$ffmpeg_opts = '-an -sn';
+
+		$ffmpeg->add_opts($ffmpeg_opts);
+
+		$ffmpeg_command = $ffmpeg->get_executable_string();
+
+		$ffmpeg_command .= " &> $filename";
+
+	}
 
 }

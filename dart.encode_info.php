@@ -1,7 +1,7 @@
 <?php
 
 	// Display encode instructions about a disc
-	if($opt_encode_info || $opt_copy_info || $opt_rip_info) {
+	if($opt_encode_info || $opt_copy_info || $opt_rip_info || $opt_pts_info) {
 
 		$dvd_episodes = $dvds_model->get_episodes();
 
@@ -41,6 +41,9 @@
 
 			if($opt_copy_info)
 				$container = 'mpg';
+
+			if($opt_pts_info)
+				$container = 'pts';
 
 			$filename = get_episode_filename($episode_id, $container, $arg_hardware);
 
@@ -97,7 +100,23 @@
 					$dvd_copy_command = $dvd_copy->get_executable_string();
 					echo "$dvd_copy_command\n";
 
+				} else if($container == 'pts') {
+
+					require 'dart.dvd_copy.php';
+					$dvd_copy->input_filename($input_filename);
+					$dvd_copy->output_filename("-");
+					$dvd_copy_command = $dvd_copy->get_executable_string();
+
+					require 'dart.ffmpeg.php';
+
+					$dvd_rip_command = "$dvd_copy_command 2> /dev/null | $ffmpeg_command";
+					if($episodes_model->skip)
+						echo "# $dvd_rip_command # skipped\n";
+					else
+						echo "$dvd_rip_command\n";
+
 				}
+
 			}
 
 			/** Blu-rays **/

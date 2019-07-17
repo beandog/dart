@@ -23,7 +23,7 @@
 
 		// Audio
 		public $audio = true;
-		public $acodec = 'copy';
+		public $acodec = '';
 		public $acodec_opts = '';
 		public $audio_streams = array();
 
@@ -83,8 +83,10 @@
 
 			$streamid = trim($streamid);
 
-			if($streamid)
+			if($streamid) {
 				$this->audio_streams[] = $streamid;
+				$this->set_acodec('copy');
+			}
 
 		}
 
@@ -125,10 +127,12 @@
 
 			$cmd[] = $this->binary;
 			$cmd[] = "-hide_banner";
+			$cmd[] = "-nostats";
 			if($this->verbose)
 				$cmd[] = "-report";
 			if($this->input_opts)
 				$cmd[] = $this->input_opts;
+			$cmd[] = "-fflags '+genpts'";
 			$arg_input = escapeshellarg($this->input_filename);
 			$cmd[] = "-i $arg_input";
 			$cmd[] = "-map '0:v'";
@@ -137,8 +141,6 @@
 				foreach($this->audio_streams as $streamid) {
 					$cmd[] = "-map 'i:$streamid'";
 				}
-			} else {
-				$cmd[] = "-map 'i:0x80'";
 			}
 
 			if(count($this->subtitle_streams)) {
@@ -146,8 +148,6 @@
 				foreach($this->subtitle_streams as $streamid) {
 					$cmd[] = "-map 'i:$streamid'";
 				}
-			} else {
-				$cmd[] = "-sn";
 			}
 
 			$args = $this->get_ffmpeg_arguments();
