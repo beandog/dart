@@ -126,13 +126,13 @@
 		public function get_executable_string() {
 
 			$cmd[] = $this->binary;
+			$cmd[] = "-fflags '+genpts'";
 			$cmd[] = "-hide_banner";
 			$cmd[] = "-nostats";
 			if($this->verbose)
 				$cmd[] = "-report";
 			if($this->input_opts)
 				$cmd[] = $this->input_opts;
-			$cmd[] = "-fflags '+genpts'";
 			$arg_input = escapeshellarg($this->input_filename);
 			$cmd[] = "-i $arg_input";
 			$cmd[] = "-map '0:v'";
