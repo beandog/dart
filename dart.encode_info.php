@@ -70,7 +70,7 @@
 						$handbrake->output_filename($filename);
 						$handbrake_command = $handbrake->get_executable_string();
 						if($episodes_model->skip)
-							echo "# $handbrake_command # skipped\n";
+							echo "# $handbrake_command\n";
 						else
 							echo "$handbrake_command\n";
 					}
@@ -86,7 +86,7 @@
 
 						$dvd_rip_command = "$dvd_copy_command 2> /dev/null | $ffmpeg_command";
 						if($episodes_model->skip)
-							echo "# $dvd_rip_command # skipped\n";
+							echo "# $dvd_rip_command\n";
 						else
 							echo "$dvd_rip_command\n";
 
@@ -111,7 +111,7 @@
 
 					$dvd_rip_command = "$dvd_copy_command 2> /dev/null | $ffmpeg_command";
 					if($episodes_model->skip)
-						echo "# $dvd_rip_command # skipped\n";
+						echo "# $dvd_rip_command\n";
 					else
 						echo "$dvd_rip_command\n";
 
