@@ -28,7 +28,7 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 	$decomb = false;
 	$detelecine = false;
 	$h264_profile = 'high';
-	$h264_level = '4.1';
+	$h264_level = '';
 	$subs_support = true;
 	$chapters_support = true;
 	$optimize_support = true;

@@ -216,11 +216,13 @@
 		}
 
 		public function set_h264_profile($str) {
-			$this->h264_profile = $str;
+			if($str)
+				$this->h264_profile = $str;
 		}
 
 		public function set_h264_level($str) {
-			$this->h264_level = $str;
+			if($str)
+				$this->h264_level = $str;
 		}
 
 		public function set_x264_preset($str) {
@@ -491,12 +493,7 @@
 
 		public function get_executable_string() {
 
-			$cmd = "";
-
-			$options = $this->get_options();
-
-			foreach($options as $str)
-				$cmd[] = escapeshellarg($str);
+			$cmd = array();
 
 			$args = $this->get_arguments();
 
@@ -504,6 +501,11 @@
 				$arg_value = escapeshellarg($value);
 				$cmd[] = "$key $arg_value";
 			}
+
+			$options = $this->get_options();
+
+			foreach($options as $str)
+				$cmd[] = escapeshellarg($str);
 
 			$str = $this->binary." ".implode(" ", $cmd);
 
