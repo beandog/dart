@@ -70,6 +70,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_pts_import', array(
+		'long_name' => '--pts-import',
+		'description' => 'Include instructions for importing PTS data',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('opt_no_dvdnav', array(
 		'long_name' => '--no-dvdnav',
 		'description' => 'Tell HandBrake not to use libdvdnav',

@@ -115,6 +115,9 @@
 					else
 						echo "$dvd_rip_command\n";
 
+					if($opt_pts_import)
+						echo "pts_import $filename\n";
+
 				}
 
 			}
