@@ -80,10 +80,6 @@ if(($opt_rip_info || $opt_pts_info) && $episode_id) {
 
 		$ffmpeg->add_video_filter('showinfo,blackframe,cropdetect');
 
-		$ffmpeg_opts = '-an -sn';
-
-		$ffmpeg->add_opts($ffmpeg_opts);
-
 		$ffmpeg_command = $ffmpeg->get_executable_string();
 
 		$ffmpeg_command .= " &> $filename";
