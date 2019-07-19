@@ -84,19 +84,6 @@ if(($opt_encode_info || $opt_rip_info) && $episode_id && $video_encoder == 'x265
 		$handbrake->deinterlace($series_model->get_preset_deinterlace());
 		$handbrake->decomb($series_model->get_preset_decomb());
 		$handbrake->detelecine($series_model->get_preset_detelecine());
-		switch($series_model->get_preset_upscale()) {
-			case '480p':
-			$handbrake->height = 480;
-			break;
-
-			case '720p':
-			$handbrake->height = 720;
-			break;
-
-			case '1080p':
-			$handbrake->height = 1080;
-			break;
-		}
 		if($fps)
 			$handbrake->set_video_framerate($fps);
 		if($container == 'mp4' && $optimize_support)

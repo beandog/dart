@@ -154,16 +154,6 @@
 
 		}
 
-		function get_preset_upscale() {
-
-			$sql = "SELECT presets.upscale FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->db->quote($this->id).";";
-
-			$str = $this->db->getOne($sql);
-
-			return $str;
-
-		}
-
 		function get_preset_fps() {
 
 			$sql = "SELECT presets.fps FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->db->quote($this->id).";";
