@@ -113,10 +113,7 @@
 					require 'dart.ffmpeg.php';
 
 					$dvd_rip_command = "$dvd_copy_command 2> /dev/null | $ffmpeg_command";
-					if($episodes_model->skip)
-						echo "# $dvd_rip_command\n";
-					else
-						echo "$dvd_rip_command\n";
+					echo "$dvd_rip_command\n";
 
 					if($opt_pts_import)
 						echo "pts_import $filename\n";
