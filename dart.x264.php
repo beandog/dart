@@ -111,9 +111,9 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 	if($force_preset)
 		$x264_preset = $force_preset;
 	$x264_tune = $series_model->get_x264_tune();
-	$animation = ($x264_tune == 'animation');
+	if($series_model->cgi == 0 && $x264_tune)
+		$handbrake->set_x264_tune($x264_tune);
 	$handbrake->set_x264_preset($x264_preset);
-	$handbrake->set_x264_tune($x264_tune);
 
 	$deinterlace = $series_model->get_preset_deinterlace();
 	$decomb = $series_model->get_preset_decomb();
