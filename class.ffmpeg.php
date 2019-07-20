@@ -11,6 +11,7 @@
 		public $ffmpeg_output = '/dev/null';
 		public $ffmpeg_opts = '';
 		public $input_opts = '';
+		public $disable_stats = false;
 
 		// DVD source
 		public $input_filename = '-';
@@ -19,7 +20,7 @@
 		// Video
 		public $vcodec = '';
 		public $vcodec_opts = '';
-		public $vf = '';
+		public $video_filters = array();
 
 		// Audio
 		public $audio = true;
@@ -68,7 +69,7 @@
 		}
 
 		public function add_video_filter($str) {
-			$this->vf = $str;
+			$this->video_filters[] = $str;
 		}
 
 		public function set_acodec($str) {
@@ -77,6 +78,10 @@
 
 		public function set_acodec_opts($str) {
 			$this->acodec_opts = $str;
+		}
+
+		public function disable_stats() {
+			$this->disable_stats = true;
 		}
 
 		public function add_audio_stream($streamid = '0x80') {
@@ -111,8 +116,10 @@
 				$args['vcodec'] = $this->vcodec;
 			if($this->vcodec_opts)
 				$args['vcodec_opts'] = $this->vcodec_opts;
-			if($this->vf)
-				$args['vf'] = $this->vf;
+			if(count($this->video_filters)) {
+				$vf = implode(",", $this->video_filters);
+				$args['vf'] = $vf;
+			}
 
 			if($this->acodec)
 				$args['acodec'] = $this->acodec;
@@ -128,7 +135,8 @@
 			$cmd[] = $this->binary;
 			$cmd[] = "-fflags '+genpts'";
 			$cmd[] = "-hide_banner";
-			$cmd[] = "-nostats";
+			if($this->disable_stats)
+				$cmd[] = "-nostats";
 			if($this->verbose)
 				$cmd[] = "-report";
 			if($this->input_opts)
@@ -146,7 +154,7 @@
 			if(count($this->subtitle_streams)) {
 				$cmd[] = "-scodec 'copy'";
 				foreach($this->subtitle_streams as $streamid) {
-					$cmd[] = "-map 'i:$streamid'";
+					$cmd[] = "-map 'i:$streamid?'";
 				}
 			}
 
