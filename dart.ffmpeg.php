@@ -24,7 +24,10 @@ if(($opt_rip_info || $opt_pts_info) && $episode_id) {
 
 		$video_quality = $series_model->get_crf();
 
-		$ffmpeg_opts = "crf=$video_quality:colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m";
+		if($tracks_model->format == 'NTSC')
+			$ffmpeg_opts = "crf=$video_quality:colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m";
+		elseif($tracks_model->format == 'PAL')
+			$ffmpeg_opts = "crf=$video_quality:colorprim=bt470bg:transfer=gamma28:colormatrix=bt470bg";
 		// if($preset_opts)
 		//	$ffmpeg_opts .= ":$preset_opts";
 

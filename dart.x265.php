@@ -29,7 +29,10 @@ if(($opt_encode_info || $opt_rip_info) && $episode_id && $video_encoder == 'x265
 
 	$video_quality = $series_model->get_crf();
 	$x265_preset = $series_model->get_x264_preset();
-	$x265_opts = 'colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m';
+	if($tracks_model->format == 'NTSC')
+		$x265_opts = 'colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m';
+	elseif($tracks_model->format == 'PAL')
+		$x265_opts = 'colorprim=bt470bg:transfer=gamma28:colormatrix=bt470bg';
 	if($video_quality <= 14)
 		$preset_opts = 'level-idc=52';
 	elseif($video_quality <= 16)
@@ -81,13 +84,33 @@ if(($opt_encode_info || $opt_rip_info) && $episode_id && $video_encoder == 'x265
 
 		$handbrake->set_x264opts($x265_opts);
 
-		$handbrake->deinterlace($series_model->get_preset_deinterlace());
-		$handbrake->decomb($series_model->get_preset_decomb());
-		$handbrake->detelecine($series_model->get_preset_detelecine());
-		if($fps)
+		/** frameinfo **/
+
+		$deinterlace = $series_model->get_preset_deinterlace();
+		$decomb = $series_model->get_preset_decomb();
+		$detelecine = $series_model->get_preset_detelecine();
+
+		$progressive = $episodes_model->progressive;
+		$top_field = $episodes_model->top_field;
+		$bottom_field = $episodes_model->bottom_field;
+
+		// Detelecine by default if PTS hasn't been scanned
+		if($progressive == null && $top_field == null && $bottom_field == null)
+			$detelecine = true;
+
+		// If all progressive, disable and override decomb, detelecine, and deinterlace
+		if($progressive > 0 && $top_field == 0 && $bottom_field == 0) {
+			$decomb = false;
+			$detelecine = false;
+			$deinterlace = false;
+		}
+
+		// Default to 24 FPS
+		$fps = $series_model->get_preset_fps();
+		if(!$fps || $fps == 24)
+			$handbrake->set_video_framerate("24000/1001");
+		else
 			$handbrake->set_video_framerate($fps);
-		if($container == 'mp4' && $optimize_support)
-			$handbrake->set_http_optimize();
 
 		/** Audio **/
 

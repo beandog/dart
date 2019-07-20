@@ -33,7 +33,10 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 	$chapters_support = true;
 	$optimize_support = true;
 	$force_preset = false;
-	$x264opts = 'colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m';
+	if($tracks_model->format == 'NTSC')
+		$x264opts = 'colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m';
+	elseif($tracks_model->format == 'PAL')
+		$x264opts = 'colorprim=bt470bg:transfer=gamma28:colormatrix=bt470bg';
 
 	$handbrake = new Handbrake;
 	$handbrake->set_binary($handbrake_bin);
@@ -111,12 +114,83 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 	$animation = ($x264_tune == 'animation');
 	$handbrake->set_x264_preset($x264_preset);
 	$handbrake->set_x264_tune($x264_tune);
-	$handbrake->deinterlace($series_model->get_preset_deinterlace());
-	$handbrake->decomb($series_model->get_preset_decomb());
-	$handbrake->detelecine($series_model->get_preset_detelecine());
+
+	$deinterlace = $series_model->get_preset_deinterlace();
+	$decomb = $series_model->get_preset_decomb();
+	$detelecine = $series_model->get_preset_detelecine();
+
+	$progressive = $episodes_model->progressive;
+	$top_field = $episodes_model->top_field;
+	$bottom_field = $episodes_model->bottom_field;
+
+	// Detelecine by default if PTS hasn't been scanned
+	if($progressive == null && $top_field == null && $bottom_field == null)
+		$detelecine = true;
+
+	// If all progressive, disable and override decomb, detelecine, and deinterlace
+	if($progressive > 0 && $top_field == 0 && $bottom_field == 0) {
+		$decomb = false;
+		$detelecine = false;
+		$deinterlace = false;
+	}
+
+	// Default to 24 FPS
 	$fps = $series_model->get_preset_fps();
-	if($fps)
+	if(!$fps || $fps == 24)
+		$handbrake->set_video_framerate("24000/1001");
+	else
 		$handbrake->set_video_framerate($fps);
+
+	// Simplifed version of dart ffmpeg checks
+	while($top_field || $bottom_field) {
+
+		// Top Field only
+		if($progressive == 0 && $bottom_field == 0) {
+			$detelecine = true;
+			break;
+		}
+
+		// Bottom Field only
+		if($progressive == 0 && $top_field == 0) {
+			$detelecine = true;
+			break;
+		}
+
+		// Top Field only, but under 1 second
+		/*
+		if($top_field <= 30 && $bottom_field == 0) {
+			$detelecine = false;
+			break;
+		}
+		*/
+
+		// Bottom Field only, but under 1 second
+		/*
+		if($top_field == 0 && $bottom_field <= 30) {
+			$detelecine = false;
+			break;
+		}
+		*/
+
+		// Top Field and Bottom Field, each under one second
+		/*
+		if($top_field <= 30 && $bottom_field <= 30) {
+			$detelecine = false;
+			break;
+		}
+		*/
+
+		// All other cases
+		$detelecine = true;
+
+		break;
+
+	}
+
+	$handbrake->deinterlace($deinterlace);
+	$handbrake->decomb($decomb);
+	$handbrake->detelecine($detelecine);
+
 	if($container == 'mp4' && $optimize_support)
 		$handbrake->set_http_optimize();
 
