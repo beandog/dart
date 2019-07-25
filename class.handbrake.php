@@ -40,6 +40,7 @@
 		public $x264_preset;
 		public $x264_tune;
 		public $x264 = array();
+		public $color_matrix = 'ntsc';
 
 		// Audio
 		public $audio = true;
@@ -237,6 +238,10 @@
 			$this->http_optimize = (bool)$bool;
 		}
 
+		public function set_color_matrix($str) {
+			$this->color_matrix = strtolower($str);
+		}
+
 		// FIXME do checks for audio types
 		public function set_audio_fallback($str) {
 			$this->audio_fallback = $str;
@@ -413,6 +418,11 @@
 			// Set x264 tune option
 			if(!is_null($this->x264_tune)) {
 				$args['--encoder-tune'] = $this->x264_tune;
+			}
+
+			// Set color matrix
+			if($this->color_matrix) {
+				$args['--color-matrix'] = $this=>color_matrix;
 			}
 
 			// Set x264 encoding options
