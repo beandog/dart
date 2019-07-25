@@ -420,7 +420,7 @@
 
 			// Set color matrix
 			if($this->color_matrix) {
-				$args['--color-matrix'] = $this=>color_matrix;
+				$args['--color-matrix'] = $this->color_matrix;
 			}
 
 			// Set x264 encoding options
