@@ -39,7 +39,8 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 	$handbrake->verbose($verbose);
 	$handbrake->debug($debug);
 	$handbrake->set_dry_run($dry_run);
-	$handbrake->set_x264opts($x264opts);
+	if(isset($x264opts))
+		$handbrake->set_x264opts($x264opts);
 	$handbrake->set_color_matrix($tracks_model->format);
 
 	switch($arg_hardware) {
