@@ -132,10 +132,10 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 		$deinterlace = false;
 	}
 
-	// Default to 24 FPS
-	$fps = $series_model->get_preset_fps();
-	if(!$fps)
-		$fps = 24;
+	// Default to 30 FPS
+	$fps = 30;
+	if($tracks_model->format == 'PAL')
+		$fps = 25;
 	$handbrake->set_video_framerate($fps);
 
 	// Simplifed version of dart ffmpeg checks
