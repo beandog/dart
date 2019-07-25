@@ -133,10 +133,9 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 
 	// Default to 24 FPS
 	$fps = $series_model->get_preset_fps();
-	if(!$fps || $fps == 24)
-		$handbrake->set_video_framerate("24000/1001");
-	else
-		$handbrake->set_video_framerate($fps);
+	if(!$fps)
+		$fps = 24;
+	$handbrake->set_video_framerate($fps);
 
 	// Simplifed version of dart ffmpeg checks
 	while($top_field || $bottom_field) {

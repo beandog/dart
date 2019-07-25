@@ -121,9 +121,7 @@
 		}
 
 		public function set_video_framerate($int) {
-			$int = abs(intval($int));
-			if($int)
-				$this->video_framerate = $int;
+			$this->video_framerate = $int;
 		}
 
 		public function add_audio_track($int) {
