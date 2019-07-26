@@ -43,6 +43,16 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 		$handbrake->set_x264opts($x264opts);
 	$handbrake->set_color_matrix($tracks_model->format);
 
+	// Content source could be have different original framerate at time of recording.
+	// Movies would be shot at 24 FPS, and then telecined to 2.97 FPS for NTSC playback.
+	// TV could be recorded at 24 FPS as well and then telecined, or directly to 29.97 for NTSC playback.
+	// Since there's no solid way to know which framerate a source was filmed at, encode by default to 30 FPS
+	// as a way to catch all frames and duplicated fields in a worry-free mode that nothing is lost.
+	// PAL is an exception in that the source is 25 FPS and all progressive, so no need to change there.
+	$fps = 30;
+	if($tracks_model->format == 'PAL')
+		$fps = 25;
+
 	switch($arg_hardware) {
 
 		case 'psp':
@@ -52,7 +62,7 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 			$chapters_support = false;
 			$optimize_support = false;
 			$force_preset = 'medium';
-			$handbrake->set_x264opts($x264opts.':bframes=1');
+			$handbrake->set_x264opts('bframes=1');
 			$handbrake->set_max_width(480);
 			$handbrake->set_max_height(272);
 			$handbrake->set_audio_downmix('stereo');
@@ -65,7 +75,7 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 			$chapters_support = false;
 			$optimize_support = false;
 			$force_preset = 'medium';
-			$handbrake->set_video_framerate(15);
+			$fps = 15;
 			$handbrake->set_max_width(176);
 			$handbrake->set_max_height(144);
 			break;
@@ -108,10 +118,15 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 		$x264_preset = 'medium';
 	if($force_preset)
 		$x264_preset = $force_preset;
+	$handbrake->set_x264_preset($x264_preset);
+
 	$x264_tune = $series_model->get_x264_tune();
+
+	// If animation is marked as CGI, then don't pass the tuning, as it will make it worse
 	if($series_model->cgi == 0 && $x264_tune)
 		$handbrake->set_x264_tune($x264_tune);
-	$handbrake->set_x264_preset($x264_preset);
+
+	/** Frame and fields **/
 
 	$deinterlace = $series_model->get_preset_deinterlace();
 	$decomb = $series_model->get_preset_decomb();
@@ -125,68 +140,23 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 	if($progressive == null && $top_field == null && $bottom_field == null)
 		$detelecine = true;
 
-	// If all progressive, disable and override decomb, detelecine, and deinterlace
-	if($progressive > 0 && $top_field == 0 && $bottom_field == 0) {
-		$decomb = false;
-		$detelecine = false;
-		$deinterlace = false;
-	}
-
-	// Default to 30 FPS
-	$fps = 30;
-	if($tracks_model->format == 'PAL')
-		$fps = 25;
-	$handbrake->set_video_framerate($fps);
-
-	// Simplifed version of dart ffmpeg checks
-	while($top_field || $bottom_field) {
-
-		// Top Field only
-		if($progressive == 0 && $bottom_field == 0) {
-			$detelecine = true;
-			break;
-		}
-
-		// Bottom Field only
-		if($progressive == 0 && $top_field == 0) {
-			$detelecine = true;
-			break;
-		}
-
-		// Top Field only, but under 1 second
-		/*
-		if($top_field <= 30 && $bottom_field == 0) {
-			$detelecine = false;
-			break;
-		}
-		*/
-
-		// Bottom Field only, but under 1 second
-		/*
-		if($top_field == 0 && $bottom_field <= 30) {
-			$detelecine = false;
-			break;
-		}
-		*/
-
-		// Top Field and Bottom Field, each under one second
-		/*
-		if($top_field <= 30 && $bottom_field <= 30) {
-			$detelecine = false;
-			break;
-		}
-		*/
-
-		// All other cases
+	// If there are any top or bottom fields, detelecine video to remove partial interlacing
+	if($top_field > 0 || $bottom_field > 0)
 		$detelecine = true;
 
-		break;
+	// If all progressive, disable detelecine.
+	// The source may still need deinterlacing or decombing based on quality of input
+	if($progressive > 0 && $top_field == 0 && $bottom_field == 0)
+		$detelecine = false;
 
-	}
+	// If PAL format, detelecining is not needed
+	if($tracks_model->format == 'PAL')
+		$detelecine = false;
 
-	$handbrake->deinterlace($deinterlace);
+	$handbrake->set_video_framerate($fps);
 	$handbrake->decomb($decomb);
 	$handbrake->detelecine($detelecine);
+	$handbrake->deinterlace($deinterlace);
 
 	if($container == 'mp4' && $optimize_support)
 		$handbrake->set_http_optimize();
