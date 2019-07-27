@@ -74,6 +74,8 @@
 							$handbrake->set_duration($qa_max);
 						$handbrake->output_filename($filename);
 						$handbrake_command = $handbrake->get_executable_string();
+						if($opt_time)
+							$handbrake_command = "command time -f '$filename - %E' -o '${filename}.time' $handbrake_command";
 						if($episodes_model->skip)
 							echo "# $handbrake_command\n";
 						else

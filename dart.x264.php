@@ -121,6 +121,8 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 		$x264_preset = 'medium';
 	if($force_preset)
 		$x264_preset = $force_preset;
+	if($arg_preset)
+		$x264_preset = $arg_preset;
 	$handbrake->set_x264_preset($x264_preset);
 
 	$x264_tune = $series_model->get_x264_tune();

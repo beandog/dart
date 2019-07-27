@@ -162,6 +162,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_time', array(
+		'long_name' => '--time',
+		'description' => 'Log time of encode',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('arg_preset', array(
 		'long_name' => '--preset',
 		'description' => 'Set encoding preset',
