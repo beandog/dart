@@ -47,6 +47,9 @@
 
 			$filename = get_episode_filename($episode_id, $container, $arg_hardware);
 
+			if($opt_qa)
+				$filename = "QA.$filename";
+
 			$input_filename = realpath($device);
 
 			// If using MakeMKV to manually extract the tracks, change the source to match its naming scheme
@@ -67,6 +70,8 @@
 						$handbrake->input_filename($input_filename);
 						if($opt_vob)
 							$handbrake->input_filename(get_episode_filename($episode_id, 'vob', $arg_hardware));
+						if($opt_qa)
+							$handbrake->set_duration($qa_max);
 						$handbrake->output_filename($filename);
 						$handbrake_command = $handbrake->get_executable_string();
 						if($episodes_model->skip)

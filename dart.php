@@ -137,6 +137,10 @@
 	// General boolean for various items
 	$first_run = true;
 
+	// Default max length for QA operations
+	if(!isset($qa_max))
+		$qa_max = 60;
+
 	$num_encoded = 0;
 
 	foreach($devices as $device) {

@@ -12,6 +12,7 @@
 		public $ffmpeg_opts = '';
 		public $input_opts = '';
 		public $disable_stats = false;
+		public $duration = 0;
 
 		// DVD source
 		public $input_filename = '-';
@@ -41,6 +42,10 @@
 
 		public function set_binary($str) {
 			$this->binary = $str;
+		}
+
+		public function set_duration($int) {
+			$this->duration = abs(intval($int));
 		}
 
 		/** Filename **/
@@ -125,6 +130,9 @@
 				$args['acodec'] = $this->acodec;
 			if($this->acodec_opts)
 				$args['acodec_opts'] = $this->acodec_opts;
+
+			if($this->duration)
+				$args['t'] = $this->duration;
 
 			return $args;
 

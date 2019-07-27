@@ -16,6 +16,7 @@
 		public $do_not_scan = false;
 		public $dry_run = false;
 		public $output;
+		public $duration = 0;
 
 		// DVD source
 		public $dvd;
@@ -73,6 +74,12 @@
 
 		public function set_binary($str) {
 			$this->binary = $str;
+		}
+
+		public function set_duration($int) {
+			$int = abs(intval($int));
+			if($int)
+				$this->duration = $int;
 		}
 
 		/** Filename **/
@@ -421,6 +428,11 @@
 			// Set color matrix
 			if($this->color_matrix) {
 				$args['--color-matrix'] = $this->color_matrix;
+			}
+
+			// Set duration for QA
+			if($this->duration) {
+				$args['--stop-at'] = "duration:".$this->duration;
 			}
 
 			// Set x264 encoding options

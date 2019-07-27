@@ -162,6 +162,18 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('arg_preset', array(
+		'long_name' => '--preset',
+		'description' => 'Set encoding preset',
+		'action' => 'StoreString',
+		'default' => '',
+	));
+	$parser->addOption('arg_crf', array(
+		'long_name' => '--crf',
+		'description' => 'Set encoding CRF',
+		'action' => 'StoreString',
+		'default' => '',
+	));
 	$parser->addOption('arg_hardware', array(
 		'long_name' => '--hardware',
 		'description' => 'Override target hardware',

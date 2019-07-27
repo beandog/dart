@@ -28,6 +28,8 @@ if(($opt_encode_info || $opt_rip_info) && $episode_id && $video_encoder == 'x265
 	$force_preset = false;
 
 	$video_quality = $series_model->get_crf();
+	if($arg_crf)
+		$video_quality = abs(intval($arg_crf));
 	$x265_preset = $series_model->get_x264_preset();
 	if($tracks_model->format == 'NTSC')
 		$x265_opts = 'colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m';

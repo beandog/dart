@@ -24,6 +24,9 @@ if(($opt_rip_info || $opt_pts_info) && $episode_id) {
 
 		$video_quality = $series_model->get_crf();
 
+		if($arg_crf)
+			$video_quality = abs(intval($arg_crf));
+
 		if($tracks_model->format == 'NTSC')
 			$ffmpeg_opts = "crf=$video_quality:colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m";
 		elseif($tracks_model->format == 'PAL')
@@ -46,8 +49,12 @@ if(($opt_rip_info || $opt_pts_info) && $episode_id) {
 		}
 
 		$x264_preset = $series_model->get_x264_preset();
-		if($x264_preset != 'medium' && strlen($x264_preset))
-			$ffmpeg_opts .= " -preset '$x264_preset'";
+		if($arg_preset)
+			$x264_preset = $arg_preset;
+		$ffmpeg_opts .= " -preset '$x264_preset'";
+
+		if($opt_qa)
+			$ffmpeg->set_duration($qa_max);
 
 		// Set video filters based on frame info
 		$progressive = $episodes_model->progressive;
