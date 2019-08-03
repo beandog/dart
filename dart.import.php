@@ -84,6 +84,3 @@
 
 	next_disc:
 
-	if($disc_type == 'bluray')
-		exit;
-
