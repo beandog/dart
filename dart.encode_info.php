@@ -109,7 +109,7 @@
 
 				} else if($container == 'pts') {
 
-					if($episodes_model->progressive > 0 || $episodes_model->top_field > 0 || $episodes_model->bottom_field > 0)
+					if($opt_skip_existing && ($episodes_model->progressive > 0 || $episodes_model->top_field > 0 || $episodes_model->bottom_field > 0))
 						continue;
 
 					require 'dart.dvd_copy.php';
