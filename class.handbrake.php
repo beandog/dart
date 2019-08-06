@@ -318,13 +318,15 @@
 			if($this->deinterlace)
 				$options[] = "--deinterlace=bob";
 
-			// Check for decombing filter
-			if($this->decomb)
-				$options[] = "--decomb";
-
 			// Check for detelecine filter
 			if($this->detelecine)
 				$options[] = "--detelecine";
+
+			// Check for decombing filter
+			if($this->decomb) {
+				$options[] = "--decomb=eedi2bob";
+				$options[] = "--comb-detect=permissive";
+			}
 
 			// Check for grayscale
 			if($this->grayscale)
@@ -421,7 +423,7 @@
 			}
 
 			// Set x264 tune option
-			if(!is_null($this->x264_tune)) {
+			if($this->x264_tune) {
 				$args['--encoder-tune'] = $this->x264_tune;
 			}
 

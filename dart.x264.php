@@ -49,7 +49,7 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 	// Since there's no solid way to know which framerate a source was filmed at, encode by default to 30 FPS
 	// as a way to catch all frames and duplicated fields in a worry-free mode that nothing is lost.
 	// PAL is an exception in that the source is 25 FPS and all progressive, so no need to change there.
-	$fps = 30;
+	$fps = $series_model->get_preset_fps();
 	if($tracks_model->format == 'PAL')
 		$fps = 25;
 
@@ -127,8 +127,15 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 
 	$x264_tune = $series_model->get_x264_tune();
 
+	// Set to animation tune if collection is Cartoons
+	if($series_model->collection_id == 1)
+		$x264_tune = 'animation';
+
 	// If animation is marked as CGI, then don't pass the tuning, as it will make it worse
-	if($series_model->cgi == 0 && $x264_tune)
+	if($x264_tune == 'animation' && $series_model->cgi == 1)
+		$x264_tune = '';
+
+	if($x264_tune)
 		$handbrake->set_x264_tune($x264_tune);
 
 	/** Frame and fields **/
@@ -149,16 +156,33 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 	if($top_field > 0 || $bottom_field > 0)
 		$detelecine = true;
 
-	// If all progressive, disable detelecine.
-	// The source may still need deinterlacing or decombing based on quality of input
-	if($progressive > 0 && $top_field == 0 && $bottom_field == 0)
-		$detelecine = false;
-
 	// If PAL format, detelecining is not needed
 	if($tracks_model->format == 'PAL')
 		$detelecine = false;
 
+	// If preset is set to decomb, override detelecine and do strict deinterlace checks
+	// and set fps to 60 for send_field
+	if($decomb) {
+		$deinterlace = false;
+		$detelecine = false;
+		$fps = 60;
+	}
+
+	// If all progressive, disable filters, and set fps to 30
+	if($progressive > 0 && $top_field == 0 && $bottom_field == 0) {
+		$decomb = false;
+		$detelecine = false;
+		$deinterlace = false;
+		$fps = 30;
+	}
+
+	// If fps is not set by this point, use 30
+	if(!$fps)
+		$fps = 30;
+
+	// Set framerate
 	$handbrake->set_video_framerate($fps);
+
 	$handbrake->decomb($decomb);
 	$handbrake->detelecine($detelecine);
 	$handbrake->deinterlace($deinterlace);
