@@ -1,6 +1,6 @@
 <?php
 
-if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
+if($opt_encode_info && $episode_id) {
 
 	/**
 	 * Handbrake
@@ -53,32 +53,36 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 	if($tracks_model->format == 'PAL')
 		$fps = 25;
 
-	switch($arg_hardware) {
+	if($video_encoder == 'x264') {
 
-		case 'psp':
-			$h264_profile = 'main';
-			$h264_level = '2.1';
-			$subs_support = false;
-			$chapters_support = false;
-			$optimize_support = false;
-			$force_preset = 'medium';
-			$handbrake->set_x264opts('bframes=1');
-			$handbrake->set_max_width(480);
-			$handbrake->set_max_height(272);
-			$handbrake->set_audio_downmix('stereo');
-			break;
+		switch($arg_hardware) {
 
-		case 'gravity2':
-			$h264_profile = 'baseline';
-			$h264_level = '1b';
-			$subs_support = false;
-			$chapters_support = false;
-			$optimize_support = false;
-			$force_preset = 'medium';
-			$fps = 15;
-			$handbrake->set_max_width(176);
-			$handbrake->set_max_height(144);
-			break;
+			case 'psp':
+				$h264_profile = 'main';
+				$h264_level = '2.1';
+				$subs_support = false;
+				$chapters_support = false;
+				$optimize_support = false;
+				$force_preset = 'medium';
+				$handbrake->set_x264opts('bframes=1');
+				$handbrake->set_max_width(480);
+				$handbrake->set_max_height(272);
+				$handbrake->set_audio_downmix('stereo');
+				break;
+
+			case 'gravity2':
+				$h264_profile = 'baseline';
+				$h264_level = '1b';
+				$subs_support = false;
+				$chapters_support = false;
+				$optimize_support = false;
+				$force_preset = 'medium';
+				$fps = 15;
+				$handbrake->set_max_width(176);
+				$handbrake->set_max_height(144);
+				break;
+
+		}
 
 	}
 
@@ -98,7 +102,7 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 
 	/** Video **/
 
-	$handbrake->set_video_encoder('x264');
+	$handbrake->set_video_encoder($video_encoder);
 	$video_quality = $series_model->get_crf();
 	$grayscale = $series_model->grayscale;
 	$handbrake->grayscale($grayscale);
@@ -238,17 +242,6 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 	if($chapters_support) {
 		$handbrake->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
 		$handbrake->add_chapters();
-	}
-
-	// Lossless video support
-	if($video_quality === 0) {
-		$handbrake->set_video_quality(0);
-		$handbrake->set_x264opts('');
-		$handbrake->set_h264_profile('high444');
-		$handbrake->set_x264_preset('');
-		$handbrake->enable_audio(false);
-		$handbrake->subtitle_tracks = array();
-		$handbrake->add_chapters(false);
 	}
 
 	$handbrake_command = $handbrake->get_executable_string();
