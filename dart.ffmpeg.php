@@ -185,7 +185,7 @@ if(($opt_rip_info || $opt_pts_info) && $episode_id) {
 		$ffmpeg->input_filename('-');
 		$ffmpeg->output_filename('-');
 
-		$ffmpeg->add_video_filter('showinfo,blackframe,cropdetect');
+		$ffmpeg->add_video_filter('showinfo,cropdetect');
 
 		$ffmpeg->disable_stats();
 

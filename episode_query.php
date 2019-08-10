@@ -99,6 +99,9 @@
 
 	$episode_metadata = $episodes_model->get_metadata();
 
+	if($episode_metadata['season'] == 100)
+		$episode_metadata['season'] = 0;
+
 	// An episode can override series title if it is in format (Series Title)
 	if(substr($episode_metadata['title'], 0, 1) == "(") {
 
