@@ -137,10 +137,6 @@ if($opt_encode_info && $episode_id) {
 	if($series_model->collection_id == 1)
 		$x264_tune = 'animation';
 
-	// If animation is marked as CGI, then don't pass the tuning, as it will make it worse
-	if($x264_tune == 'animation' && $series_model->cgi == 1)
-		$x264_tune = '';
-
 	if($x264_tune)
 		$handbrake->set_x264_tune($x264_tune);
 

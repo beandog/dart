@@ -39,12 +39,12 @@ if(($opt_rip_info || $opt_pts_info) && $episode_id) {
 		if($video_encoder == 'x264') {
 			$ffmpeg->set_vcodec('libx264');
 			$ffmpeg_opts = "-x264-params '$ffmpeg_opts'";
-			if($series_model->cgi == 0 && $x264_tune)
+			if($x264_tune)
 				$ffmpeg_opts .= " -tune '$x264_tune'";
 		} else if($video_encoder == 'x265') {
 			$ffmpeg->set_vcodec('libx265');
 			$ffmpeg_opts = "-x265-params '$ffmpeg_opts'";
-			if($series_model->cgi == 0 && $x264_tune)
+			if($x264_tune)
 				$ffmpeg_opts .= " -tune '$x264_tune'";
 		}
 
