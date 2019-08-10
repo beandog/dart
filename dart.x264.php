@@ -43,15 +43,7 @@ if($opt_encode_info && $episode_id) {
 		$handbrake->set_x264opts($x264opts);
 	$handbrake->set_color_matrix($tracks_model->format);
 
-	// Content source could be have different original framerate at time of recording.
-	// Movies would be shot at 24 FPS, and then telecined to 2.97 FPS for NTSC playback.
-	// TV could be recorded at 24 FPS as well and then telecined, or directly to 29.97 for NTSC playback.
-	// Since there's no solid way to know which framerate a source was filmed at, encode by default to 30 FPS
-	// as a way to catch all frames and duplicated fields in a worry-free mode that nothing is lost.
-	// PAL is an exception in that the source is 25 FPS and all progressive, so no need to change there.
 	$fps = $series_model->get_preset_fps();
-	if($tracks_model->format == 'PAL')
-		$fps = 25;
 
 	if($video_encoder == 'x264') {
 
@@ -170,17 +162,16 @@ if($opt_encode_info && $episode_id) {
 		$fps = 60;
 	}
 
-	// If all progressive, disable filters, and set fps to 30
+	// If all progressive, disable filters
 	if($progressive > 0 && $top_field == 0 && $bottom_field == 0) {
 		$decomb = false;
 		$detelecine = false;
 		$deinterlace = false;
-		$fps = 30;
 	}
 
-	// If fps is not set by this point, use 30
+	// If fps is not set by this point, use 60
 	if(!$fps)
-		$fps = 30;
+		$fps = 60;
 
 	// Set framerate
 	$handbrake->set_video_framerate($fps);
