@@ -115,8 +115,10 @@ if($opt_encode_info && $episode_id) {
 
 	/** H.264 **/
 
-	$handbrake->set_h264_profile($h264_profile);
-	$handbrake->set_h264_level($h264_level);
+	if($video_encoder == 'x264') {
+		$handbrake->set_h264_profile($h264_profile);
+		$handbrake->set_h264_level($h264_level);
+	}
 
 	/** x264 **/
 
