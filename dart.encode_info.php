@@ -47,9 +47,6 @@
 
 			$filename = get_episode_filename($episode_id, $container, $arg_hardware);
 
-			if($opt_qa)
-				$filename = "QA.$filename";
-
 			$input_filename = realpath($device);
 
 			// If using MakeMKV to manually extract the tracks, change the source to match its naming scheme
@@ -69,8 +66,7 @@
 						$handbrake->input_filename($input_filename);
 						if($opt_vob)
 							$handbrake->input_filename(get_episode_filename($episode_id, 'vob', $arg_hardware));
-						if($opt_qa)
-							$handbrake->set_duration($qa_max);
+
 						$handbrake->output_filename($filename);
 						$handbrake_command = $handbrake->get_executable_string();
 						if($opt_time)
@@ -79,6 +75,21 @@
 							echo "# $handbrake_command\n";
 						else
 							echo "$handbrake_command\n";
+
+						if($opt_qa && !$episodes_model->skip) {
+
+							$handbrake->set_duration(15);
+
+							foreach(array('02', '08', '10', '12', '14', '16', '18', '20', '22', '24', '26', '28') as $qa_crf) {
+								$handbrake->set_video_quality($qa_crf);
+								$qa_filename = str_replace(".mkv", ".480p$fps.$video_encoder.q${qa_crf}.mkv", $filename);
+								$handbrake->output_filename($qa_filename);
+								$handbrake_command = $handbrake->get_executable_string();
+								echo "$handbrake_command\n";
+							}
+
+						}
+
 					}
 
 					if($opt_rip_info) {
