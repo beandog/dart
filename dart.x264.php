@@ -33,6 +33,10 @@ if($opt_encode_info && $episode_id) {
 	$chapters_support = true;
 	$optimize_support = true;
 	$force_preset = false;
+	if($tracks_model->format == 'NTSC')
+		$x264opts = 'colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m';
+	elseif($tracks_model->format == 'PAL')
+		$x264opts = 'colorprim=bt470bg:transfer=gamma28:colormatrix=bt470bg';
 
 	$handbrake = new Handbrake;
 	$handbrake->set_binary($handbrake_bin);
@@ -41,7 +45,6 @@ if($opt_encode_info && $episode_id) {
 	$handbrake->set_dry_run($dry_run);
 	if(isset($x264opts))
 		$handbrake->set_x264opts($x264opts);
-	$handbrake->set_color_matrix($tracks_model->format);
 
 	$fps = $series_model->get_preset_fps();
 
