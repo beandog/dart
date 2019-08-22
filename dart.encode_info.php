@@ -34,6 +34,10 @@
 		foreach($dvd_episodes as $episode_id) {
 
 			$episodes_model = new Episodes_Model($episode_id);
+
+			if($episodes_model->skip)
+				continue;
+
 			$tracks_model = new Tracks_Model($episodes_model->track_id);
 			$series_model = new Series_Model($episodes_model->get_series_id());
 			$container = $series_model->get_preset_format();
@@ -61,6 +65,7 @@
 
 					require 'dart.x264.php';
 
+
 					if($opt_encode_info) {
 
 						$handbrake->input_filename($input_filename);
@@ -71,12 +76,10 @@
 						$handbrake_command = $handbrake->get_executable_string();
 						if($opt_time)
 							$handbrake_command = "command time -f '$filename - %E' -o '${filename}.time' $handbrake_command";
-						if($episodes_model->skip)
-							echo "# $handbrake_command\n";
-						else
-							echo "$handbrake_command\n";
 
-						if($opt_qa && !$episodes_model->skip) {
+						echo "$handbrake_command\n";
+
+						if($opt_qa) {
 
 							$handbrake->set_duration(15);
 
@@ -102,10 +105,7 @@
 						require 'dart.ffmpeg.php';
 
 						$dvd_rip_command = "$dvd_copy_command 2> /dev/null | $ffmpeg_command";
-						if($episodes_model->skip)
-							echo "# $dvd_rip_command\n";
-						else
-							echo "$dvd_rip_command\n";
+						echo "$dvd_rip_command\n";
 
 					}
 
