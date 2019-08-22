@@ -33,9 +33,11 @@ if($opt_encode_info && $episode_id) {
 	$chapters_support = true;
 	$optimize_support = true;
 	$force_preset = false;
-	if($tracks_model->format == 'NTSC')
+
+	$format = $tracks_model->format;
+	if($format == 'NTSC')
 		$x264opts = 'colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m';
-	elseif($tracks_model->format == 'PAL')
+	elseif($format == 'PAL')
 		$x264opts = 'colorprim=bt470bg:transfer=gamma28:colormatrix=bt470bg';
 
 	$handbrake = new Handbrake;
@@ -99,8 +101,7 @@ if($opt_encode_info && $episode_id) {
 
 	$handbrake->set_video_encoder($video_encoder);
 	$video_quality = $series_model->get_crf();
-	$grayscale = $series_model->grayscale;
-	$handbrake->grayscale($grayscale);
+	$handbrake->grayscale($series_model->grayscale);
 
 	if($arg_crf)
 		$video_quality = abs(intval($arg_crf));
@@ -126,11 +127,11 @@ if($opt_encode_info && $episode_id) {
 		$x264_preset = $arg_preset;
 	$handbrake->set_x264_preset($x264_preset);
 
-	$x264_tune = $series_model->get_x264_tune();
-
 	// Set to animation tune if collection is Cartoons
 	if($series_model->collection_id == 1)
 		$x264_tune = 'animation';
+	else
+		$x264_tune = $series_model->get_x264_tune();
 
 	if($x264_tune)
 		$handbrake->set_x264_tune($x264_tune);
@@ -204,15 +205,12 @@ if($opt_encode_info && $episode_id) {
 
 	$scan_subp_tracks = false;
 
-	$has_closed_captioning = $tracks_model->has_closed_captioning();
-	$num_subp_tracks = $tracks_model->get_num_subp_tracks();
-	$num_active_subp_tracks = $tracks_model->get_num_active_subp_tracks();
-	$num_active_en_subp_tracks = $tracks_model->get_num_active_subp_tracks('en');
 
 	// Check for a subtitle track
 	if($subs_support) {
 
 		$subp_ix = $tracks_model->get_first_english_subp();
+		$has_closed_captioning = $tracks_model->has_closed_captioning();
 
 		// If we have a VobSub one, add it
 		// Otherwise, check for a CC stream, and add that
@@ -220,6 +218,7 @@ if($opt_encode_info && $episode_id) {
 			$handbrake->add_subtitle_track($subp_ix);
 			$d_subtitles = "VOBSUB";
 		} elseif($has_closed_captioning) {
+			$num_subp_tracks = $tracks_model->get_num_subp_tracks();
 			$closed_captioning_ix = $num_subp_tracks + 1;
 			$handbrake->add_subtitle_track($closed_captioning_ix);
 			$d_subtitles = "Closed Captioning";
