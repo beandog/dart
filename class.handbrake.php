@@ -41,7 +41,7 @@
 		public $x264_preset;
 		public $x264_tune;
 		public $x264 = array();
-		public $color_matrix = 'ntsc';
+		public $color_matrix;
 
 		// Audio
 		public $audio = true;
