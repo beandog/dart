@@ -27,7 +27,7 @@ if($opt_encode_info && $episode_id) {
 	$deinterlace = false;
 	$decomb = false;
 	$detelecine = false;
-	$h264_profile = 'high';
+	$h264_profile = '';
 	$h264_level = '';
 	$subs_support = true;
 	$chapters_support = true;
@@ -110,10 +110,10 @@ if($opt_encode_info && $episode_id) {
 
 	/** H.264 **/
 
-	if($video_encoder == 'x264') {
+	if($h264_profile)
 		$handbrake->set_h264_profile($h264_profile);
+	if($h264_level)
 		$handbrake->set_h264_level($h264_level);
-	}
 
 	/** x264 **/
 
