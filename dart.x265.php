@@ -35,21 +35,6 @@ if(($opt_encode_info || $opt_rip_info) && $episode_id && $video_encoder == 'x265
 		$x265_opts = 'colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m';
 	elseif($tracks_model->format == 'PAL')
 		$x265_opts = 'colorprim=bt470bg:transfer=gamma28:colormatrix=bt470bg';
-	if($video_quality <= 14)
-		$preset_opts = 'level-idc=52';
-	elseif($video_quality <= 16)
-		$preset_opts = 'level-idc=51';
-	elseif($video_quality <= 18)
-		$preset_opts = 'level-idc=50';
-	elseif($video_quality <= 24)
-		$preset_opts = 'level-idc=41';
-	elseif($video_quality <= 26)
-		$preset_opts = 'level-idc=40';
-	else
-		$preset_opts = '';
-
-	if($preset_opts)
-		$x265_opts = "$preset_opts:$x265_opts";
 
 	$fps = $series_model->get_preset_fps();
 
