@@ -174,15 +174,24 @@
 
 		/**
 		 * Get the disc title
+		 *
+		 * Blu-ray discs title is optional, but will have a UDF volume name. The
+		 * volume name will only be accessible if the disc is imported directly, though.
 		 */
 		private function title() {
 
 			if(!$this->opened)
 				return null;
 
-			$title = $this->dvd_info['bluray']['disc name'];
+			$disc_name = trim($this->dvd_info['bluray']['disc name']);
+			$udf_title = trim($this->dvd_info['bluray']['udf title']);
 
-			$title = trim($title);
+			$title = '';
+
+			if(strlen($disc_name))
+				$title = $disc_name;
+			elseif(strlen($udf_title))
+				$title = $udf_title;
 
 			return $title;
 		}
