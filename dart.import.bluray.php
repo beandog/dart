@@ -49,6 +49,15 @@
 			$dvds_model->bluray = 1;
 		}
 
+		if($dvds_model->decss == null) {
+			$keydb = getenv('HOME').'/.config/aacs/KEYDB.cfg';
+			$decss = $dvd->test_keydb($keydb);
+			if($decss)
+				$dvds_model->decss = md5_file($keydb);
+			$d_keydb = basename(realpath($keydb));
+			echo "* $d_keydb: ".($decss ? 'pass' : 'fail')."\n";
+		}
+
 	}
 
 	// Flag it as indexed

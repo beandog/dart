@@ -491,4 +491,27 @@
 
 		}
 
+		/** KEYDB.cfg testing **/
+		public function test_keydb($filename) {
+
+			if(!file_exists($filename))
+				return false;
+
+			$filename = realpath($filename);
+
+			$arg_device = escapeshellarg($this->device);
+			$arg_keydb = escapeshellarg($filename);
+
+			$cmd = $this->binary." -m -k $arg_keydb $arg_device 2>&1 | grep -q 'aacs_open() failed'";
+
+			exec($cmd, $output, $retval);
+
+
+			if($retval == 0)
+				return false;
+			else
+				return true;
+
+		}
+
 	}

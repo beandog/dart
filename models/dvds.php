@@ -97,6 +97,13 @@
 				if($count)
 					return true;
 
+				// Check for untested KEYDB.cfg
+				$sql = "SELECT COUNT(1) FROM dvds WHERE id = $dvd_id AND decss IS NULL;";
+				$count = abs(intval($this->db->getOne($sql)));
+				if($count)
+					return true;
+
+
 			}
 
 			return false;
