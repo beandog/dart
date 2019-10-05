@@ -43,6 +43,12 @@
 			$dvds_model->title = $dvd_title;
 		}
 
+		// Old title could be either disc title or volume name
+		if($device_is_hardware && $dvds_model->title != $dvd_title) {
+			echo "* Volume: $dvd_title\n";
+			$dvds_model->title = $dvd_title;
+		}
+
 		$dvd_filesize = $dvd->size;
 		if($dvds_model->filesize != $dvd_filesize) {
 			echo "* Filesize: $dvd_filesize\n";

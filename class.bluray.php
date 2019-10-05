@@ -183,17 +183,10 @@
 			if(!$this->opened)
 				return null;
 
-			$disc_name = trim($this->dvd_info['bluray']['disc name']);
 			$udf_title = trim($this->dvd_info['bluray']['udf title']);
 
-			$title = '';
+			return $udf_title;
 
-			if(strlen($disc_name))
-				$title = $disc_name;
-			elseif(strlen($udf_title))
-				$title = $udf_title;
-
-			return $title;
 		}
 
 		/** Tracks **/

@@ -308,7 +308,10 @@
 
 			$title = $this->dvd_info['dvd']['title'];
 
+			// Standardize UDF volume names for Blu-rays to match DVDs
 			$title = trim($title);
+			$title = strtoupper($title);
+			$title = str_replace(' ', '_', $title);
 
 			return $title;
 		}
