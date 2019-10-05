@@ -103,6 +103,10 @@
 				if($count)
 					return true;
 
+				$sql = "SELECT COUNT(1) FROM dvds d JOIN specs s ON s.metadata = 'keydb' AND s.name != d.decss WHERE d.id = $dvd_id;";
+				$count = abs(intval($this->db->getOne($sql)));
+				if($count)
+					return true;
 
 			}
 

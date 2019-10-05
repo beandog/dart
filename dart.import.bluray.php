@@ -17,6 +17,15 @@
 			echo "* Created new BD id: $dvds_model_id\n";
 	}
 
+	if($disc_type == 'bluray') {
+
+		$keydb = getenv('HOME').'/.config/aacs/KEYDB.cfg';
+		$keydb_md5 = md5_file($keydb);
+		if($dvds_model->decss != $keydb_md5)
+			$missing_dvd_metadata = true;
+
+	}
+
 	// Hand off control of whether a DVD is missing metadata to the dvds model,
 	// but if it is flagged as missing metadata, run *all* the checks in the
 	// import process, regardless of what the model says.
@@ -49,13 +58,16 @@
 			$dvds_model->bluray = 1;
 		}
 
-		if($dvds_model->decss == null) {
-			$keydb = getenv('HOME').'/.config/aacs/KEYDB.cfg';
+		if($disc_type == 'bluray') {
+
 			$decss = $dvd->test_keydb($keydb);
 			if($decss)
 				$dvds_model->decss = md5_file($keydb);
+			else
+				$dvds_model->decss = '';
 			$d_keydb = basename(realpath($keydb));
 			echo "* $d_keydb: ".($decss ? 'pass' : 'fail')."\n";
+
 		}
 
 	}
