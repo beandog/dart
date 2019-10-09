@@ -3,7 +3,7 @@
 	// BD
 
 	$dvdread_id = $dvd->dvdread_id;
-	$dvd_title = $dvd->title;
+	$dvd_title = strtoupper($dvd->title);
 
 	// Create a new database record for the BD
 	if($new_dvd) {
