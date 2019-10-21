@@ -132,12 +132,6 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('arg_stage', array(
-		'long_name' => '--stage',
-		'description' => 'Specific stage to execute',
-		'action' => 'StoreString',
-		'default' => 'all',
-	));
 	$parser->addOption('opt_iso_filename', array(
 		'long_name' => '--iso-filename',
 		'description' => 'Display ISO filename',
