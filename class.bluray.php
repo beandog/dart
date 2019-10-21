@@ -12,6 +12,7 @@
 
 		// Bluray
 		public $dvdread_id;
+		public $disc_id;
 		public $title;
 		public $title_tracks;
 		public $bd_playlists;
@@ -141,6 +142,7 @@
 			$dvdread_id = sha1("$main_playlist.$main_filesize");
 
 			$this->dvdread_id = $dvdread_id;
+			$this->disc_id = strtolower($this->dvd_info['bluray']['disc id']);
 
 			return true;
 

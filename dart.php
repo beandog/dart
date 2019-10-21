@@ -28,6 +28,7 @@
 
 	require_once 'models/dbtable.php';
 	require_once 'models/dvds.php';
+	require_once 'models/blurays.php';
 	require_once 'models/episodes.php';
 	require_once 'models/series_dvds.php';
 	require_once 'models/series.php';

@@ -20,7 +20,12 @@
 				return false;
 
 			$sql = "SELECT id FROM blurays WHERE dvd_id = $int;";
-			$this->id = intval($this->db->getOne($sql));
+			$var = $this->db->getOne($sql);
+
+			if(!$var)
+				return false;
+
+			$this->id = intval($var);
 
 			return $this->id;
 

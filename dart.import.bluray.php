@@ -22,6 +22,14 @@
 	if($dvds_model->decss != $keydb_md5)
 		$missing_dvd_metadata = true;
 
+	// Load or create the Blurays model
+	$blurays_model = new Blurays_Model;
+	$blurays_model_id = $blurays_model->load_dvd_id($dvds_model_id);
+	if(!$blurays_model_id) {
+		$blurays_model_id = $blurays_model->create_new();
+		$blurays_model->dvd_id = $dvds_model_id;
+	}
+
 	// Hand off control of whether a DVD is missing metadata to the dvds model,
 	// but if it is flagged as missing metadata, run *all* the checks in the
 	// import process, regardless of what the model says.
@@ -68,6 +76,8 @@
 		$d_keydb = basename(realpath($keydb));
 		echo "* $d_keydb: ".($decss ? 'pass' : 'fail')."\n";
 
+		if($blurays_model->disc_id != $dvd->disc_id)
+			$blurays_model->disc_id = $dvd->disc_id;
 
 	}
 

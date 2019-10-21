@@ -108,6 +108,11 @@
 				if($count)
 					return true;
 
+				$sql = "SELECT disc_id FROM blurays WHERE dvd_id = $dvd_id;";
+				$var = $this->db->getOne($sql);
+				if(!$var)
+					return true;
+
 			}
 
 			return false;
