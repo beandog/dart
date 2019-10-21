@@ -17,11 +17,6 @@
 			echo "* Created new BD id: $dvds_model_id\n";
 	}
 
-	$keydb = getenv('HOME').'/.config/aacs/KEYDB.cfg';
-	$keydb_md5 = md5_file($keydb);
-	if($dvds_model->decss != $keydb_md5)
-		$missing_dvd_metadata = true;
-
 	// Load or create the Blurays model
 	$blurays_model = new Blurays_Model;
 	$blurays_model_id = $blurays_model->load_dvd_id($dvds_model_id);
@@ -67,16 +62,6 @@
 			echo "* Flagging as Blu-ray\n";
 			$dvds_model->bluray = 1;
 		}
-
-		/*
-		$decss = $dvd->test_keydb($keydb);
-		if($decss)
-			$dvds_model->decss = md5_file($keydb);
-		else
-			$dvds_model->decss = '';
-		$d_keydb = basename(realpath($keydb));
-		echo "* $d_keydb: ".($decss ? 'pass' : 'fail')."\n";
-		*/
 
 		if($blurays_model->disc_id != $dvd->disc_id)
 			$blurays_model->disc_id = $dvd->disc_id;
