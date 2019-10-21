@@ -88,10 +88,6 @@ if($opt_encode_info && $episode_id) {
 	$handbrake->input_filename($device);
 	$handbrake->input_track($tracks_model->ix);
 
-	// If using MakeMKV, don't pass a track number
-	if($opt_makemkv)
-		$handbrake->input_track(0);
-
 	/** Encoding **/
 
 	if($opt_no_dvdnav || $series_model->dvdnav == 0)

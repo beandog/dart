@@ -53,11 +53,6 @@
 
 			$input_filename = realpath($device);
 
-			// If using MakeMKV to manually extract the tracks, change the source to match its naming scheme
-			if($opt_makemkv) {
-				$input_filename = dirname(realpath($device))."/title".str_pad($tracks_model->ix - 1, 2, 0, STR_PAD_LEFT).".mkv";
-			}
-
 			/** DVDs **/
 			if(!($opt_skip_existing && file_exists($filename)) && $disc_type == "dvd") {
 

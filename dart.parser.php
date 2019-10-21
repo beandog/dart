@@ -144,12 +144,6 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_makemkv', array(
-		'long_name' => '--makemkv',
-		'description' => 'Use MakeMKV where possible',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
 	$parser->addOption('opt_qa', array(
 		'long_name' => '--qa',
 		'description' => 'Make changes when doing a QA run',
