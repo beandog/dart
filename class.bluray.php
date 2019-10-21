@@ -486,6 +486,69 @@
 
 		}
 
+		/** Backup using MakeMKV **/
+		public function dvdbackup($filename, $logfile = '/dev/null') {
+
+			$bool = false;
+
+			if(!$this->opened)
+				return null;
+
+			$logfile = realpath($logfile);
+
+			if($this->debug) {
+				echo "* dvd->dvdbackup($filename)\n";
+				echo "* Logging to $logfile\n";
+			}
+
+			// tobe
+			if(realpath($this->device) == '/dev/sr0')
+				$arg_input = 1;
+			else
+				$arg_input = 0;
+
+			$arg_logfile = escapeshellarg($logfile);
+
+			$target_dir = dirname($filename);
+			$target_rip = $target_dir."/".basename($filename, '.iso').".R1p";
+			$arg_name = basename($target_rip);
+			$arg_output = escapeshellarg($arg_name);
+
+			if($this->debug) {
+				echo "* input: $arg_input\n";
+				echo "* output: $arg_output\n";
+				echo "* name: $arg_name\n";
+			}
+
+			$cmd = "firejail --net=none makemkvcon --noscan --minlength=0 -r backup --decrypt disc:$arg_input $arg_output 2>&1 | tee $logfile";
+			if($this->debug)
+				echo "* Executing: $cmd\n";
+
+			$success = true;
+			$retval = 0;
+
+			if(!$this->dry_run)
+				passthru($cmd, $retval);
+
+			if($this->debug)
+				echo "* makemkvcon return value: $retval\n";
+
+			if($retval !== 0)
+				$success = false;
+
+			if(!$this->dry_run)
+				$bool = rename($target_dir.'/'.$arg_name, $filename);
+
+			if($bool === false)
+				$success = false;
+
+			if($this->dry_run)
+				return false;
+
+			return $success;
+
+		}
+
 		/** KEYDB.cfg testing **/
 		public function test_keydb($filename) {
 
