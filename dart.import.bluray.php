@@ -68,6 +68,7 @@
 			$dvds_model->bluray = 1;
 		}
 
+		/*
 		$decss = $dvd->test_keydb($keydb);
 		if($decss)
 			$dvds_model->decss = md5_file($keydb);
@@ -75,6 +76,7 @@
 			$dvds_model->decss = '';
 		$d_keydb = basename(realpath($keydb));
 		echo "* $d_keydb: ".($decss ? 'pass' : 'fail')."\n";
+		*/
 
 		if($blurays_model->disc_id != $dvd->disc_id)
 			$blurays_model->disc_id = $dvd->disc_id;

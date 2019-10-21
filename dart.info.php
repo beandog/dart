@@ -29,11 +29,6 @@
 				echo "* $display_name\n";
 		}
 
-		$keydb = getenv('HOME').'/.config/aacs/KEYDB.cfg';
-		$decss = $dvd->test_keydb($keydb);
-		$d_keydb = basename(realpath($keydb));
-		echo "* $d_keydb: ".($decss ? "pass" : "fail")."\n";
-
 		if(count($skip_episodes)) {
 			echo "[Skips]\n";
 			foreach($skip_episodes as $episode_id => $display_name) {
