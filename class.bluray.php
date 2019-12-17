@@ -13,6 +13,7 @@
 		// Bluray
 		public $dvdread_id;
 		public $disc_id;
+		public $disc_title;
 		public $title;
 		public $title_tracks;
 		public $bd_playlists;
@@ -143,6 +144,7 @@
 
 			$this->dvdread_id = $dvdread_id;
 			$this->disc_id = strtolower($this->dvd_info['bluray']['disc id']);
+			$this->disc_name = trim($this->dvd_info['bluray']['disc name']);
 
 			return true;
 

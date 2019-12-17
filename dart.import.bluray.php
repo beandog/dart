@@ -29,7 +29,7 @@
 	// but if it is flagged as missing metadata, run *all* the checks in the
 	// import process, regardless of what the model says.
 
-	if($new_dvd || ($disc_indexed && $missing_dvd_metadata)) {
+	if($new_dvd || ($disc_indexed && ($missing_dvd_metadata || $missing_bluray_metadata))) {
 
 		if(!$new_dvd) {
 			echo "[Metadata]\n";
@@ -41,19 +41,23 @@
 			$dvds_model->dvdread_id = $dvdread_id;
 		}
 
-		if(!$dvds_model->title) {
+		if($access_device && $dvds_model->title != $dvd_title) {
 			echo "* title: $dvd_title\n";
 			$dvds_model->title = $dvd_title;
 		}
 
-		// Old title could be either disc title or volume name
-		if($device_is_hardware && $dvds_model->title != $dvd_title) {
-			echo "* Volume: $dvd_title\n";
-			$dvds_model->title = $dvd_title;
+		if($access_device && $blurays_model->disc_title != $dvd->disc_name) {
+			echo "* Disc title:\t".$dvd->disc_name."\n";
+			$blurays_model->disc_title = $dvd->disc_name;
+		}
+
+		if($access_device && $blurays_model->disc_id != $dvd->disc_id) {
+			echo "* AACs ID: ".$dvd->disc_id."\n";
+			$blurays_model->disc_id = $dvd->disc_id;
 		}
 
 		$dvd_filesize = $dvd->size;
-		if($dvds_model->filesize != $dvd_filesize) {
+		if($access_device && $dvds_model->filesize != $dvd_filesize) {
 			echo "* Filesize: $dvd_filesize\n";
 			$dvds_model->filesize = $dvd_filesize;
 		}
@@ -62,9 +66,6 @@
 			echo "* Flagging as Blu-ray\n";
 			$dvds_model->bluray = 1;
 		}
-
-		if($blurays_model->disc_id != $dvd->disc_id)
-			$blurays_model->disc_id = $dvd->disc_id;
 
 	}
 
