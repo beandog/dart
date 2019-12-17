@@ -155,11 +155,9 @@ if($opt_encode_info && $episode_id) {
 		$detelecine = false;
 
 	// If preset is set to decomb, override detelecine and do strict deinterlace checks
-	// and set fps to 60 for send_field
 	if($decomb) {
 		$deinterlace = false;
 		$detelecine = false;
-		$fps = 60;
 	}
 
 	// If all progressive, disable filters
@@ -169,9 +167,9 @@ if($opt_encode_info && $episode_id) {
 		$deinterlace = false;
 	}
 
-	// If fps is not set by this point, use 60
+	// If fps is not set by this point, use 24
 	if(!$fps)
-		$fps = 60;
+		$fps = 24;
 
 	// Set framerate
 	$handbrake->set_video_framerate($fps);
