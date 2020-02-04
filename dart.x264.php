@@ -134,32 +134,50 @@ if($opt_encode_info && $episode_id) {
 
 	/** Frame and fields **/
 
+	$detelecine = true;
 	$deinterlace = $series_model->get_preset_deinterlace();
-	$decomb = $series_model->get_preset_decomb();
-	$detelecine = $series_model->get_preset_detelecine();
+	$decomb = false;
+	$comb_detect = false;
+	if($deinterlace == 1) {
+		$decomb = true;
+		$comb_detect = false;
+	} elseif($deinterlace == 2) {
+		$decomb = true;
+		$comb_detect = true;
+	}
 
 	$progressive = $episodes_model->progressive;
 	$top_field = $episodes_model->top_field;
 	$bottom_field = $episodes_model->bottom_field;
 
 	// Detelecine and decomb by default if PTS hasn't been scanned
-	if($progressive == null && $top_field == null && $bottom_field == null) {
+	if($deinterlace == 0 && $progressive == null && $top_field == null && $bottom_field == null) {
 		$decomb = true;
-		$detelecine = true;
+		$comb_detect = true;
 	}
 
 	// If there are any top or bottom fields, detelecine video to remove partial interlacing
-	if($top_field > 0 || $bottom_field > 0)
+	if($deinterlace == 0 && ($top_field > 0 || $bottom_field > 0)) {
 		$decomb = true;
+		$comb_detect = true;
+	}
 
 	// If PAL format, detelecining is not needed
 	if($tracks_model->format == 'PAL')
 		$detelecine = false;
 
 	// If all progressive, disable filters
-	if($progressive > 0 && $top_field == 0 && $bottom_field == 0) {
+	if($deinterlace == 0 && $progressive > 0 && $top_field == 0 && $bottom_field == 0) {
 		$decomb = false;
-		$deinterlace = false;
+		$comb_detect = false;
+	}
+
+	if($deinterlace == 1) {
+		$decomb = true;
+		$comb_detect = false;
+	} elseif ($deinterlace == 2) {
+		$decomb = true;
+		$comb_detect = true;
 	}
 
 	// If fps is not set by this point, use 24
@@ -169,9 +187,9 @@ if($opt_encode_info && $episode_id) {
 	// Set framerate
 	$handbrake->set_video_framerate($fps);
 
-	$handbrake->decomb($decomb);
 	$handbrake->detelecine($detelecine);
-	$handbrake->deinterlace($deinterlace);
+	$handbrake->decomb($decomb);
+	$handbrake->comb_detect($comb_detect);
 
 	if($container == 'mp4' && $optimize_support)
 		$handbrake->set_http_optimize();
