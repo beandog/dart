@@ -72,6 +72,16 @@
 
 		}
 
+		public function get_first_english_ix() {
+
+			$sql = "SELECT ix FROM audio WHERE track_id = ".$this->db->quote($this->id)." AND (langcode = 'en' OR langcode = 'eng') AND active = 1 ORDER BY ix LIMIT 1;";
+
+			$var = $this->db->getOne($sql);
+
+			return $var;
+
+		}
+
 		public function get_num_active_audio_tracks($lang = '') {
 
 			$sql = "SELECT COUNT(1) FROM audio WHERE track_id = ".$this->db->quote($this->id)." AND active = 1";
