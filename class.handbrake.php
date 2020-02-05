@@ -27,9 +27,9 @@
 		public $video_encoder;
 		public $video_quality;
 		public $video_framerate;
-		public $detelecine;
+		public $deinterlace;
 		public $decomb;
-		public $comb_detect;
+		public $detelecine;
 		public $grayscale;
 		public $max_height;
 		public $max_width;
@@ -177,15 +177,16 @@
 			$this->audio = (boolean)$bool;
 		}
 
-		public function detelecine($bool = true) {
-			$this->detelecine = (boolean)$bool;
+		public function deinterlace($bool = true) {
+			$this->deinterlace = (boolean)$bool;
 		}
+
 		public function decomb($bool = true) {
 			$this->decomb = (boolean)$bool;
 		}
 
-		public function comb_detect($bool = true) {
-			$this->comb_detect = (boolean)$bool;
+		public function detelecine($bool = true) {
+			$this->detelecine = (boolean)$bool;
 		}
 
 		public function dvdnav($bool = true) {
@@ -313,18 +314,18 @@
 			if($this->add_chapters)
 				$options[] = "--markers";
 
+			// Check for deinterlacing filter
+			if($this->deinterlace)
+				$options[] = "--deinterlace=bob";
+
 			// Check for detelecine filter
 			if($this->detelecine)
 				$options[] = "--detelecine";
 
 			// Check for decombing filter
 			if($this->decomb) {
-				if($this->comb_detect) {
-					$options[] = "--decomb=eedi2bob";
-					$options[] = "--comb-detect=permissive";
-				} else {
-					$options[] = "--decomb";
-				}
+				$options[] = "--decomb=eedi2bob";
+				$options[] = "--comb-detect=permissive";
 			}
 
 			// Check for grayscale
