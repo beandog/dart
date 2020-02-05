@@ -162,9 +162,9 @@ if($opt_encode_info && $episode_id) {
 		$deinterlace = false;
 	}
 
-	// If fps is not set by this point, use 24
+	// If fps is not set by this point, use 30
 	if(!$fps)
-		$fps = 24;
+		$fps = 30;
 
 	// Set framerate
 	$handbrake->set_video_framerate($fps);

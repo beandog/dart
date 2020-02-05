@@ -92,12 +92,12 @@ if(($opt_encode_info || $opt_rip_info) && $episode_id && $video_encoder == 'x265
 			$deinterlace = false;
 		}
 
-		// Default to 24 FPS
+		// Default to 30 FPS
 		$fps = $series_model->get_preset_fps();
-		if(!$fps || $fps == 24)
-			$handbrake->set_video_framerate("24000/1001");
-		else
-			$handbrake->set_video_framerate($fps);
+		if(!$fps)
+			$fps = 30;
+
+		$handbrake->set_video_framerate($fps);
 
 		/** Audio **/
 
