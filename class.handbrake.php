@@ -29,6 +29,7 @@
 		public $video_framerate;
 		public $deinterlace;
 		public $decomb;
+		public $comb_detect;
 		public $detelecine;
 		public $grayscale;
 		public $max_height;
@@ -185,6 +186,10 @@
 			$this->decomb = (boolean)$bool;
 		}
 
+		public function comb_detect($bool = true) {
+			$this->comb_detect = (boolean)$bool;
+		}
+
 		public function detelecine($bool = true) {
 			$this->detelecine = (boolean)$bool;
 		}
@@ -324,6 +329,10 @@
 
 			// Check for decombing filter
 			if($this->decomb) {
+				$options[] = "--decomb";
+			}
+
+			if($this->comb_detect) {
 				$options[] = "--decomb=eedi2bob";
 				$options[] = "--comb-detect=permissive";
 			}

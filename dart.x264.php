@@ -169,9 +169,14 @@ if($opt_encode_info && $episode_id) {
 	// Set framerate
 	$handbrake->set_video_framerate($fps);
 
-	$handbrake->decomb($decomb);
+	$handbrake->comb_detect($decomb);
 	$handbrake->detelecine($detelecine);
 	$handbrake->deinterlace($deinterlace);
+
+	if($series_model->get_preset_decomb() == 2) {
+		$handbrake->comb_detect(false);
+		$handbrake->decomb(true);
+	}
 
 	if($container == 'mp4' && $optimize_support)
 		$handbrake->set_http_optimize();
