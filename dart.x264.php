@@ -97,6 +97,8 @@ if($opt_encode_info && $episode_id) {
 
 	$handbrake->set_video_encoder($video_encoder);
 	$video_quality = $series_model->get_crf();
+	$video_quality -= $series_model->quality * 2;
+	$video_quality -= $series_model->get_quality_bonus() * 2;
 	$handbrake->grayscale($series_model->grayscale);
 
 	if($arg_crf)

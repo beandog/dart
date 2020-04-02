@@ -164,5 +164,16 @@
 
 		}
 
+		function get_quality_bonus() {
+
+			$sql = "SELECT l.q_bonus FROM libraries l JOIN series s ON s.library_id = l.id AND s.id = ".$this->db->quote($this->id).";";
+
+			$var = $this->db->getOne($sql);
+			$var = intval($var);
+
+			return $var;
+
+		}
+
 	}
 ?>
