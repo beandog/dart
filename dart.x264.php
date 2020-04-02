@@ -142,13 +142,12 @@ if($opt_encode_info && $episode_id) {
 	$top_field = $episodes_model->top_field;
 	$bottom_field = $episodes_model->bottom_field;
 
-	// Detelecine and decomb by default if PTS hasn't been scanned
+	// Decomb by default if PTS hasn't been scanned
 	if($progressive == null && $top_field == null && $bottom_field == null) {
 		$decomb = true;
-		$detelecine = true;
 	}
 
-	// If there are any top or bottom fields, detelecine video to remove partial interlacing
+	// If there are any top or bottom fields, decomb video to remove partial interlacing
 	if($top_field > 0 || $bottom_field > 0)
 		$decomb = true;
 
@@ -161,10 +160,6 @@ if($opt_encode_info && $episode_id) {
 		$decomb = false;
 		$deinterlace = false;
 	}
-
-	// If fps is not set by this point, use 30
-	if(!$fps)
-		$fps = 30;
 
 	// Set framerate
 	$handbrake->set_video_framerate($fps);
