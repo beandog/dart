@@ -146,12 +146,12 @@ if($opt_encode_info && $episode_id) {
 
 	// Decomb by default if PTS hasn't been scanned
 	if($progressive == null && $top_field == null && $bottom_field == null) {
-		$decomb = true;
+		$detelecine = true;
 	}
 
-	// If there are any top or bottom fields, decomb video to remove partial interlacing
+	// If there are any top or bottom fields, detelecine video to remove partial interlacing
 	if($top_field > 0 || $bottom_field > 0)
-		$decomb = true;
+		$detelecine = true;
 
 	// If PAL format, detelecining is not needed
 	if($tracks_model->format == 'PAL')
@@ -159,8 +159,9 @@ if($opt_encode_info && $episode_id) {
 
 	// If all progressive, disable filters
 	if($progressive > 0 && $top_field == 0 && $bottom_field == 0) {
-		$decomb = false;
+		$detelecine = false;
 		$deinterlace = false;
+		$decomb = false;
 	}
 
 	// Set framerate
