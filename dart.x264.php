@@ -97,7 +97,6 @@ if($opt_encode_info && $episode_id) {
 
 	$handbrake->set_video_encoder($video_encoder);
 	$video_quality = $series_model->get_crf();
-	$video_quality -= $series_model->quality * 4;
 	$handbrake->grayscale($series_model->grayscale);
 
 	if($arg_crf)
@@ -136,7 +135,8 @@ if($opt_encode_info && $episode_id) {
 	/** Frame and fields **/
 
 	$deinterlace = $series_model->get_preset_deinterlace();
-	$decomb = $series_model->get_preset_decomb();
+	if($series_model->get_preset_decomb() || $series_model->decomb)
+		$decomb = true;
 	$detelecine = $series_model->get_preset_detelecine();
 
 	$progressive = $episodes_model->progressive;
