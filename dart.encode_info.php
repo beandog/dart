@@ -63,6 +63,13 @@
 
 					if($opt_encode_info) {
 
+						if($opt_qa) {
+
+							$handbrake->set_duration(30);
+							$handbrake->set_video_framerate(30);
+
+						}
+
 						$handbrake->input_filename($input_filename);
 						if($opt_vob)
 							$handbrake->input_filename(get_episode_filename($episode_id, 'vob', $arg_hardware));
@@ -76,8 +83,7 @@
 
 						if($opt_qa) {
 
-							$handbrake->set_duration(15);
-
+							/*
 							foreach(array('02', '08', '10', '12', '14', '16', '18', '20', '22', '24', '26', '28') as $qa_crf) {
 								$handbrake->set_video_quality($qa_crf);
 								$qa_filename = str_replace(".mkv", ".480p$fps.$video_encoder.q${qa_crf}.mkv", $filename);
@@ -85,6 +91,31 @@
 								$handbrake_command = $handbrake->get_executable_string();
 								echo "$handbrake_command\n";
 							}
+							*/
+
+							$qa_filename = str_replace(".mkv", ".DETEL.mkv", $filename);
+							$handbrake->detelecine(true);
+							$handbrake->decomb(false);
+							$handbrake->comb_detect(false);
+							$handbrake->output_filename($qa_filename);
+							$handbrake_command = $handbrake->get_executable_string();
+							echo "$handbrake_command\n";
+
+							$qa_filename = str_replace(".mkv", ".DECOMB.mkv", $filename);
+							$handbrake->detelecine(false);
+							$handbrake->decomb(true);
+							$handbrake->comb_detect(false);
+							$handbrake->output_filename($qa_filename);
+							$handbrake_command = $handbrake->get_executable_string();
+							echo "$handbrake_command\n";
+
+							$qa_filename = str_replace(".mkv", ".PERMISSIVE.mkv", $filename);
+							$handbrake->detelecine(false);
+							$handbrake->decomb(true);
+							$handbrake->comb_detect(true);
+							$handbrake->output_filename($qa_filename);
+							$handbrake_command = $handbrake->get_executable_string();
+							echo "$handbrake_command\n";
 
 						}
 
