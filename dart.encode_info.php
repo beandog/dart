@@ -70,12 +70,6 @@
 
 					if($opt_encode_info) {
 
-						if($opt_qa) {
-
-							$handbrake->set_duration(30);
-
-						}
-
 						$handbrake->input_filename($input_filename);
 						if($opt_vob)
 							$handbrake->input_filename(get_episode_filename($episode_id, 'vob', $arg_hardware));
@@ -89,7 +83,7 @@
 
 						if($opt_qa) {
 
-							$handbrake->set_duration(300);
+							$handbrake->set_duration(90);
 
 							foreach(array('18', '20', '22', '24') as $qa_crf) {
 								$handbrake->set_video_quality($qa_crf);
