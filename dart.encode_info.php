@@ -73,7 +73,6 @@
 						if($opt_qa) {
 
 							$handbrake->set_duration(30);
-							$handbrake->set_video_framerate(30);
 
 						}
 
