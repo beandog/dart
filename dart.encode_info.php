@@ -6,8 +6,15 @@
 		$dvd_episodes = $dvds_model->get_episodes();
 
 		// On QA run, only encode the first one
-		if($opt_qa)
-			$dvd_episodes = array(current($dvd_episodes));
+		if($opt_qa) {
+			foreach($dvd_episodes as $episode_id) {
+				$episodes_model = new Episodes_Model($episode_id);
+				if($episodes_model->skip)
+					continue;
+				$dvd_episodes = array($episode_id);
+				break;
+			}
+		}
 
 		if($disc_type == 'bluray') {
 
