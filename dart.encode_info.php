@@ -140,6 +140,8 @@
 					require 'dart.dvd_copy.php';
 					$dvd_copy->input_filename($input_filename);
 					$dvd_copy->output_filename($filename);
+					if($opt_copy_stdout)
+						$dvd_copy->output_filename("-");
 					$dvd_copy_command = $dvd_copy->get_executable_string();
 					echo "$dvd_copy_command\n";
 
