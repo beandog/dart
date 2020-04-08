@@ -90,15 +90,15 @@
 
 						if($opt_qa) {
 
-							/*
-							foreach(array('02', '08', '10', '12', '14', '16', '18', '20', '22', '24', '26', '28') as $qa_crf) {
+							$handbrake->set_duration(300);
+
+							foreach(array('18', '20', '22', '24') as $qa_crf) {
 								$handbrake->set_video_quality($qa_crf);
 								$qa_filename = str_replace(".mkv", ".480p$fps.$video_encoder.q${qa_crf}.mkv", $filename);
 								$handbrake->output_filename($qa_filename);
 								$handbrake_command = $handbrake->get_executable_string();
 								echo "$handbrake_command\n";
 							}
-							*/
 
 							$qa_filename = str_replace(".mkv", ".DETEL.mkv", $filename);
 							$handbrake->detelecine(true);
