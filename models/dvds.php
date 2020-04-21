@@ -170,6 +170,13 @@
 				if($this->dvd_tracks_missing_cells())
 					return true;
 
+				// Check if filesize is not set for tracks
+				$sql = "SELECT COUNT(1) FROM tracks WHERE dvd_id = $dvd_id AND filesize IS NULL OR filesize = 0;";
+
+				$count = intval($this->db->getOne($sql));
+				if($count)
+					return true;
+
 			}
 
 			if($disc_type == 'bluray') {

@@ -85,6 +85,12 @@
 				echo "* Updating track length (msecs): $tracks_model_length -> ".$dvd->title_track_seconds."\n";
 		}
 
+		if($tracks_model->filesize != $dvd->title_track_filesize) {
+			$tracks_model->filesize = $dvd->title_track_filesize;
+			if($debug)
+				echo "* Updating track filesize (MBs): ".ceil($dvd->title_track_filesize / 1048576)."\n";
+		}
+
 		if($tracks_model->format != $dvd->video_format) {
 			$tracks_model->format = $dvd->video_format;
 			if($debug)
