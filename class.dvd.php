@@ -60,6 +60,7 @@
 		public $chapter_length;
 		public $chapter_seconds;
 		public $chapter_msecs;
+		public $chapter_filesize;
 
 		// DVD Cell
 		public $cell;
@@ -721,6 +722,7 @@
 			$this->chapter_length = $this->chapter_length();
 			$this->chapter_msecs = $this->chapter_msecs();
 			$this->chapter_seconds = $this->chapter_seconds();
+			$this->chapter_filesize = $this->chapter_filesize();
 
 			return true;
 
@@ -743,6 +745,10 @@
 
 			return $seconds;
 
+		}
+
+		private function chapter_filesize() {
+			return $this->dvd_info_number($this->chapter_info, 'filesize');
 		}
 
 		/** DVD Cell **/

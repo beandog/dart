@@ -171,7 +171,7 @@
 					return true;
 
 				// Check if filesize is not set for tracks
-				$sql = "SELECT COUNT(1) FROM tracks WHERE dvd_id = $dvd_id AND filesize IS NULL OR filesize = 0;";
+				$sql = "SELECT COUNT(1) FROM tracks t JOIN chapters c ON c.track_id = t.id WHERE t.dvd_id = $dvd_id AND ((t.filesize IS NULL OR t.filesize = 0) OR (c.filesize IS NULL OR c.filesize = 0));";
 
 				$count = intval($this->db->getOne($sql));
 				if($count)
