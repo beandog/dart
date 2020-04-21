@@ -139,7 +139,7 @@ if($opt_encode_info && $episode_id) {
 		$decomb = true;
 	if($series_model->get_preset_detelecine() || $series_model->detelecine)
 		$detelecine = true;
-	if($series_model->get_preset_decomb() == 2)
+	if($series_model->get_preset_decomb() == 2 || $series_model->decomb == 2)
 		$comb_detect = true;
 	else
 		$comb_detect = false;

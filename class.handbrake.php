@@ -328,7 +328,7 @@
 				$options[] = "--detelecine";
 
 			// Check for decombing filter
-			if($this->decomb) {
+			if($this->decomb && !$this->comb_detect) {
 				$options[] = "--decomb";
 			}
 
