@@ -497,6 +497,7 @@
 			$this->title_track_audio_tracks = $this->title_track_audio_tracks();
 			$this->title_track_subtitle_tracks = $this->title_track_subtitle_tracks();
 			$this->title_track_cells = $this->title_track_cells();
+			$this->title_track_filesize = $this->title_track_filesize();
 
 			$this->video_codec = $this->video_codec();
 			$this->video_format = $this->video_format();
@@ -570,6 +571,15 @@
 				return 0;
 
 			return count($this->title_track_info['cells']);
+
+		}
+
+		private function title_track_filesize() {
+
+			if(!array_key_exists('filesize', $this->title_track_info))
+				return 0;
+
+			return $this->title_track_info['filesize'];
 
 		}
 
