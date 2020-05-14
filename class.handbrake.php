@@ -136,7 +136,6 @@
 			$int = abs(intval($int));
 			if($int)
 				$this->audio_tracks[] = $int;
-			nn
 		}
 
 		/**
