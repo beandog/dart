@@ -136,6 +136,7 @@
 			$int = abs(intval($int));
 			if($int)
 				$this->audio_tracks[] = $int;
+			nn
 		}
 
 		/**
@@ -465,8 +466,8 @@
 				if(count($this->audio_tracks)) {
 					$str = implode(",", $this->audio_tracks);
 					$args['--audio'] = $str;
-				} else {
-					$args['--audio-lang-list'] = 'eng';
+				// } else {
+				//	$args['--audio-lang-list'] = 'eng';
 				}
 
 				// Add audio encoders
