@@ -199,7 +199,7 @@
 
 					$handbrake->input_track($hb_track);
 					$handbrake->set_disc_type('bluray');
-					$handbrake->set_crop('0:0:0:0');
+					// $handbrake->set_crop('0:0:0:0');
 
 					if($debug)
 						$handbrake->set_duration(300);
