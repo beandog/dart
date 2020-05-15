@@ -82,6 +82,22 @@
 
 		}
 
+		public function get_bluray_hb_track() {
+
+			$sql = "SELECT dvd_id, ix FROM tracks WHERE id = ".$this->db->quote($this->id).";";
+			$row = $this->db->getRow($sql);
+			extract($row);
+
+			$sql = "SELECT ix FROM tracks WHERE dvd_id = $dvd_id ORDER BY ix;";
+			$arr = $this->get_col($sql);
+
+			$hb_track_number = array_search($ix, $arr);
+			$hb_track_number++;
+
+			return $hb_track_number;
+
+		}
+
 		public function get_num_active_audio_tracks($lang = '') {
 
 			$sql = "SELECT COUNT(1) FROM audio WHERE track_id = ".$this->db->quote($this->id)." AND active = 1";

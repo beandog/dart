@@ -40,6 +40,9 @@ if($opt_encode_info && $episode_id) {
 	elseif($format == 'PAL')
 		$x264opts = 'colorprim=bt470bg:transfer=gamma28:colormatrix=bt470bg';
 
+	if($disc_type == 'bluray')
+		$x264opts = '';
+
 	$handbrake = new Handbrake;
 	$handbrake->set_binary($handbrake_bin);
 	$handbrake->verbose($verbose);
@@ -86,7 +89,8 @@ if($opt_encode_info && $episode_id) {
 	/** Files **/
 
 	$handbrake->input_filename($device);
-	$handbrake->input_track($tracks_model->ix);
+	if($disc_type == 'dvd')
+		$handbrake->input_track($tracks_model->ix);
 
 	/** Encoding **/
 
@@ -157,6 +161,9 @@ if($opt_encode_info && $episode_id) {
 	if($tracks_model->format == 'PAL')
 		$detelecine = false;
 
+	if($disc_type == 'bluray')
+		$detelecine = false;
+
 	// Set framerate
 	$handbrake->set_video_framerate($fps);
 
@@ -169,7 +176,8 @@ if($opt_encode_info && $episode_id) {
 
 	/** Audio **/
 
-	$handbrake->add_audio_track($tracks_model->audio_ix);
+	if($disc_type == 'dvd')
+		$handbrake->add_audio_track($tracks_model->audio_ix);
 
 	$audio_encoder = $series_model->get_audio_encoder();
 	if($audio_encoder == 'fdk_aac' || $audio_encoder == 'mp3' || $audio_encoder == 'ac3' || $audio_encoder == 'eac3') {
@@ -184,7 +192,6 @@ if($opt_encode_info && $episode_id) {
 	/** Subtitles **/
 
 	$scan_subp_tracks = false;
-
 
 	// Check for a subtitle track
 	if($subs_support) {
@@ -205,6 +212,7 @@ if($opt_encode_info && $episode_id) {
 		} else {
 			$d_subtitles = "None :(";
 		}
+
 
 	}
 

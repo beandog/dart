@@ -56,6 +56,9 @@
 			if($opt_pts_info)
 				$container = 'pts';
 
+			if($disc_type == 'bluray')
+				$container = 'mkv';
+
 			$filename = get_episode_filename($episode_id, $container, $arg_hardware);
 
 			$input_filename = realpath($device);
@@ -181,6 +184,28 @@
 				if(file_exists($bluray_mkv) && $opt_skip_existing)
 					continue;
 
+				if($opt_bluray_encode) {
+
+					$hb_track = $tracks_model->get_bluray_hb_track();
+
+					require 'dart.x264.php';
+
+					$handbrake->input_track($hb_track);
+					$handbrake->set_disc_type('bluray');
+					$handbrake->set_crop('0:0:0:0');
+
+					if($debug)
+						$handbrake->set_duration(300);
+
+					$handbrake->output_filename($bluray_mkv);
+					$handbrake_command = $handbrake->get_executable_string();
+
+					echo "$handbrake_command\n";
+
+					continue;
+
+				}
+
 				if(file_exists($bluray_txt) && $opt_skip_existing)
 					$display_txt = false;
 
@@ -227,7 +252,8 @@
 				if($display_m2ts)
 					echo "$bluray_m2ts_command\n";
 
-				echo "$mkvmerge_command\n";
+				if($opt_skip_existing && !file_exists($bluray_mkv))
+					echo "$mkvmerge_command\n";
 
 			}
 

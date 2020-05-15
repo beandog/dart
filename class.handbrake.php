@@ -17,6 +17,7 @@
 		public $dry_run = false;
 		public $output;
 		public $duration = 0;
+		public $disc_type = 'dvd';
 
 		// DVD source
 		public $dvd;
@@ -43,6 +44,7 @@
 		public $x264_tune;
 		public $x264 = array();
 		public $color_matrix;
+		public $crop;
 
 		// Audio
 		public $audio = true;
@@ -75,6 +77,10 @@
 
 		public function set_binary($str) {
 			$this->binary = $str;
+		}
+
+		public function set_disc_type($str) {
+			$this->disc_type = $str;
 		}
 
 		public function set_duration($int) {
@@ -252,6 +258,10 @@
 			$this->color_matrix = strtolower($str);
 		}
 
+		public function set_crop($str) {
+			$this->crop = $str;
+		}
+
 		// FIXME do checks for audio types
 		public function set_audio_fallback($str) {
 			$this->audio_fallback = $str;
@@ -354,9 +364,12 @@
 				$options[] = "--optimize";
 
 			// If audio is enabled and no tracks have been specifically selected,
-			// then choose the first English one
-			if($this->audio && !count($this->audio_tracks))
+			// then choose the first English one for DVD. For Blu-ray, there can bee
+			// all kinds of channel numbers, just grab them all and select in player.
+			if($this->audio && !count($this->audio_tracks) && $this->disc_type == 'dvd')
 				$options[] = "--first-audio";
+			if($this->audio && !count($this->audio_tracks) && $this->disc_type == 'bluray')
+				$options[] = "--all-audio";
 
 			// Set constant framerate
 			if(!is_null($this->video_framerate)) {
@@ -441,6 +454,11 @@
 				$args['--color-matrix'] = $this->color_matrix;
 			}
 
+			// Set cropping
+			if($this->crop) {
+				$args['--crop'] = $this->crop;
+			}
+
 			// Set duration for QA
 			if($this->duration) {
 				$args['--stop-at'] = "duration:".$this->duration;
@@ -465,8 +483,8 @@
 				if(count($this->audio_tracks)) {
 					$str = implode(",", $this->audio_tracks);
 					$args['--audio'] = $str;
-				// } else {
-				//	$args['--audio-lang-list'] = 'eng';
+				} else {
+					$args['--audio-lang-list'] = 'eng';
 				}
 
 				// Add audio encoders
