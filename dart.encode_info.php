@@ -176,13 +176,14 @@
 
 				$display_txt = true;
 				$display_m2ts = true;
+				$display_mkv = true;
 
 				$bluray_m2ts = substr($filename, 0, strlen($filename) - 3)."m2ts";
 				$bluray_txt = substr($filename, 0, strlen($filename) - 3)."txt";
 				$bluray_mkv = substr($filename, 0, strlen($filename) - 3)."mkv";
 				$bluray_mp4 = substr($filename, 0, strlen($filename) - 3)."mp4";
 
-				if(file_exists($bluray_mkv) && $opt_skip_existing)
+				if(file_exists($bluray_mkv) && $opt_skip_existing && !$opt_bluray_encode)
 					continue;
 
 				if(file_exists($bluray_mp4) && $opt_skip_existing && $opt_bluray_encode)
@@ -217,6 +218,9 @@
 
 				if(file_exists($bluray_m2ts) && $opt_skip_existing)
 					$display_m2ts = false;
+
+				if(file_exists($bluray_mkv) && $opt_skip_existing)
+					$display_mkv = false;
 
 				$bluray_copy->input_track($tracks_model->ix);
 				$bluray_copy->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
@@ -258,7 +262,7 @@
 				if($display_m2ts)
 					echo "$bluray_m2ts_command\n";
 
-				if($opt_skip_existing && !file_exists($bluray_mkv))
+				if($display_mkv)
 					echo "$mkvmerge_command\n";
 
 			}
