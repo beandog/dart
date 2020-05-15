@@ -180,13 +180,19 @@
 				$bluray_m2ts = substr($filename, 0, strlen($filename) - 3)."m2ts";
 				$bluray_txt = substr($filename, 0, strlen($filename) - 3)."txt";
 				$bluray_mkv = substr($filename, 0, strlen($filename) - 3)."mkv";
+				$bluray_mp4 = substr($filename, 0, strlen($filename) - 3)."mp4";
 
 				if(file_exists($bluray_mkv) && $opt_skip_existing)
+					continue;
+
+				if(file_exists($bluray_mp4) && $opt_skip_existing && $opt_bluray_encode)
 					continue;
 
 				if($opt_bluray_encode) {
 
 					$hb_track = $tracks_model->get_bluray_hb_track();
+
+					$container = 'mp4';
 
 					require 'dart.x264.php';
 
@@ -197,7 +203,7 @@
 					if($debug)
 						$handbrake->set_duration(300);
 
-					$handbrake->output_filename($bluray_mkv);
+					$handbrake->output_filename($bluray_mp4);
 					$handbrake_command = $handbrake->get_executable_string();
 
 					echo "$handbrake_command\n";
