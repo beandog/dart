@@ -177,17 +177,18 @@
 				$display_txt = true;
 				$display_m2ts = true;
 				$display_mkv = true;
+				$bluray_encode = false;
 
 				$bluray_m2ts = substr($filename, 0, strlen($filename) - 3)."m2ts";
 				$bluray_txt = substr($filename, 0, strlen($filename) - 3)."txt";
 				$bluray_vc1 = substr($filename, 0, strlen($filename) - 3)."VC1.mkv";
 				$bluray_mkv = substr($filename, 0, strlen($filename) - 3)."mkv";
 
-				if(file_exists($bluray_mkv) && $opt_skip_existing && !$opt_bluray_encode)
+				if(file_exists($bluray_mkv) && $opt_skip_existing)
 					continue;
 
 				if($tracks_model->codec == "vc1")
-					$opt_bluray_encode = true;
+					$bluray_encode = true;
 
 				if(file_exists($bluray_txt) && $opt_skip_existing)
 					$display_txt = false;
@@ -234,11 +235,10 @@
 				$mkvmerge->output_filename($bluray_mkv);
 				$mkvmerge->add_chapters($bluray_txt);
 
-				if($opt_bluray_encode)
+				if($bluray_encode)
 					$mkvmerge->output_filename($bluray_vc1);
 
 				$mkvmerge_command = $mkvmerge->get_executable_string();
-
 
 				if($display_txt)
 					echo "$bluray_chapters_command\n";
@@ -249,7 +249,7 @@
 				if($display_mkv)
 					echo "$mkvmerge_command\n";
 
-				if($opt_bluray_encode) {
+				if($bluray_encode) {
 
 					require 'dart.x264.php';
 
@@ -267,7 +267,6 @@
 					echo "$handbrake_command\n";
 
 				}
-
 
 			}
 

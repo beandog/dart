@@ -52,12 +52,6 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_bluray_encode', array(
-		'long_name' => '--bluray-encode',
-		'description' => 'Treat a Blu-ray as a DVD for encoding',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
 	$parser->addOption('opt_copy_info', array(
 		'long_name' => '--copy-info',
 		'description' => 'Display dvd_copy instructions for a DVD',
