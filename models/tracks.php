@@ -62,6 +62,17 @@
 
 		}
 
+		// Get an audio track with a hardware supported codec (DTS, Dolby Digital)
+		public function get_fallback_codec_ix() {
+
+			$sql = "SELECT COALESCE(ix, 1) FROM audio WHERE track_id = ".$this->db->quote($this->id)." AND langcode = 'eng' AND active = 1 ORDER BY format = 'dts' DESC, format = 'ac3' DESC, ix;";
+
+			$var = $this->db->getOne($sql);
+
+			return $var;
+
+		}
+
 		public function get_first_english_streamid() {
 
 			$sql = "SELECT COALESCE(streamid, '0x80') FROM audio WHERE track_id = ".$this->db->quote($this->id)." AND langcode = 'en' AND active = 1 ORDER BY streamid LIMIT 1;";
