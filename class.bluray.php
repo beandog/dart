@@ -57,6 +57,7 @@
 		public $chapter_length;
 		public $chapter_seconds;
 		public $chapter_msecs;
+		public $chapter_filesize;
 
 		// All
 		public $playlist_info;
@@ -483,6 +484,7 @@
 			$this->chapter = $chapter;
 			$this->chapter_info = $this->playlist_info['chapters'][$this->chapter - 1];
 			$this->chapter_seconds = floatval(bcdiv($this->chapter_info['duration'], 100, 2));
+			$this->chapter_filesize = $this->chapter_info['filesize'];
 
 			return true;
 
