@@ -223,6 +223,14 @@
 				if(!$count)
 					return true;
 
+				// Check if chapters are missing filesize
+				$sql = "SELECT COUNT(1) FROM chapters c JOIN tracks t ON c.track_id = t.id WHERE t.dvd_id = $dvd_id AND c.filesize IS NULL;";
+				$count = intval($this->db->getOne($sql));
+				if($count)
+					return true;
+
+				return false;
+
 			}
 
 			return false;
