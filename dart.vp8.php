@@ -1,6 +1,6 @@
 <?php
 
-if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
+if($opt_encode_info && $episode_id && $video_encoder == 'vp8') {
 
 	/**
 	 * Handbrake
@@ -9,82 +9,22 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 	 * and builds a new HandBrake object.
 	 */
 
-	/**
-	 * Encoding specification up to 1080p60
-	 * use dvdnav over dvdread
-	 * chapters
-	 * no fixed video, audio codec bitrate
-	 * audio codec fdk_aac
-	 * fallback audio ac3,dts copy
-	 * x264 preset medium
-	 * x264 tune animation, film or grain
-	 * x264 optional grayscale
-	 * H.264 profile high
-	 * H.264 level 4.1 default (5.0 for 720p and higher)
-	 * NTSC color
-	 */
-
 	$deinterlace = false;
 	$decomb = false;
 	$detelecine = false;
-	$h264_profile = '';
-	$h264_level = '';
 	$subs_support = true;
 	$chapters_support = true;
 	$optimize_support = true;
 	$force_preset = false;
-
-	$format = $tracks_model->format;
-	if($format == 'NTSC')
-		$x264opts = 'colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m';
-	elseif($format == 'PAL')
-		$x264opts = 'colorprim=bt470bg:transfer=gamma28:colormatrix=bt470bg';
-
-	if($disc_type == 'bluray')
-		$x264opts = '';
 
 	$handbrake = new Handbrake;
 	$handbrake->set_binary($handbrake_bin);
 	$handbrake->verbose($verbose);
 	$handbrake->debug($debug);
 	$handbrake->set_dry_run($dry_run);
-	if(isset($x264opts))
-		$handbrake->set_x264opts($x264opts);
+	$handbrake->set_color_matrix(strtolower($tracks_model->format));
 
 	$fps = $series_model->get_preset_fps();
-
-	if($video_encoder == 'x264') {
-
-		switch($arg_hardware) {
-
-			case 'psp':
-				$h264_profile = 'main';
-				$h264_level = '2.1';
-				$subs_support = false;
-				$chapters_support = false;
-				$optimize_support = false;
-				$force_preset = 'medium';
-				$handbrake->set_x264opts('bframes=1');
-				$handbrake->set_max_width(480);
-				$handbrake->set_max_height(272);
-				$handbrake->set_audio_downmix('stereo');
-				break;
-
-			case 'gravity2':
-				$h264_profile = 'baseline';
-				$h264_level = '1b';
-				$subs_support = false;
-				$chapters_support = false;
-				$optimize_support = false;
-				$force_preset = 'medium';
-				$fps = 15;
-				$handbrake->set_max_width(176);
-				$handbrake->set_max_height(144);
-				break;
-
-		}
-
-	}
 
 	/** Files **/
 
@@ -99,7 +39,7 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 
 	/** Video **/
 
-	$handbrake->set_video_encoder($video_encoder);
+	$handbrake->set_video_encoder('vp8');
 	$video_quality = $series_model->get_crf();
 	$handbrake->grayscale($series_model->grayscale);
 
@@ -108,33 +48,6 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 
 	if($video_quality)
 		$handbrake->set_video_quality($video_quality);
-
-	/** H.264 **/
-
-	if($h264_profile)
-		$handbrake->set_h264_profile($h264_profile);
-	if($h264_level)
-		$handbrake->set_h264_level($h264_level);
-
-	/** x264 **/
-
-	$x264_preset = $series_model->get_x264_preset();
-	if(!$x264_preset)
-		$x264_preset = 'medium';
-	if($force_preset)
-		$x264_preset = $force_preset;
-	if($arg_preset)
-		$x264_preset = $arg_preset;
-	$handbrake->set_x264_preset($x264_preset);
-
-	// Set to animation tune if collection is Cartoons
-	if($series_model->collection_id == 1)
-		$x264_tune = 'animation';
-	else
-		$x264_tune = $series_model->get_x264_tune();
-
-	if($x264_tune)
-		$handbrake->set_x264_tune($x264_tune);
 
 	/** Frame and fields **/
 
