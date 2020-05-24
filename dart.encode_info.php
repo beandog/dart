@@ -69,6 +69,7 @@
 				if($container == 'mkv' || $container == 'mp4') {
 
 					require 'dart.vp8.php';
+					require 'dart.vp9.php';
 					require 'dart.x264.php';
 
 					if($opt_encode_info) {
