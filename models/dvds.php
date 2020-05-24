@@ -229,6 +229,12 @@
 				if($count)
 					return true;
 
+				// Check if the filesize for tracks is using old format
+				$sql = "SELECT MAX(filesize) FROM tracks WHERE dvd_id = $dvd_id;";
+				$filesize = $this->db->getOne($sql);
+				if(ceil($filesize / 1048576) == 1)
+					return true;
+
 				return false;
 
 			}

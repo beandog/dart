@@ -236,11 +236,7 @@
 				echo "* Updating video FPS: ".$dvd->video_fps."\n";
 		}
 
-		$filesize = 0;
-		$playlist_filesize = $dvd->playlist_filesize;
-		if($playlist_filesize) {
-			$filesize = ceil($playlist_filesize / 1048576);
-		}
+		$filesize = $dvd->playlist_filesize;
 		if($tracks_model->filesize != $filesize && $filesize) {
 			$tracks_model->filesize = $filesize;
 			if($debug)
