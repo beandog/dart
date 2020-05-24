@@ -15,7 +15,7 @@ if(($opt_encode_info || $opt_rip_info) && $episode_id && $video_encoder == 'x265
 	 * chapters
 	 * no fixed video, audio codec bitrate
 	 * audio codec copy
-	 * x265 defaults for preset and profile
+	 * x265 lossless
 	 * NTSC color
 	 */
 
@@ -27,128 +27,110 @@ if(($opt_encode_info || $opt_rip_info) && $episode_id && $video_encoder == 'x265
 	$optimize_support = true;
 	$force_preset = false;
 
-	$video_quality = $series_model->get_crf();
-	if($arg_crf)
-		$video_quality = abs(intval($arg_crf));
-	$x265_preset = $series_model->get_x264_preset();
-	if($tracks_model->format == 'NTSC')
-		$x265_opts = 'colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m';
-	elseif($tracks_model->format == 'PAL')
-		$x265_opts = 'colorprim=bt470bg:transfer=gamma28:colormatrix=bt470bg';
-
 	$fps = $series_model->get_preset_fps();
 
 	// HandBrake for --encode-info
 
-	if($opt_encode_info) {
+	$handbrake = new Handbrake;
+	$handbrake->set_binary($handbrake_bin);
+	$handbrake->verbose($verbose);
+	$handbrake->debug($debug);
+	$handbrake->set_dry_run($dry_run);
 
-		$handbrake = new Handbrake;
-		$handbrake->set_binary($handbrake_bin);
-		$handbrake->verbose($verbose);
-		$handbrake->debug($debug);
-		$handbrake->set_dry_run($dry_run);
+	/** Files **/
 
-		/** Files **/
+	$handbrake->input_filename($device);
+	$handbrake->input_track($tracks_model->ix);
 
-		$handbrake->input_filename($device);
-		$handbrake->input_track($tracks_model->ix);
+	/** Encoding **/
 
-		/** Encoding **/
+	if($opt_no_dvdnav || $series_model->dvdnav == 0)
+		$handbrake->dvdnav(false);
 
-		if($opt_no_dvdnav || $series_model->dvdnav == 0)
-			$handbrake->dvdnav(false);
+	/** Video **/
 
-		/** Video **/
+	$handbrake->set_video_encoder('x265');
+	$handbrake->set_x264opts("lossless=1");
 
-		$handbrake->set_video_encoder('x265');
+	$handbrake->set_color_matrix(strtolower($tracks_model->format));
 
-		if($video_quality)
-			$handbrake->set_video_quality($video_quality);
+	/** frameinfo **/
 
-		/** x265 **/
+	$deinterlace = $series_model->get_preset_deinterlace();
+	$decomb = $series_model->get_preset_decomb();
+	$detelecine = $series_model->get_preset_detelecine();
 
-		$handbrake->set_x264_preset($x265_preset);
+	$progressive = $episodes_model->progressive;
+	$top_field = $episodes_model->top_field;
+	$bottom_field = $episodes_model->bottom_field;
 
-		$handbrake->set_x264opts($x265_opts);
+	// Detelecine by default if PTS hasn't been scanned
+	if($progressive == null && $top_field == null && $bottom_field == null)
+		$detelecine = true;
 
-		/** frameinfo **/
+	// If all progressive, disable and override decomb, detelecine, and deinterlace
+	if($progressive > 0 && $top_field == 0 && $bottom_field == 0) {
+		$decomb = false;
+		$detelecine = false;
+		$deinterlace = false;
+	}
 
-		$deinterlace = $series_model->get_preset_deinterlace();
-		$decomb = $series_model->get_preset_decomb();
-		$detelecine = $series_model->get_preset_detelecine();
+	// Default to 30 FPS
+	$fps = $series_model->get_preset_fps();
 
-		$progressive = $episodes_model->progressive;
-		$top_field = $episodes_model->top_field;
-		$bottom_field = $episodes_model->bottom_field;
-
-		// Detelecine by default if PTS hasn't been scanned
-		if($progressive == null && $top_field == null && $bottom_field == null)
-			$detelecine = true;
-
-		// If all progressive, disable and override decomb, detelecine, and deinterlace
-		if($progressive > 0 && $top_field == 0 && $bottom_field == 0) {
-			$decomb = false;
-			$detelecine = false;
-			$deinterlace = false;
-		}
-
-		// Default to 30 FPS
-		$fps = $series_model->get_preset_fps();
-		if(!$fps)
-			$fps = 30;
-
+	if($fps)
 		$handbrake->set_video_framerate($fps);
 
-		/** Audio **/
+	/** Audio **/
 
-		$handbrake->add_audio_track($tracks_model->audio_ix);
+	$handbrake->add_audio_track($tracks_model->audio_ix);
 
-		$audio_encoder = $series_model->get_audio_encoder();
-		if($audio_encoder == 'fdk_aac' || $audio_encoder == 'mp3' || $audio_encoder == 'ac3' || $audio_encoder == 'eac3') {
-			$handbrake->add_audio_encoder($audio_encoder);
-		} elseif($audio_encoder == 'fdk_aac,copy') {
-			$handbrake->add_audio_encoder('fdk_aac');
-			$handbrake->add_audio_encoder('copy');
+	$audio_encoder = $series_model->get_audio_encoder();
+	if($audio_encoder == 'fdk_aac' || $audio_encoder == 'mp3' || $audio_encoder == 'ac3' || $audio_encoder == 'eac3') {
+		$handbrake->add_audio_encoder($audio_encoder);
+	} elseif($audio_encoder == 'fdk_aac,copy') {
+		$handbrake->add_audio_encoder('fdk_aac');
+		$handbrake->add_audio_encoder('copy');
+	} else {
+		$handbrake->add_audio_encoder('copy');
+	}
+
+	/** Subtitles **/
+
+	$scan_subp_tracks = false;
+
+	$has_closed_captioning = $tracks_model->has_closed_captioning();
+	$num_subp_tracks = $tracks_model->get_num_subp_tracks();
+	$num_active_subp_tracks = $tracks_model->get_num_active_subp_tracks();
+	$num_active_en_subp_tracks = $tracks_model->get_num_active_subp_tracks('en');
+
+	// Check for a subtitle track
+	if($subs_support) {
+
+		$subp_ix = $tracks_model->get_first_english_subp();
+
+		// If we have a VobSub one, add it
+		// Otherwise, check for a CC stream, and add that
+		if($subp_ix) {
+			$handbrake->add_subtitle_track($subp_ix);
+			$d_subtitles = "VOBSUB";
+		} elseif($has_closed_captioning) {
+			$closed_captioning_ix = $num_active_subp_tracks + 1;
+			$handbrake->add_subtitle_track($closed_captioning_ix);
+			$d_subtitles = "Closed Captioning";
 		} else {
-			$handbrake->add_audio_encoder('copy');
-		}
-
-		/** Subtitles **/
-
-		$scan_subp_tracks = false;
-
-		$has_closed_captioning = $tracks_model->has_closed_captioning();
-		$num_subp_tracks = $tracks_model->get_num_subp_tracks();
-		$num_active_subp_tracks = $tracks_model->get_num_active_subp_tracks();
-		$num_active_en_subp_tracks = $tracks_model->get_num_active_subp_tracks('en');
-
-		// Check for a subtitle track
-		if($subs_support) {
-
-			$subp_ix = $tracks_model->get_first_english_subp();
-
-			// If we have a VobSub one, add it
-			// Otherwise, check for a CC stream, and add that
-			if($subp_ix) {
-				$handbrake->add_subtitle_track($subp_ix);
-				$d_subtitles = "VOBSUB";
-			} elseif($has_closed_captioning) {
-				$closed_captioning_ix = $num_active_subp_tracks + 1;
-				$handbrake->add_subtitle_track($closed_captioning_ix);
-				$d_subtitles = "Closed Captioning";
-			} else {
-				$d_subtitles = "None :(";
-			}
-
-		}
-
-		/** Chapters **/
-
-		if($chapters_support) {
-			$handbrake->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
-			$handbrake->add_chapters();
+			$d_subtitles = "None :(";
 		}
 
 	}
+
+	/** Chapters **/
+
+	if($chapters_support) {
+		$handbrake->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
+		$handbrake->add_chapters();
+	}
+
+	$handbrake_command = $handbrake->get_executable_string();
 
 }
