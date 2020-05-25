@@ -54,6 +54,13 @@ if(($opt_encode_info || $opt_rip_info) && $episode_id && $video_encoder == 'x265
 
 	$handbrake->set_color_matrix(strtolower($tracks_model->format));
 
+	/** x265 **/
+
+	$x264_preset = $series_model->get_x264_preset();
+	if($arg_preset)
+		$x264_preset = $arg_preset;
+	$handbrake->set_x264_preset($x264_preset);
+
 	/** frameinfo **/
 
 	$deinterlace = $series_model->get_preset_deinterlace();
