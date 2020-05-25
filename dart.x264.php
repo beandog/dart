@@ -34,12 +34,6 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 	$optimize_support = true;
 	$force_preset = false;
 
-	$format = $tracks_model->format;
-	if($format == 'NTSC')
-		$x264opts = 'colorprim=smpte170m:transfer=smpte170m:colormatrix=smpte170m';
-	elseif($format == 'PAL')
-		$x264opts = 'colorprim=bt470bg:transfer=gamma28:colormatrix=bt470bg';
-
 	if($disc_type == 'bluray')
 		$x264opts = '';
 
@@ -108,6 +102,9 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 
 	$handbrake->set_video_quality($video_quality);
 
+	$format = $tracks_model->format;
+	$handbrake->set_color_matrix(strtolower($format));
+
 	/** H.264 **/
 
 	if($h264_profile)
@@ -132,7 +129,7 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 	else
 		$x264_tune = $series_model->get_x264_tune();
 
-	if($x264_tune)
+	if($x264_tune && $video_quality)
 		$handbrake->set_x264_tune($x264_tune);
 
 	/** Frame and fields **/
