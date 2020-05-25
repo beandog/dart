@@ -106,8 +106,7 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 	if($arg_crf)
 		$video_quality = abs(intval($arg_crf));
 
-	if($video_quality)
-		$handbrake->set_video_quality($video_quality);
+	$handbrake->set_video_quality($video_quality);
 
 	/** H.264 **/
 
