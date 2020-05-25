@@ -66,12 +66,19 @@
 
 		function get_crf() {
 
-			$sql = "SELECT COALESCE(s.crf, p.crf) FROM presets p INNER JOIN series_presets sp ON sp.preset_id = p.id JOIN series s ON s.id = sp.series_id AND sp.series_id = ".$this->db->quote($this->id).";";
-			$var = $this->db->getOne($sql);
+			$sql = "SELECT s.crf AS series_crf, p.crf AS preset_crf FROM presets p INNER JOIN series_presets sp ON sp.preset_id = p.id JOIN series s ON s.id = sp.series_id AND sp.series_id = ".$this->db->quote($this->id).";";
+			$arr = $this->db->getRow($sql);
 
-			$var = abs(intval($var));
+			extract($arr);
 
-			return $var;
+			// Prefer lossless
+			if($preset_crf == 0)
+				return 0;
+
+			if($series_crf != NULL)
+				return $series_crf;
+
+			return $preset_crf;
 
 		}
 
