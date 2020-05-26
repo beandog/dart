@@ -85,7 +85,7 @@
 
 	if($opt_json || $opt_display_filenames || $opt_num || $opt_display_iso)
 		$opt_info = false;
-	
+
 	$num_episodes = 0;
 	$num_encoded = 0;
 	$num_not_encoded = 0;
@@ -111,7 +111,7 @@
 	$dvds_model = new Dvds_Model;
 
 	$dvd = new DVD($device);
-			
+
 	$dvd_query['dvd']['dvdread_id'] = $dvd->dvdread_id();
 	$dvds_model_id = $dvds_model->find_dvdread_id($dvd_query['dvd']['dvdread_id']);
 
@@ -127,7 +127,7 @@
 	$dvd_query['dvd']['volname'] = $dvds_model->title;
 	$dvd_query['titles'] = array();
 	$container = $series_model->get_preset_format();
-	
+
 	$dvd_episodes = $dvds_model->get_episodes();
 
 	$num_episodes += count($dvd_episodes);
@@ -286,7 +286,7 @@
 
 	if($opt_json)
 		echo json_encode($dvd_query, JSON_PRETTY_PRINT)."\n";
-	
+
 	if($opt_info) {
 
 		echo "Disc Title: ".$dvd_query['dvd']['volname']."\n";
@@ -308,7 +308,7 @@
 
 			if($opt_encoded && !$opt_not && $episode_encoded)
 				echo $display_episode;
-			
+
 			if($opt_encoded && $opt_not && !$episode_encoded)
 				echo $display_episode;
 
@@ -327,7 +327,7 @@
 		echo "\n";
 		exit(0);
 	}
-	
+
 	if($opt_num && $opt_encoded && !$opt_not) {
 		echo $num_encoded;
 		echo "\n";
