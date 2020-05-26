@@ -14,10 +14,12 @@
 		if($dvds_model->has_max_tracks())
 			echo "* Bugs: has 99 tracks\n";
 
+		/*
 		$dvd_bugs = trim($dvds_model->get_bugs());
 
 		if($dvd_bugs)
 			echo "* Bugs: $dvd_bugs\n";
+		*/
 
 		// Display the episode names
 		foreach($dvd_episodes as $episode_id) {
