@@ -46,7 +46,7 @@
 			$dvds_model->title = $dvd_title;
 		}
 
-		if($access_device && $blurays_model->disc_title != $dvd->disc_name) {
+		if($access_device && $blurays_model->disc_title !== $dvd->disc_name) {
 			echo "* Disc title:\t".$dvd->disc_name."\n";
 			$blurays_model->disc_title = $dvd->disc_name;
 		}

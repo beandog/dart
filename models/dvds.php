@@ -104,7 +104,7 @@
 
 				$sql = "SELECT disc_title FROM blurays WHERE dvd_id = $dvd_id;";
 				$var = $this->db->getOne($sql);
-				if(!$var)
+				if(is_null($var))
 					return true;
 
 			}
