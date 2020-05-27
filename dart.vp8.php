@@ -22,7 +22,6 @@ if($opt_encode_info && $episode_id && $video_encoder == 'vp8') {
 	$handbrake->verbose($verbose);
 	$handbrake->debug($debug);
 	$handbrake->set_dry_run($dry_run);
-	$handbrake->set_color_matrix(strtolower($tracks_model->format));
 
 	$fps = $series_model->get_preset_fps();
 

@@ -103,7 +103,6 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 	$handbrake->set_video_quality($video_quality);
 
 	$format = $tracks_model->format;
-	$handbrake->set_color_matrix(strtolower($format));
 
 	/** H.264 **/
 

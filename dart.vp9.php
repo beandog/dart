@@ -11,7 +11,6 @@ if($opt_encode_info && $episode_id && $video_encoder == 'vp9') {
 
 	/**
 	 * VP9 encodes:
-	 * - NTSC or PAL color matrix
 	 * - lossless video
 	 */
 
@@ -28,7 +27,6 @@ if($opt_encode_info && $episode_id && $video_encoder == 'vp9') {
 	$handbrake->verbose($verbose);
 	$handbrake->debug($debug);
 	$handbrake->set_dry_run($dry_run);
-	$handbrake->set_color_matrix(strtolower($tracks_model->format));
 
 	// Lossless video
 	$handbrake->set_x264opts("lossless=1");
