@@ -75,9 +75,6 @@ if($opt_encode_info && $episode_id && $video_encoder == 'vp9') {
 	if($tracks_model->format == 'PAL')
 		$detelecine = false;
 
-	if($disc_type == 'bluray')
-		$detelecine = false;
-
 	// Set framerate
 	$handbrake->set_video_framerate($fps);
 
