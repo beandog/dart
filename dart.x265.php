@@ -61,30 +61,40 @@ if(($opt_encode_info || $opt_rip_info) && $episode_id && $video_encoder == 'x265
 
 	/** frameinfo **/
 
-	$deinterlace = $series_model->get_preset_deinterlace();
-	$decomb = $series_model->get_preset_decomb();
-	$detelecine = $series_model->get_preset_detelecine();
+	if($series_model->get_preset_decomb() || $series_model->decomb)
+		$decomb = true;
+	if($series_model->get_preset_detelecine() || $series_model->detelecine)
+		$detelecine = true;
+	if($series_model->get_preset_decomb() == 2 || $series_model->decomb == 2)
+		$comb_detect = true;
+	else
+		$comb_detect = false;
 
 	$progressive = $episodes_model->progressive;
 	$top_field = $episodes_model->top_field;
 	$bottom_field = $episodes_model->bottom_field;
 
 	// Detelecine by default if PTS hasn't been scanned
-	if($progressive == null && $top_field == null && $bottom_field == null)
+	if($progressive == null && $top_field == null && $bottom_field == null) {
 		$detelecine = true;
-
-	// If all progressive, disable and override decomb, detelecine, and deinterlace
-	if($progressive > 0 && $top_field == 0 && $bottom_field == 0) {
-		$decomb = false;
-		$detelecine = false;
-		$deinterlace = false;
 	}
 
-	// Default to 30 FPS
-	$fps = $series_model->get_preset_fps();
+	// If PAL format, detelecining is not needed
+	if($tracks_model->format == 'PAL')
+		$detelecine = false;
 
-	if($fps)
-		$handbrake->set_video_framerate($fps);
+	if($disc_type == 'bluray')
+		$detelecine = false;
+
+	// Set framerate
+	$handbrake->set_video_framerate($fps);
+
+	$handbrake->detelecine($detelecine);
+	$handbrake->decomb($decomb);
+	$handbrake->comb_detect($comb_detect);
+
+	if($container == 'mp4' && $optimize_support)
+		$handbrake->set_http_optimize();
 
 	/** Audio **/
 
