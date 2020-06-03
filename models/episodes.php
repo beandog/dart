@@ -106,15 +106,6 @@
 			if($part)
 				$title .= ", Part $part";
 
-			// Add season, episode number to indexed series
-			/*
-			if($indexed == 't') {
-				$episode_number = $this->get_number();
-				$episode_number_ix = str_pad($episode_number, 2, 0, STR_PAD_LEFT);
-				$title = "$season.$episode_number_ix $title";
-			}
-			*/
-
 			return $title;
 
 		}
