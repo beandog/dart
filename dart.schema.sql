@@ -2,12 +2,19 @@
 -- PostgreSQL database dump
 --
 
+-- Dumped from database version 9.3.17
+-- Dumped by pg_dump version 9.6.14
+
 SET statement_timeout = 0;
 SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
+SET xmloption = content;
 SET client_min_messages = warning;
+SET row_security = off;
 
 --
 -- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
@@ -23,13 +30,11 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
-SET search_path = public, pg_catalog;
-
 --
 -- Name: track_num_episodes(integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION track_num_episodes(integer) RETURNS boolean
+CREATE FUNCTION public.track_num_episodes(integer) RETURNS boolean
     LANGUAGE plpgsql
     AS $_$ BEGIN
 RETURN COUNT(1) > 0 FROM episodes e WHERE e.track_id = $1; END; $_$;
@@ -39,7 +44,7 @@ RETURN COUNT(1) > 0 FROM episodes e WHERE e.track_id = $1; END; $_$;
 -- Name: track_total_length_of_episodes(integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION track_total_length_of_episodes(integer) RETURNS double precision
+CREATE FUNCTION public.track_total_length_of_episodes(integer) RETURNS double precision
     LANGUAGE sql
     AS $_$
 SELECT DISTINCT t.length FROM tracks t JOIN episodes e ON e.track_id = t.id AND t.id = $1 $_$;
@@ -50,10 +55,10 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: audio; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: audio; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE audio (
+CREATE TABLE public.audio (
     id integer NOT NULL,
     track_id integer,
     ix integer,
@@ -70,14 +75,14 @@ CREATE TABLE audio (
 -- Name: TABLE audio; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON TABLE audio IS 'Metadata';
+COMMENT ON TABLE public.audio IS 'Metadata';
 
 
 --
 -- Name: audio_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE audio_id_seq
+CREATE SEQUENCE public.audio_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -89,17 +94,17 @@ CREATE SEQUENCE audio_id_seq
 -- Name: audio_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE audio_id_seq OWNED BY audio.id;
+ALTER SEQUENCE public.audio_id_seq OWNED BY public.audio.id;
 
 
 --
--- Name: blurays; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: blurays; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE blurays (
+CREATE TABLE public.blurays (
     id integer NOT NULL,
     dvd_id integer,
-    disc_title character varying(255) DEFAULT ''::character varying NOT NULL,
+    disc_title character varying(255),
     disc_id character varying(40) DEFAULT ''::character varying NOT NULL
 );
 
@@ -108,21 +113,21 @@ CREATE TABLE blurays (
 -- Name: COLUMN blurays.disc_title; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN blurays.disc_title IS 'Disc title is optional on Blu-rays';
+COMMENT ON COLUMN public.blurays.disc_title IS 'Disc title is optional on Blu-rays';
 
 
 --
 -- Name: COLUMN blurays.disc_id; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN blurays.disc_id IS 'AACS id';
+COMMENT ON COLUMN public.blurays.disc_id IS 'AACS id';
 
 
 --
 -- Name: blurays_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE blurays_id_seq
+CREATE SEQUENCE public.blurays_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -134,14 +139,14 @@ CREATE SEQUENCE blurays_id_seq
 -- Name: blurays_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE blurays_id_seq OWNED BY blurays.id;
+ALTER SEQUENCE public.blurays_id_seq OWNED BY public.blurays.id;
 
 
 --
--- Name: bugs; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: bugs; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE bugs (
+CREATE TABLE public.bugs (
     id integer NOT NULL,
     disc smallint DEFAULT 0 NOT NULL,
     name character varying(255) DEFAULT ''::character varying NOT NULL
@@ -152,7 +157,7 @@ CREATE TABLE bugs (
 -- Name: bugs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE bugs_id_seq
+CREATE SEQUENCE public.bugs_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -164,14 +169,14 @@ CREATE SEQUENCE bugs_id_seq
 -- Name: bugs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE bugs_id_seq OWNED BY bugs.id;
+ALTER SEQUENCE public.bugs_id_seq OWNED BY public.bugs.id;
 
 
 --
--- Name: cells; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: cells; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE cells (
+CREATE TABLE public.cells (
     id integer NOT NULL,
     track_id integer,
     ix integer DEFAULT 1 NOT NULL,
@@ -185,7 +190,7 @@ CREATE TABLE cells (
 -- Name: cells_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE cells_id_seq
+CREATE SEQUENCE public.cells_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -197,14 +202,14 @@ CREATE SEQUENCE cells_id_seq
 -- Name: cells_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE cells_id_seq OWNED BY cells.id;
+ALTER SEQUENCE public.cells_id_seq OWNED BY public.cells.id;
 
 
 --
--- Name: chapters; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: chapters; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE chapters (
+CREATE TABLE public.chapters (
     id integer NOT NULL,
     track_id integer,
     ix integer,
@@ -218,21 +223,21 @@ CREATE TABLE chapters (
 -- Name: TABLE chapters; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON TABLE chapters IS 'Metadata';
+COMMENT ON TABLE public.chapters IS 'Metadata';
 
 
 --
 -- Name: COLUMN chapters.filesize; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN chapters.filesize IS 'Size in bytes';
+COMMENT ON COLUMN public.chapters.filesize IS 'Size in bytes';
 
 
 --
 -- Name: chapters_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE chapters_id_seq
+CREATE SEQUENCE public.chapters_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -244,17 +249,16 @@ CREATE SEQUENCE chapters_id_seq
 -- Name: chapters_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE chapters_id_seq OWNED BY chapters.id;
+ALTER SEQUENCE public.chapters_id_seq OWNED BY public.chapters.id;
 
 
 --
--- Name: collections; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: collections; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE collections (
+CREATE TABLE public.collections (
     id integer NOT NULL,
-    title character varying(255) DEFAULT ''::character varying NOT NULL,
-    parent_id integer
+    title character varying(255) DEFAULT ''::character varying NOT NULL
 );
 
 
@@ -262,14 +266,14 @@ CREATE TABLE collections (
 -- Name: TABLE collections; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON TABLE collections IS 'Collection data';
+COMMENT ON TABLE public.collections IS 'Collection data';
 
 
 --
 -- Name: collections_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE collections_id_seq
+CREATE SEQUENCE public.collections_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -281,14 +285,14 @@ CREATE SEQUENCE collections_id_seq
 -- Name: collections_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE collections_id_seq OWNED BY collections.id;
+ALTER SEQUENCE public.collections_id_seq OWNED BY public.collections.id;
 
 
 --
--- Name: dvds; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: dvds; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE dvds (
+CREATE TABLE public.dvds (
     id integer NOT NULL,
     dvdread_id character varying(255) DEFAULT ''::character varying NOT NULL,
     title character varying(255) DEFAULT ''::character varying NOT NULL,
@@ -297,7 +301,6 @@ CREATE TABLE dvds (
     side smallint,
     skip smallint DEFAULT 0 NOT NULL,
     notes character varying DEFAULT ''::character varying NOT NULL,
-    bugs text DEFAULT ''::text NOT NULL,
     bluray smallint DEFAULT 0 NOT NULL,
     package_title character varying(255) DEFAULT ''::character varying NOT NULL
 );
@@ -307,21 +310,21 @@ CREATE TABLE dvds (
 -- Name: TABLE dvds; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON TABLE dvds IS 'Metadata';
+COMMENT ON TABLE public.dvds IS 'Metadata';
 
 
 --
 -- Name: COLUMN dvds.filesize; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN dvds.filesize IS 'Size in megabytes';
+COMMENT ON COLUMN public.dvds.filesize IS 'Size in megabytes';
 
 
 --
--- Name: tracks; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: tracks; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE tracks (
+CREATE TABLE public.tracks (
     id integer NOT NULL,
     dvd_id integer,
     ix integer DEFAULT 1 NOT NULL,
@@ -346,42 +349,42 @@ CREATE TABLE tracks (
 -- Name: TABLE tracks; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON TABLE tracks IS 'Metadata';
+COMMENT ON TABLE public.tracks IS 'Metadata';
 
 
 --
 -- Name: COLUMN tracks.ix; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN tracks.ix IS 'Track number';
+COMMENT ON COLUMN public.tracks.ix IS 'Track number';
 
 
 --
 -- Name: COLUMN tracks.codec; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN tracks.codec IS 'Video codec';
+COMMENT ON COLUMN public.tracks.codec IS 'Video codec';
 
 
 --
 -- Name: COLUMN tracks.resolution; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN tracks.resolution IS 'Video format';
+COMMENT ON COLUMN public.tracks.resolution IS 'Video format';
 
 
 --
 -- Name: COLUMN tracks.filesize; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN tracks.filesize IS 'Size in bytes';
+COMMENT ON COLUMN public.tracks.filesize IS 'Size in bytes';
 
 
 --
 -- Name: dart_audio_tracks; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW dart_audio_tracks AS
+CREATE VIEW public.dart_audio_tracks AS
  SELECT a.id,
     d.id AS dvd_id,
     t.id AS track_id,
@@ -402,9 +405,9 @@ CREATE VIEW dart_audio_tracks AS
     a.channels,
     a.streamid,
     a.active
-   FROM ((dvds d
-     JOIN tracks t ON ((t.dvd_id = d.id)))
-     JOIN audio a ON ((a.track_id = t.id)))
+   FROM ((public.dvds d
+     JOIN public.tracks t ON ((t.dvd_id = d.id)))
+     JOIN public.audio a ON ((a.track_id = t.id)))
   ORDER BY d.id, t.id, a.id;
 
 
@@ -412,7 +415,7 @@ CREATE VIEW dart_audio_tracks AS
 -- Name: episodes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE episodes_id_seq
+CREATE SEQUENCE public.episodes_id_seq
     START WITH 14147
     INCREMENT BY 1
     NO MINVALUE
@@ -421,11 +424,11 @@ CREATE SEQUENCE episodes_id_seq
 
 
 --
--- Name: episodes; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: episodes; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE episodes (
-    id integer DEFAULT nextval('episodes_id_seq'::regclass) NOT NULL,
+CREATE TABLE public.episodes (
+    id integer DEFAULT nextval('public.episodes_id_seq'::regclass) NOT NULL,
     track_id integer,
     ix smallint DEFAULT 0 NOT NULL,
     title character varying(255) DEFAULT ''::character varying NOT NULL,
@@ -449,14 +452,14 @@ CREATE TABLE episodes (
 -- Name: COLUMN episodes.episode_number; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN episodes.episode_number IS 'Override episode number';
+COMMENT ON COLUMN public.episodes.episode_number IS 'Override episode number';
 
 
 --
 -- Name: dart_episodes; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW dart_episodes AS
+CREATE VIEW public.dart_episodes AS
  SELECT e.id,
     d.id AS dvd_id,
     t.id AS track_id,
@@ -477,22 +480,21 @@ CREATE VIEW dart_episodes AS
     e.starting_chapter,
     e.ending_chapter,
     e.season
-   FROM ((dvds d
-     JOIN tracks t ON ((t.dvd_id = d.id)))
-     JOIN episodes e ON ((e.track_id = t.id)))
+   FROM ((public.dvds d
+     JOIN public.tracks t ON ((t.dvd_id = d.id)))
+     JOIN public.episodes e ON ((e.track_id = t.id)))
   ORDER BY d.id, t.id, e.id;
 
 
 --
--- Name: series; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: series; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE series (
+CREATE TABLE public.series (
     id integer NOT NULL,
     collection_id integer,
     title character varying(255) DEFAULT ''::character varying NOT NULL,
     production_year character varying(4) DEFAULT ''::character varying NOT NULL,
-    indexed boolean DEFAULT false NOT NULL,
     average_length integer DEFAULT 0 NOT NULL,
     grayscale smallint DEFAULT 0 NOT NULL,
     nsix character varying(255) DEFAULT ''::character varying NOT NULL,
@@ -506,8 +508,7 @@ CREATE TABLE series (
     decomb smallint DEFAULT 0 NOT NULL,
     detelecine smallint DEFAULT 0 NOT NULL,
     screenshots character varying(255) DEFAULT ''::character varying NOT NULL,
-    history smallint,
-    legacy_id smallint
+    start_date date
 );
 
 
@@ -515,59 +516,51 @@ CREATE TABLE series (
 -- Name: TABLE series; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON TABLE series IS 'Collection data';
+COMMENT ON TABLE public.series IS 'Collection data';
 
 
 --
 -- Name: COLUMN series.title; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN series.title IS 'Title used for displays everywhere';
-
-
---
--- Name: COLUMN series.indexed; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN series.indexed IS 'Use indexing or not for episodes';
+COMMENT ON COLUMN public.series.title IS 'Title used for displays everywhere';
 
 
 --
 -- Name: COLUMN series.average_length; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN series.average_length IS 'Average length of minutes of an episode';
+COMMENT ON COLUMN public.series.average_length IS 'Average length of minutes of an episode';
 
 
 --
 -- Name: COLUMN series.nsix; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN series.nsix IS 'NSIX - Naming Scheme Index';
+COMMENT ON COLUMN public.series.nsix IS 'NSIX - Naming Scheme Index';
 
 
 --
 -- Name: dart_series; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW dart_series AS
+CREATE VIEW public.dart_series AS
  SELECT s.id,
     s.collection_id,
     c.title AS collection_title,
     s.title,
-    s.indexed,
     s.average_length,
     s.grayscale
-   FROM (series s
-     LEFT JOIN collections c ON ((c.id = s.collection_id)))
+   FROM (public.series s
+     LEFT JOIN public.collections c ON ((c.id = s.collection_id)))
   ORDER BY c.title, s.title;
 
 
 --
--- Name: series_dvds; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: series_dvds; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE series_dvds (
+CREATE TABLE public.series_dvds (
     id integer NOT NULL,
     series_id integer,
     dvd_id integer,
@@ -583,35 +576,34 @@ CREATE TABLE series_dvds (
 -- Name: TABLE series_dvds; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON TABLE series_dvds IS 'Collection data';
+COMMENT ON TABLE public.series_dvds IS 'Collection data';
 
 
 --
 -- Name: COLUMN series_dvds.season; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN series_dvds.season IS 'Default season for episodes';
+COMMENT ON COLUMN public.series_dvds.season IS 'Default season for episodes';
 
 
 --
 -- Name: COLUMN series_dvds.audio_preference; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN series_dvds.audio_preference IS 'Which audio track to select by default';
+COMMENT ON COLUMN public.series_dvds.audio_preference IS 'Which audio track to select by default';
 
 
 --
 -- Name: dart_series_dvds; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW dart_series_dvds AS
+CREATE VIEW public.dart_series_dvds AS
  SELECT sd.id,
     s.collection_id,
     d.id AS dvd_id,
     s.id AS series_id,
     c.title AS collection_title,
     s.title AS series_title,
-    s.indexed,
     s.average_length,
     s.grayscale,
     sd.side AS series_dvds_side,
@@ -624,10 +616,10 @@ CREATE VIEW dart_series_dvds AS
     d.filesize,
     d.metadata_spec,
     d.side
-   FROM (((series_dvds sd
-     JOIN series s ON ((s.id = sd.series_id)))
-     JOIN dvds d ON ((sd.dvd_id = d.id)))
-     LEFT JOIN collections c ON ((c.id = s.collection_id)))
+   FROM (((public.series_dvds sd
+     JOIN public.series s ON ((s.id = sd.series_id)))
+     JOIN public.dvds d ON ((sd.dvd_id = d.id)))
+     LEFT JOIN public.collections c ON ((c.id = s.collection_id)))
   ORDER BY c.title, s.title, sd.ix;
 
 
@@ -635,7 +627,7 @@ CREATE VIEW dart_series_dvds AS
 -- Name: dart_series_episodes; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW dart_series_episodes AS
+CREATE VIEW public.dart_series_episodes AS
  SELECT e.id,
     s.collection_id,
     d.id AS dvd_id,
@@ -645,7 +637,6 @@ CREATE VIEW dart_series_episodes AS
     c.title AS collection_title,
     s.title AS series_title,
     s.nsix,
-    s.indexed,
     s.average_length,
     s.grayscale,
     s.production_year,
@@ -671,12 +662,12 @@ CREATE VIEW dart_series_episodes AS
     e.ending_chapter,
     e.episode_number,
     COALESCE(NULLIF(e.season, 0), sd.season) AS season
-   FROM (((((episodes e
-     JOIN tracks t ON ((e.track_id = t.id)))
-     JOIN dvds d ON ((d.id = t.dvd_id)))
-     JOIN series_dvds sd ON ((sd.dvd_id = d.id)))
-     JOIN series s ON ((sd.series_id = s.id)))
-     JOIN collections c ON ((c.id = s.collection_id)))
+   FROM (((((public.episodes e
+     JOIN public.tracks t ON ((e.track_id = t.id)))
+     JOIN public.dvds d ON ((d.id = t.dvd_id)))
+     JOIN public.series_dvds sd ON ((sd.dvd_id = d.id)))
+     JOIN public.series s ON ((sd.series_id = s.id)))
+     JOIN public.collections c ON ((c.id = s.collection_id)))
   ORDER BY c.title, s.title, sd.ix, t.ix, e.ix, e.id;
 
 
@@ -684,7 +675,7 @@ CREATE VIEW dart_series_episodes AS
 -- Name: dart_series_tracks; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW dart_series_tracks AS
+CREATE VIEW public.dart_series_tracks AS
  SELECT t.id,
     s.collection_id,
     d.id AS dvd_id,
@@ -692,7 +683,6 @@ CREATE VIEW dart_series_tracks AS
     sd.id AS series_dvds_id,
     c.title AS collection_title,
     s.title AS series_title,
-    s.indexed,
     s.average_length,
     s.grayscale,
     sd.side AS series_dvds_side,
@@ -711,19 +701,19 @@ CREATE VIEW dart_series_tracks AS
     t.aspect,
     t.closed_captioning,
     t.valid
-   FROM ((((tracks t
-     JOIN dvds d ON ((d.id = t.dvd_id)))
-     JOIN series_dvds sd ON ((sd.dvd_id = d.id)))
-     JOIN series s ON ((sd.series_id = s.id)))
-     JOIN collections c ON ((c.id = s.collection_id)))
+   FROM ((((public.tracks t
+     JOIN public.dvds d ON ((d.id = t.dvd_id)))
+     JOIN public.series_dvds sd ON ((sd.dvd_id = d.id)))
+     JOIN public.series s ON ((sd.series_id = s.id)))
+     JOIN public.collections c ON ((c.id = s.collection_id)))
   ORDER BY c.title, s.title, sd.ix, t.ix;
 
 
 --
--- Name: subp; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: subp; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE subp (
+CREATE TABLE public.subp (
     id integer NOT NULL,
     track_id integer,
     ix integer,
@@ -739,14 +729,14 @@ CREATE TABLE subp (
 -- Name: TABLE subp; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON TABLE subp IS 'Metadata';
+COMMENT ON TABLE public.subp IS 'Metadata';
 
 
 --
 -- Name: dart_subp_tracks; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW dart_subp_tracks AS
+CREATE VIEW public.dart_subp_tracks AS
  SELECT s.id,
     d.id AS dvd_id,
     t.id AS track_id,
@@ -765,9 +755,9 @@ CREATE VIEW dart_subp_tracks AS
     s.langcode,
     s.streamid,
     s.active
-   FROM ((dvds d
-     JOIN tracks t ON ((t.dvd_id = d.id)))
-     JOIN subp s ON ((s.track_id = t.id)))
+   FROM ((public.dvds d
+     JOIN public.tracks t ON ((t.dvd_id = d.id)))
+     JOIN public.subp s ON ((s.track_id = t.id)))
   ORDER BY d.id, t.id, s.id;
 
 
@@ -775,7 +765,7 @@ CREATE VIEW dart_subp_tracks AS
 -- Name: dart_tracks; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW dart_tracks AS
+CREATE VIEW public.dart_tracks AS
  SELECT t.id,
     d.id AS dvd_id,
     d.dvdread_id,
@@ -789,16 +779,16 @@ CREATE VIEW dart_tracks AS
     t.aspect,
     t.closed_captioning,
     t.valid
-   FROM (dvds d
-     JOIN tracks t ON ((t.dvd_id = d.id)))
+   FROM (public.dvds d
+     JOIN public.tracks t ON ((t.dvd_id = d.id)))
   ORDER BY d.id, t.id;
 
 
 --
--- Name: dvd_bugs; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: dvd_bugs; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE dvd_bugs (
+CREATE TABLE public.dvd_bugs (
     id integer NOT NULL,
     dvd_id integer NOT NULL,
     bug_id integer NOT NULL
@@ -809,7 +799,7 @@ CREATE TABLE dvd_bugs (
 -- Name: dvd_bugs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE dvd_bugs_id_seq
+CREATE SEQUENCE public.dvd_bugs_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -821,14 +811,14 @@ CREATE SEQUENCE dvd_bugs_id_seq
 -- Name: dvd_bugs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE dvd_bugs_id_seq OWNED BY dvd_bugs.id;
+ALTER SEQUENCE public.dvd_bugs_id_seq OWNED BY public.dvd_bugs.id;
 
 
 --
 -- Name: dvds_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE dvds_id_seq
+CREATE SEQUENCE public.dvds_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -840,32 +830,14 @@ CREATE SEQUENCE dvds_id_seq
 -- Name: dvds_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE dvds_id_seq OWNED BY dvds.id;
+ALTER SEQUENCE public.dvds_id_seq OWNED BY public.dvds.id;
 
 
 --
--- Name: encodes; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: libraries; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE encodes (
-    episode_id integer NOT NULL,
-    format character varying(255) DEFAULT 'AVC'::character varying NOT NULL,
-    preset character varying(255) DEFAULT 'medium'::character varying NOT NULL,
-    crf integer,
-    fps integer,
-    nsix character varying(255) DEFAULT ''::character varying NOT NULL,
-    filename character varying(255) DEFAULT ''::character varying NOT NULL,
-    bytes integer,
-    mbs integer,
-    encode_date date
-);
-
-
---
--- Name: libraries; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE libraries (
+CREATE TABLE public.libraries (
     id integer NOT NULL,
     collection_id integer DEFAULT 1 NOT NULL,
     name character varying(255) NOT NULL,
@@ -877,7 +849,7 @@ CREATE TABLE libraries (
 -- Name: libraries_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE libraries_id_seq
+CREATE SEQUENCE public.libraries_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -889,14 +861,14 @@ CREATE SEQUENCE libraries_id_seq
 -- Name: libraries_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE libraries_id_seq OWNED BY libraries.id;
+ALTER SEQUENCE public.libraries_id_seq OWNED BY public.libraries.id;
 
 
 --
--- Name: presets; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: presets; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE presets (
+CREATE TABLE public.presets (
     id integer NOT NULL,
     name character varying(255) DEFAULT ''::character varying NOT NULL,
     crf integer DEFAULT 20,
@@ -904,14 +876,11 @@ CREATE TABLE presets (
     acodec character varying DEFAULT 'copy'::character varying NOT NULL,
     x264_preset character varying(255) DEFAULT 'medium'::character varying NOT NULL,
     x264_tune character varying(255) DEFAULT ''::character varying NOT NULL,
-    x264_profile character varying DEFAULT 'high'::character varying NOT NULL,
     deinterlace smallint DEFAULT 0 NOT NULL,
     decomb smallint DEFAULT 0 NOT NULL,
     detelecine smallint DEFAULT 0 NOT NULL,
     fps smallint DEFAULT 60,
-    x265 smallint DEFAULT 0 NOT NULL,
-    reference smallint,
-    adaptive smallint DEFAULT 0 NOT NULL
+    vcodec character varying(4) DEFAULT 'avc'::bpchar NOT NULL
 );
 
 
@@ -919,14 +888,14 @@ CREATE TABLE presets (
 -- Name: TABLE presets; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON TABLE presets IS 'Handbrake';
+COMMENT ON TABLE public.presets IS 'Handbrake';
 
 
 --
 -- Name: presets_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE presets_id_seq
+CREATE SEQUENCE public.presets_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -938,14 +907,14 @@ CREATE SEQUENCE presets_id_seq
 -- Name: presets_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE presets_id_seq OWNED BY presets.id;
+ALTER SEQUENCE public.presets_id_seq OWNED BY public.presets.id;
 
 
 --
 -- Name: qa_audio_channel_priority; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW qa_audio_channel_priority AS
+CREATE VIEW public.qa_audio_channel_priority AS
  SELECT at1.track_id,
     at1.langcode,
     at1.format,
@@ -953,8 +922,8 @@ CREATE VIEW qa_audio_channel_priority AS
     at2.streamid AS streamid_2,
     at1.channels AS channels_1,
     at2.channels AS channels_2
-   FROM (audio at1
-     JOIN audio at2 ON ((((((((((at1.track_id = at2.track_id) AND ((at1.langcode)::text = (at2.langcode)::text)) AND ((at1.streamid)::text <> (at2.streamid)::text)) AND (at1.active = 1)) AND (at2.active = 1)) AND ((at1.format)::text = (at2.format)::text)) AND (at2.channels > at1.channels)) AND (at2.ix > at1.ix)) AND (length((at1.langcode)::text) = 2))))
+   FROM (public.audio at1
+     JOIN public.audio at2 ON ((((((((((at1.track_id = at2.track_id) AND ((at1.langcode)::text = (at2.langcode)::text)) AND ((at1.streamid)::text <> (at2.streamid)::text)) AND (at1.active = 1)) AND (at2.active = 1)) AND ((at1.format)::text = (at2.format)::text)) AND (at2.channels > at1.channels)) AND (at2.ix > at1.ix)) AND (length((at1.langcode)::text) = 2))))
   ORDER BY at1.track_id;
 
 
@@ -962,41 +931,24 @@ CREATE VIEW qa_audio_channel_priority AS
 -- Name: qa_bluray_best_audio; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW qa_bluray_best_audio AS
+CREATE VIEW public.qa_bluray_best_audio AS
  SELECT audio.id,
     audio.track_id,
     audio.ix,
     audio.format,
     audio.langcode
-   FROM audio
+   FROM public.audio
   WHERE (audio.track_id IN ( SELECT audio_1.track_id
-           FROM audio audio_1
+           FROM public.audio audio_1
           WHERE (((audio_1.format)::text = ANY (ARRAY[('lpcm'::character varying)::text, ('dtshd-ma'::character varying)::text, ('truhd'::character varying)::text, ('dtshd'::character varying)::text])) AND (audio_1.ix > 1))))
   ORDER BY audio.track_id, audio.ix;
-
-
---
--- Name: season_has_cc; Type: VIEW; Schema: public; Owner: -
---
-
-CREATE VIEW season_has_cc AS
- SELECT DISTINCT s.title AS series_title,
-    sd.season,
-    t.closed_captioning AS has_cc
-   FROM ((((tracks t
-     JOIN dvds d ON (((t.dvd_id = d.id) AND (d.bluray = 0))))
-     JOIN series_dvds sd ON ((sd.dvd_id = d.id)))
-     JOIN series s ON ((s.id = sd.series_id)))
-     JOIN episodes e ON (((e.track_id = t.id) AND (e.skip = 0))))
-  WHERE (sd.season > 0)
-  ORDER BY s.title, sd.season;
 
 
 --
 -- Name: series_dvds_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE series_dvds_id_seq
+CREATE SEQUENCE public.series_dvds_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1008,14 +960,14 @@ CREATE SEQUENCE series_dvds_id_seq
 -- Name: series_dvds_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE series_dvds_id_seq OWNED BY series_dvds.id;
+ALTER SEQUENCE public.series_dvds_id_seq OWNED BY public.series_dvds.id;
 
 
 --
--- Name: series_presets; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: series_presets; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE series_presets (
+CREATE TABLE public.series_presets (
     id integer NOT NULL,
     series_id integer,
     preset_id integer DEFAULT 43
@@ -1026,14 +978,14 @@ CREATE TABLE series_presets (
 -- Name: TABLE series_presets; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON TABLE series_presets IS 'Handbrake';
+COMMENT ON TABLE public.series_presets IS 'Handbrake';
 
 
 --
 -- Name: series_presets_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE series_presets_id_seq
+CREATE SEQUENCE public.series_presets_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1045,14 +997,14 @@ CREATE SEQUENCE series_presets_id_seq
 -- Name: series_presets_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE series_presets_id_seq OWNED BY series_presets.id;
+ALTER SEQUENCE public.series_presets_id_seq OWNED BY public.series_presets.id;
 
 
 --
 -- Name: sets_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE sets_id_seq
+CREATE SEQUENCE public.sets_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1064,14 +1016,14 @@ CREATE SEQUENCE sets_id_seq
 -- Name: sets_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE sets_id_seq OWNED BY series.id;
+ALTER SEQUENCE public.sets_id_seq OWNED BY public.series.id;
 
 
 --
--- Name: specs; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+-- Name: specs; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE specs (
+CREATE TABLE public.specs (
     id integer NOT NULL,
     metadata character varying(255) NOT NULL,
     name character varying(255) NOT NULL,
@@ -1083,7 +1035,7 @@ CREATE TABLE specs (
 -- Name: specs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE specs_id_seq
+CREATE SEQUENCE public.specs_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1095,14 +1047,14 @@ CREATE SEQUENCE specs_id_seq
 -- Name: specs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE specs_id_seq OWNED BY specs.id;
+ALTER SEQUENCE public.specs_id_seq OWNED BY public.specs.id;
 
 
 --
 -- Name: subp_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE subp_id_seq
+CREATE SEQUENCE public.subp_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1114,14 +1066,14 @@ CREATE SEQUENCE subp_id_seq
 -- Name: subp_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE subp_id_seq OWNED BY subp.id;
+ALTER SEQUENCE public.subp_id_seq OWNED BY public.subp.id;
 
 
 --
 -- Name: tracks_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE tracks_id_seq
+CREATE SEQUENCE public.tracks_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1133,58 +1085,29 @@ CREATE SEQUENCE tracks_id_seq
 -- Name: tracks_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE tracks_id_seq OWNED BY tracks.id;
-
-
---
--- Name: view_cartoon_stats; Type: VIEW; Schema: public; Owner: -
---
-
-CREATE VIEW view_cartoon_stats AS
- SELECT DISTINCT dart_series_tracks.dvd_id,
-    dart_series_tracks.series_title,
-    max(dart_series_tracks.ix) AS tracks,
-    dart_series_tracks.collection_id AS c_id
-   FROM dart_series_tracks
-  WHERE (dart_series_tracks.collection_id = 1)
-  GROUP BY dart_series_tracks.collection_id, dart_series_tracks.dvd_id, dart_series_tracks.series_title
-  ORDER BY dart_series_tracks.series_title;
+ALTER SEQUENCE public.tracks_id_seq OWNED BY public.tracks.id;
 
 
 --
 -- Name: view_dvd_nsix; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW view_dvd_nsix AS
+CREATE VIEW public.view_dvd_nsix AS
  SELECT s.collection_id,
     sd.series_id,
     sd.dvd_id,
     s.nsix,
     ((((((((s.collection_id || '.'::text) || to_char(sd.series_id, 'FM000'::text)) || '.'::text) || to_char(sd.dvd_id, 'FM0000'::text)) || '.'::text) || (s.nsix)::text) || '.'::text) || 'iso'::text) AS dvd_nsix_iso,
     s.title AS series_title
-   FROM (series s
-     JOIN series_dvds sd ON ((sd.series_id = s.id)));
-
-
---
--- Name: view_dvd_stats; Type: VIEW; Schema: public; Owner: -
---
-
-CREATE VIEW view_dvd_stats AS
- SELECT DISTINCT dart_series_tracks.dvd_id,
-    dart_series_tracks.series_title,
-    max(dart_series_tracks.ix) AS tracks
-   FROM dart_series_tracks
-  WHERE (dart_series_tracks.collection_id = 1)
-  GROUP BY dart_series_tracks.collection_id, dart_series_tracks.dvd_id, dart_series_tracks.series_title
-  ORDER BY dart_series_tracks.series_title, dart_series_tracks.dvd_id;
+   FROM (public.series s
+     JOIN public.series_dvds sd ON ((sd.series_id = s.id)));
 
 
 --
 -- Name: view_episode_frames; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW view_episode_frames AS
+CREATE VIEW public.view_episode_frames AS
  SELECT e.id,
     ((((((((s.collection_id || '.'::text) || to_char(sd.series_id, 'FM000'::text)) || '.'::text) || to_char(sd.dvd_id, 'FM0000'::text)) || '.'::text) || to_char(e.id, 'FM00000'::text)) || '.'::text) || (s.nsix)::text) AS episode_nsix,
     e.skip,
@@ -1192,12 +1115,12 @@ CREATE VIEW view_episode_frames AS
     e.progressive,
     e.top_field AS tff,
     e.bottom_field AS bff
-   FROM (((((episodes e
-     JOIN tracks t ON ((e.track_id = t.id)))
-     JOIN dvds d ON ((d.id = t.dvd_id)))
-     JOIN series_dvds sd ON ((sd.dvd_id = d.id)))
-     JOIN series s ON ((sd.series_id = s.id)))
-     JOIN collections c ON ((c.id = s.collection_id)))
+   FROM (((((public.episodes e
+     JOIN public.tracks t ON ((e.track_id = t.id)))
+     JOIN public.dvds d ON ((d.id = t.dvd_id)))
+     JOIN public.series_dvds sd ON ((sd.dvd_id = d.id)))
+     JOIN public.series s ON ((sd.series_id = s.id)))
+     JOIN public.collections c ON ((c.id = s.collection_id)))
   ORDER BY s.collection_id, s.id, d.id, e.id;
 
 
@@ -1205,19 +1128,19 @@ CREATE VIEW view_episode_frames AS
 -- Name: view_episode_library; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW view_episode_library AS
+CREATE VIEW public.view_episode_library AS
  SELECT e.id,
     ((((((((s.collection_id || '.'::text) || to_char(sd.series_id, 'FM000'::text)) || '.'::text) || to_char(sd.dvd_id, 'FM0000'::text)) || '.'::text) || to_char(e.id, 'FM00000'::text)) || '.'::text) || (s.nsix)::text) AS episode_nsix,
     e.skip,
     s.library_id,
     s.upgrade_id,
     e.title
-   FROM (((((episodes e
-     JOIN tracks t ON ((e.track_id = t.id)))
-     JOIN dvds d ON ((d.id = t.dvd_id)))
-     JOIN series_dvds sd ON ((sd.dvd_id = d.id)))
-     JOIN series s ON ((sd.series_id = s.id)))
-     JOIN collections c ON ((c.id = s.collection_id)))
+   FROM (((((public.episodes e
+     JOIN public.tracks t ON ((e.track_id = t.id)))
+     JOIN public.dvds d ON ((d.id = t.dvd_id)))
+     JOIN public.series_dvds sd ON ((sd.dvd_id = d.id)))
+     JOIN public.series s ON ((sd.series_id = s.id)))
+     JOIN public.collections c ON ((c.id = s.collection_id)))
   ORDER BY s.collection_id, s.id, d.id, e.id;
 
 
@@ -1225,17 +1148,17 @@ CREATE VIEW view_episode_library AS
 -- Name: view_episode_nsix; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW view_episode_nsix AS
+CREATE VIEW public.view_episode_nsix AS
  SELECT e.id,
     ((((((((s.collection_id || '.'::text) || to_char(sd.series_id, 'FM000'::text)) || '.'::text) || to_char(sd.dvd_id, 'FM0000'::text)) || '.'::text) || to_char(e.id, 'FM00000'::text)) || '.'::text) || (s.nsix)::text) AS episode_nsix,
     e.skip,
     e.title
-   FROM (((((episodes e
-     JOIN tracks t ON ((e.track_id = t.id)))
-     JOIN dvds d ON ((d.id = t.dvd_id)))
-     JOIN series_dvds sd ON ((sd.dvd_id = d.id)))
-     JOIN series s ON ((sd.series_id = s.id)))
-     JOIN collections c ON ((c.id = s.collection_id)))
+   FROM (((((public.episodes e
+     JOIN public.tracks t ON ((e.track_id = t.id)))
+     JOIN public.dvds d ON ((d.id = t.dvd_id)))
+     JOIN public.series_dvds sd ON ((sd.dvd_id = d.id)))
+     JOIN public.series s ON ((sd.series_id = s.id)))
+     JOIN public.collections c ON ((c.id = s.collection_id)))
   ORDER BY s.collection_id, s.id, d.id, e.id;
 
 
@@ -1243,7 +1166,7 @@ CREATE VIEW view_episode_nsix AS
 -- Name: view_episodes; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW view_episodes AS
+CREATE VIEW public.view_episodes AS
  SELECT e.id AS episode_id,
     e.track_id,
     e.ix AS episode_ix,
@@ -1272,432 +1195,417 @@ CREATE VIEW view_episodes AS
     sd.ix AS series_dvds_ix,
     sd.volume AS series_dvds_volume,
     COALESCE(NULLIF(e.season, 0), sd.season) AS season
-   FROM ((((episodes e
-     JOIN tracks t ON ((e.track_id = t.id)))
-     JOIN dvds d ON ((t.dvd_id = d.id)))
-     JOIN series_dvds sd ON ((sd.dvd_id = d.id)))
-     JOIN series s ON ((s.id = sd.series_id)));
+   FROM ((((public.episodes e
+     JOIN public.tracks t ON ((e.track_id = t.id)))
+     JOIN public.dvds d ON ((t.dvd_id = d.id)))
+     JOIN public.series_dvds sd ON ((sd.dvd_id = d.id)))
+     JOIN public.series s ON ((s.id = sd.series_id)));
 
 
 --
--- Name: view_tv_stats; Type: VIEW; Schema: public; Owner: -
+-- Name: audio id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-CREATE VIEW view_tv_stats AS
- SELECT DISTINCT dart_series_tracks.dvd_id,
-    dart_series_tracks.series_title,
-    max(dart_series_tracks.ix) AS tracks,
-    dart_series_tracks.collection_id AS c_id
-   FROM dart_series_tracks
-  WHERE (dart_series_tracks.collection_id = 2)
-  GROUP BY dart_series_tracks.collection_id, dart_series_tracks.dvd_id, dart_series_tracks.series_title
-  ORDER BY dart_series_tracks.series_title;
+ALTER TABLE ONLY public.audio ALTER COLUMN id SET DEFAULT nextval('public.audio_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: blurays id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY audio ALTER COLUMN id SET DEFAULT nextval('audio_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY blurays ALTER COLUMN id SET DEFAULT nextval('blurays_id_seq'::regclass);
+ALTER TABLE ONLY public.blurays ALTER COLUMN id SET DEFAULT nextval('public.blurays_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: bugs id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY bugs ALTER COLUMN id SET DEFAULT nextval('bugs_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY cells ALTER COLUMN id SET DEFAULT nextval('cells_id_seq'::regclass);
+ALTER TABLE ONLY public.bugs ALTER COLUMN id SET DEFAULT nextval('public.bugs_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: cells id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY chapters ALTER COLUMN id SET DEFAULT nextval('chapters_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY collections ALTER COLUMN id SET DEFAULT nextval('collections_id_seq'::regclass);
+ALTER TABLE ONLY public.cells ALTER COLUMN id SET DEFAULT nextval('public.cells_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: chapters id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY dvd_bugs ALTER COLUMN id SET DEFAULT nextval('dvd_bugs_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY dvds ALTER COLUMN id SET DEFAULT nextval('dvds_id_seq'::regclass);
+ALTER TABLE ONLY public.chapters ALTER COLUMN id SET DEFAULT nextval('public.chapters_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: collections id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY libraries ALTER COLUMN id SET DEFAULT nextval('libraries_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY presets ALTER COLUMN id SET DEFAULT nextval('presets_id_seq'::regclass);
+ALTER TABLE ONLY public.collections ALTER COLUMN id SET DEFAULT nextval('public.collections_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: dvd_bugs id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY series ALTER COLUMN id SET DEFAULT nextval('sets_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY series_dvds ALTER COLUMN id SET DEFAULT nextval('series_dvds_id_seq'::regclass);
+ALTER TABLE ONLY public.dvd_bugs ALTER COLUMN id SET DEFAULT nextval('public.dvd_bugs_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: dvds id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY series_presets ALTER COLUMN id SET DEFAULT nextval('series_presets_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY specs ALTER COLUMN id SET DEFAULT nextval('specs_id_seq'::regclass);
+ALTER TABLE ONLY public.dvds ALTER COLUMN id SET DEFAULT nextval('public.dvds_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: libraries id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY subp ALTER COLUMN id SET DEFAULT nextval('subp_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY tracks ALTER COLUMN id SET DEFAULT nextval('tracks_id_seq'::regclass);
+ALTER TABLE ONLY public.libraries ALTER COLUMN id SET DEFAULT nextval('public.libraries_id_seq'::regclass);
 
 
 --
--- Name: audio_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: presets id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY audio
+ALTER TABLE ONLY public.presets ALTER COLUMN id SET DEFAULT nextval('public.presets_id_seq'::regclass);
+
+
+--
+-- Name: series id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.series ALTER COLUMN id SET DEFAULT nextval('public.sets_id_seq'::regclass);
+
+
+--
+-- Name: series_dvds id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.series_dvds ALTER COLUMN id SET DEFAULT nextval('public.series_dvds_id_seq'::regclass);
+
+
+--
+-- Name: series_presets id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.series_presets ALTER COLUMN id SET DEFAULT nextval('public.series_presets_id_seq'::regclass);
+
+
+--
+-- Name: specs id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.specs ALTER COLUMN id SET DEFAULT nextval('public.specs_id_seq'::regclass);
+
+
+--
+-- Name: subp id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subp ALTER COLUMN id SET DEFAULT nextval('public.subp_id_seq'::regclass);
+
+
+--
+-- Name: tracks id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracks ALTER COLUMN id SET DEFAULT nextval('public.tracks_id_seq'::regclass);
+
+
+--
+-- Name: audio audio_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.audio
     ADD CONSTRAINT audio_pkey PRIMARY KEY (id);
 
-ALTER TABLE audio CLUSTER ON audio_pkey;
+ALTER TABLE public.audio CLUSTER ON audio_pkey;
 
 
 --
--- Name: blurays_dvd_id_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: blurays blurays_dvd_id_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY blurays
+ALTER TABLE ONLY public.blurays
     ADD CONSTRAINT blurays_dvd_id_key UNIQUE (dvd_id);
 
 
 --
--- Name: blurays_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: blurays blurays_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY blurays
+ALTER TABLE ONLY public.blurays
     ADD CONSTRAINT blurays_pkey PRIMARY KEY (id);
 
 
 --
--- Name: bugs_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: bugs bugs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY bugs
+ALTER TABLE ONLY public.bugs
     ADD CONSTRAINT bugs_pkey PRIMARY KEY (id);
 
 
 --
--- Name: cells_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: cells cells_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY cells
+ALTER TABLE ONLY public.cells
     ADD CONSTRAINT cells_pkey PRIMARY KEY (id);
 
 
 --
--- Name: chapters_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: chapters chapters_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY chapters
+ALTER TABLE ONLY public.chapters
     ADD CONSTRAINT chapters_pkey PRIMARY KEY (id);
 
-ALTER TABLE chapters CLUSTER ON chapters_pkey;
+ALTER TABLE public.chapters CLUSTER ON chapters_pkey;
 
 
 --
--- Name: collections_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: collections collections_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY collections
+ALTER TABLE ONLY public.collections
     ADD CONSTRAINT collections_pkey PRIMARY KEY (id);
 
 
 --
--- Name: dvd_bugs_dvd_id_bug_id_key; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: dvd_bugs dvd_bugs_dvd_id_bug_id_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY dvd_bugs
+ALTER TABLE ONLY public.dvd_bugs
     ADD CONSTRAINT dvd_bugs_dvd_id_bug_id_key UNIQUE (dvd_id, bug_id);
 
 
 --
--- Name: dvd_bugs_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: dvd_bugs dvd_bugs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY dvd_bugs
+ALTER TABLE ONLY public.dvd_bugs
     ADD CONSTRAINT dvd_bugs_pkey PRIMARY KEY (id);
 
 
 --
--- Name: dvds_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: dvds dvds_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY dvds
+ALTER TABLE ONLY public.dvds
     ADD CONSTRAINT dvds_pkey PRIMARY KEY (id);
 
-ALTER TABLE dvds CLUSTER ON dvds_pkey;
+ALTER TABLE public.dvds CLUSTER ON dvds_pkey;
 
 
 --
--- Name: episodes_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: episodes episodes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY episodes
+ALTER TABLE ONLY public.episodes
     ADD CONSTRAINT episodes_pkey PRIMARY KEY (id);
 
-ALTER TABLE episodes CLUSTER ON episodes_pkey;
+ALTER TABLE public.episodes CLUSTER ON episodes_pkey;
 
 
 --
--- Name: libraries_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: libraries libraries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY libraries
+ALTER TABLE ONLY public.libraries
     ADD CONSTRAINT libraries_pkey PRIMARY KEY (id);
 
 
 --
--- Name: presets_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: presets presets_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY presets
+ALTER TABLE ONLY public.presets
     ADD CONSTRAINT presets_pkey PRIMARY KEY (id);
 
-ALTER TABLE presets CLUSTER ON presets_pkey;
+ALTER TABLE public.presets CLUSTER ON presets_pkey;
 
 
 --
--- Name: series_dvds_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: series_dvds series_dvds_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY series_dvds
+ALTER TABLE ONLY public.series_dvds
     ADD CONSTRAINT series_dvds_pkey PRIMARY KEY (id);
 
 
 --
--- Name: series_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: series series_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY series
+ALTER TABLE ONLY public.series
     ADD CONSTRAINT series_pkey PRIMARY KEY (id);
 
 
 --
--- Name: series_presets_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: series_presets series_presets_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY series_presets
+ALTER TABLE ONLY public.series_presets
     ADD CONSTRAINT series_presets_pkey PRIMARY KEY (id);
 
-ALTER TABLE series_presets CLUSTER ON series_presets_pkey;
+ALTER TABLE public.series_presets CLUSTER ON series_presets_pkey;
 
 
 --
--- Name: specs_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: specs specs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY specs
+ALTER TABLE ONLY public.specs
     ADD CONSTRAINT specs_pkey PRIMARY KEY (id);
 
-ALTER TABLE specs CLUSTER ON specs_pkey;
+ALTER TABLE public.specs CLUSTER ON specs_pkey;
 
 
 --
--- Name: subp_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: subp subp_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY subp
+ALTER TABLE ONLY public.subp
     ADD CONSTRAINT subp_pkey PRIMARY KEY (id);
 
-ALTER TABLE subp CLUSTER ON subp_pkey;
+ALTER TABLE public.subp CLUSTER ON subp_pkey;
 
 
 --
--- Name: tracks_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: tracks tracks_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY tracks
+ALTER TABLE ONLY public.tracks
     ADD CONSTRAINT tracks_pkey PRIMARY KEY (id);
 
-ALTER TABLE tracks CLUSTER ON tracks_pkey;
+ALTER TABLE public.tracks CLUSTER ON tracks_pkey;
 
 
 --
--- Name: audio_track_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: audio audio_track_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY audio
-    ADD CONSTRAINT audio_track_id_fkey FOREIGN KEY (track_id) REFERENCES tracks(id) ON DELETE CASCADE;
-
-
---
--- Name: blurays_dvd_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY blurays
-    ADD CONSTRAINT blurays_dvd_id_fkey FOREIGN KEY (dvd_id) REFERENCES dvds(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.audio
+    ADD CONSTRAINT audio_track_id_fkey FOREIGN KEY (track_id) REFERENCES public.tracks(id) ON DELETE CASCADE;
 
 
 --
--- Name: cells_track_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: blurays blurays_dvd_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY cells
-    ADD CONSTRAINT cells_track_id_fkey FOREIGN KEY (track_id) REFERENCES tracks(id) ON DELETE CASCADE;
-
-
---
--- Name: chapters_track_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY chapters
-    ADD CONSTRAINT chapters_track_id_fkey FOREIGN KEY (track_id) REFERENCES tracks(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.blurays
+    ADD CONSTRAINT blurays_dvd_id_fkey FOREIGN KEY (dvd_id) REFERENCES public.dvds(id) ON DELETE CASCADE;
 
 
 --
--- Name: dvd_bugs_bug_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cells cells_track_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY dvd_bugs
-    ADD CONSTRAINT dvd_bugs_bug_id_fkey FOREIGN KEY (bug_id) REFERENCES bugs(id) ON DELETE CASCADE;
-
-
---
--- Name: dvd_bugs_dvd_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY dvd_bugs
-    ADD CONSTRAINT dvd_bugs_dvd_id_fkey FOREIGN KEY (dvd_id) REFERENCES dvds(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.cells
+    ADD CONSTRAINT cells_track_id_fkey FOREIGN KEY (track_id) REFERENCES public.tracks(id) ON DELETE CASCADE;
 
 
 --
--- Name: episodes_track_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: chapters chapters_track_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY episodes
-    ADD CONSTRAINT episodes_track_id_fkey FOREIGN KEY (track_id) REFERENCES tracks(id) ON DELETE CASCADE;
-
-
---
--- Name: libraries_collection_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY libraries
-    ADD CONSTRAINT libraries_collection_id_fkey FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.chapters
+    ADD CONSTRAINT chapters_track_id_fkey FOREIGN KEY (track_id) REFERENCES public.tracks(id) ON DELETE CASCADE;
 
 
 --
--- Name: series_dvds_dvd_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: dvd_bugs dvd_bugs_bug_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY series_dvds
-    ADD CONSTRAINT series_dvds_dvd_id_fkey FOREIGN KEY (dvd_id) REFERENCES dvds(id) ON DELETE CASCADE;
-
-
---
--- Name: series_dvds_series_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY series_dvds
-    ADD CONSTRAINT series_dvds_series_id_fkey FOREIGN KEY (series_id) REFERENCES series(id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY public.dvd_bugs
+    ADD CONSTRAINT dvd_bugs_bug_id_fkey FOREIGN KEY (bug_id) REFERENCES public.bugs(id) ON DELETE CASCADE;
 
 
 --
--- Name: series_library_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: dvd_bugs dvd_bugs_dvd_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY series
-    ADD CONSTRAINT series_library_id_fkey FOREIGN KEY (library_id) REFERENCES libraries(id) ON DELETE SET NULL;
-
-
---
--- Name: series_presets_series_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY series_presets
-    ADD CONSTRAINT series_presets_series_id_fkey FOREIGN KEY (series_id) REFERENCES series(id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY public.dvd_bugs
+    ADD CONSTRAINT dvd_bugs_dvd_id_fkey FOREIGN KEY (dvd_id) REFERENCES public.dvds(id) ON DELETE CASCADE;
 
 
 --
--- Name: series_upgrade_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: episodes episodes_track_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY series
-    ADD CONSTRAINT series_upgrade_id_fkey FOREIGN KEY (upgrade_id) REFERENCES series(id) ON DELETE SET NULL;
-
-
---
--- Name: subp_track_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY subp
-    ADD CONSTRAINT subp_track_id_fkey FOREIGN KEY (track_id) REFERENCES tracks(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.episodes
+    ADD CONSTRAINT episodes_track_id_fkey FOREIGN KEY (track_id) REFERENCES public.tracks(id) ON DELETE CASCADE;
 
 
 --
--- Name: tracks_dvd_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: libraries libraries_collection_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY tracks
-    ADD CONSTRAINT tracks_dvd_id_fkey FOREIGN KEY (dvd_id) REFERENCES dvds(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.libraries
+    ADD CONSTRAINT libraries_collection_id_fkey FOREIGN KEY (collection_id) REFERENCES public.collections(id) ON DELETE CASCADE;
 
 
 --
--- Name: public; Type: ACL; Schema: -; Owner: -
+-- Name: series_dvds series_dvds_dvd_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.series_dvds
+    ADD CONSTRAINT series_dvds_dvd_id_fkey FOREIGN KEY (dvd_id) REFERENCES public.dvds(id) ON DELETE CASCADE;
+
+
+--
+-- Name: series_dvds series_dvds_series_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.series_dvds
+    ADD CONSTRAINT series_dvds_series_id_fkey FOREIGN KEY (series_id) REFERENCES public.series(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: series series_library_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.series
+    ADD CONSTRAINT series_library_id_fkey FOREIGN KEY (library_id) REFERENCES public.libraries(id) ON DELETE SET NULL;
+
+
+--
+-- Name: series_presets series_presets_series_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.series_presets
+    ADD CONSTRAINT series_presets_series_id_fkey FOREIGN KEY (series_id) REFERENCES public.series(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: series series_upgrade_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.series
+    ADD CONSTRAINT series_upgrade_id_fkey FOREIGN KEY (upgrade_id) REFERENCES public.series(id) ON DELETE SET NULL;
+
+
+--
+-- Name: subp subp_track_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subp
+    ADD CONSTRAINT subp_track_id_fkey FOREIGN KEY (track_id) REFERENCES public.tracks(id) ON DELETE CASCADE;
+
+
+--
+-- Name: tracks tracks_dvd_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracks
+    ADD CONSTRAINT tracks_dvd_id_fkey FOREIGN KEY (dvd_id) REFERENCES public.dvds(id) ON DELETE CASCADE;
+
+
+--
+-- Name: SCHEMA public; Type: ACL; Schema: -; Owner: -
 --
 
 REVOKE ALL ON SCHEMA public FROM PUBLIC;
