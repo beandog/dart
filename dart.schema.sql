@@ -66,8 +66,7 @@ CREATE TABLE public.audio (
     format character varying(255) DEFAULT ''::character varying NOT NULL,
     channels smallint DEFAULT 0 NOT NULL,
     streamid character varying(255) DEFAULT ''::character varying NOT NULL,
-    active smallint,
-    passthrough smallint
+    active smallint
 );
 
 
@@ -214,7 +213,6 @@ CREATE TABLE public.chapters (
     track_id integer,
     ix integer,
     length double precision,
-    startcell integer,
     filesize bigint
 );
 
@@ -437,8 +435,6 @@ CREATE TABLE public.episodes (
     ending_chapter smallint,
     season smallint DEFAULT 0 NOT NULL,
     episode_number smallint,
-    filesize bigint,
-    air_date date,
     skip smallint DEFAULT 0 NOT NULL,
     progressive integer,
     top_field integer,
