@@ -91,16 +91,21 @@
 				if($count)
 					return true;
 
-				// Check for missing title
+				// Missing a title on a Blu-ray is not uncommon
+				/*
 				$sql = "SELECT COUNT(1) FROM dvds WHERE id = $dvd_id AND TRIM(title) = '';";
 				$count = abs(intval($this->db->getOne($sql)));
 				if($count)
 					return true;
+				*/
 
+				// Legacy indexing
+				/*
 				$sql = "SELECT disc_id FROM blurays WHERE dvd_id = $dvd_id;";
 				$var = $this->db->getOne($sql);
 				if(!$var)
 					return true;
+				*/
 
 				$sql = "SELECT disc_title FROM blurays WHERE dvd_id = $dvd_id;";
 				$var = $this->db->getOne($sql);

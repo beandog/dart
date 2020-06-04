@@ -51,10 +51,13 @@
 			$blurays_model->disc_title = $dvd->disc_name;
 		}
 
+		// Legacy metadata
+		/*
 		if($access_device && $blurays_model->disc_id != $dvd->disc_id) {
 			echo "* AACs ID: ".$dvd->disc_id."\n";
 			$blurays_model->disc_id = $dvd->disc_id;
 		}
+		*/
 
 		$dvd_filesize = $dvd->size;
 		if($access_device && $dvds_model->filesize != $dvd_filesize) {

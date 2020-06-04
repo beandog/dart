@@ -292,7 +292,7 @@
 
 			} elseif(is_dir($this->device)) {
 
-				exec("du -s ".$this->device, $output, $retval);
+				exec("du -s ".escapeshellarg($this->device), $output, $retval);
 
 				if($retval == 0)
 					$kb_size = intval(current(preg_split("/\s/", current($output))));
