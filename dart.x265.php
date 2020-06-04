@@ -80,8 +80,10 @@ if(($opt_encode_info || $opt_rip_info) && $episode_id && $video_encoder == 'x265
 	}
 
 	// If PAL format, detelecining is not needed
-	if($tracks_model->format == 'PAL')
+	if($tracks_model->format == 'PAL') {
 		$detelecine = false;
+		$fps = 25;
+	}
 
 	// Set framerate
 	$handbrake->set_video_framerate($fps);
