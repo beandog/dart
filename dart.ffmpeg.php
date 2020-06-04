@@ -27,10 +27,7 @@ if(($opt_rip_info || $opt_pts_info) && $episode_id) {
 		if($arg_crf)
 			$video_quality = abs(intval($arg_crf));
 
-		if($tracks_model->format == 'NTSC')
-			$ffmpeg_opts = "crf=$video_quality";
-		elseif($tracks_model->format == 'PAL')
-			$ffmpeg_opts = "crf=$video_quality";
+		$ffmpeg_opts = "crf=$video_quality";
 		// if($preset_opts)
 		//	$ffmpeg_opts .= ":$preset_opts";
 
@@ -57,99 +54,26 @@ if(($opt_rip_info || $opt_pts_info) && $episode_id) {
 			$ffmpeg->set_duration($qa_max);
 
 		// Set video filters based on frame info
-		$progressive = $episodes_model->progressive;
-		$top_field = $episodes_model->top_field;
-		$bottom_field = $episodes_model->bottom_field;
 		$crop = $episodes_model->crop;
-		$fps = $series_model->get_preset_fps();
-
-		$detelecine = false;
-		$deinterlace = false;
-
-		// Detelecine by default and output to 24 FPS
-		if($progressive == null && $top_field == null && $bottom_field == null) {
-			$fps = "24000/1001";
-			$detelecine = true;
-		}
-
-		while($progressive || $top_field || $bottom_field) {
-
-			// Top Field only
-			if($progressive == 0 && $bottom_field == 0) {
-				$detelecine = true;
-				break;
-			}
-
-			// Bottom Field only
-			if($progressive == 0 && $top_field == 0) {
-				$detelecine = true;
-				break;
-			}
-
-			// Top Field only, but under 1 second
-			if($top_field <= 30 && $bottom_field == 0)
-				break;
-
-			// Bottom Field only, but under 1 second
-			if($top_field == 0 && $bottom_field <= 30)
-				break;
-
-			// Top Field and Bottom Field, each under one second
-			if($top_field <= 30 && $bottom_field <= 30)
-				break;
-
-			// Progressive is not the majority
-			if($progressive < $top_field || $progressive < $bottom_field || $progressive < ($top_field + $bottom_field)) {
-				$detelecine = true;
-				break;
-			}
-
-			// Progressive fields the majority, but no Bottom Field
-			if($progressive > $top_field && $bottom_field == 0) {
-				$deinterlace = true;
-				break;
-			}
-
-			// Progressive fields the majority, but no Top Field
-			if($progressive > $bottom_field && $top_field == 0) {
-				$deinterlace = true;
-				break;
-			}
-
-			// Progressive and Top Fields, less than one second of Bottom Field
-			if($progressive > $top_field && $bottom_field <= 30) {
-				$deinterlace = true;
-				break;
-			}
-
-			// Progressive and Bottom Fields, less than one second of Top Field
-			if($progressive > $bottom_field && $top_field <= 30) {
-				$deinterlace = true;
-				break;
-			}
-
-			// All other cases
-			$detelecine = true;
-
-			break;
-
-		}
 
 		if($crop != null && $crop != '720:480:0:0')
 			$ffmpeg->add_video_filter("crop=$crop");
 
+		/*
 		if($detelecine)
 			$ffmpeg->add_video_filter("pullup,dejudder");
+		*/
 
+		/*
 		if($deinterlace && $fps > 30)
 			$ffmpeg->add_video_filter("bwdif=deint=1");
 		elseif($deinterlace)
 			$ffmpeg->add_video_filter("bwdif=mode=send_frame:deint=1");
+		*/
 
-		if($fps && $fps == 24)
-			$ffmpeg->add_video_filter("fps=fps=24000/1001");
-		elseif($fps)
-			$ffmpeg->add_video_filter("fps=fps=$fps");
+		// Detelecine by default and output to 24 FPS
+		$ffmpeg->add_video_filter("pullup");
+		$ffmpeg->add_video_filter("fps=fps=24000/1001");
 
 		$audio_streamid = $tracks_model->get_first_english_streamid();
 		if($audio_streamid) {
