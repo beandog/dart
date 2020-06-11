@@ -27,7 +27,6 @@ if(($opt_encode_info || $opt_rip_info) && $episode_id && $video_encoder == 'x265
 	$optimize_support = true;
 	$force_preset = false;
 
-	$fps = $series_model->get_preset_fps();
 
 	// HandBrake for --encode-info
 
@@ -49,15 +48,21 @@ if(($opt_encode_info || $opt_rip_info) && $episode_id && $video_encoder == 'x265
 
 	/** Video **/
 
+	$fps = $series_model->get_preset_fps();
 	$handbrake->set_video_encoder('x265');
-	$handbrake->set_x264opts("lossless=1");
+	$video_quality = $series_model->get_crf();
+	if($video_quality == 0)
+		$handbrake->set_x264opts("lossless=1");
+
+	$handbrake->set_video_quality($video_quality);
 
 	/** x265 **/
 
 	$x264_preset = $series_model->get_x264_preset();
 	if($arg_preset)
 		$x264_preset = $arg_preset;
-	$handbrake->set_x264_preset($x264_preset);
+	if($video_quality != 0)
+		$handbrake->set_x264_preset($x264_preset);
 
 	/** frameinfo **/
 
