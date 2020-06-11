@@ -159,7 +159,8 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 	}
 
 	// Set framerate
-	$handbrake->set_video_framerate($fps);
+	if($fps)
+		$handbrake->set_video_framerate($fps);
 
 	$handbrake->detelecine($detelecine);
 	$handbrake->decomb($decomb);
