@@ -59,6 +59,8 @@ if(($opt_rip_info || $opt_pts_info) && $episode_id) {
 		if($crop != null && $crop != '720:480:0:0')
 			$ffmpeg->add_video_filter("crop=$crop");
 
+		$fps = $series_model->get_preset_fps();
+
 		/*
 		if($detelecine)
 			$ffmpeg->add_video_filter("pullup,dejudder");
@@ -74,7 +76,10 @@ if(($opt_rip_info || $opt_pts_info) && $episode_id) {
 		// Detelecine by default and output to 24 FPS
 		$ffmpeg->add_video_filter("pullup");
 		$ffmpeg->add_video_filter("dejudder");
-		$ffmpeg->add_video_filter("fps=fps=24000/1001");
+
+		if(!$fps)
+			$fps = 24;
+		$ffmpeg->add_video_filter("fps=fps=$fps");
 
 		$audio_streamid = $tracks_model->get_first_english_streamid();
 		if($audio_streamid) {
