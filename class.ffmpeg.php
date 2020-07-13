@@ -141,8 +141,8 @@
 		public function get_executable_string() {
 
 			$cmd[] = $this->binary;
-			$cmd[] = "-fflags '+genpts'";
 			$cmd[] = "-hide_banner";
+			$cmd[] = "-fflags '+genpts'";
 			if($this->disable_stats)
 				$cmd[] = "-nostats";
 			if($this->verbose)
