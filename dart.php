@@ -18,6 +18,7 @@
 
 	require_once 'class.dvd.php';
 	require_once 'class.bluray.php';
+	require_once 'class.cd.php';
 	require_once 'class.dvddrive.php';
 	require_once 'class.matroska.php';
 	require_once 'class.handbrake.php';
@@ -338,6 +339,8 @@
 					$disc_name = "DVD";
 				elseif($disc_type == "bluray")
 					$disc_name = "Blu-ray";
+				elseif($disc_type == "cd")
+					$disc_name = "CD";
 			}
 
 			if(!$batch_mode)
@@ -347,6 +350,8 @@
 				$dvd = new DVD($device, $debug);
 			elseif($disc_type == "bluray")
 				$dvd = new Bluray($device, $debug);
+			elseif($disc_type == "cd")
+				$dvd = new CD($device, $debug);
 
 			if(!$dvd->opened) {
 				echo "* Opening $device FAILED\n";

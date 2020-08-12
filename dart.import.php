@@ -22,6 +22,9 @@
 	else
 		$missing_bluray_metadata = false;
 
+	if($disc_type == 'cd')
+		$missing_cd_metadata = $dvds_model->missing_cd_metadata();
+
 	if($opt_archive && !$missing_dvd_metadata && !$missing_dvd_tracks_metadata) {
 		echo "* Archive:\tNo legacy metadata! :D\n";
 	}
@@ -54,7 +57,10 @@
 		if(($new_dvd || $missing_dvd_metadata || $missing_bluray_metadata) && $disc_type == 'bluray')
 			require 'dart.import.bluray.php';
 
-		if($new_dvd || $missing_dvd_tracks_metadata)
+		if(($new_dvd || $missing_cd_metadata) && $disc_type == 'cd')
+			require 'dart.import.cd.php';
+
+		if($new_dvd || $missing_dvd_tracks_metadata || $missing_cd_metadata)
 			require 'dart.import.tracks.php';
 
 		if($opt_import && $new_dvd)
