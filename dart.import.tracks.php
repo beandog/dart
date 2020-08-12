@@ -266,7 +266,7 @@
 
 		$tracks_model = new Tracks_Model;
 
-		$cmd = "cueconvert $cue_filename";
+		$cmd = "cueconvert $cue_filename 2> /dev/null";
 
 		exec($cmd, $output, $retval);
 
