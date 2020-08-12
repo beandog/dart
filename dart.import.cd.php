@@ -9,8 +9,6 @@
 
 		echo "[Import]\n";
 
-		var_dump($dvd->dvdread_id);
-
 		$dvds_model_id = $dvds_model->create_new();
 
 		if($debug)
