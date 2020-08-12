@@ -417,7 +417,7 @@
 
 		// If archiving, everything would have happened by now,
 		// so eject the drive.
-		if((($opt_archive) || ($opt_import && $new_dvd)) && $device_is_hardware && $drive->is_closed()) {
+		if((($opt_archive) || ($opt_import && $new_dvd)) && $device_is_hardware && $drive->is_closed() && $disc_type != 'cd') {
 			if(!$batch_mode)
 				echo "* Ready to archive next disc, opening tray!\n";
 			$drive->open();
