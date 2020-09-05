@@ -24,6 +24,8 @@
 
 	if($disc_type == 'cd')
 		$missing_cd_metadata = $dvds_model->missing_cd_metadata();
+	else
+		$missing_cd_metadata = false;
 
 	if($opt_archive && !$missing_dvd_metadata && !$missing_dvd_tracks_metadata) {
 		echo "* Archive:\tNo legacy metadata! :D\n";
