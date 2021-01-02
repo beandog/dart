@@ -174,32 +174,6 @@
 
 		}
 
-		// Check a track record to see if it is missing
-		// metadata somewhere.
-		// Unused -- dvd_tracks_missing_metadata() is used instead.
-		public function missing_metadata() {
-
-			$track_id = abs(intval($this->id));
-
-			$sql = "SELECT COUNT(1) FROM tracks WHERE closed_captioning AND id = $track_id;";
-			$count = $this->get_one($sql);
-			if($count)
-				return true;
-
-			$sql = "SELECT COUNT(1) FROM audio WHERE track_id = $track_id AND active IS NULL;";
-			$count = $this->get_one($sql);
-			if($count)
-				return true;
-
-			$sql = "SELECT COUNT(1) FROM subp WHERE track_id = $track_id AND active IS NULL;";
-			$count = $this->get_one($sql);
-			if($count)
-				return true;
-
-			return false;
-
-		}
-
 		function get_audio_details($audio_stream_id) {
 
 			$track_id = intval($this->id);
