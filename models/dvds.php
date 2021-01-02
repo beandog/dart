@@ -342,7 +342,7 @@
 
 		public function has_bugs() {
 
-			$sql = "SELECT LENGTH(TRIM(bugs)) FROM dvds WHERE id = ".$this->db->quote($this->id).";";
+			$sql = "SELECT COUNT(1) FROM dvd_bugs WHERE dvd_id = ".$this->db->quote($this->id).";";
 			$var = $this->db->getOne($sql);
 			if($var)
 				return true;
