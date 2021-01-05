@@ -507,9 +507,9 @@
 
 			// tobe
 			if(realpath($this->device) == '/dev/sr0')
-				$arg_input = 1;
-			else
 				$arg_input = 0;
+			else
+				$arg_input = 1;
 
 			$arg_logfile = escapeshellarg($logfile);
 
