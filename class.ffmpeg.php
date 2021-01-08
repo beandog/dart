@@ -142,6 +142,8 @@
 
 			$cmd[] = $this->binary;
 			$cmd[] = "-hide_banner";
+			// Generating PTS is only necessary with dvd_copy and remuxing, but not ripping
+			// It's safe to leave here though
 			$cmd[] = "-fflags '+genpts'";
 			if($this->disable_stats)
 				$cmd[] = "-nostats";
