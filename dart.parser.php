@@ -186,12 +186,6 @@
 		'action' => 'StoreString',
 		'default' => 'main',
 	));
-	$parser->addOption('arg_scan', array(
-		'long_name' => '--scan',
-		'description' => 'Scan data to import',
-		'action' => 'StoreString',
-		'default' => '',
-	));
 
 	try { $result = $parser->parse(); }
 	catch(PEAR_Exception $e) {
