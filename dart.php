@@ -93,11 +93,6 @@
 
 	}
 
-	// Base URL to access DVD admin frontend
-	// Override in preferences
-	if(empty($baseurl))
-		$baseurl = '';
-
 	if($opt_open_trays && !$opt_close_trays) {
 		foreach($all_devices as $str) {
 			$drive = new DVDDrive($str);
