@@ -117,8 +117,6 @@
 	if(!isset($qa_max))
 		$qa_max = 60;
 
-	$num_encoded = 0;
-
 	foreach($devices as $device) {
 
 		start:
