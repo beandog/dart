@@ -23,14 +23,6 @@
 
 	}
 
-	// Human-friendly output
-	function d_yes_no($var) {
-		if($var)
-			return "yes";
-		else
-			return "no";
-	}
-
 	function beep_error() {
 
 		system("beep -f 1000 -n -f 2000 -n -f 1500 -n -f 1750 -n f 1750 -n -f 1750");
