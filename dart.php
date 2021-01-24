@@ -113,9 +113,6 @@
 	if(!count($devices) && ($opt_info || $opt_encode_info || $opt_copy_info || $opt_rip_info || $opt_pts_info || $opt_dump_iso || $opt_import || $opt_archive))
 		$devices = $all_devices;
 
-	// General boolean for various items
-	$first_run = true;
-
 	// Default max length for QA operations
 	if(!isset($qa_max))
 		$qa_max = 60;
@@ -164,9 +161,6 @@
 		// Assume media is a DVD
 		$disc_type = 'dvd';
 		$disc_name = 'DVD';
-
-		// Making a run for it! :)
-		$first_run = false;
 
 		// Check if source filename is a block device or not
 		$device_dirname = dirname(realpath($device));
