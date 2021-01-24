@@ -29,39 +29,6 @@
 
 	}
 
-	function display_audio($codec, $channels) {
-
-		if($codec == 'ac3')
-			$str = "Dolby Digital ";
-		else
-			$str = "DTS ";
-
-		switch($channels) {
-
-			case 1:
-				$str .= "Mono";
-				break;
-			case 2:
-				$str .= "Stereo";
-				break;
-			case 3:
-				$str .= "Stereo 2.1";
-				break;
-			case 4:
-				$str .= "Surround Sound 4.0";
-				break;
-			case 5:
-				$str .= "Surround Sound 5.0";
-				break;
-			case 6:
-				$str .= "Surround Sound 5.1";
-				break;
-		}
-
-		return $str;
-
-	}
-
 	function safe_filename_title($str = 'Title') {
 
 		$str = preg_replace("/[^A-Za-z0-9 \-,\.\?':!_]/", '', $str);
