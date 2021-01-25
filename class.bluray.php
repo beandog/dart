@@ -108,7 +108,9 @@
 				$this->binary = "/usr/bin/bluray_info";
 
 			$arg_device = escapeshellarg($this->device);
-			$cmd = $this->binary." --json $arg_device 2> /dev/null";
+			$cmd = $this->binary." --json $arg_device";
+			if(!$this->debug)
+				$cmd .= "2> /dev/null";
 
 			if($this->debug)
 				echo "* Executing: $cmd\n";
