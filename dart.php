@@ -327,9 +327,9 @@
 				echo "[$disc_name]\n";
 
 			if($disc_type == "dvd")
-				$dvd = new DVD($device, $debug);
+				$dvd = new DVD($device, $debug, $opt_dry_run);
 			elseif($disc_type == "bluray")
-				$dvd = new Bluray($device, $debug);
+				$dvd = new Bluray($device, $debug, $opt_dry_run);
 			elseif($disc_type == "cd")
 				$dvd = new CD($device, $debug);
 
