@@ -285,13 +285,6 @@
 			if($retval !== 0)
 				$success = false;
 
-			// Not needed on a single title set run
-			// if(!$this->dry_run)
-			//	$bool = rename($target_dir.'/'.$arg_name, $filename);
-
-			if($bool === false)
-				$success = false;
-
 			return $success;
 
 		}
