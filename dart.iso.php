@@ -96,8 +96,14 @@
 				}
 			}
 
+			// See if backing up individual title sets
+			if($dvds_model->has_max_tracks())
+				$opt_title_sets = true;
+			else
+				$opt_title_sets = false;
+
 			// Dump the DVD contents to an ISO on the filesystem
-			if(!$target_iso_exists && !$is_ripping && $opt_dump_iso && $access_device) {
+			if(!$target_iso_exists && !$is_ripping && $opt_dump_iso && $access_device && !$opt_title_sets) {
 
 				$logfile = "/tmp/dvdbackup.log";
 
@@ -113,6 +119,37 @@
 					echo "* DVD extraction failed :(\n";
 					rename($target_rip, "$target_rip.FAIL");
 				}
+
+			}
+
+			// Dump the DVD title sets individually
+			if(!$target_iso_exists && !$is_ripping && $opt_dump_iso && $access_device && $opt_title_sets) {
+
+				$arr_title_sets = $dvds_model->get_title_sets();
+				$str_title_sets = implode(' ', $arr_title_sets);
+
+				echo "* Title sets: $str_title_sets\n";
+
+				$logfile = "/tmp/dvdbackup.log";
+
+				foreach($arr_title_sets as $title_set) {
+
+					echo "* Dumping $device title set $title_set to $target_iso\n";
+
+					$dvd_dump_iso_success = $dvd->dvdbackup_title_set($target_iso, $title_set, $logfile);
+
+					if(!$dvd_dump_iso_success) {
+						echo "* DVD extraction failed :(\n";
+						rename($target_rip, "$target_rip.FAIL");
+						break;
+					}
+
+				 }
+
+				echo "* DVD copy successful. Ready for another :D\n";
+				if(file_exists($target_rip) && !file_exists($target_iso))
+					rename($target_rip, $target_iso);
+				$drive->open();
 
 			}
 
