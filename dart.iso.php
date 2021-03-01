@@ -134,7 +134,7 @@
 
 				foreach($arr_title_sets as $title_set) {
 
-					echo "* Dumping $device title set $title_set to $target_iso\n";
+					echo "* Dumping $device VTS $title_set to $target_iso\n";
 
 					$dvd_dump_iso_success = $dvd->dvdbackup_title_set($target_iso, $title_set, $logfile);
 
