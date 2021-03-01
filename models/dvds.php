@@ -306,6 +306,15 @@
 
 		}
 
+		public function get_title_sets() {
+
+			$sql = "SELECT DISTINCT track_vts FROM view_episodes WHERE dvd_id = ".$this->id." AND episode_skip = 0 ORDER BY track_vts;";
+			$arr = $this->db->getCol($sql);
+
+			return $arr;
+
+		}
+
 		public function get_series_id() {
 
 			$sql = "SELECT series.id FROM dvds JOIN series_dvds ON dvds.id = series_dvds.dvd_id JOIN series ON series.id = series_dvds.series_id WHERE dvds.id = ".$this->db->quote($this->id).";";
