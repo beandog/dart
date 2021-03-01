@@ -134,6 +134,13 @@
 
 				foreach($arr_title_sets as $title_set) {
 
+					$title_set_filename = "$target_rip/VIDEO_TS/VTS_". str_pad($title_set, 2, 0, STR_PAD_LEFT) ."_1.VOB";
+
+					if(file_exists($title_set_filename)) {
+						echo "* Skipping ".basename($title_set_filename)."\n";
+						continue;
+					}
+
 					echo "* Dumping $device VTS $title_set to $target_iso\n";
 
 					$dvd_dump_iso_success = $dvd->dvdbackup_title_set($target_iso, $title_set, $logfile);
