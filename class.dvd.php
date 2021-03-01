@@ -292,9 +292,6 @@
 			if($bool === false)
 				$success = false;
 
-			if($this->dry_run)
-				return false;
-
 			return $success;
 
 		}
