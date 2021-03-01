@@ -202,22 +202,6 @@
 			$arg_name = basename($target_rip);
 			$arg_output = escapeshellarg(dirname($filename));
 
-			/*
-			if(!is_dir($target_dir)) {
-
-				if($this->debug)
-					echo "* Making directory: $target_dir\n";
-
-				$bool = @mkdir($target_dir, 0755, true);
-
-				if(!$bool) {
-					echo "* Creating directory '$target_dir' FAILED!\n";
-					return false;
-				}
-
-			}
-			*/
-
 			if($this->debug) {
 				echo "* input: $arg_input\n";
 				echo "* output: $arg_output\n";
@@ -250,52 +234,6 @@
 				return false;
 
 			return $success;
-
-			// ddrescue README
-			// Since I've used dd in the past, ddrescue seems like a good
-			// alternative that can work around broken sectors, which was
-			// the main feature I liked about readdvd to begin with.
-			// It does come with a lot of options, so I'm testing these out
-			// for now; however, I have seen multiple examples of using these
-			// arguments for DVDs.
-
-			/**
-			 * Removing support for older ISO dumping methods
-			if($method == 'ddrescue') {
-
-				$logfile = getenv('HOME')."/.ddrescue/".$this->dvdread_id().".log";
-
-				if(file_exists($logfile))
-					unlink($logfile);
-
-				$arg_device = escapeshellarg($this->device);
-				$arg_dest = escapeshellarg($dest);
-				$arg_logfile = escapeshellarg($logfile);
-				$cmd = "ddrescue -b 2048 -n $arg_device $arg_dest $arg_logfile";
-				passthru($cmd, $retval);
-
-				if($retval !== 0)
-					return false;
-				else
-					return true;
-
-			} elseif($method == 'pv') {
-
-				$arg_device = escapeshellarg($this->device);
-				$arg_dest = escapeshellarg($dest);
-				$cmd = "pv -pter -w 80 $arg_device | dd of=$arg_dest 2> /dev/null";
-				$cmd .= '; echo ${PIPESTATUS[*]}';
-
-				exec($cmd, $arr);
-
-				foreach($arr as $exit_code)
-					if(intval($exit_code))
-						return false;
-
-				return true;
-
-			}
-			*/
 
 		}
 
