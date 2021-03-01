@@ -265,15 +265,19 @@
 				echo "* name: $arg_name\n";
 			}
 
-			$cmd = "dvdbackup -T $title_set -p -i $arg_input -o $arg_output -n $arg_name 2>&1 | tee $logfile";
+			$cmd = "dvdbackup -T $title_set -p -i $arg_input -o $arg_output -n $arg_name";
 			if($this->debug)
 				echo "* Executing: $cmd\n";
+
+			if($this->dry_run) {
+				echo "$cmd\n";
+				return true;
+			}
 
 			$success = true;
 			$retval = 0;
 
-			if(!$this->dry_run)
-				passthru($cmd, $retval);
+			passthru($cmd, $retval);
 
 			if($this->debug)
 				echo "* dvdbackup return value: $retval\n";
