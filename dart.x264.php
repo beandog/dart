@@ -143,10 +143,6 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 	else
 		$comb_detect = false;
 
-	$progressive = $episodes_model->progressive;
-	$top_field = $episodes_model->top_field;
-	$bottom_field = $episodes_model->bottom_field;
-
 	// If PAL format, detelecining is not needed
 	if($tracks_model->format == 'PAL') {
 		$detelecine = false;
