@@ -147,11 +147,6 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 	$top_field = $episodes_model->top_field;
 	$bottom_field = $episodes_model->bottom_field;
 
-	// Detelecine by default if PTS hasn't been scanned
-	if($progressive == null && $top_field == null && $bottom_field == null) {
-		$detelecine = true;
-	}
-
 	// If PAL format, detelecining is not needed
 	if($tracks_model->format == 'PAL') {
 		$detelecine = false;
