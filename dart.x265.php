@@ -43,7 +43,7 @@ if(($opt_encode_info || $opt_rip_info) && $episode_id && $video_encoder == 'x265
 
 	/** Encoding **/
 
-	if($opt_no_dvdnav || $series_model->dvdnav == 0)
+	if(($opt_no_dvdnav || $series_model->dvdnav == 0) && $disc_type == 'dvd')
 		$handbrake->dvdnav(false);
 
 	/** Video **/
