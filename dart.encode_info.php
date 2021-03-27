@@ -256,8 +256,6 @@
 
 					$handbrake->input_filename($bluray_vc1);
 					$handbrake->add_audio_track(1);
-					if($audio_ix != $fallback_ix)
-						$handbrake->add_audio_track(2);
 
 					if($debug)
 						$handbrake->set_duration(300);
