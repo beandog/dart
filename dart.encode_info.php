@@ -218,16 +218,12 @@
 				$mkvmerge = new Mkvmerge();
 				$mkvmerge->add_video_track(0);
 
+				$audio_ix = $tracks_model->get_best_quality_audio_ix('bluray');
+				$mkvmerge->add_audio_track($audio_ix);
+
 				$num_pgs_tracks = $tracks_model->get_num_subp_tracks();
 				$num_active_pgs_tracks = $tracks_model->get_num_active_subp_tracks();
 				$num_active_en_pgs_tracks = $tracks_model->get_num_active_subp_tracks('eng');
-
-				$fallback_ix = $tracks_model->get_fallback_codec_ix();
-				$mkvmerge->add_audio_track($fallback_ix);
-
-				$audio_ix = $tracks_model->get_best_quality_audio_ix('bluray');
-				if($audio_ix != $fallback_ix)
-					$mkvmerge->add_audio_track($audio_ix);
 
 				if($num_pgs_tracks) {
 					$pgs_ix = 0;
