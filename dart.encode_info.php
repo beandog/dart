@@ -257,6 +257,14 @@
 					$handbrake->input_filename($bluray_vc1);
 					$handbrake->add_audio_track(1);
 
+					$audio_model = new Audio_Model();
+					$audio_id = $audio_model->find_audio_id($tracks_model->id, 1);
+					$audio_model->load($audio_id);
+					if($audio_model->format == 'truhd') {
+						$handbrake->add_audio_track(1);
+						$handbrake->add_audio_encoder('eac3');
+					}
+
 					if($debug)
 						$handbrake->set_duration(300);
 
