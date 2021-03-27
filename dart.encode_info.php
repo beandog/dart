@@ -218,7 +218,13 @@
 				$mkvmerge = new Mkvmerge();
 				$mkvmerge->add_video_track(0);
 
-				$audio_ix = $tracks_model->get_best_quality_audio_ix('bluray');
+				// This was originally here to grab the TrueHD audio streams which
+				// looked like they were the second stream instead of the first. That is
+				// not always the case, and while it seems ideal to check all the
+				// variables, practically speaking the best quality track is going to be
+				// the first one matching the language.
+				// $audio_ix = $tracks_model->get_best_quality_audio_ix('bluray');
+				$audio_ix = $tracks_model->get_first_english_ix('bluray');
 				$mkvmerge->add_audio_track($audio_ix);
 
 				$num_pgs_tracks = $tracks_model->get_num_subp_tracks();
