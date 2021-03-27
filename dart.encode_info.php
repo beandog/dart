@@ -260,7 +260,24 @@
 					$audio_model = new Audio_Model();
 					$audio_id = $audio_model->find_audio_id($tracks_model->id, 1);
 					$audio_model->load($audio_id);
-					if($audio_model->format == 'truhd') {
+					$primary_format = $audio_model->format;
+					if($primary_format == 'truhd') {
+						$handbrake->add_audio_track(1);
+						$handbrake->add_audio_encoder('eac3');
+					}
+
+					// There are edge cases where the first audio track is Dolby
+					// Digital, and the second audio track is Dolby TrueHD. In
+					// these cases, the primary track is not ac3, but truhd. They
+					// will show incorrectly in bluray_info, and mediainfo from the
+					// m2ts files, but when remuxed or re-encoded they will properly
+					// show the correct codec.
+					// In these cases, also duplicate the truhd track as eac3.
+					$audio_id = $audio_model->find_audio_id($tracks_model->id, 2);
+					$audio_model->load($audio_id);
+					$secondary_format = $audio_model->format;
+
+					if($primary_format == 'ac3' && $secondary_format == 'truhd') {
 						$handbrake->add_audio_track(1);
 						$handbrake->add_audio_encoder('eac3');
 					}
