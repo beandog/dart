@@ -189,6 +189,8 @@
 				$bluray_vc1 = substr($filename, 0, strlen($filename) - 3)."VC1.mkv";
 				$bluray_mkv = substr($filename, 0, strlen($filename) - 3)."mkv";
 
+				$bluray_playlist = $tracks_model->ix;
+
 				if(file_exists($bluray_mkv) && $opt_skip_existing)
 					continue;
 
@@ -204,10 +206,10 @@
 				if(file_exists($bluray_mkv) && $opt_skip_existing)
 					$display_mkv = false;
 
-				$bluray_copy->input_track($tracks_model->ix);
+				$bluray_copy->input_track($bluray_playlist);
 				$bluray_copy->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
 
-				$bluray_chapters->input_track($tracks_model->ix);
+				$bluray_chapters->input_track($bluray_playlist);
 				$bluray_chapters->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
 
 				$bluray_copy->output_filename($bluray_m2ts);
@@ -247,20 +249,31 @@
 
 				$mkvmerge_command = $mkvmerge->get_executable_string();
 
-				if($display_txt)
+				if($display_txt && !$bluray_encode)
 					echo "$bluray_chapters_command\n";
 
-				if($display_m2ts)
+				if($display_m2ts && !$bluray_encode)
 					echo "$bluray_m2ts_command\n";
 
-				if($display_mkv)
+				if($display_mkv && !$bluray_encode)
 					echo "$mkvmerge_command\n";
 
 				if($bluray_encode) {
 
 					require 'dart.x264.php';
 
-					$handbrake->input_filename($bluray_vc1);
+					$handbrake->input_filename($device);
+
+					// HandBrake orders titles by index
+					$counter = 1;
+					foreach($dvd->dvd_info['playlists'] as $key => $arr) {
+						if($key == $bluray_playlist) {
+							$handbrake->input_track($counter);
+							break;
+						}
+						$counter++;
+					}
+
 					$handbrake->add_audio_track(1);
 
 					$audio_model = new Audio_Model();
