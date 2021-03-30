@@ -51,12 +51,6 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_copy_stdout', array(
-		'long_name' => '--stdout',
-		'description' => 'Send dvd_copy output to stdout',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
 	$parser->addOption('opt_rip_info', array(
 		'long_name' => '--rip-info',
 		'description' => 'Display dvd_copy + ffmpeg instructions for a DVD',
