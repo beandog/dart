@@ -27,9 +27,6 @@
 			if($verbose)
 				$bluray_copy->verbose();
 
-			if($dry_run)
-				$bluray_copy->dry_run();
-
 			$bluray_copy->input_filename($device);
 
 			$bluray_chapters = new BlurayChapters();

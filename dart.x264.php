@@ -41,7 +41,6 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 	$handbrake->set_binary($handbrake_bin);
 	$handbrake->verbose($verbose);
 	$handbrake->debug($debug);
-	$handbrake->set_dry_run($dry_run);
 	if(isset($x264opts))
 		$handbrake->set_x264opts($x264opts);
 

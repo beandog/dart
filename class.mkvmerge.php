@@ -4,7 +4,6 @@
 
 		public $debug = false;
 		public $verbose = false;
-		public $dry_run = false;
 
 		// mkvmerge
 		public $binary = 'mkvmerge';
@@ -65,10 +64,6 @@
 
 		public function add_chapters($str) {
 			$this->chapters = $str;
-		}
-
-		public function set_dry_run($bool = true) {
-			$this->dry_run = (boolean)$bool;
 		}
 
 		public function get_arguments() {

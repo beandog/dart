@@ -13,9 +13,6 @@ if(($opt_rip_info || $opt_pts_info) && $episode_id) {
 		if($verbose)
 			$ffmpeg->verbose();
 
-		if($dry_run)
-			$ffmpeg->dry_run();
-
 		$subp_ix = $tracks_model->get_first_english_subp();
 		if($subp_ix)
 			$ffmpeg->input_opts("-probesize '67108864' -analyzeduration '60000000'");
@@ -108,9 +105,6 @@ if(($opt_rip_info || $opt_pts_info) && $episode_id) {
 
 		if($verbose)
 			$ffmpeg->verbose();
-
-		if($dry_run)
-			$ffmpeg->dry_run();
 
 		$ffmpeg->input_filename('-');
 		$ffmpeg->output_filename('-');

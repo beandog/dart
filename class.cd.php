@@ -6,7 +6,6 @@
 		public $dvd_info;
 		public $is_iso;
 		public $debug;
-		public $dry_run;
 		public $binary = '/usr/bin/dvd_info';
 
 		public $opened;
@@ -74,11 +73,10 @@
 		public $cd_id;
 		public $cddb_id;
 
-		function __construct($device = "/dev/dvd", $debug = false, $dry_run = false) {
+		function __construct($device = "/dev/dvd", $debug = false) {
 
 			$this->device = realpath($device);
 			$this->debug = boolval($debug);
-			$this->dry_run = boolval($dry_run);
 
 			if(!file_exists($this->device)) {
 				$this->opened = false;

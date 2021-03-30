@@ -26,7 +26,6 @@ if($opt_encode_info && $episode_id && $video_encoder == 'vp9') {
 	$handbrake->set_binary($handbrake_bin);
 	$handbrake->verbose($verbose);
 	$handbrake->debug($debug);
-	$handbrake->set_dry_run($dry_run);
 
 	// Lossless video
 	$handbrake->set_x264opts("lossless=1");

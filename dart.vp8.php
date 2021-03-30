@@ -21,7 +21,6 @@ if($opt_encode_info && $episode_id && $video_encoder == 'vp8') {
 	$handbrake->set_binary($handbrake_bin);
 	$handbrake->verbose($verbose);
 	$handbrake->debug($debug);
-	$handbrake->set_dry_run($dry_run);
 
 	$fps = $series_model->get_preset_fps();
 

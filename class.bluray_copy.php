@@ -4,7 +4,6 @@
 
 		public $debug = false;
 		public $verbose = false;
-		public $dry_run = false;
 
 		// bluray_copy
 		public $bluray_copy = 'bluray_copy';
@@ -40,10 +39,6 @@
 		public function input_track($str) {
 			$track = abs(intval($str));
 			$this->track = $track;
-		}
-
-		public function set_dry_run($bool = true) {
-			$this->dry_run = (boolean)$bool;
 		}
 
 		public function set_chapters($starting_chapter = 1, $ending_chapter = 1) {
@@ -118,10 +113,6 @@
 		public function input_track($str) {
 			$track = abs(intval($str));
 			$this->track = $track;
-		}
-
-		public function set_dry_run($bool = true) {
-			$this->dry_run = (boolean)$bool;
 		}
 
 		public function set_chapters($starting_chapter = 1, $ending_chapter = 1) {

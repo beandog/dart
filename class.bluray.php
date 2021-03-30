@@ -5,7 +5,6 @@
 		public $device;
 		public $is_iso;
 		public $debug;
-		public $dry_run;
 		public $binary = '/usr/bin/bluray_info';
 
 		public $opened;
@@ -62,11 +61,10 @@
 		// All
 		public $playlist_info;
 
-		function __construct($device = "/dev/bluray", $debug = false, $dry_run = false) {
+		function __construct($device = "/dev/bluray", $debug = false) {
 
 			$this->device = realpath($device);
 			$this->debug = boolval($debug);
-			$this->dry_run = boolval($dry_run);
 
 			if(!file_exists($this->device)) {
 				$this->opened = false;
@@ -533,8 +531,7 @@
 			$success = true;
 			$retval = 0;
 
-			if(!$this->dry_run)
-				passthru($cmd, $retval);
+			passthru($cmd, $retval);
 
 			if($this->debug)
 				echo "* makemkvcon return value: $retval\n";
@@ -542,14 +539,10 @@
 			if($retval !== 0)
 				$success = false;
 
-			if(!$this->dry_run)
-				$bool = rename($target_dir.'/'.$arg_name, $filename);
+			$bool = rename($target_dir.'/'.$arg_name, $filename);
 
 			if($bool === false)
 				$success = false;
-
-			if($this->dry_run)
-				return false;
 
 			return $success;
 

@@ -48,11 +48,6 @@
 	if($debug)
 		$verbose = 10;
 
-	if($opt_dry_run)
-		$dry_run = true;
-	else
-		$dry_run = false;
-
 	$skip = 0;
 
 	// --backup is basically a shortcut for ripping an ISO and importing it plus
@@ -327,9 +322,9 @@
 				echo "[$disc_name]\n";
 
 			if($disc_type == "dvd")
-				$dvd = new DVD($device, $debug, $opt_dry_run);
+				$dvd = new DVD($device, $debug);
 			elseif($disc_type == "bluray")
-				$dvd = new Bluray($device, $debug, $opt_dry_run);
+				$dvd = new Bluray($device, $debug);
 			elseif($disc_type == "cd")
 				$dvd = new CD($device, $debug);
 

@@ -34,7 +34,6 @@ if(($opt_encode_info || $opt_rip_info) && $episode_id && $video_encoder == 'x265
 	$handbrake->set_binary($handbrake_bin);
 	$handbrake->verbose($verbose);
 	$handbrake->debug($debug);
-	$handbrake->set_dry_run($dry_run);
 
 	/** Files **/
 

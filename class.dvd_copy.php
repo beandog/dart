@@ -4,7 +4,6 @@
 
 		public $debug = false;
 		public $verbose = false;
-		public $dry_run = false;
 
 		// dvd_copy
 		public $dvd_copy = 'dvd_copy';
@@ -59,10 +58,6 @@
 		public function input_track($str) {
 			$track = abs(intval($str));
 			$this->track = $track;
-		}
-
-		public function set_dry_run($bool = true) {
-			$this->dry_run = (boolean)$bool;
 		}
 
 		public function set_chapters($starting_chapter = 1, $ending_chapter = 1) {

@@ -6,7 +6,6 @@
 		public $dvd_info;
 		public $is_iso;
 		public $debug;
-		public $dry_run;
 		public $binary = '/usr/bin/dvd_info';
 
 		public $opened;
@@ -70,11 +69,10 @@
 		public $cell_first_sector;
 		public $cell_last_sector;
 
-		function __construct($device = "/dev/dvd", $debug = false, $dry_run = false) {
+		function __construct($device = "/dev/dvd", $debug = false) {
 
 			$this->device = realpath($device);
 			$this->debug = boolval($debug);
-			$this->dry_run = boolval($dry_run);
 
 			if(!file_exists($this->device)) {
 				$this->opened = false;
@@ -215,8 +213,7 @@
 			$success = true;
 			$retval = 0;
 
-			if(!$this->dry_run)
-				passthru($cmd, $retval);
+			passthru($cmd, $retval);
 
 			if($this->debug)
 				echo "* dvdbackup return value: $retval\n";
@@ -224,14 +221,10 @@
 			if($retval !== 0)
 				$success = false;
 
-			if(!$this->dry_run)
-				$bool = rename($target_dir.'/'.$arg_name, $filename);
+			$bool = rename($target_dir.'/'.$arg_name, $filename);
 
 			if($bool === false)
 				$success = false;
-
-			if($this->dry_run)
-				return false;
 
 			return $success;
 
@@ -268,11 +261,6 @@
 			$cmd = "dvdbackup -T $title_set -p -i $arg_input -o $arg_output -n $arg_name";
 			if($this->debug)
 				echo "* Executing: $cmd\n";
-
-			if($this->dry_run) {
-				echo "$cmd\n";
-				return true;
-			}
 
 			$success = true;
 			$retval = 0;

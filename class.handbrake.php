@@ -14,7 +14,6 @@
 		public $args = array();
 		public $scan_complete = false;
 		public $do_not_scan = false;
-		public $dry_run = false;
 		public $output;
 		public $duration = 0;
 		public $disc_type = 'dvd';
@@ -101,10 +100,6 @@
 		public function input_track($str) {
 			$track = abs(intval($str));
 			$this->track = $track;
-		}
-
-		public function set_dry_run($bool = true) {
-			$this->dry_run = (boolean)$bool;
 		}
 
 		public function add_chapters($bool = true) {
@@ -812,13 +807,6 @@
 
 			if($this->debug)
 				echo "Executing: ".escapeshellcmd($str)."\n";
-
-			if($this->dry_run) {
-				echo "* Dry run\n";
-				echo escapeshellcmd($str);
-				echo "\n";
-				return 1;
-			}
 
 			$return_var = null;
 

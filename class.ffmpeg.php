@@ -4,7 +4,6 @@
 
 		public $debug = false;
 		public $verbose = false;
-		public $dry_run = false;
 
 		// ffmpeg
 		public $ffmpeg = 'ffmpeg';
@@ -59,10 +58,6 @@
 
 		public function input_opts($str) {
 			$this->input_opts = $str;
-		}
-
-		public function set_dry_run($bool = true) {
-			$this->dry_run = (boolean)$bool;
 		}
 
 		public function set_vcodec($str) {
