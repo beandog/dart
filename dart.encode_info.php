@@ -35,8 +35,6 @@
 			$bluray_chapters = new BlurayChapters();
 			$bluray_chapters->input_filename($device);
 
-			$bluray_encode_audio = false;
-
 		}
 
 		// Display the episode names
@@ -185,6 +183,7 @@
 				$display_m2ts = true;
 				$display_mkv = true;
 				$bluray_encode = false;
+				$bluray_encode_audio = false;
 
 				$bluray_m2ts = substr($filename, 0, strlen($filename) - 3)."m2ts";
 				$bluray_txt = substr($filename, 0, strlen($filename) - 3)."txt";
@@ -228,9 +227,7 @@
 				$bluray_chapters->output_filename($bluray_txt);
 				$bluray_chapters_command = $bluray_chapters->get_executable_string();
 
-				if($bluray_encode_audio) {
-					$bluray_ffmpeg_command = "ffmpeg -i '$bluray_m2ts' -map '0:a:0' -acodec 'eac3' -y '$bluray_ac3'";
-				}
+				$bluray_ffmpeg_command = "ffmpeg -i '$bluray_m2ts' -map '0:a:0' -acodec 'eac3' -y '$bluray_ac3'";
 
 				$mkvmerge = new Mkvmerge();
 				$mkvmerge->add_video_track(0);
