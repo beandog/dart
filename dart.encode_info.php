@@ -35,6 +35,8 @@
 			$bluray_chapters = new BlurayChapters();
 			$bluray_chapters->input_filename($device);
 
+			$bluray_encode_audio = false;
+
 		}
 
 		// Display the episode names
@@ -187,6 +189,7 @@
 				$bluray_m2ts = substr($filename, 0, strlen($filename) - 3)."m2ts";
 				$bluray_txt = substr($filename, 0, strlen($filename) - 3)."txt";
 				$bluray_vc1 = substr($filename, 0, strlen($filename) - 3)."VC1.mkv";
+				$bluray_ac3 = substr($filename, 0, strlen($filename) - 3)."eac3";
 				$bluray_mkv = substr($filename, 0, strlen($filename) - 3)."mkv";
 
 				$bluray_playlist = $tracks_model->ix;
@@ -212,10 +215,22 @@
 				$bluray_chapters->input_track($bluray_playlist);
 				$bluray_chapters->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
 
+				// Re-encode TrueHD into a second Dolby Digital Plus stream if necessary
+				$audio_model = new Audio_Model();
+				$audio_id = $audio_model->find_audio_id($tracks_model->id, 1);
+				$audio_model->load($audio_id);
+				$primary_format = $audio_model->format;
+				if($primary_format == 'truhd')
+					$bluray_encode_audio = true;
+
 				$bluray_copy->output_filename($bluray_m2ts);
 				$bluray_m2ts_command = $bluray_copy->get_executable_string();
 				$bluray_chapters->output_filename($bluray_txt);
 				$bluray_chapters_command = $bluray_chapters->get_executable_string();
+
+				if($bluray_encode_audio) {
+					$bluray_ffmpeg_command = "ffmpeg -i '$bluray_m2ts' -map '0:a:0' -acodec 'eac3' -y '$bluray_ac3'";
+				}
 
 				$mkvmerge = new Mkvmerge();
 				$mkvmerge->add_video_track(0);
@@ -240,12 +255,15 @@
 					$mkvmerge->add_subtitle_track($pgs_ix);
 				}
 
-				$mkvmerge->input_filename($bluray_m2ts);
+				$mkvmerge->add_input_filename($bluray_m2ts);
 				$mkvmerge->output_filename($bluray_mkv);
 				$mkvmerge->add_chapters($bluray_txt);
 
 				if($bluray_encode)
 					$mkvmerge->output_filename($bluray_vc1);
+
+				if($bluray_encode_audio)
+					$mkvmerge->add_input_filename($bluray_ac3);
 
 				$mkvmerge_command = $mkvmerge->get_executable_string();
 
@@ -254,6 +272,9 @@
 
 				if($display_m2ts && !$bluray_encode)
 					echo "$bluray_m2ts_command\n";
+
+				if($bluray_encode_audio)
+					echo "$bluray_ffmpeg_command\n";
 
 				if($display_mkv && !$bluray_encode)
 					echo "$mkvmerge_command\n";
@@ -276,11 +297,7 @@
 
 					$handbrake->add_audio_track(1);
 
-					$audio_model = new Audio_Model();
-					$audio_id = $audio_model->find_audio_id($tracks_model->id, 1);
-					$audio_model->load($audio_id);
-					$primary_format = $audio_model->format;
-					if($primary_format == 'truhd') {
+					if($bluray_encode_audio) {
 						$handbrake->add_audio_track(1);
 						$handbrake->add_audio_encoder('eac3');
 					}
