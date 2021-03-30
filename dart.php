@@ -81,20 +81,6 @@
 
 	}
 
-	if($opt_open_trays && !$opt_close_trays) {
-		foreach($all_devices as $str) {
-			$drive = new DVDDrive($str);
-			$drive->open();
-		}
-	}
-
-	if($opt_close_trays && !$opt_open_trays) {
-		foreach($all_devices as $str) {
-			$drive = new DVDDrive($str);
-			$drive->close();
-		}
-	}
-
 	if($opt_encode_info || $opt_copy_info || $opt_rip_info || $opt_pts_info)
 		$batch_mode = true;
 
@@ -266,7 +252,7 @@
 			}
 
 			// Close the tray if not waiting
-			if(!$opt_wait && $tray_open && !$opt_open_trays && $access_device) {
+			if(!$opt_wait && $tray_open && $access_device) {
 
 				if(!$batch_mode)
 					echo "* Drive is open, closing tray\n";

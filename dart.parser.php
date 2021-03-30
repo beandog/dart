@@ -112,25 +112,6 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_open_trays', array(
-		'long_name' => '--open',
-		'description' => 'Open all DVD trays',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
-	$parser->addOption('opt_close_trays', array(
-		'long_name' => '--close',
-		'description' => 'Close all DVD trays',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
-	$parser->addOption('opt_force', array(
-		'short_name' => '-f',
-		'long_name' => '--force',
-		'description' => 'Close all DVD trays',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
 	$parser->addOption('opt_iso_filename', array(
 		'long_name' => '--iso-filename',
 		'description' => 'Display ISO filename',
