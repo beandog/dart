@@ -273,7 +273,7 @@
 				if($display_m2ts && !$bluray_encode)
 					echo "$bluray_m2ts_command\n";
 
-				if($bluray_encode_audio)
+				if($bluray_encode_audio && !file_exists($bluray_ac3))
 					echo "$bluray_ffmpeg_command\n";
 
 				if($display_mkv && !$bluray_encode)
