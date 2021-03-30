@@ -14,6 +14,7 @@
 
 		// mkvmerge source
 		public $input_filename = '/dev/sr0';
+		public $input_filenames = array();
 		public $output_filename = 'media_track.mkv';
 
 		// Video
@@ -39,11 +40,15 @@
 
 		/** Filename **/
 		public function input_filename($src) {
-			$this->input_filename = $src;
+			$this->input_filenames[] = $src;
 		}
 
 		public function output_filename($str) {
 			$this->output_filename = $str;
+		}
+
+		public function add_input_filename($str) {
+			$this->input_filenames[] = $str;
 		}
 
 		public function add_video_track($str) {
@@ -109,7 +114,8 @@
 			if($this->verbose)
 				$cmd[] = "-v";
 
-			$cmd[] = escapeshellarg($this->input_filename);
+			foreach($this->input_filenames as $filename)
+				$cmd[] = escapeshellarg($filename);
 
 			$str = implode(" ", $cmd);
 
