@@ -224,8 +224,7 @@
 			// with the assumption for now that if dart is specifically told to access
 			// *this device*, then it is intended to have media in it. If there's none
 			// in there, do the courtesy of opening the tray so that the user doesn't
-			// have to eject it manually. A possible option is also to check for the
-			// --open option given, and only eject the tray in that case.
+			// have to eject it manually.
 			if(!$opt_wait && !$tray_open && !$tray_has_media && $access_device) {
 
 				// The device was included in the main program call, so eject
