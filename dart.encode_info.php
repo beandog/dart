@@ -81,9 +81,6 @@
 						if($opt_time)
 							$handbrake_command = "command time -f '$filename - %E' -o '${filename}.time' $handbrake_command";
 
-						if($opt_ssim && !file_exists($ssim_filename))
-							echo "$hb_ssim_command\n";
-
 						echo "$handbrake_command\n";
 
 						if($opt_qa) {

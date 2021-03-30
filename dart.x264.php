@@ -174,15 +174,6 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 		$handbrake->add_audio_encoder('copy');
 	}
 
-	if($opt_ssim) {
-		$hb_ssim = clone $handbrake;
-		$hb_ssim->set_video_quality(0);
-		$hb_ssim->set_x264_preset('ultrafast');
-		$ssim_filename = str_replace($series_model->nsix, '_SSIM', $filename);
-		$hb_ssim->output_filename($ssim_filename);
-		$hb_ssim_command = $hb_ssim->get_executable_string();
-	}
-
 	/** Subtitles **/
 
 	$scan_subp_tracks = false;

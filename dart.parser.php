@@ -69,12 +69,6 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_ssim', array(
-		'long_name' => '--ssim',
-		'description' => 'Display instructions for creating SSIM reference file',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
 	$parser->addOption('opt_no_dvdnav', array(
 		'long_name' => '--no-dvdnav',
 		'description' => 'Tell HandBrake not to use libdvdnav',
