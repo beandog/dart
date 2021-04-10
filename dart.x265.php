@@ -58,10 +58,11 @@ if(($opt_encode_info || $opt_rip_info) && $episode_id && $video_encoder == 'x265
 	/** x265 **/
 
 	$x264_preset = $series_model->get_x264_preset();
+	if(!$x264_preset)
+		$x264_preset = 'medium';
 	if($arg_preset)
 		$x264_preset = $arg_preset;
-	if($video_quality != 0)
-		$handbrake->set_x264_preset($x264_preset);
+	$handbrake->set_x264_preset($x264_preset);
 
 	/** frameinfo **/
 
