@@ -190,7 +190,9 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 			$handbrake->add_subtitle_track($subp_ix);
 			$d_subtitles = "VOBSUB";
 		} elseif($has_closed_captioning) {
-			$num_subp_tracks = $tracks_model->get_num_subp_tracks();
+			// In older versions of HB, it would count empty subp tracks
+			// $num_subp_tracks = $tracks_model->get_num_subp_tracks();
+			$num_subp_tracks = $tracks_model->get_num_active_subp_tracks();
 			$closed_captioning_ix = $num_subp_tracks + 1;
 			$handbrake->add_subtitle_track($closed_captioning_ix);
 			$d_subtitles = "Closed Captioning";
