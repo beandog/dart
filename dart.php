@@ -364,9 +364,9 @@
 
 		}
 
+		require 'dart.import.php';
 		require 'dart.info.php';
 		require 'dart.encode_info.php';
-		require 'dart.import.php';
 		require 'dart.iso.php';
 
 		// goto point for next device -- skip here for any reason that the initial
