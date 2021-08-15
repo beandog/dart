@@ -8,19 +8,15 @@
 
 		public function __construct($table, $id = null) {
 
-			// $this->db = MDB2::singleton();
-
 			$this->table = $table;
-
-			// FIXME needs a constructor
-			global $pdo_dsn;
-			$this->new_pdo($pdo_dsn);
 
 			global $db4;
 			$this->db = pg_connect($db4);
 
-			if($this->db === false)
-				echo "Couldn't connect to DB4\n";
+			if($this->db === false) {
+				trigger_error("Cannot connect to DB using credentials: $db4", E_USER_ERROR);
+				return null;
+			}
 
 			return $this->id = $id;
 
@@ -40,7 +36,9 @@
 				$key => $value
 			);
 
-			return $this->db->autoExecute($this->table, $arr_update, MDB2_AUTOQUERY_UPDATE, "id = '".pg_escape_string($this->id)."'");
+			$sql = "UPDATE ".$this->table." SET $key = '".pg_escape_string($value)."';";
+
+			return $this->query($sql);
 
 		}
 
@@ -75,25 +73,11 @@
 
 		}
 
-		public function new_pdo($pdo_dsn) {
-
-			// *Starting* to migrate from PEAR DBA to native PHP PDO.
-			try {
-				$this->pg = new PDO($pdo_dsn);
-				$this->pg->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-				return true;
-			} catch (PDOException $e) {
-				echo "* PHP PDO connection FAILED: ".$e->getMessage()."\n";
-				return false;
-			}
-
-		}
-
 		public function create_new() {
 
-			$this->db->query("INSERT INTO ".$this->table." DEFAULT VALUES;");
+			$sql = "INSERT INTO ".$this->table." DEFAULT VALUES RETURNING id;";
 
-			return $this->id = $this->db->lastInsertID();
+			return $this->get_one($sql);
 
 		}
 
@@ -101,7 +85,14 @@
 
 			$sql = "DELETE FROM ".$this->table." WHERE id = ".$this->id.";";
 
-			return $this->db->query($sql);
+			$rs = pg_query($sql);
+
+			if($rs === false) {
+				trigger_error("Query failed: $sql", E_USER_ERROR);
+				return false;
+			}
+
+			return true;
 
 		}
 
@@ -111,17 +102,16 @@
 
 		}
 
-		// Replace DBA with native PHP PDO functions that return the correct
-		// data types from PostgreSQL instead of casting them all to strings :D
-
 		public function get_one($sql) {
 
-			$rs = $this->pg->query($sql);
+			$rs = pg_query($sql);
 			if($rs === false) {
 				trigger_error("Query failed: $sql", E_USER_ERROR);
-				return null;
+				return array();
 			}
-			$var = $rs->fetchColumn();
+
+			$arr = pg_fetch_array($rs, 0, PGSQL_ASSOC);
+			$var = current($arr);
 
 			return $var;
 
@@ -129,12 +119,16 @@
 
 		public function get_col($sql) {
 
-			$rs = $this->pg->query($sql);
+			$rs = pg_query($sql);
 			if($rs === false) {
 				trigger_error("Query failed: $sql", E_USER_ERROR);
 				return array();
 			}
-			$arr = $rs->fetchAll(PDO::FETCH_COLUMN);
+
+			$arr = array();
+
+			while($row = pg_fetch_array($rs, 0, PGSQL_NUM))
+				$arr[] = current($row);
 
 			return $arr;
 
@@ -142,12 +136,16 @@
 
 		public function get_all($sql) {
 
-			$rs = $this->pg->query($sql);
+			$rs = pg_query($sql);
 			if($rs === false) {
 				trigger_error("Query failed: $sql", E_USER_ERROR);
 				return array();
 			}
-			$arr = $rs->fetchAll();
+
+			$arr = array();
+
+			while($row = pg_fetch_array($rs, 0, PGSQL_ASSOC))
+				$arr[] = $row;
 
 			return $arr;
 
@@ -155,13 +153,13 @@
 
 		public function get_row($sql) {
 
-			$rs = $this->pg->query($sql);
+			$rs = pg_query($sql);
 			if($rs === false) {
 				trigger_error("Query failed: $sql", E_USER_ERROR);
 				return array();
 			}
-			$arr = $rs->fetchAll();
-			$arr = current($arr);
+
+			$arr = pg_fetch_array($rs, 0, PGSQL_ASSOC);
 
 			return $arr;
 
