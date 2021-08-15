@@ -84,7 +84,9 @@
 
 			$sql = "INSERT INTO ".$this->table." DEFAULT VALUES RETURNING id;";
 
-			return $this->get_one($sql);
+			$this->id = $this->get_one($sql);
+
+			return $this->id;
 
 		}
 
