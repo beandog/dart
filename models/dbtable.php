@@ -118,6 +118,10 @@
 			}
 
 			$arr = pg_fetch_array($rs, null, PGSQL_ASSOC);
+
+			if($arr === false)
+				return array();
+
 			$var = current($arr);
 
 			return $var;
@@ -167,6 +171,9 @@
 			}
 
 			$arr = pg_fetch_array($rs, null, PGSQL_ASSOC);
+
+			if($arr === false)
+				return array();
 
 			return $arr;
 
