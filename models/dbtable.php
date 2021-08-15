@@ -122,7 +122,7 @@
 			$arr = pg_fetch_array($rs, null, PGSQL_ASSOC);
 
 			if($arr === false)
-				return array();
+				return '';
 
 			$var = current($arr);
 
