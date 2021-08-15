@@ -407,7 +407,7 @@
 			} else {
 
 				$block_device = basename($this->device, "/dev/");
-				$num_sectors = file_get_contents("/sys/block/$block_device/size");
+				$num_sectors = intval(file_get_contents("/sys/block/$block_device/size"));
 				$b_size = $num_sectors * 512;
 
 			}
