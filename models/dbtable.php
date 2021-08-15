@@ -38,7 +38,14 @@
 
 			$sql = "UPDATE ".$this->table." SET $key = '".pg_escape_string($value)."';";
 
-			return $this->query($sql);
+			$rs = pg_query($sql);
+
+			if($rs === false) {
+				trigger_error("Query failed: $sql", E_USER_ERROR);
+				return false;
+			}
+
+			return true;
 
 		}
 
