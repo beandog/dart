@@ -3,8 +3,6 @@
 
 	require_once 'config.local.php';
 
-	require_once 'inc.mdb2.php';
-
 	require_once 'dart.functions.php';
 	require_once 'class.dvd.php';
 
@@ -90,7 +88,7 @@
 	$episode_title .= ".".$pathinfo['extension'];
 
 	echo $filename;
-	
+
 	echo "\n";
 
 	// The ghosts of monolithic code haunt me. :)

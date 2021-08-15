@@ -4,8 +4,6 @@
 	// Overrides to defaults
 	require_once 'config.local.php';
 
-	require_once 'inc.mdb2.php';
-
 	require_once 'dart.functions.php';
 	require_once 'class.dvd.php';
 
