@@ -36,7 +36,7 @@
 				$key => $value
 			);
 
-			$sql = "UPDATE ".$this->table." SET $key = '".pg_escape_string($value)."';";
+			$sql = "UPDATE ".$this->table." SET $key = '".pg_escape_string($value)."' WHERE id = ".$this->id.";";
 
 			$rs = pg_query($sql);
 
