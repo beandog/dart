@@ -14,9 +14,9 @@
 
 		function get_collection_title() {
 
-			$sql = "SELECT c.title FROM collections c INNER JOIN series s ON s.collection_id = c.id WHERE s.id = ".$this->db->quote($this->id).";";
+			$sql = "SELECT c.title FROM collections c INNER JOIN series s ON s.collection_id = c.id WHERE s.id = ".$this->id.";";
 
-			$var = $this->db->getOne($sql);
+			$var = $this->get_one($sql);
 
 			return $var;
 
@@ -24,9 +24,9 @@
 
 		function get_preset_name() {
 
-			$sql = "SELECT presets.name FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->db->quote($this->id).";";
+			$sql = "SELECT presets.name FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->id.";";
 
-			$var = $this->db->getOne($sql);
+			$var = $this->get_one($sql);
 
 			return $var;
 
@@ -34,9 +34,9 @@
 
 		function get_preset_format() {
 
-			$sql = "SELECT presets.format FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->db->quote($this->id).";";
+			$sql = "SELECT presets.format FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->id.";";
 
-			$var = $this->db->getOne($sql);
+			$var = $this->get_one($sql);
 
 			return $var;
 
@@ -48,7 +48,7 @@
 
 			$sql = "SELECT vcodec FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = $series_id;";
 
-			$var = $this->db->getOne($sql);
+			$var = $this->get_one($sql);
 
 			return $var;
 
@@ -56,9 +56,9 @@
 
 		function get_audio_encoder() {
 
-			$sql = "SELECT presets.acodec FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->db->quote($this->id).";";
+			$sql = "SELECT presets.acodec FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->id.";";
 
-			$var = $this->db->getOne($sql);
+			$var = $this->get_one($sql);
 
 			return $var;
 
@@ -66,8 +66,8 @@
 
 		function get_crf() {
 
-			$sql = "SELECT s.crf AS series_crf, p.crf AS preset_crf FROM presets p INNER JOIN series_presets sp ON sp.preset_id = p.id JOIN series s ON s.id = sp.series_id AND sp.series_id = ".$this->db->quote($this->id).";";
-			$arr = $this->db->getRow($sql);
+			$sql = "SELECT s.crf AS series_crf, p.crf AS preset_crf FROM presets p INNER JOIN series_presets sp ON sp.preset_id = p.id JOIN series s ON s.id = sp.series_id AND sp.series_id = ".$this->id.";";
+			$arr = $this->get_row($sql);
 
 			extract($arr);
 
@@ -86,8 +86,8 @@
 
 			$arr = array();
 
-			$sql = "SELECT presets.x264opts FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->db->quote($this->id).";";
-			$str = $this->db->getOne($sql);
+			$sql = "SELECT presets.x264opts FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->id.";";
+			$str = $this->get_one($sql);
 
 			if(strlen($str))
 				$arr[] = $str;
@@ -107,8 +107,8 @@
 
 			$arr = array();
 
-			$sql = "SELECT presets.x264_preset FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->db->quote($this->id).";";
-			$str = $this->db->getOne($sql);
+			$sql = "SELECT presets.x264_preset FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->id.";";
+			$str = $this->get_one($sql);
 
 			return $str;
 
@@ -118,8 +118,8 @@
 
 			$arr = array();
 
-			$sql = "SELECT presets.x264_tune FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->db->quote($this->id).";";
-			$str = $this->db->getOne($sql);
+			$sql = "SELECT presets.x264_tune FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->id.";";
+			$str = $this->get_one($sql);
 
 			return $str;
 
@@ -127,9 +127,9 @@
 
 		function get_preset_deinterlace() {
 
-			$sql = "SELECT presets.deinterlace FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->db->quote($this->id).";";
+			$sql = "SELECT presets.deinterlace FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->id.";";
 
-			$str = $this->db->getOne($sql);
+			$str = $this->get_one($sql);
 
 			return $str;
 
@@ -137,9 +137,9 @@
 
 		function get_preset_decomb() {
 
-			$sql = "SELECT presets.decomb FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->db->quote($this->id).";";
+			$sql = "SELECT presets.decomb FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->id.";";
 
-			$str = $this->db->getOne($sql);
+			$str = $this->get_one($sql);
 
 			return $str;
 
@@ -147,9 +147,9 @@
 
 		function get_preset_detelecine() {
 
-			$sql = "SELECT presets.detelecine FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->db->quote($this->id).";";
+			$sql = "SELECT presets.detelecine FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->id.";";
 
-			$str = $this->db->getOne($sql);
+			$str = $this->get_one($sql);
 
 			return $str;
 
@@ -157,9 +157,9 @@
 
 		function get_preset_fps() {
 
-			$sql = "SELECT presets.fps FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->db->quote($this->id).";";
+			$sql = "SELECT presets.fps FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->id.";";
 
-			$var = $this->db->getOne($sql);
+			$var = $this->get_one($sql);
 
 			return $var;
 

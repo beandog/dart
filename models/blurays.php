@@ -20,7 +20,7 @@
 				return false;
 
 			$sql = "SELECT id FROM blurays WHERE dvd_id = $int;";
-			$var = $this->db->getOne($sql);
+			$var = $this->get_one($sql);
 
 			if(!$var)
 				return false;
@@ -36,8 +36,8 @@
 			if(!$str)
 				return false;
 
-			$sql = "SELECT b.id FROM blurays b JOIN dvds d ON d.id = b.dvd_id WHERE d.dvdread_id = ".$this->db->quote($str).";";
-			$this->id = intval($this->db->getOne($sql));
+			$sql = "SELECT b.id FROM blurays b JOIN dvds d ON d.id = b.dvd_id WHERE d.dvdread_id = '".pg_escape_string($str)."';";
+			$this->id = intval($this->get_one($sql));
 
 			return $this->id;
 
@@ -48,8 +48,8 @@
 			if(!$str)
 				return false;
 
-			$sql = "SELECT id FROM blurays WHERE disc_title = ".$this->db->quote($str).";";
-			$this->id = intval($this->db->getOne($sql));
+			$sql = "SELECT id FROM blurays WHERE disc_title = '".pg_escape_string($str)."';";
+			$this->id = intval($this->get_one($sql));
 
 			return $this->id;
 
@@ -62,8 +62,8 @@
 
 			$str = strtolower($str);
 
-			$sql = "SELECT id FROM blurays WHERE disc_id = ".$this->db->quote($str).";";
-			$this->id = intval($this->db->getOne($sql));
+			$sql = "SELECT id FROM blurays WHERE disc_id = '".pg_escape_string($str)."';";
+			$this->id = intval($this->get_one($sql));
 
 			return $this->id;
 
@@ -74,8 +74,8 @@
 			if(!$str)
 				return false;
 
-			$sql = "SELECT id FROM blurays WHERE volname = ".$this->db->quote($str).";";
-			$this->id = intval($this->db->getOne($sql));
+			$sql = "SELECT id FROM blurays WHERE volname = '".pg_escape_string($str)."';";
+			$this->id = intval($this->get_one($sql));
 
 			return $this->id;
 
@@ -86,8 +86,8 @@
 			if(!$str)
 				return false;
 
-			$sql = "SELECT id FROM blurays WHERE legacy_md5 = ".$this->db->quote($str).";";
-			$this->id = intval($this->db->getOne($sql));
+			$sql = "SELECT id FROM blurays WHERE legacy_md5 = '".pg_escape_string($str)."';";
+			$this->id = intval($this->get_one($sql));
 
 			return $this->id;
 

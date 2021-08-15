@@ -26,8 +26,8 @@
 		 */
 		public function find_subp_id($track_id, $ix) {
 
-			$sql = "SELECT id FROM subp WHERE track_id = ".$this->db->quote($track_id)." AND ix = ".$this->db->quote($ix).";";
-			$var = $this->db->getOne($sql);
+			$sql = "SELECT id FROM subp WHERE track_id = $track_id AND ix = $ix;";
+			$var = $this->get_one($sql);
 
 			return $var;
 		}

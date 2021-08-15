@@ -30,7 +30,7 @@
 			else
 				return 0;
 
-			$max_metadata_spec = intval($this->db->getOne($sql));
+			$max_metadata_spec = intval($this->get_one($sql));
 
 			return $max_metadata_spec;
 
@@ -59,7 +59,7 @@
 
 			// Check for empty filesize
 			$sql = "SELECT filesize FROM dvds WHERE id = $dvd_id;";
-			$filesize = abs(intval($this->db->getOne($sql)));
+			$filesize = abs(intval($this->get_one($sql)));
 			if(!$filesize)
 				return true;
 
@@ -68,14 +68,14 @@
 				$max_metadata_spec_id = $this->max_metadata_spec();
 
 				$sql = "SELECT COUNT(1) FROM dvds d WHERE id = $dvd_id AND bluray = 0 AND metadata_spec < $max_metadata_spec_id;";
-				$count = abs(intval($this->db->getOne($sql)));
+				$count = abs(intval($this->get_one($sql)));
 
 				if($count)
 					return true;
 
 				// Check if the DVD doesn't have the side set
 				$sql = "SELECT COUNT(1) FROM dvds WHERE id = $dvd_id AND bluray = 0 AND side IS NULL;";
-				$count = abs(intval($this->db->getOne($sql)));
+				$count = abs(intval($this->get_one($sql)));
 
 				if($count)
 					return true;
@@ -87,14 +87,14 @@
 				// Check for old metadata spec
 				$max_metadata_spec_id = $this->max_metadata_spec('bluray');
 				$sql = "SELECT COUNT(1) FROM dvds d WHERE id = $dvd_id AND bluray = 1 AND metadata_spec < $max_metadata_spec_id;";
-				$count = abs(intval($this->db->getOne($sql)));
+				$count = abs(intval($this->get_one($sql)));
 				if($count)
 					return true;
 
 				// Missing a title on a Blu-ray is not uncommon
 				/*
 				$sql = "SELECT COUNT(1) FROM dvds WHERE id = $dvd_id AND TRIM(title) = '';";
-				$count = abs(intval($this->db->getOne($sql)));
+				$count = abs(intval($this->get_one($sql)));
 				if($count)
 					return true;
 				*/
@@ -102,13 +102,13 @@
 				// Legacy indexing
 				/*
 				$sql = "SELECT disc_id FROM blurays WHERE dvd_id = $dvd_id;";
-				$var = $this->db->getOne($sql);
+				$var = $this->get_one($sql);
 				if(!$var)
 					return true;
 				*/
 
 				$sql = "SELECT disc_title FROM blurays WHERE dvd_id = $dvd_id;";
-				$var = $this->db->getOne($sql);
+				$var = $this->get_one($sql);
 				if(is_null($var))
 					return true;
 
@@ -124,7 +124,7 @@
 			$dvd_id = abs(intval($this->id));
 
 			$sql = "SELECT * FROM blurays WHERE dvd_id = $dvd_id";
-			$row = $this->db->getRow($sql);
+			$row = $this->get_row($sql);
 
 			if($row['disc_title'] == null)
 				return true;
@@ -139,12 +139,12 @@
 			$dvd_id = abs(intval($this->id));
 
 			$sql = "SELECT COUNT(1) FROM tracks WHERE dvd_id = $dvd_id;";
-			$var = $this->db->getOne($sql);
+			$var = $this->get_one($sql);
 			if(!$var)
 				return true;
 
 			$sql = "SELECT COUNT(1) FROM tracks WHERE dvd_id = $dvd_id AND length IS NULL;";
-			$var = $this->db->getOne($sql);
+			$var = $this->get_one($sql);
 			if($var)
 				return true;
 
@@ -160,7 +160,7 @@
 
 			// Verify tracks are existent
 			$sql = "SELECT COUNT(1) FROM tracks WHERE dvd_id = $dvd_id;";
-			$count = intval($this->db->getOne($sql));
+			$count = intval($this->get_one($sql));
 			if(!$count)
 				return true;
 
@@ -175,19 +175,19 @@
 
 				// Check if an audio track hasn't been set
 				$sql = "SELECT COUNT(1) FROM tracks WHERE dvd_id = $dvd_id AND audio_ix IS NULL;";
-				$count = intval($this->db->getOne($sql));
+				$count = intval($this->get_one($sql));
 				if($count)
 					return true;
 
 				// Check if any subtitle tracks have not been tracked as active or not
 				$sql = "SELECT COUNT(1) FROM subp s JOIN tracks t ON s.track_id = t.id WHERE t.dvd_id = $dvd_id AND active IS NULL;";
-				$count = intval($this->db->getOne($sql));
+				$count = intval($this->get_one($sql));
 				if($count)
 					return true;
 
 				// Check if closed captioning is not flagged
 				$sql = "SELECT COUNT(1) FROM tracks WHERE dvd_id = $dvd_id AND closed_captioning IS NULL;";
-				$count = intval($this->db->getOne($sql));
+				$count = intval($this->get_one($sql));
 				if($count)
 					return true;
 
@@ -197,7 +197,7 @@
 				// Check if filesize is not set for tracks
 				$sql = "SELECT COUNT(1) FROM tracks t JOIN chapters c ON c.track_id = t.id WHERE t.dvd_id = $dvd_id AND (t.filesize IS NULL OR c.filesize IS NULL);";
 
-				$count = intval($this->db->getOne($sql));
+				$count = intval($this->get_one($sql));
 				if($count)
 					return true;
 
@@ -207,55 +207,55 @@
 
 				// Check if there are zero audio tracks
 				$sql = "SELECT COUNT(1) FROM audio a JOIN tracks t ON a.track_id = t.id WHERE t.dvd_id = $dvd_id;";
-				$count = intval($this->db->getOne($sql));
+				$count = intval($this->get_one($sql));
 				if(!$count)
 					return true;
 
 				// Check if any audio tracks are missing language
 				$sql = "SELECT COUNT(1) FROM audio a JOIN tracks t ON a.track_id = t.id WHERE t.dvd_id = $dvd_id AND langcode = '';";
-				$count = intval($this->db->getOne($sql));
+				$count = intval($this->get_one($sql));
 				if($count)
 					return true;
 
 				// Check if any audio tracks are missing stream id
 				$sql = "SELECT COUNT(1) FROM audio a JOIN tracks t ON a.track_id = t.id WHERE t.dvd_id = $dvd_id AND streamid = '';";
-				$count = intval($this->db->getOne($sql));
+				$count = intval($this->get_one($sql));
 				if($count)
 					return true;
 
 				// Check if there are zero subtitles
 				$sql = "SELECT COUNT(1) FROM subp s JOIN tracks t ON s.track_id = t.id WHERE t.dvd_id = $dvd_id;";
-				$count = intval($this->db->getOne($sql));
+				$count = intval($this->get_one($sql));
 				if(!$count)
 					return true;
 
 				// Check if any subtitles are missing language
 				$sql = "SELECT COUNT(1) FROM subp s JOIN tracks t ON s.track_id = t.id WHERE t.dvd_id = $dvd_id AND langcode = '';";
-				$count = intval($this->db->getOne($sql));
+				$count = intval($this->get_one($sql));
 				if($count)
 					return true;
 
 				// Check if any subtitles are missing stream id
 				$sql = "SELECT COUNT(1) FROM subp s JOIN tracks t ON s.track_id = t.id WHERE t.dvd_id = $dvd_id AND streamid = '';";
-				$count = intval($this->db->getOne($sql));
+				$count = intval($this->get_one($sql));
 				if($count)
 					return true;
 
 				// Check if there are zero chapters
 				$sql = "SELECT COUNT(1) FROM chapters c JOIN tracks t ON c.track_id = t.id WHERE t.dvd_id = $dvd_id;";
-				$count = intval($this->db->getOne($sql));
+				$count = intval($this->get_one($sql));
 				if(!$count)
 					return true;
 
 				// Check if chapters are missing filesize
 				$sql = "SELECT COUNT(1) FROM chapters c JOIN tracks t ON c.track_id = t.id WHERE t.dvd_id = $dvd_id AND c.filesize IS NULL;";
-				$count = intval($this->db->getOne($sql));
+				$count = intval($this->get_one($sql));
 				if($count)
 					return true;
 
 				// Check if the filesize for tracks is using old format
 				$sql = "SELECT MAX(filesize) FROM tracks WHERE dvd_id = $dvd_id;";
-				$filesize = $this->db->getOne($sql);
+				$filesize = $this->get_one($sql);
 				if(ceil($filesize / 1048576) == 1)
 					return true;
 
@@ -273,13 +273,13 @@
 
 			// Check if VTS or TTN is not imported
 			$sql = "SELECT COUNT(1) from tracks WHERE dvd_id = $dvd_id AND (vts IS NULL OR ttn IS NULL);";
-			$count = intval($this->db->getOne($sql));
+			$count = intval($this->get_one($sql));
 			if($count)
 				return true;
 
 			// Check if cells have been imported
 			$sql = "SELECT COUNT(1) FROM cells c JOIN tracks t ON c.track_id = t.id JOIN dvds d ON t.dvd_id = d.id WHERE d.id = $dvd_id;";
-			$count = intval($this->db->getOne($sql));
+			$count = intval($this->get_one($sql));
 			if(!$count)
 				return true;
 
@@ -289,9 +289,9 @@
 
 		public function get_episodes() {
 
-			$sql = "SELECT e.id FROM dart_series_episodes e INNER JOIN tracks t ON e.track_id = t.id INNER JOIN dvds d ON t.dvd_id = d.id WHERE d.id = ".$this->db->quote($this->id)." ORDER BY e.season, e.episode_number, e.ix;";
+			$sql = "SELECT e.id FROM dart_series_episodes e INNER JOIN tracks t ON e.track_id = t.id INNER JOIN dvds d ON t.dvd_id = d.id WHERE d.id = ".$this->id." ORDER BY e.season, e.episode_number, e.ix;";
 
-			$arr = $this->db->getCol($sql);
+			$arr = $this->get_col($sql);
 
 			return $arr;
 
@@ -300,7 +300,7 @@
 		public function get_tracks() {
 
 			$sql = "SELECT id FROM tracks t WHERE dvd_id = ".$this->id." ORDER BY ix;";
-			$arr = $this->db->getCol($sql);
+			$arr = $this->get_col($sql);
 
 			return $arr;
 
@@ -309,7 +309,7 @@
 		public function get_title_sets() {
 
 			$sql = "SELECT DISTINCT track_vts FROM view_episodes WHERE dvd_id = ".$this->id." AND episode_skip = 0 ORDER BY track_vts;";
-			$arr = $this->db->getCol($sql);
+			$arr = $this->get_col($sql);
 
 			return $arr;
 
@@ -317,31 +317,31 @@
 
 		public function get_series_id() {
 
-			$sql = "SELECT series.id FROM dvds JOIN series_dvds ON dvds.id = series_dvds.dvd_id JOIN series ON series.id = series_dvds.series_id WHERE dvds.id = ".$this->db->quote($this->id).";";
-			$var = $this->db->getOne($sql);
+			$sql = "SELECT series.id FROM dvds JOIN series_dvds ON dvds.id = series_dvds.dvd_id JOIN series ON series.id = series_dvds.series_id WHERE dvds.id = ".$this->id.";";
+			$var = $this->get_one($sql);
 			return $var;
 
 		}
 
 		public function get_series_title() {
 
-			$sql = "SELECT series.title FROM dvds JOIN series_dvds ON dvds.id = series_dvds.dvd_id JOIN series ON series.id = series_dvds.series_id WHERE dvds.id = ".$this->db->quote($this->id).";";
-			$var = $this->db->getOne($sql);
+			$sql = "SELECT series.title FROM dvds JOIN series_dvds ON dvds.id = series_dvds.dvd_id JOIN series ON series.id = series_dvds.series_id WHERE dvds.id = ".$this->id.";";
+			$var = $this->get_one($sql);
 			return $var;
 
 		}
 
 		public function get_collection_id() {
 
-			$sql = "SELECT series.collection_id FROM dvds JOIN series_dvds ON dvds.id = series_dvds.dvd_id JOIN series ON series.id = series_dvds.series_id WHERE dvds.id = ".$this->db->quote($this->id).";";
-			$var = $this->db->getOne($sql);
+			$sql = "SELECT series.collection_id FROM dvds JOIN series_dvds ON dvds.id = series_dvds.dvd_id JOIN series ON series.id = series_dvds.series_id WHERE dvds.id = ".$this->id.";";
+			$var = $this->get_one($sql);
 			return $var;
 		}
 
 		public function has_max_tracks() {
 
-			$sql = "SELECT MAX(ix) FROM tracks WHERE dvd_id = ".$this->db->quote($this->id).";";
-			$var = $this->db->getOne($sql);
+			$sql = "SELECT MAX(ix) FROM tracks WHERE dvd_id = ".$this->id.";";
+			$var = $this->get_one($sql);
 			if($var == 99)
 				return true;
 			else
@@ -351,8 +351,8 @@
 
 		public function has_bugs() {
 
-			$sql = "SELECT COUNT(1) FROM dvd_bugs WHERE dvd_id = ".$this->db->quote($this->id).";";
-			$var = $this->db->getOne($sql);
+			$sql = "SELECT COUNT(1) FROM dvd_bugs WHERE dvd_id = ".$this->id.";";
+			$var = $this->get_one($sql);
 			if($var)
 				return true;
 			else
@@ -362,8 +362,8 @@
 
 		public function get_bugs() {
 
-			$sql = "SELECT bugs FROM dvds WHERE id = ".$this->db->quote($this->id).";";
-			$var = $this->db->getOne($sql);
+			$sql = "SELECT bugs FROM dvds WHERE id = ".$this->id.";";
+			$var = $this->get_one($sql);
 			return $var;
 
 		}
@@ -372,8 +372,8 @@
 
 			$dvdread_id = trim($dvdread_id);
 
-			$sql = "SELECT id FROM dvds WHERE dvdread_id = ".$this->db->quote($dvdread_id).";";
-			$var = $this->db->getOne($sql);
+			$sql = "SELECT id FROM dvds WHERE dvdread_id = '".pg_escape_string($dvdread_id)."';";
+			$var = $this->get_one($sql);
 
 			if($var)
 				$var = intval($var);
@@ -389,8 +389,8 @@
 			if(!$dvdread_id)
 				return false;
 
-			$sql = "SELECT id FROM dvds WHERE dvdread_id = ".$this->db->quote($dvdread_id).";";
-			$this->id = intval($this->db->getOne($sql));
+			$sql = "SELECT id FROM dvds WHERE dvdread_id = '".pg_escape_string($dvdread_id)."';";
+			$this->id = intval($this->get_one($sql));
 
 			return $this->id;
 

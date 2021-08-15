@@ -18,7 +18,7 @@
 
 			$sql = "SELECT s.collection_id, sd.series_id, t.dvd_id, e.track_id, s.title FROM episodes e JOIN tracks t ON e.track_id = t.id JOIN dvds d ON t.dvd_id = d.id JOIN series_dvds sd ON d.id = sd.dvd_id JOIN series s ON sd.series_id = s.id WHERE e.id = $episode_id LIMIT 1;";
 
-			$arr = $this->db->getRow($sql);
+			$arr = $this->get_row($sql);
 
 			if(!$arr)
 				return "";
@@ -47,7 +47,7 @@
 
 			$sql = "SELECT series_id FROM dart_series_episodes WHERE id = $episode_id LIMIT 1;";
 
-			$var = $this->db->getOne($sql);
+			$var = $this->get_one($sql);
 			$var = intval($var);
 
 			return $var;
@@ -60,7 +60,7 @@
 
 			$sql = "SELECT volume FROM dart_series_episodes WHERE id = $episode_id LIMIT 1;";
 
-			$var = $this->db->getOne($sql);
+			$var = $this->get_one($sql);
 
 			if($var === 0)
 				$var = null;
@@ -77,7 +77,7 @@
 
 			$sql = "SELECT series_title, title, part FROM dart_series_episodes WHERE id = $episode_id;";
 
-			$arr = $this->db->getRow($sql);
+			$arr = $this->get_row($sql);
 
 			if(empty($arr[2]))
 				array_pop($arr);
@@ -95,7 +95,7 @@
 			$episode_id = intval($this->id);
 
 			$sql = "SELECT * FROM dart_series_episodes WHERE id = $episode_id;";
-			$arr = $this->db->getRow($sql);
+			$arr = $this->get_row($sql);
 
 			if(!$arr)
 				return "";
@@ -114,7 +114,7 @@
 
 			// Check to see if it is manually set
 			$sql = "SELECT episode_number FROM episodes WHERE id = ".$this->id.";";
-			$var = $this->db->getOne($sql);
+			$var = $this->get_one($sql);
 
 			if($var)
 				return $var;
@@ -143,10 +143,10 @@
 // 				"AND e1.dvd_id != e2.dvd_id ".
 				// Previous DVD index or same index and other side
 				"AND ( (e1.series_dvds_ix < e2.series_dvds_ix ) OR ((e1.series_dvds_ix = e2.series_dvds_ix) AND (e1.series_dvds_side < e2.series_dvds_side))) ".
-				"WHERE e2.episode_id = ".$this->db->quote($this->id).
+				"WHERE e2.episode_id = ".$this->id.
 				" ORDER BY e1.episode_id;";
 
-			$episodes = $this->db->getCol($sql);
+			$episodes = $this->get_col($sql);
 
 			$i = count($episodes);
 
@@ -160,10 +160,10 @@
 // 				FROM view_episodes e1 INNER JOIN view_episodes e2 ON e1.series_id = e2.series_id
 // 				AND e1.dvd_id != e2.dvd_id
 // 				AND e1.season < e2.season
-// 				WHERE e2.episode_id = ".$this->db->quote($this->id)."
+// 				WHERE e2.episode_id = ".$this->id."
 // 				ORDER BY e1.episode_id;";
 //
-// 			$episodes = array_unique(array_merge($episodes, $this->db->getCol($sql)));
+// 			$episodes = array_unique(array_merge($episodes, $this->get_col($sql)));
 //
 // 			$i = count($episodes);
 //
@@ -176,10 +176,10 @@
 				AND e1.season = e2.season
 				AND e1.dvd_id != e2.dvd_id
 				AND e1.series_dvds_volume < e2.series_dvds_volume
-				WHERE e2.episode_id = ".$this->db->quote($this->id)."
+				WHERE e2.episode_id = ".$this->id."
 				ORDER BY e1.episode_id;";
 
-			$episodes = array_merge($episodes, $this->db->getCol($sql));
+			$episodes = array_merge($episodes, $this->get_col($sql));
 
 			$count1 = count(array_unique($episodes));
 
@@ -208,9 +208,9 @@
  					"OR (e1.episode_ix = e2.episode_ix AND e1.episode_id < e2.episode_id)) ".
  				// Not the same episode
 				"AND e1.episode_id != e2.episode_id ".
-				"WHERE e2.episode_id = ".$this->db->quote($this->id).
+				"WHERE e2.episode_id = ".$this->id.
 				";";
- 			$count2 = $this->db->getOne($sql);
+			$count2 = $this->get_one($sql);
 
 // 			echo "$count2\n";
 
@@ -228,7 +228,7 @@
 			$episode_id = intval($this->id);
 
 			$sql = "SELECT * FROM dart_series_episodes WHERE id = $episode_id;";
-			$arr = $this->db->getRow($sql);
+			$arr = $this->get_row($sql);
 
 			return $arr;
 

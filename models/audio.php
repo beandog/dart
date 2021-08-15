@@ -30,7 +30,7 @@
 			$ix = abs(intval($ix));
 
 			$sql = "SELECT id FROM audio WHERE track_id = $track_id AND ix = $ix;";
-			$var = $this->db->getOne($sql);
+			$var = $this->get_one($sql);
 
 			return $var;
 		}

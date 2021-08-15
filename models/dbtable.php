@@ -8,7 +8,7 @@
 
 		public function __construct($table, $id = null) {
 
-			$this->db = MDB2::singleton();
+			// $this->db = MDB2::singleton();
 
 			$this->table = $table;
 
@@ -16,15 +16,21 @@
 			global $pdo_dsn;
 			$this->new_pdo($pdo_dsn);
 
+			global $db4;
+			$this->db = pg_connect($db4);
+
+			if($this->db === false)
+				echo "Couldn't connect to DB4\n";
+
 			return $this->id = $id;
 
 		}
 
 		public function __get($var) {
 
-			$sql = "SELECT ".$this->db->escape($var)." FROM ".$this->table." WHERE id = ".$this->db->quote($this->id).";";
+			$sql = "SELECT $var FROM ".$this->table." WHERE id = ".$this->id.";";
 
-			return $this->db->getOne($sql);
+			return $this->get_one($sql);
 
 		}
 
@@ -34,7 +40,7 @@
 				$key => $value
 			);
 
-			return $this->db->autoExecute($this->table, $arr_update, MDB2_AUTOQUERY_UPDATE, "id = ".$this->db->quote($this->id));
+			return $this->db->autoExecute($this->table, $arr_update, MDB2_AUTOQUERY_UPDATE, "id = '".pg_escape_string($this->id)."'");
 
 		}
 
@@ -93,7 +99,7 @@
 
 		public function delete() {
 
-			$sql = "DELETE FROM ".$this->table." WHERE id = ".$this->db->quote($this->id).";";
+			$sql = "DELETE FROM ".$this->table." WHERE id = ".$this->id.";";
 
 			return $this->db->query($sql);
 

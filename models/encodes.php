@@ -21,7 +21,7 @@
 				$seconds = time();
 
 			$sql = "UPDATE encodes SET encode_finish = (encode_begin + interval '$seconds seconds') WHERE id = $id;";
-			$this->db->query($sql);
+			$this->query($sql);
 
 		}
 
