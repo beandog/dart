@@ -117,7 +117,7 @@
 				return array();
 			}
 
-			$arr = pg_fetch_array($rs, 0, PGSQL_ASSOC);
+			$arr = pg_fetch_array($rs, null, PGSQL_ASSOC);
 			$var = current($arr);
 
 			return $var;
@@ -134,7 +134,7 @@
 
 			$arr = array();
 
-			while($row = pg_fetch_array($rs, 0, PGSQL_NUM))
+			while($row = pg_fetch_array($rs, null, PGSQL_NUM))
 				$arr[] = current($row);
 
 			return $arr;
@@ -151,7 +151,7 @@
 
 			$arr = array();
 
-			while($row = pg_fetch_array($rs, 0, PGSQL_ASSOC))
+			while($row = pg_fetch_array($rs, null, PGSQL_ASSOC))
 				$arr[] = $row;
 
 			return $arr;
@@ -166,7 +166,7 @@
 				return array();
 			}
 
-			$arr = pg_fetch_array($rs, 0, PGSQL_ASSOC);
+			$arr = pg_fetch_array($rs, null, PGSQL_ASSOC);
 
 			return $arr;
 
