@@ -286,7 +286,7 @@
 			if($dirname == "/dev") {
 
 				$block_device = basename($this->device, "/dev/");
-				$num_sectors = file_get_contents("/sys/block/$block_device/size");
+				$num_sectors = intval(trim(file_get_contents("/sys/block/$block_device/size")));
 				$b_size = $num_sectors * 512;
 				$kb_size = $b_size / 1024;
 
