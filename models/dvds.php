@@ -126,7 +126,7 @@
 			$sql = "SELECT * FROM blurays WHERE dvd_id = $dvd_id";
 			$row = $this->get_row($sql);
 
-			if($row['disc_title'] == null)
+			if(count($row) && $row['disc_title'] == null)
 				return true;
 
 			return false;
