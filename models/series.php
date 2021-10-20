@@ -72,7 +72,7 @@
 			extract($arr);
 
 			// Prefer lossless
-			if($preset_crf == 0)
+			if($preset_crf === "0")
 				return 0;
 
 			// If preset is null, use default CRF of encoder

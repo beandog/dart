@@ -50,7 +50,7 @@ if(($opt_encode_info || $opt_rip_info) && $episode_id && $video_encoder == 'x265
 	$fps = $series_model->get_preset_fps();
 	$handbrake->set_video_encoder('x265');
 	$video_quality = $series_model->get_crf();
-	if($video_quality == 0)
+	if($video_quality === 0)
 		$handbrake->set_x264opts("lossless=1");
 
 	if($video_quality != null)
