@@ -75,7 +75,11 @@
 			if($preset_crf == 0)
 				return 0;
 
-			if($series_crf != NULL)
+			// If preset is null, use default CRF of encoder
+			if($preset_crf == null)
+				return null;
+
+			if($series_crf != null)
 				return $series_crf;
 
 			return $preset_crf;

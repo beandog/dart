@@ -53,7 +53,8 @@ if(($opt_encode_info || $opt_rip_info) && $episode_id && $video_encoder == 'x265
 	if($video_quality == 0)
 		$handbrake->set_x264opts("lossless=1");
 
-	$handbrake->set_video_quality($video_quality);
+	if($video_quality != null)
+		$handbrake->set_video_quality($video_quality);
 
 	/** x265 **/
 
