@@ -64,8 +64,6 @@ if(($opt_encode_info || $opt_rip_info) && $episode_id && $video_encoder == 'x265
 	$x264_preset = $series_model->get_x264_preset();
 	if(!$x264_preset)
 		$x264_preset = 'medium';
-	if($arg_preset)
-		$x264_preset = $arg_preset;
 	$handbrake->set_x264_preset($x264_preset);
 
 	// x265 supports animation tune, even though --fullhelp does not document it

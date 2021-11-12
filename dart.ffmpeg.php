@@ -43,8 +43,6 @@ if(($opt_rip_info || $opt_pts_info) && $episode_id) {
 		}
 
 		$x264_preset = $series_model->get_x264_preset();
-		if($arg_preset)
-			$x264_preset = $arg_preset;
 		$ffmpeg_opts .= " -preset '$x264_preset'";
 
 		if($opt_qa)
