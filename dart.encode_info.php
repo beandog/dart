@@ -299,8 +299,12 @@
 					// show the correct codec.
 					// In these cases, also duplicate the truhd track as eac3.
 					$audio_id = $audio_model->find_audio_id($tracks_model->id, 2);
-					$audio_model->load($audio_id);
-					$secondary_format = $audio_model->format;
+					if($audio_id) {
+						$audio_model->load($audio_id);
+						$secondary_format = $audio_model->format;
+					} else {
+						$secondary_format = '';
+					}
 
 					if($primary_format == 'ac3' && $secondary_format == 'truhd') {
 						$handbrake->add_audio_track(1);
