@@ -129,6 +129,12 @@
 			if(count($row) && $row['disc_title'] == null)
 				return true;
 
+			$sql = "SELECT title FROM dvds WHERE id = $dvd_id;";
+			$row = $this->get_row($sql);
+
+			if($row['title'] == '')
+				return true;
+
 			return false;
 
 		}
