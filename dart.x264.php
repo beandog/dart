@@ -125,7 +125,7 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 	else
 		$x264_tune = $series_model->get_x264_tune();
 
-	if($x264_tune && $video_quality)
+	if($x264_tune && $video_quality && $arg_hardware != 'psp')
 		$handbrake->set_x264_tune($x264_tune);
 
 	/** Frame and fields **/
