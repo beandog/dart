@@ -55,9 +55,9 @@ if(($opt_encode_info || $opt_rip_info) && $episode_id && $video_encoder == 'x265
 		$handbrake->set_x264opts("lossless=1");
 
 	// Handbrake sets default CRF to 22 for x265, override here
-	if($video_quality == null)
+	if(is_null($video_quality))
 		$handbrake->set_video_quality(28);
-	else
+	elseif($video_quality > 0)
 		$handbrake->set_video_quality($video_quality);
 
 	/** x265 **/
