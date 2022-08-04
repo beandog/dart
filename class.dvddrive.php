@@ -15,7 +15,7 @@
 
 			$this->debug = false;
 
-			$this->arr_drive_status = array("", "CDS_NO_DISC", "CDS_TRAY_OPEN", "CDS_DRIVE_NOT_READY", "CDS_DISK_OK");
+			$this->arr_drive_status = array("", "CDS_NO_DISC", "CDS_TRAY_OPEN", "CDS_DRIVE_NOT_READY", "CDS_DISK_OK", "CDS_ERR_DEVTYPE", "CDS_ERR_OPEN");
 
 			if(file_exists('/usr/local/bin/dvd_drive_status'))
 				$this->binary = '/usr/local/bin/dvd_drive_status';
