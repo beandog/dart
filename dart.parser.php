@@ -99,13 +99,6 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_wait', array(
-		'short_name' => '-w',
-		'long_name' => '--wait',
-		'description' => 'Wait for media to be in the tray before proceeding',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
 	$parser->addOption('opt_iso_filename', array(
 		'long_name' => '--iso-filename',
 		'description' => 'Display ISO filename',
