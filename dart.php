@@ -157,14 +157,12 @@
 			if($debug)
 				echo "* Info / Import / Archive / ISO: Enabling device access\n";
 			$access_device = true;
-			if(!$opt_wait) {
-				if(!$batch_mode) {
-					echo "[Access Device]\n";
-					echo "* Reading $display_device\n";
-				}
-				if($debug)
-					echo "* Reading ".realpath($device)."\n";
+			if(!$batch_mode) {
+				echo "[Access Device]\n";
+				echo "* Reading $display_device\n";
 			}
+			if($debug)
+				echo "* Reading ".realpath($device)."\n";
 		}
 
 		// Look for any conditions where we there is access to the device, but
@@ -199,13 +197,6 @@
 			if($debug)
 				echo "* Has media: ".($tray_has_media ? "yes" : "no" )."\n";
 
-			if($debug) {
-				if($opt_wait)
-					echo "* Wait for media requested by user\n";
-				else
-					echo "* No waiting requested\n";
-			}
-
 			/**
 			 * Writing all these logic checks independently makes it so my head
 			 * doesn't hurt while trying to parse multiple conditions. However, each
@@ -222,7 +213,7 @@
 			// *this device*, then it is intended to have media in it. If there's none
 			// in there, do the courtesy of opening the tray so that the user doesn't
 			// have to eject it manually.
-			if(!$opt_wait && !$tray_open && !$tray_has_media && $access_device) {
+			if(!$tray_open && !$tray_has_media && $access_device) {
 
 				// The device was included in the main program call, so eject
 				// the tray if there is no media in there.
@@ -232,23 +223,8 @@
 					echo "* Opening drive: Disabling device access\n";
 			}
 
-			// If waiting and the drive is closed and has no media, go to the next device
-			if($opt_wait && !$tray_open && !$tray_has_media && $access_device) {
-				echo "* Drive is closed, without media\n";
-				echo "* No media, so out we go!\n";
-				$tray_open = $drive->open();
-				$access_device = false;
-			}
-
-			// If waiting, and the drive is open, move along to the next device
-			if($opt_wait && $tray_open && $access_device) {
-				if($debug)
-					echo "* Drive is open, skipping device\n";
-				$access_device = false;
-			}
-
 			// Close the tray if not waiting
-			if(!$opt_wait && $tray_open && $access_device) {
+			if($tray_open && $access_device) {
 
 				if(!$batch_mode)
 					echo "* Drive is open, closing tray\n";
@@ -379,28 +355,6 @@
 			$drive->open();
 		}
 
-		// If polling for a new disc, check to see if one is in the
-		// drive. If there is, start over.
-		if($opt_wait && ($opt_import || $opt_archive || $opt_dump_iso) && $device_is_hardware) {
-
-			// Only toggle devices if passed more than one
-			// Otherwise, just re-poll the original.
-			// This is useful in cases where --wait is called
-			// on two separate devices, so two drives can
-			// be accessed at the same time
-			// Otherwise, if there is only one device, then wait until
-			// the tray is closed manually.
-			if(count($devices) > 1) {
-				$device = toggle_device($devices, $device);
-			}
-
-			if($debug)
-				echo "* Going to start position\n";
-
-			goto start;
-		}
-
 	}
-
 
 ?>
