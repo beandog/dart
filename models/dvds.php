@@ -132,7 +132,7 @@
 			$sql = "SELECT title FROM dvds WHERE id = $dvd_id;";
 			$row = $this->get_row($sql);
 
-			if($row['title'] == '')
+			if(count($row) && $row['title'] == '')
 				return true;
 
 			return false;
