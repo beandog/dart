@@ -14,22 +14,24 @@
 	$new_chapters = 0;
 	$new_cells = 0;
 
-	$missing_dvd_metadata = $dvds_model->dvd_missing_metadata($disc_type);
-	$missing_dvd_tracks_metadata = $dvds_model->dvd_tracks_missing_metadata($disc_type);
+	$missing_dvd_metadata = false;
+	$missing_dvd_tracks_metadata = false;
+	$missing_bluray_metadata = false;
+	$missing_cd_metadata = false;
 
-	if($access_device && $disc_type == 'bluray')
+	if($disc_indexed && $access_device) {
+		$missing_dvd_metadata = $dvds_model->dvd_missing_metadata($disc_type);
+		$missing_dvd_tracks_metadata = $dvds_model->dvd_tracks_missing_metadata($disc_type);
+	}
+
+	if($disc_indexed && $access_device && $disc_type == 'bluray')
 		$missing_bluray_metadata = $dvds_model->missing_bluray_metadata();
-	else
-		$missing_bluray_metadata = false;
 
 	if($disc_type == 'cd')
 		$missing_cd_metadata = $dvds_model->missing_cd_metadata();
-	else
-		$missing_cd_metadata = false;
 
-	if($opt_archive && !$missing_dvd_metadata && !$missing_dvd_tracks_metadata) {
+	if($opt_archive && !$missing_dvd_metadata && !$missing_dvd_tracks_metadata)
 		echo "* Archive:\tNo legacy metadata! :D\n";
-	}
 
 	// Some conditions apply where importing may be skipped.
 
