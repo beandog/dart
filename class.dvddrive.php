@@ -169,10 +169,10 @@
 		 *
 		 * Pass *all* control / decss / check of the drive to dvd_eject
 		 */
-		function open() {
+		function eject() {
 
 			if($this->debug)
-				echo "* drive::open(".$this->device.")\n";
+				echo "* drive::eject(".$this->device.")\n";
 
 			$arg_device = escapeshellarg($this->device);
 

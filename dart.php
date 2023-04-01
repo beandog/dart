@@ -217,7 +217,7 @@
 
 				// The device was included in the main program call, so eject
 				// the tray if there is no media in there.
-				$drive->open();
+				$drive->eject();
 				$access_device = false;
 				if($debug)
 					echo "* Opening drive: Disabling device access\n";
@@ -240,7 +240,7 @@
 				} else {
 					if(!$batch_mode)
 						echo "* Expected media, didn't find any!?\n";
-					$tray_open = $drive->open();
+					$tray_open = $drive->eject();
 					$access_device = false;
 
 					// This is *possibly* a case where the DVD drive is closed,
@@ -352,7 +352,7 @@
 		if((($opt_archive) || ($opt_import && $new_dvd)) && $device_is_hardware && $drive->is_closed() && $disc_type != 'cd') {
 			if(!$batch_mode)
 				echo "* Ready to archive next disc, opening tray!\n";
-			$drive->open();
+			$drive->eject();
 		}
 
 	}
