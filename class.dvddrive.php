@@ -33,6 +33,35 @@
 		}
 
 		/**
+		 * Basic check to see if drive is accessible
+		 */
+		function access_device() {
+
+			if($this->debug)
+				echo "* drive::access_device(".$this->device.")\n";
+
+			$cmd = $this->binary." ".$this->device." &> /dev/null";
+			passthru($cmd, $retval);
+
+			if($retval == 5) {
+				if($this->debug)
+					echo "* drive::access_device: device exists, but is not a DVD drive\n";
+				return false;
+			} elseif($retval == 6) {
+				if($this->debug)
+					echo "* drive::access_device: cannot access device\n";
+				return false;
+			} elseif($retval == 7) {
+				if($this->debug)
+					echo "* drive::access_device: cannot find a device\n";
+				return false;
+			}
+
+			return true;
+
+		}
+
+		/**
 		 * Sleep until the drive is ready to access
 		 */
 		function wait_until_ready() {

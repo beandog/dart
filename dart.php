@@ -178,6 +178,13 @@
 			$drive = new DVDDrive($device);
 			$drive->set_debug($debug);
 
+			// Check for basic access
+			$device_access = $drive->access_device();
+			if($device_access == false) {
+				echo "* Access device failed\n";
+				goto next_device;
+			}
+
 			// Poll the devices as few times as necessary to avoid hardware kernel
 			// complaints. Set defaults.
 			$tray_open = false;
