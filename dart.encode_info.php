@@ -180,7 +180,7 @@
 				$bluray_m2ts = substr($filename, 0, strlen($filename) - 3)."m2ts";
 				$bluray_txt = substr($filename, 0, strlen($filename) - 3)."txt";
 				$bluray_vc1 = substr($filename, 0, strlen($filename) - 3)."VC1.mkv";
-				$bluray_ac3 = substr($filename, 0, strlen($filename) - 3)."eac3";
+				$bluray_flac = substr($filename, 0, strlen($filename) - 3)."flac";
 				$bluray_mkv = substr($filename, 0, strlen($filename) - 3)."mkv";
 
 				$bluray_playlist = $tracks_model->ix;
@@ -219,7 +219,7 @@
 				$bluray_chapters->output_filename($bluray_txt);
 				$bluray_chapters_command = $bluray_chapters->get_executable_string();
 
-				$bluray_ffmpeg_command = "ffmpeg -i '$bluray_m2ts' -map '0:a:0' -acodec 'eac3' -y '$bluray_ac3'";
+				$bluray_ffmpeg_command = "ffmpeg -i '$bluray_m2ts' -map '0:a:0' -acodec 'flac' -y '$bluray_flac'";
 
 				$mkvmerge = new Mkvmerge();
 				$mkvmerge->add_video_track(0);
@@ -252,7 +252,7 @@
 					$mkvmerge->output_filename($bluray_vc1);
 
 				if($bluray_encode_audio)
-					$mkvmerge->add_input_filename($bluray_ac3);
+					$mkvmerge->add_input_filename($bluray_flac);
 
 				$mkvmerge_command = $mkvmerge->get_executable_string();
 
@@ -262,7 +262,7 @@
 				if($display_m2ts && !$bluray_encode)
 					echo "$bluray_m2ts_command\n";
 
-				if($bluray_encode_audio && !file_exists($bluray_ac3))
+				if($bluray_encode_audio && !file_exists($bluray_flac))
 					echo "$bluray_ffmpeg_command\n";
 
 				if($display_mkv && !$bluray_encode)
@@ -288,7 +288,7 @@
 
 					if($bluray_encode_audio) {
 						$handbrake->add_audio_track(1);
-						$handbrake->add_audio_encoder('eac3');
+						$handbrake->add_audio_encoder('flac');
 					}
 
 					// There are edge cases where the first audio track is Dolby
@@ -297,7 +297,7 @@
 					// will show incorrectly in bluray_info, and mediainfo from the
 					// m2ts files, but when remuxed or re-encoded they will properly
 					// show the correct codec.
-					// In these cases, also duplicate the truhd track as eac3.
+					// In these cases, also duplicate the truhd track as flac.
 					$audio_id = $audio_model->find_audio_id($tracks_model->id, 2);
 					if($audio_id) {
 						$audio_model->load($audio_id);
@@ -308,7 +308,7 @@
 
 					if($primary_format == 'ac3' && $secondary_format == 'truhd') {
 						$handbrake->add_audio_track(1);
-						$handbrake->add_audio_encoder('eac3');
+						$handbrake->add_audio_encoder('flac');
 					}
 
 					if($debug)
