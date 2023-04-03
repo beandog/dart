@@ -9,11 +9,6 @@ if($opt_encode_info && $episode_id && $video_encoder == 'vp9') {
 	 * and builds a new HandBrake object.
 	 */
 
-	/**
-	 * VP9 encodes:
-	 * - lossless video
-	 */
-
 	$deinterlace = false;
 	$decomb = false;
 	$detelecine = false;
@@ -26,10 +21,6 @@ if($opt_encode_info && $episode_id && $video_encoder == 'vp9') {
 	$handbrake->set_binary($handbrake_bin);
 	$handbrake->verbose($verbose);
 	$handbrake->debug($debug);
-
-	// Lossless video
-	$handbrake->set_x264opts("lossless=1");
-	$handbrake->set_video_quality(0);
 
 	$fps = $series_model->get_preset_fps();
 
@@ -47,7 +38,20 @@ if($opt_encode_info && $episode_id && $video_encoder == 'vp9') {
 	/** Video **/
 
 	$handbrake->set_video_encoder('vp9');
+	$video_quality = $series_model->get_crf();
 	$handbrake->grayscale($series_model->grayscale);
+
+	// Lossless option
+	if($video_quality == 0) {
+		$handbrake->set_x264opts("lossless=1");
+		$handbrake->set_video_quality(0);
+	}
+
+	if($arg_crf)
+		$video_quality = abs(intval($arg_crf));
+
+	if($video_quality)
+		$handbrake->set_video_quality($video_quality);
 
 	/** Frame and fields **/
 
