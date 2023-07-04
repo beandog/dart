@@ -41,14 +41,6 @@
 
 			if($disc_type == 'dvd') {
 
-				$max_metadata_spec_id = $this->max_metadata_spec();
-
-				$sql = "SELECT COUNT(1) FROM dvds d WHERE id = $dvd_id AND bluray = 0 AND metadata_spec < $max_metadata_spec_id;";
-				$count = abs(intval($this->get_one($sql)));
-
-				if($count)
-					return true;
-
 				// Check if the DVD doesn't have the side set
 				$sql = "SELECT COUNT(1) FROM dvds WHERE id = $dvd_id AND bluray = 0 AND side IS NULL;";
 				$count = abs(intval($this->get_one($sql)));
@@ -59,13 +51,6 @@
 			}
 
 			if($disc_type == 'bluray') {
-
-				// Check for old metadata spec
-				$max_metadata_spec_id = $this->max_metadata_spec('bluray');
-				$sql = "SELECT COUNT(1) FROM dvds d WHERE id = $dvd_id AND bluray = 1 AND metadata_spec < $max_metadata_spec_id;";
-				$count = abs(intval($this->get_one($sql)));
-				if($count)
-					return true;
 
 				// Missing a title on a Blu-ray is not uncommon
 				/*
