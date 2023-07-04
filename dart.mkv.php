@@ -14,8 +14,6 @@
 	$matroska->addTag();
 	if($encoding_spec)
 		$matroska->addSimpleTag("encoding_spec", $encoding_spec);
-	if($metadata_spec)
-		$matroska->addSimpleTag("metadata_spec", $metadata_spec);
 	$matroska->addSimpleTag("handbrake_version", $handbrake_version);
 	$matroska->addSimpleTag("collection_title", $collection_title);
 	$matroska->addSimpleTag("series_title", $series_title);

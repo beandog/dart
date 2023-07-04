@@ -107,7 +107,6 @@
 			/*
 			$arr['title'] = $arr_episode['DVD_EPISODE_TITLE'];
 			$arr['encoding_spec'] = $arr_episode['ENCODING_SPEC'];
-			$arr['metadata_spec'] = $arr_episode['METADATA_SPEC'];
 			$arr['collection'] = $arr_episode['DVD_COLLECTION'];
 			$arr['season'] = $arr_episode['DVD_SERIES_SEASON'];
 			$arr['volume'] = $arr_episode['DVD_SERIES_VOLUME'];
@@ -147,12 +146,12 @@
 			ksort($arr['x264_encoding_settings']);
 
 			$arr['x264_preset'] = '';
-			
+
 			extract($arr['x264_encoding_settings']);
 
 			if($aq == 0 && $b_adapt == 0 && $cabac == 0 && $deblock == '0:1:1' && $mbtree == 0 && $me == 'dia' && $mixed_ref == 0 && $rc_lookahead == 0 && $ref == 1 && $scenecut == 0 && $subme == 0 && $trellis == 0 && $weightb == 0 && $weightp == 0)
 				$arr['x264_preset'] = 'ultrafast';
-			
+
 			if($mbtree == 0 && $me == 'dia' && $mixed_ref == 0 && $rc_lookahead == 0 && $subme == 1 && $trellis == 0 && $weightp == 1)
 
 			 	$arr['x264_preset'] = 'superfast';

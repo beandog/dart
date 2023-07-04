@@ -79,7 +79,6 @@
 
 		$missing_dvd_metadata = false;
 		$missing_dvd_tracks_metadata = false;
-		$dvds_model->metadata_spec = $dvds_model->max_metadata_spec($disc_type);
 
 		if($new_title_tracks)
 			echo "* New title tracks: $new_title_tracks\n";
