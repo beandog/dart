@@ -87,7 +87,7 @@
 						echo "* Batch mode: enabled\n";
 						echo "* Ejecting disk\n";
 					}
-					$drive->open();
+					$drive->eject();
 				} else {
 					if($debug) {
 						echo "* Batch mode: disabled\n";
@@ -114,7 +114,7 @@
 					echo "* DVD copy successful. Ready for another :D\n";
 					if(file_exists($target_rip) && !file_exists($target_iso))
 						rename($target_rip, $target_iso);
-					$drive->open();
+					$drive->eject();
 				} else {
 					echo "* DVD extraction failed :(\n";
 					rename($target_rip, "$target_rip.FAIL");
@@ -156,7 +156,7 @@
 				echo "* DVD copy successful. Ready for another :D\n";
 				if(file_exists($target_rip) && !file_exists($target_iso))
 					rename($target_rip, $target_iso);
-				$drive->open();
+				$drive->eject();
 
 			}
 
