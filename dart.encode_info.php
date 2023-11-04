@@ -287,7 +287,10 @@
 					$handbrake->add_audio_track(1);
 
 					if($bluray_encode_audio) {
-						$handbrake->add_audio_track(1);
+
+						// FIXME? this probably shouldn't be here, HandBrake would add it directly
+						// $handbrake->add_audio_track(1);
+
 						$handbrake->add_audio_encoder('flac');
 					}
 
