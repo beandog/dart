@@ -251,8 +251,11 @@
 				if($bluray_encode)
 					$mkvmerge->output_filename($bluray_vc1);
 
-				if($bluray_encode_audio)
+				if($bluray_encode_audio) {
 					$mkvmerge->add_input_filename($bluray_flac);
+					// Make FLAC primary audio stream
+					$mkvmerge->set_track_order('0:0,1:0,0:1');
+				}
 
 				$mkvmerge_command = $mkvmerge->get_executable_string();
 

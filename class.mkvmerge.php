@@ -10,6 +10,7 @@
 		public $chapters = '';
 		public $mkvmerge_opts = '';
 		public $mkvmerge_output = '/dev/null';
+		public $track_order = '';
 
 		// mkvmerge source
 		public $input_filename = '/dev/sr0';
@@ -66,6 +67,10 @@
 			$this->chapters = $str;
 		}
 
+		public function set_track_order($str) {
+			$this->track_order = $str;
+		}
+
 		public function get_arguments() {
 
 			$args = array();
@@ -83,6 +88,9 @@
 
 			if(strlen($this->chapters))
 				$args['--chapters'] = $this->chapters;
+
+			if(strlen($this->track_order))
+				$args['--track-order'] = $this->track_order;
 
 			$args['--default-language'] = "eng";
 
