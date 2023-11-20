@@ -43,7 +43,7 @@
 	if(!$disc_indexed)
 		$new_dvd = true;
 
-	if($opt_import || $opt_archive || $new_dvd || $missing_dvd_metadata || $missing_dvd_tracks_metadata)
+	if($opt_import || $opt_archive || $new_dvd || $missing_dvd_metadata || $missing_dvd_tracks_metadata || $missing_bluray_metadata)
 		$allow_import = true;
 
 	// If only creating the ISO is requested, then skip import. This is
