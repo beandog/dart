@@ -41,7 +41,7 @@
 			$dvds_model->dvdread_id = $dvdread_id;
 		}
 
-		if($access_device && $dvds_model->title != $dvd_title) {
+		if($access_device && $dvds_model->title != $dvd_title && $dvd_title) {
 			echo "* Title: $dvd_title\n";
 			$dvds_model->title = $dvd_title;
 		}
