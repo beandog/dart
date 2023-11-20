@@ -96,6 +96,31 @@
 			if(count($row) && $row['title'] == '')
 				return true;
 
+			$sql = "SELECT provider_data FROM blurays WHERE dvd_id = $dvd_id;";
+			$var = $this->get_one($sql);
+			if(is_null($var))
+				return true;
+
+			$sql = "SELECT bdinfo_titles FROM blurays WHERE dvd_id = $dvd_id;";
+			$var = $this->get_one($sql);
+			if(is_null($var))
+				return true;
+
+			$sql = "SELECT hdmv_titles FROM blurays WHERE dvd_id = $dvd_id;";
+			$var = $this->get_one($sql);
+			if(is_null($var))
+				return true;
+
+			$sql = "SELECT bdj_titles FROM blurays WHERE dvd_id = $dvd_id;";
+			$var = $this->get_one($sql);
+			if(is_null($var))
+				return true;
+
+			$sql = "SELECT bdplus FROM blurays WHERE dvd_id = $dvd_id;";
+			$var = $this->get_one($sql);
+			if(is_null($var))
+				return true;
+
 			return false;
 
 		}

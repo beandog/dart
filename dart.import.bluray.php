@@ -59,6 +59,31 @@
 		}
 		*/
 
+		if(is_null($blurays_model->provider_data)) {
+			echo "* Provider:	".$dvd->provider_data."\n";
+			$blurays_model->provider_data = $dvd->provider_data;
+		}
+
+		if(is_null($blurays_model->bdinfo_titles)) {
+			echo "* BD Info Titles: ".$dvd->bdinfo_titles."\n";
+			$blurays_model->bdinfo_titles = $dvd->bdinfo_titles;
+		}
+
+		if(is_null($blurays_model->hdmv_titles)) {
+			echo "* HDMV Titles:\t".$dvd->hdmv_titles."\n";
+			$blurays_model->hdmv_titles = $dvd->hdmv_titles;
+		}
+
+		if(is_null($blurays_model->bdj_titles)) {
+			echo "* BDJ Titles:\t".$dvd->bdj_titles."\n";
+			$blurays_model->bdj_titles = $dvd->bdj_titles;
+		}
+
+		if(is_null($blurays_model->bdplus)) {
+			echo "* BD+:\t".($dvd->bdplus ? 'Yes' : 'No')."\n";
+			$blurays_model->bdplus = $dvd->bdplus;
+		}
+
 		$dvd_filesize = $dvd->size;
 		if($access_device && $dvds_model->filesize != $dvd_filesize) {
 			echo "* Filesize: $dvd_filesize\n";

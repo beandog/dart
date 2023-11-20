@@ -58,6 +58,13 @@
 		public $chapter_msecs;
 		public $chapter_filesize;
 
+		// Bluray Metadata
+		public $provider_data;
+		public $bdinfo_titles;
+		public $hdmv_titles;
+		public $bdj_titles;
+		public $bdplus;
+
 		// All
 		public $playlist_info;
 
@@ -146,6 +153,11 @@
 			$this->dvdread_id = $dvdread_id;
 			$this->disc_id = strtolower($this->dvd_info['bluray']['disc id']);
 			$this->disc_name = trim($this->dvd_info['bluray']['disc name']);
+			$this->provider_data = trim($this->dvd_info['bluray']['provider data']);
+			$this->bdinfo_titles = $this->dvd_info['bluray']['bdinfo titles'];
+			$this->hdmv_titles = $this->dvd_info['bluray']['hdmv titles'];
+			$this->bdj_titles = $this->dvd_info['bluray']['bdj titles'];
+			$this->bdplus = intval($this->dvd_info['bluray']['bdplus']);
 
 			return true;
 
