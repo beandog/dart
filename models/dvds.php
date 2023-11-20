@@ -93,7 +93,7 @@
 			$sql = "SELECT title FROM dvds WHERE id = $dvd_id;";
 			$row = $this->get_row($sql);
 
-			if(count($row) && $row['title'] == '')
+			if(count($row) && is_null($row['title']))
 				return true;
 
 			$sql = "SELECT provider_data FROM blurays WHERE dvd_id = $dvd_id;";
