@@ -42,7 +42,7 @@
 		}
 
 		if($access_device && $dvds_model->title != $dvd_title) {
-			echo "* title: $dvd_title\n";
+			echo "* Title: $dvd_title\n";
 			$dvds_model->title = $dvd_title;
 		}
 
