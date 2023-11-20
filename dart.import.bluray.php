@@ -47,7 +47,7 @@
 		}
 
 		if($access_device && $blurays_model->disc_title !== $dvd->disc_name) {
-			echo "* Disc title:\t".$dvd->disc_name."\n";
+			echo "* Disc title: ".$dvd->disc_name."\n";
 			$blurays_model->disc_title = $dvd->disc_name;
 		}
 
@@ -60,7 +60,7 @@
 		*/
 
 		if(is_null($blurays_model->provider_data)) {
-			echo "* Provider:	".$dvd->provider_data."\n";
+			echo "* Provider: ".$dvd->provider_data."\n";
 			$blurays_model->provider_data = $dvd->provider_data;
 		}
 
@@ -70,17 +70,17 @@
 		}
 
 		if(is_null($blurays_model->hdmv_titles)) {
-			echo "* HDMV Titles:\t".$dvd->hdmv_titles."\n";
+			echo "* HDMV Titles: ".$dvd->hdmv_titles."\n";
 			$blurays_model->hdmv_titles = $dvd->hdmv_titles;
 		}
 
 		if(is_null($blurays_model->bdj_titles)) {
-			echo "* BDJ Titles:\t".$dvd->bdj_titles."\n";
+			echo "* BDJ Titles: ".$dvd->bdj_titles."\n";
 			$blurays_model->bdj_titles = $dvd->bdj_titles;
 		}
 
 		if(is_null($blurays_model->bdplus)) {
-			echo "* BD+:\t".($dvd->bdplus ? 'Yes' : 'No')."\n";
+			echo "* BD+: ".($dvd->bdplus ? 'Yes' : 'No')."\n";
 			$blurays_model->bdplus = $dvd->bdplus;
 		}
 
