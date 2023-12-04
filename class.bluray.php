@@ -113,7 +113,7 @@
 				$this->binary = "/usr/bin/bluray_info";
 
 			$arg_device = escapeshellarg($this->device);
-			$cmd = $this->binary." --json $arg_device";
+			$cmd = $this->binary." --duplicates --json $arg_device";
 			if(!$this->debug)
 				$cmd .= " 2> /dev/null";
 
