@@ -62,7 +62,7 @@
 		public $provider_data;
 		public $bdinfo_titles;
 		public $hdmv_titles;
-		public $bdj_titles;
+		public $bd_j_titles;
 		public $bdplus;
 
 		// All
@@ -156,7 +156,7 @@
 			$this->provider_data = trim($this->dvd_info['bluray']['provider data']);
 			$this->bdinfo_titles = $this->dvd_info['bluray']['bdinfo titles'];
 			$this->hdmv_titles = $this->dvd_info['bluray']['hdmv titles'];
-			$this->bdj_titles = $this->dvd_info['bluray']['bdj titles'];
+			$this->bd_j_titles = $this->dvd_info['bluray']['bd-j titles'];
 			$this->bdplus = intval($this->dvd_info['bluray']['bdplus']);
 
 			return true;

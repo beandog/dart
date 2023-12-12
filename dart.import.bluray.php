@@ -74,9 +74,9 @@
 			$blurays_model->hdmv_titles = $dvd->hdmv_titles;
 		}
 
-		if(is_null($blurays_model->bdj_titles)) {
-			echo "* BDJ Titles: ".$dvd->bdj_titles."\n";
-			$blurays_model->bdj_titles = $dvd->bdj_titles;
+		if(is_null($blurays_model->bd_j_titles)) {
+			echo "* BDJ Titles: ".$dvd->bd_j_titles."\n";
+			$blurays_model->bd_j_titles = $dvd->bd_j_titles;
 		}
 
 		if(is_null($blurays_model->bdplus)) {

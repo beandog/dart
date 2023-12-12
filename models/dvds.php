@@ -111,7 +111,7 @@
 			if(is_null($var))
 				return true;
 
-			$sql = "SELECT bdj_titles FROM blurays WHERE dvd_id = $dvd_id;";
+			$sql = "SELECT bd_j_titles FROM blurays WHERE dvd_id = $dvd_id;";
 			$var = $this->get_one($sql);
 			if(is_null($var))
 				return true;
