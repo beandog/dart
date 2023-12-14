@@ -30,6 +30,7 @@
 		public $title_track_audio_tracks;
 		public $title_track_subtitle_tracks;
 		public $title_track_cells;
+		public $title_track_blocks;
 
 		// DVD Video
 		public $video_codec;
@@ -60,6 +61,7 @@
 		public $chapter_seconds;
 		public $chapter_msecs;
 		public $chapter_filesize;
+		public $chapter_blocks;
 
 		// DVD Cell
 		public $cell;
@@ -477,6 +479,7 @@
 			$this->title_track_subtitle_tracks = $this->title_track_subtitle_tracks();
 			$this->title_track_cells = $this->title_track_cells();
 			$this->title_track_filesize = $this->title_track_filesize();
+			$this->title_track_blocks = $this->title_track_blocks();
 
 			$this->video_codec = $this->video_codec();
 			$this->video_format = $this->video_format();
@@ -559,6 +562,15 @@
 				return 0;
 
 			return $this->title_track_info['filesize'];
+
+		}
+
+		private function title_track_blocks() {
+
+			if(!array_key_exists('blocks', $this->title_track_info))
+				return 0;
+
+			return $this->title_track_info['blocks'];
 
 		}
 
@@ -701,6 +713,7 @@
 			$this->chapter_msecs = $this->chapter_msecs();
 			$this->chapter_seconds = $this->chapter_seconds();
 			$this->chapter_filesize = $this->chapter_filesize();
+			$this->chapter_blocks = $this->chapter_blocks();
 
 			return true;
 
@@ -727,6 +740,10 @@
 
 		private function chapter_filesize() {
 			return $this->dvd_info_number($this->chapter_info, 'filesize');
+		}
+
+		private function chapter_blocks() {
+			return $this->dvd_info_number($this->chapter_info, 'blocks');
 		}
 
 		/** DVD Cell **/

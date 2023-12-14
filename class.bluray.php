@@ -24,6 +24,7 @@
 		// Bluray Playlist
 		public $playlist;
 		public $playlist_filesize;
+		public $playlist_blocks;
 		public $playlist_length;
 		public $playlist_msecs;
 		public $playlist_seconds;
@@ -57,6 +58,7 @@
 		public $chapter_seconds;
 		public $chapter_msecs;
 		public $chapter_filesize;
+		public $chapter_blocks;
 
 		// Bluray Metadata
 		public $provider_data;
@@ -330,6 +332,7 @@
 			$this->playlist_msecs = $this->playlist_msecs();
 			$this->playlist_seconds = $this->playlist_seconds();
 			$this->playlist_filesize = $this->playlist_filesize();
+			$this->playlist_blocks = $this->playlist_blocks();
 
 			$this->title_track_chapters = $this->title_track_chapters();
 			$this->title_track_audio_tracks = $this->title_track_audio_tracks();
@@ -367,6 +370,10 @@
 
 		private function playlist_filesize() {
 			return $this->dvd_info_number($this->playlist_info, 'filesize');
+		}
+
+		private function playlist_blocks() {
+			return $this->dvd_info_number($this->playlist_info, 'blocks');
 		}
 
 		private function title_track_audio_tracks() {
@@ -497,6 +504,7 @@
 			$this->chapter_info = $this->playlist_info['chapters'][$this->chapter - 1];
 			$this->chapter_seconds = floatval(bcdiv($this->chapter_info['duration'], 100, 2));
 			$this->chapter_filesize = $this->chapter_info['filesize'];
+			$this->chapter_blocks = $this->chapter_info['blocks'];
 
 			return true;
 

@@ -121,6 +121,11 @@
 			if(is_null($var))
 				return true;
 
+			$sql = "SELECT blocks FROM tracks WHERE dvd_id = $dvd_id;";
+			$var = $this->get_one($sql);
+			if(is_null($var))
+				return true;
+
 			return false;
 
 		}
@@ -193,6 +198,18 @@
 				if($count)
 					return true;
 
+				// Check if tracks are missing blocks
+				$sql = "SELECT COUNT(1) FROM tracks t WHERE dvd_id = $dvd_id AND blocks IS NULL;";
+				$count = intval($this->get_one($sql));
+				if($count)
+					return true;
+
+				// Check if chapters are missing blocks
+				$sql = "SELECT COUNT(1) FROM chapters c JOIN tracks t ON c.track_id = t.id WHERE t.dvd_id = $dvd_id AND c.blocks IS NULL;";
+				$count = intval($this->get_one($sql));
+				if($count)
+					return true;
+
 			}
 
 			if($disc_type == 'bluray') {
@@ -241,6 +258,18 @@
 
 				// Check if chapters are missing filesize
 				$sql = "SELECT COUNT(1) FROM chapters c JOIN tracks t ON c.track_id = t.id WHERE t.dvd_id = $dvd_id AND c.filesize IS NULL;";
+				$count = intval($this->get_one($sql));
+				if($count)
+					return true;
+
+				// Check if tracks are missing blocks
+				$sql = "SELECT COUNT(1) FROM tracks t WHERE dvd_id = $dvd_id AND blocks IS NULL;";
+				$count = intval($this->get_one($sql));
+				if($count)
+					return true;
+
+				// Check if chapters are missing blocks
+				$sql = "SELECT COUNT(1) FROM chapters c JOIN tracks t ON c.track_id = t.id WHERE t.dvd_id = $dvd_id AND c.blocks IS NULL;";
 				$count = intval($this->get_one($sql));
 				if($count)
 					return true;

@@ -87,6 +87,12 @@
 				echo "* Updating track length (msecs): $tracks_model_length -> ".$dvd->title_track_seconds."\n";
 		}
 
+		if($tracks_model->blocks != $dvd->title_track_blocks) {
+			$tracks_model->blocks = $dvd->title_track_blocks;
+			if($debug)
+				echo "* Updating track blocks: ".$dvd->title_track_blocks."\n";
+		}
+
 		if($tracks_model->filesize != $dvd->title_track_filesize) {
 			$tracks_model->filesize = $dvd->title_track_filesize;
 			if($debug)
@@ -149,8 +155,11 @@
 
 	}
 
-	if($missing_dvd_tracks_metadata && $disc_type = 'bluray' && !$new_dvd)
+	if($missing_dvd_tracks_metadata && $disc_type = 'bluray' && !$new_dvd) {
+		if($debug)
+			echo "* Missing tracks metadata\n";
 		echo "* Updating BD playlists metadata: ";
+	}
 	elseif($opt_archive && !$new_dvd)
 		echo "* Checking playlists for full archival: ";
 	elseif($opt_import && $new_dvd)
@@ -243,6 +252,13 @@
 			$tracks_model->filesize = $filesize;
 			if($debug)
 				echo "* Updating playlist filesize: $filesize\n";
+		}
+
+		$blocks = $dvd->playlist_blocks;
+		if($tracks_model->blocks != $blocks && $blocks) {
+			$tracks_model->blocks = $blocks;
+			if($debug)
+				echo "* Updating playlist blocks: $blocks\n";
 		}
 
 		require 'dart.import.audio.php';
