@@ -55,6 +55,8 @@
 
 		}
 
+		// Legacy metadata
+		/*
 		function load_disc_id($str) {
 
 			if(!$str)
@@ -68,6 +70,7 @@
 			return $this->id;
 
 		}
+		*/
 
 		function load_volname($str) {
 

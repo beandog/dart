@@ -152,7 +152,8 @@
 			$dvdread_id = sha1("$main_playlist.$main_filesize");
 
 			$this->dvdread_id = $dvdread_id;
-			$this->disc_id = strtolower($this->dvd_info['bluray']['disc id']);
+			// Legacy metadata
+			// $this->disc_id = strtolower($this->dvd_info['bluray']['disc id']);
 			$this->disc_name = trim($this->dvd_info['bluray']['disc name']);
 			$this->provider_data = trim($this->dvd_info['bluray']['provider data']);
 			$this->bdinfo_titles = $this->dvd_info['bluray']['bdinfo titles'];
