@@ -65,7 +65,6 @@
 		public $bdinfo_titles;
 		public $hdmv_titles;
 		public $bd_j_titles;
-		public $bdplus;
 
 		// All
 		public $playlist_info;
@@ -159,7 +158,6 @@
 			$this->bdinfo_titles = $this->dvd_info['bluray']['bdinfo titles'];
 			$this->hdmv_titles = $this->dvd_info['bluray']['hdmv titles'];
 			$this->bd_j_titles = $this->dvd_info['bluray']['bd-j titles'];
-			$this->bdplus = intval($this->dvd_info['bluray']['bdplus']);
 
 			return true;
 

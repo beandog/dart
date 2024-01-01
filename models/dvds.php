@@ -116,11 +116,6 @@
 			if(is_null($var))
 				return true;
 
-			$sql = "SELECT bdplus FROM blurays WHERE dvd_id = $dvd_id;";
-			$var = $this->get_one($sql);
-			if(is_null($var))
-				return true;
-
 			$sql = "SELECT blocks FROM tracks WHERE dvd_id = $dvd_id;";
 			$var = $this->get_one($sql);
 			if(is_null($var))

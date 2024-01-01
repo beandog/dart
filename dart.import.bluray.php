@@ -79,11 +79,6 @@
 			$blurays_model->bd_j_titles = $dvd->bd_j_titles;
 		}
 
-		if(is_null($blurays_model->bdplus)) {
-			echo "* BD+: ".($dvd->bdplus ? 'Yes' : 'No')."\n";
-			$blurays_model->bdplus = $dvd->bdplus;
-		}
-
 		$dvd_filesize = $dvd->size;
 		if($access_device && $dvds_model->filesize != $dvd_filesize) {
 			echo "* Filesize: $dvd_filesize\n";
