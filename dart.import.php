@@ -52,6 +52,14 @@
 	if($opt_dump_iso && (!$opt_import && !$opt_archive))
 		$allow_import = false;
 
+	// Currently setting importing Blu-rays to force only, as dvdread indexing has changed
+	if($new_dvd && $disc_type == 'bluray' && !$opt_force) {
+		$allow_import = false;
+		$disc_indexed = false;
+		echo "Importing new Blu-rays requires --force option, skipping\n";
+		goto next_disc;
+	}
+
 	// Start import
 	if($access_device && $allow_import) {
 

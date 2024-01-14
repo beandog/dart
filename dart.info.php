@@ -1,7 +1,7 @@
 <?php
 
 	// Display info about disc
-	if($opt_info) {
+	if($opt_info && $disc_indexed) {
 
 		echo "[Info]\n";
 

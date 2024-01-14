@@ -26,6 +26,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_force', array(
+		'long_name' => '--force',
+		'description' => 'Force import of new Blu-ray',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('opt_archive', array(
 		'short_name' => '-a',
 		'long_name' => '--archive',
