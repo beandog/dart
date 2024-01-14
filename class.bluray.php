@@ -114,6 +114,32 @@
 				$this->binary = "/usr/bin/bluray_info";
 
 			$arg_device = escapeshellarg($this->device);
+
+			// Get bluray_id
+			$cmd = "bluray_id $arg_device";
+			if(!$this->debug)
+				$cmd .= " 2> /dev/null";
+
+			if($this->debug)
+				echo "* Executing: $cmd\n";
+
+			exec($cmd, $output, $retval);
+
+			if($retval !== 0 || !count($output)) {
+				echo "* bluray_id FAILED\n";
+				return false;
+			}
+
+			$dvdread_id = trim(current($output));
+
+			if(!strlen($dvdread_id)) {
+				echo "* bluray_id $arg_device FAILED\n";
+				return false;
+			}
+
+			$this->dvdread_id = $dvdread_id;
+
+			// Get bluray_json
 			$cmd = $this->binary." --duplicates --json $arg_device";
 			if(!$this->debug)
 				$cmd .= " 2> /dev/null";
@@ -121,6 +147,7 @@
 			if($this->debug)
 				echo "* Executing: $cmd\n";
 
+			$output = array();
 			exec($cmd, $output, $retval);
 
 			if($retval !== 0 || !count($output)) {
@@ -140,18 +167,6 @@
 
 			$this->dvd_info = $json;
 
-			// Uniq identifier is a sha1 sum of the main playlist number followed by the
-			// filesize of the main playlist as a decimal.
-			// sha1 is used to generate a 40 character string, so it visually
-			// stands out in the database for dvdread_id
-
-			$main_title = $this->dvd_info['bluray']['main title'];
-			$main_playlist = $this->dvd_info['bluray']['main playlist'];
-			$main_filesize = $this->dvd_info['titles'][$main_title - 1]['filesize'];
-
-			$dvdread_id = sha1("$main_playlist.$main_filesize");
-
-			$this->dvdread_id = $dvdread_id;
 			// Legacy metadata
 			// $this->disc_id = strtolower($this->dvd_info['bluray']['disc id']);
 			$this->disc_name = trim($this->dvd_info['bluray']['disc name']);
