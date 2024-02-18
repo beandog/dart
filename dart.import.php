@@ -25,8 +25,8 @@
 	}
 
 	if($disc_indexed && $access_device && $disc_type == 'bluray') {
-		$missing_bluray_metadata = $dvds_model->missing_bluray_metadata();
-		$missing_dvd_tracks_metadata = $dvds_model->bluray_playlists_missing_metadata();
+		$missing_bluray_metadata = $dvds_model->missing_bluray_metadata($debug);
+		$missing_dvd_tracks_metadata = $dvds_model->bluray_playlists_missing_metadata($debug);
 	}
 
 	if($disc_type == 'cd')

@@ -45,7 +45,7 @@
 		}
 
 		// Check for missing data on a Blu-ray found on the disc
-		public function missing_bluray_metadata() {
+		public function missing_bluray_metadata($debug = false) {
 
 			$debug = false;
 
@@ -185,81 +185,117 @@
 
 		// Check if any of the tracks on the BD are missing metadata, regardless
 		// of spec.
-		public function bluray_playlists_missing_metadata() {
+		public function bluray_playlists_missing_metadata($debug = true) {
 
 			$dvd_id = abs(intval($this->id));
 
 			// Verify tracks are existent
 			$sql = "SELECT COUNT(1) FROM tracks WHERE dvd_id = $dvd_id;";
 			$count = intval($this->get_one($sql));
-			if(!$count)
+			if(!$count) {
+				if($debug)
+					echo "* Zero playlists\n";
 				return true;
+			}
 
 			// Check if there are zero audio tracks
 			$sql = "SELECT COUNT(1) FROM audio a JOIN tracks t ON a.track_id = t.id WHERE t.dvd_id = $dvd_id;";
 			$count = intval($this->get_one($sql));
-			if(!$count)
+			if(!$count) {
+				if($debug)
+					echo "* Zero audio tracks\n";
 				return true;
+			}
 
 			// Check if any audio tracks are missing language
 			$sql = "SELECT COUNT(1) FROM audio a JOIN tracks t ON a.track_id = t.id WHERE t.dvd_id = $dvd_id AND langcode = '';";
 			$count = intval($this->get_one($sql));
-			if($count)
+			if($count) {
+				if($debug)
+					echo "* Audio tracks missing language\n";
 				return true;
+			}
 
 			// Check if any audio tracks are missing stream id
 			$sql = "SELECT COUNT(1) FROM audio a JOIN tracks t ON a.track_id = t.id WHERE t.dvd_id = $dvd_id AND streamid = '';";
 			$count = intval($this->get_one($sql));
-			if($count)
+			if($count) {
+				if($debug)
+					echo "* Audio tracks missing stream id\n";
 				return true;
+			}
 
 			// Check if there are zero subtitles
 			$sql = "SELECT COUNT(1) FROM subp s JOIN tracks t ON s.track_id = t.id WHERE t.dvd_id = $dvd_id;";
 			$count = intval($this->get_one($sql));
-			if(!$count)
+			if(!$count) {
+				if($debug)
+					echo "* Zero subtitles\n";
 				return true;
+			}
 
 			// Check if any subtitles are missing language
 			$sql = "SELECT COUNT(1) FROM subp s JOIN tracks t ON s.track_id = t.id WHERE t.dvd_id = $dvd_id AND langcode = '';";
 			$count = intval($this->get_one($sql));
-			if($count)
+			if($count) {
+				if($debug)
+					echo "* Subtitles missing language\n";
 				return true;
+			}
 
 			// Check if any subtitles are missing stream id
 			$sql = "SELECT COUNT(1) FROM subp s JOIN tracks t ON s.track_id = t.id WHERE t.dvd_id = $dvd_id AND streamid = '';";
 			$count = intval($this->get_one($sql));
-			if($count)
+			if($count) {
+				if($debug)
+					echo "* Subtitles missing stream id\n";
 				return true;
+			}
 
 			// Check if there are zero chapters
 			$sql = "SELECT COUNT(1) FROM chapters c JOIN tracks t ON c.track_id = t.id WHERE t.dvd_id = $dvd_id;";
 			$count = intval($this->get_one($sql));
-			if(!$count)
+			if(!$count) {
+				if($debug)
+					echo "* Zero chapters\n";
 				return true;
+			}
 
 			// Check if chapters are missing filesize
 			$sql = "SELECT COUNT(1) FROM chapters c JOIN tracks t ON c.track_id = t.id WHERE t.dvd_id = $dvd_id AND c.filesize IS NULL;";
 			$count = intval($this->get_one($sql));
-			if($count)
+			if($count) {
+				if($debug)
+					echo "* Chapters missing filesize\n";
 				return true;
+			}
 
-			// Check if tracks are missing blocks
+			// Check if playlists are missing blocks
 			$sql = "SELECT COUNT(1) FROM tracks t WHERE dvd_id = $dvd_id AND blocks IS NULL;";
 			$count = intval($this->get_one($sql));
-			if($count)
+			if($count) {
+				if($debug)
+					echo "* Playlists are missing blocks\n";
 				return true;
+			}
 
 			// Check if chapters are missing blocks
 			$sql = "SELECT COUNT(1) FROM chapters c JOIN tracks t ON c.track_id = t.id WHERE t.dvd_id = $dvd_id AND c.blocks IS NULL;";
 			$count = intval($this->get_one($sql));
-			if($count)
+			if($count) {
+				if($debug)
+					echo "* Chapters are missing blocks\n";
 				return true;
+			}
 
 			// Check if the filesize for tracks is using old format
 			$sql = "SELECT MAX(filesize) FROM tracks WHERE dvd_id = $dvd_id;";
 			$filesize = $this->get_one($sql);
-			if(ceil($filesize / 1048576) == 1)
+			if(ceil($filesize / 1048576) == 1) {
+				if($debug)
+					echo "* Filesize for tracks is using old format\n";
 				return true;
+			}
 
 			return false;
 
