@@ -155,9 +155,9 @@
 
 	}
 
-	if($missing_dvd_tracks_metadata && $disc_type = 'bluray' && !$new_dvd) {
+	if($missing_dvd_tracks_metadata && $disc_type == 'bluray' && !$new_dvd) {
 		if($debug)
-			echo "* Missing tracks metadata\n";
+			echo "* Missing playlists metadata\n";
 		echo "* Updating BD playlists metadata: ";
 	}
 	elseif($opt_archive && !$new_dvd)
