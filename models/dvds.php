@@ -82,13 +82,18 @@
 		// Check for missing data on a Blu-ray found on the disc
 		public function missing_bluray_metadata() {
 
+			$debug = false;
+
 			$dvd_id = abs(intval($this->id));
 
 			$sql = "SELECT * FROM blurays WHERE dvd_id = $dvd_id";
 			$row = $this->get_row($sql);
 
-			if(count($row) && $row['disc_title'] == null)
+			if(count($row) && $row['disc_title'] === null) {
+				if($debug)
+					echo "* Missing 'disc_title'\n";
 				return true;
+			}
 
 			$sql = "SELECT title FROM dvds WHERE id = $dvd_id;";
 			$row = $this->get_row($sql);
