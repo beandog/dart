@@ -31,6 +31,12 @@
 
 	if($new_dvd || ($disc_indexed && ($missing_dvd_metadata || $missing_bluray_metadata))) {
 
+		if($debug && $missing_dvd_metadata)
+			echo "* Missing DVD metadata\n";
+
+		if($debug && $missing_bluray_metadata)
+			echo "* Missing BD metadata\n";
+
 		if(!$new_dvd) {
 			echo "[Metadata]\n";
 			echo "* Updating legacy BD metadata\n";
