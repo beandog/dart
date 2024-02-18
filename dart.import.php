@@ -19,13 +19,15 @@
 	$missing_bluray_metadata = false;
 	$missing_cd_metadata = false;
 
-	if($disc_indexed && $access_device) {
-		$missing_dvd_metadata = $dvds_model->dvd_missing_metadata($disc_type);
-		$missing_dvd_tracks_metadata = $dvds_model->dvd_tracks_missing_metadata($disc_type);
+	if($disc_indexed && $access_device && $disc_type == 'dvd') {
+		$missing_dvd_metadata = $dvds_model->dvd_missing_metadata();
+		$missing_dvd_tracks_metadata = $dvds_model->dvd_tracks_missing_metadata();
 	}
 
-	if($disc_indexed && $access_device && $disc_type == 'bluray')
+	if($disc_indexed && $access_device && $disc_type == 'bluray') {
 		$missing_bluray_metadata = $dvds_model->missing_bluray_metadata();
+		$missing_dvd_tracks_metadata = $dvds_model->bluray_playlists_missing_metadata();
+	}
 
 	if($disc_type == 'cd')
 		$missing_cd_metadata = $dvds_model->missing_cd_metadata();
