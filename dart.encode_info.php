@@ -238,7 +238,7 @@
 				$num_active_en_pgs_tracks = $tracks_model->get_num_active_subp_tracks('eng');
 
 				if($num_pgs_tracks) {
-					$pgs_ix = 1;
+					$pgs_ix = 0;
 					$pgs_ix += count($tracks_model->get_audio_streams());
 					$pgs_ix += $tracks_model->get_first_english_subp();
 					$mkvmerge->add_subtitle_track($pgs_ix);
