@@ -51,7 +51,7 @@
 		}
 
 		$chapters_model_filesize = intval($chapters_model->filesize);
-		if($chapters_model->filesize != $dvd->chapter_filesize) {
+		if($chapters_model->filesize !== $dvd->chapter_filesize) {
 			$chapters_model->filesize = $dvd->chapter_filesize;
 			if($debug) {
 				echo "* Updating chapter filesize: ".ceil($dvd->chapter_filesize / 1048576)." MBs\n";
