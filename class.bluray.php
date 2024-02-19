@@ -387,11 +387,7 @@
 		}
 
 		private function playlist_blocks() {
-			// Temporary fix while 1.13 is still being used to track my BDs
-			/*
 			return $this->dvd_info_number($this->playlist_info, 'blocks');
-			*/
-			return $this->playlist_filesize() / 192;
 		}
 
 		private function title_track_audio_tracks() {
@@ -522,9 +518,7 @@
 			$this->chapter_info = $this->playlist_info['chapters'][$this->chapter - 1];
 			$this->chapter_seconds = floatval(bcdiv($this->chapter_info['duration'], 100, 2));
 			$this->chapter_filesize = $this->chapter_info['filesize'];
-			// Temporarily disabled while 1.13 is still main release and BDs use that index
-			// $this->chapter_blocks = $this->chapter_info['blocks'];
-			$this->chapter_blocks = $this->chapter_info['filesize'] / 192;
+			$this->chapter_blocks = $this->chapter_info['blocks'];
 
 			return true;
 
