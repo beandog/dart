@@ -42,16 +42,16 @@
 			}
 		}
 
-		$chapters_model_blocks = intval($chapters_model->blocks);
-		if($chapters_model_blocks != $dvd->chapter_blocks) {
+		$chapters_model_blocks = $chapters_model->blocks;
+		if($chapters_model_blocks != $dvd->chapter_blocks || is_null($chapters_model_blocks)) {
 			$chapters_model->blocks = $dvd->chapter_blocks;
 			if($debug) {
 				echo "* Updating chapter blocks: ".$dvd->chapter_blocks."\n";
 			}
 		}
 
-		$chapters_model_filesize = intval($chapters_model->filesize);
-		if($chapters_model->filesize !== $dvd->chapter_filesize) {
+		$chapters_model_filesize = $chapters_model->filesize;
+		if($chapters_model_filesize != $dvd->chapter_filesize || is_null($chapters_model_filesize)) {
 			$chapters_model->filesize = $dvd->chapter_filesize;
 			if($debug) {
 				echo "* Updating chapter filesize: ".ceil($dvd->chapter_filesize / 1048576)." MBs\n";
