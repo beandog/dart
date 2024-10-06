@@ -219,7 +219,7 @@
 				$bluray_chapters->output_filename($bluray_txt);
 				$bluray_chapters_command = $bluray_chapters->get_executable_string();
 
-				$bluray_ffmpeg_command = "ffmpeg -i '$bluray_m2ts' -map '0:a:0' -acodec 'flac' -y '$bluray_flac'";
+				$bluray_ffmpeg_command = "ffmpeg -i '$bluray_m2ts' -map '0:a:0' -acodec 'flac24' -y '$bluray_flac'";
 
 				$mkvmerge = new Mkvmerge();
 				$mkvmerge->add_video_track(0);
