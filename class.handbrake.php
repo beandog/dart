@@ -171,6 +171,8 @@
 
 		// FIXME limit to set audio encoders
 		public function add_audio_encoder($str) {
+			if($str == 'flac')
+				$str = 'flac24';
 			if(!is_null($str))
 				$this->audio_encoders[] = $str;
 		}
