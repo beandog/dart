@@ -88,7 +88,7 @@ if($opt_encode_info && $episode_id && $video_encoder == 'vp9') {
 		$handbrake->add_audio_track($tracks_model->audio_ix);
 
 	$audio_encoder = $series_model->get_audio_encoder();
-	if($audio_encoder == 'fdk_aac' || $audio_encoder == 'ac3' || $audio_encoder == 'flac') {
+	if($audio_encoder == 'fdk_aac' || $audio_encoder == 'ac3' || $audio_encoder == 'opus' || $audio_encoder == 'flac') {
 		$handbrake->add_audio_encoder($audio_encoder);
 	} elseif($audio_encoder == 'fdk_aac,copy') {
 		$handbrake->add_audio_encoder('fdk_aac');

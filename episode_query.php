@@ -79,7 +79,7 @@
 	if(substr($pathinfo['basename'], 0, 1) == '3' || substr($pathinfo['basename'], 0, 1) == '4' || substr($pathinfo['basename'], 0, 1) == '5' || substr($pathinfo['basename'], 0, 1) == '8' || substr($pathinfo['basename'], 0, 1) == '9')
 		$movie = true;
 	$str_elements = explode('.', $pathinfo['basename']);
-	if(count($str_elements) < 3 || !file_exists($realpath) || !(in_array($pathinfo['extension'], array('mkv', 'mp4', 'mpg', 'vob', 'm2ts')))) {
+	if(count($str_elements) < 3 || !file_exists($realpath) || !(in_array($pathinfo['extension'], array('mkv', 'mp4', 'webm', 'mpg', 'vob', 'm2ts')))) {
 		goto next_episode;
 	}
 
