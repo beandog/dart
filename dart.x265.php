@@ -49,8 +49,7 @@ if(($opt_encode_info || $opt_rip_info) && $episode_id && $video_encoder == 'x265
 
 	$fps = $series_model->get_preset_fps();
 	$handbrake->set_video_encoder('x265');
-	// CRF overrides for series are specific to x264, for x265 use preset values instead
-	$video_quality = $series_model->get_crf('preset');
+	$video_quality = $series_model->get_crf();
 	if($video_quality === 0)
 		$handbrake->set_x264opts("lossless=1");
 
