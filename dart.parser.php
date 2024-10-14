@@ -57,12 +57,6 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_rip_info', array(
-		'long_name' => '--rip-info',
-		'description' => 'Display dvd_copy + ffmpeg instructions for a DVD',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
 	$parser->addOption('opt_no_dvdnav', array(
 		'long_name' => '--no-dvdnav',
 		'description' => 'Tell HandBrake not to use libdvdnav',

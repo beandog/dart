@@ -164,7 +164,7 @@
 
 		// Move the ISO to the correct filesystem location
 		// *except* in cases where --info is passed
-		if(!is_link($device) && $device_is_iso && !file_exists($target_iso) && !$opt_info && !$opt_encode_info && !$opt_copy_info && !$opt_rip_info) {
+		if(!is_link($device) && $device_is_iso && !file_exists($target_iso) && !$opt_info && !$opt_encode_info && !$opt_copy_info) {
 			if(!is_dir($isos_dir))
 				mkdir($isos_dir, 0755, true);
 			rename($device, $target_iso);

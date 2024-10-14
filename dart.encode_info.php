@@ -1,7 +1,7 @@
 <?php
 
 	// Display encode instructions about a disc
-	if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_rip_info)) {
+	if($disc_indexed && ($opt_encode_info || $opt_copy_info)) {
 
 		$dvd_episodes = $dvds_model->get_episodes();
 
@@ -121,19 +121,6 @@
 
 					}
 
-					if($opt_rip_info) {
-
-						require 'dart.dvd_copy.php';
-						$dvd_copy->input_filename($input_filename);
-						$dvd_copy->output_filename("-");
-						$dvd_copy_command = $dvd_copy->get_executable_string();
-
-						require 'dart.ffmpeg.php';
-
-						$dvd_rip_command = "$dvd_copy_command 2> /dev/null | $ffmpeg_command";
-						echo "$dvd_rip_command\n";
-
-					}
 
 				} else if($container == 'mpg') {
 

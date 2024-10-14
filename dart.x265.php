@@ -1,6 +1,6 @@
 <?php
 
-if(($opt_encode_info || $opt_rip_info) && $episode_id && $video_encoder == 'x265') {
+if($opt_encode_info && $episode_id && $video_encoder == 'x265') {
 
 	/**
 	 * Handbrake
