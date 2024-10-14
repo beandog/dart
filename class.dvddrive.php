@@ -262,8 +262,6 @@
 				$this->disc_type = "dvd";
 			elseif(in_array("E: ID_CDROM_MEDIA_BD=1", $arr))
 				$this->disc_type = "bluray";
-			elseif(in_array("E: ID_CDROM_MEDIA_CD=1", $arr))
-				$this->disc_type = "cd";
 			else
 				$this->disc_type = "dvd";
 

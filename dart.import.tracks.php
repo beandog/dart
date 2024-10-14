@@ -4,8 +4,6 @@
 
 	if($disc_type == 'bluray')
 		goto bluray_disc;
-	elseif($disc_type == 'cd')
-		goto cd_rom;
 
 	$dvd_title_tracks = $dvd->title_tracks;
 
@@ -264,69 +262,6 @@
 		require 'dart.import.audio.php';
 		require 'dart.import.subtitles.php';
 		require 'dart.import.chapters.php';
-
-	}
-
-	goto next_disc;
-
-	cd_rom:
-
-	if($disc_type == 'cd') {
-
-		$cue_filename = "$dvdread_id.cue";
-
-		if(!file_exists($cue_filename)) {
-			echo "* Need $cue_filename to import CD\n";
-			goto next_disc;
-		}
-
-		$tracks_model = new Tracks_Model;
-
-		$cmd = "cueconvert $cue_filename 2> /dev/null";
-
-		exec($cmd, $output, $retval);
-
-		$arr_cue_tracks = preg_grep('/^FILE/', $output);
-
-		$ix = 1;
-
-		// length in database is duration in msecs relative to starting index
-		// rational is that using ffmpeg to seek to track, would start with -ss
-		// to seek point, then use -t relative to the next track
-		foreach($arr_cue_tracks as $cue_track) {
-
-			$tracks_model_id = $tracks_model->find_track_id($dvds_model_id, $ix);
-
-			if(!$tracks_model_id) {
-				$tracks_model_id = $tracks_model->create_new();
-				$tracks_model->ix = $ix;
-				$tracks_model->dvd_id = $dvds_model_id;
-			}
-
-			$tracks_model->load($tracks_model_id);
-
-			$arr = explode(' ', $cue_track);
-			$start_point = $arr[2];
-			$stop_point = null;
-			if(count($arr) == 4)
-				$stop_point = $arr[3];
-
-			// Starting format is MM:SS:MS, need to convert MS from :XX to .XX
-			$arr = explode(':', $start_point);
-			$start_ms = 0;
-			if(count($arr) == 1)
-				$start_ms = $arr[0];
-			else {
-				$start_ms = $arr[0] * 60;
-				$start_ms += $arr[1];
-				$start_ms += $arr[2] / 100;
-			}
-
-			$tracks_model->length = $start_ms;
-
-			$ix++;
-
-		}
 
 	}
 

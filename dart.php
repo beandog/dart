@@ -16,7 +16,6 @@
 
 	require_once 'class.dvd.php';
 	require_once 'class.bluray.php';
-	require_once 'class.cd.php';
 	require_once 'class.dvddrive.php';
 	require_once 'class.matroska.php';
 	require_once 'class.handbrake.php';
@@ -278,8 +277,6 @@
 					$disc_name = "DVD";
 				elseif($disc_type == "bluray")
 					$disc_name = "Blu-ray";
-				elseif($disc_type == "cd")
-					$disc_name = "CD";
 			}
 
 			if(!$batch_mode)
@@ -289,8 +286,6 @@
 				$dvd = new DVD($device, $debug);
 			elseif($disc_type == "bluray")
 				$dvd = new Bluray($device, $debug);
-			elseif($disc_type == "cd")
-				$dvd = new CD($device, $debug);
 
 			if(!$dvd->opened) {
 				echo "* Opening $device FAILED\n";
@@ -355,7 +350,7 @@
 
 		// If archiving, everything would have happened by now,
 		// so eject the drive.
-		if((($opt_archive) || ($opt_import && $new_dvd)) && $device_is_hardware && $drive->is_closed() && $disc_type != 'cd') {
+		if((($opt_archive) || ($opt_import && $new_dvd)) && $device_is_hardware && $drive->is_closed()) {
 			if(!$batch_mode)
 				echo "* Ready to archive next disc, opening tray!\n";
 			$drive->eject();
