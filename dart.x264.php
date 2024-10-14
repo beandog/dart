@@ -63,18 +63,6 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 				$handbrake->set_audio_downmix('stereo');
 				break;
 
-			case 'gravity2':
-				$h264_profile = 'baseline';
-				$h264_level = '1b';
-				$subs_support = false;
-				$chapters_support = false;
-				$optimize_support = false;
-				$force_preset = 'medium';
-				$fps = 15;
-				$handbrake->set_max_width(176);
-				$handbrake->set_max_height(144);
-				break;
-
 		}
 
 	}
