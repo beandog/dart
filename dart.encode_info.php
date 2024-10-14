@@ -1,7 +1,7 @@
 <?php
 
 	// Display encode instructions about a disc
-	if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_rip_info || $opt_pts_info)) {
+	if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_rip_info)) {
 
 		$dvd_episodes = $dvds_model->get_episodes();
 
