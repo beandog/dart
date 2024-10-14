@@ -9,16 +9,6 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x265') {
 	 * and builds a new HandBrake object.
 	 */
 
-	/**
-	 * Encoding specification up to 1080p60
-	 * use dvdnav over dvdread
-	 * chapters
-	 * no fixed video, audio codec bitrate
-	 * audio codec copy
-	 * x265 lossless
-	 * NTSC color
-	 */
-
 	$deinterlace = false;
 	$decomb = false;
 	$detelecine = false;

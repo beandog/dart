@@ -9,21 +9,6 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 	 * and builds a new HandBrake object.
 	 */
 
-	/**
-	 * Encoding specification up to 1080p60
-	 * use dvdnav over dvdread
-	 * chapters
-	 * no fixed video, audio codec bitrate
-	 * audio codec fdk_aac
-	 * fallback audio ac3,dts copy
-	 * x264 preset medium
-	 * x264 tune animation, film or grain
-	 * x264 optional grayscale
-	 * H.264 profile high
-	 * H.264 level 4.1 default (5.0 for 720p and higher)
-	 * NTSC color
-	 */
-
 	$deinterlace = false;
 	$decomb = false;
 	$detelecine = false;
