@@ -91,6 +91,7 @@
 			exit;
 		}
 		$safe_title = safe_filename_title($series_title);
+		$safe_title = preg_replace('/^The /', '', $safe_title);
 		$safe_title = str_replace(' ', '-', $safe_title);
 		$safe_title = str_replace(':', '', $safe_title);
 		$safe_title = str_replace('!', '', $safe_title);
