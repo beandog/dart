@@ -37,12 +37,13 @@
 		public $height;
 		public $width;
 		public $auto_anamorphic;
-		public $h264_profile;
-		public $h264_level;
 		public $x264_preset;
 		public $x264_tune;
 		public $x264 = array();
 		public $crop;
+
+		public $h264_profile; // Needed for PSP
+		public $h264_level;
 
 		// Audio
 		public $audio = true;
@@ -228,11 +229,13 @@
 			$this->width = abs(intval($int));
 		}
 
+		// PSP
 		public function set_h264_profile($str) {
 			if($str)
 				$this->h264_profile = $str;
 		}
 
+		// PSP
 		public function set_h264_level($str) {
 			if($str)
 				$this->h264_level = $str;
@@ -423,12 +426,12 @@
 				$args['--rate'] = $this->video_framerate;
 			}
 
-			// Set H.264 profile
+			// Set H.264 profile (needed for PSP)
 			if(!is_null($this->h264_profile)) {
 				$args['--encoder-profile'] = $this->h264_profile;
 			}
 
-			// Set H.264 level
+			// Set H.264 level (needed for PSP)
 			if(!is_null($this->h264_level)) {
 				$args['--encoder-level'] = $this->h264_level;
 			}
