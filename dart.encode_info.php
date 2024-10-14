@@ -50,9 +50,6 @@
 			if($opt_copy_info)
 				$container = 'mpg';
 
-			if($opt_pts_info)
-				$container = 'pts';
-
 			if($disc_type == 'bluray')
 				$container = 'mkv';
 
