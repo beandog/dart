@@ -22,7 +22,6 @@
 	require_once 'class.handbrake.php';
 	require_once 'class.dvd_copy.php';
 	require_once 'class.bluray_copy.php';
-	require_once 'class.mkvmerge.php';
 	require_once 'class.ffmpeg.php';
 
 	require_once 'models/dbtable.php';
