@@ -247,9 +247,11 @@
 			$this->x264_tune = $str;
 		}
 
+		/*
 		public function set_http_optimize($bool = true) {
 			$this->http_optimize = (bool)$bool;
 		}
+		*/
 
 		public function set_color_matrix($str) {
 			$this->color_matrix = strtolower($str);

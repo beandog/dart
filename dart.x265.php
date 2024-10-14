@@ -95,8 +95,10 @@ if(($opt_encode_info || $opt_rip_info) && $episode_id && $video_encoder == 'x265
 	$handbrake->decomb($decomb);
 	$handbrake->comb_detect($comb_detect);
 
+	/*
 	if($container == 'mp4' && $optimize_support)
 		$handbrake->set_http_optimize();
+	*/
 
 	/** Audio **/
 

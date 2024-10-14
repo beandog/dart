@@ -63,10 +63,11 @@
 			/** DVDs **/
 			if(!($opt_skip_existing && file_exists($filename)) && $disc_type == "dvd") {
 
-				if($container == 'mkv' || $container == 'mp4' || $container == 'webm') {
+				// if($container == 'mkv' || $container == 'mp4' || $container == 'webm') {
+				if($container == 'mkv') {
 
-					require 'dart.vp8.php';
-					require 'dart.vp9.php';
+					// require 'dart.vp8.php';
+					// require 'dart.vp9.php';
 					require 'dart.x264.php';
 					require 'dart.x265.php';
 
