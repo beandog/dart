@@ -85,8 +85,17 @@
 	if($pathinfo['extension'] == 'iso') {
 		$series_id = intval($str_elements[1]);
 		$series_model = new Series_Model($series_id);
-		$safe_title = safe_filename_title($series_model->title);
+		$series_title = $series_model->title;
+		if(!strlen($series_title)) {
+			echo "DELETED-SERIES-".$pathinfo['filename']."\n";
+			exit;
+		}
+		$safe_title = safe_filename_title($series_title);
 		$safe_title = str_replace(' ', '-', $safe_title);
+		$safe_title = str_replace(':', '', $safe_title);
+		$safe_title = str_replace('!', '', $safe_title);
+		$safe_title = str_replace('?', '', $safe_title);
+		$safe_title = str_replace(',', '', $safe_title);
 		echo "$safe_title\n";
 		exit;
 	}
