@@ -63,8 +63,6 @@
 				// if($container == 'mkv' || $container == 'mp4' || $container == 'webm') {
 				if($container == 'mkv') {
 
-					// require 'dart.vp8.php';
-					// require 'dart.vp9.php';
 					require 'dart.x264.php';
 					require 'dart.x265.php';
 
