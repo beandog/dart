@@ -42,7 +42,6 @@
 		public $x264_preset;
 		public $x264_tune;
 		public $x264 = array();
-		public $color_matrix;
 		public $crop;
 
 		// Audio
@@ -253,10 +252,6 @@
 		}
 		*/
 
-		public function set_color_matrix($str) {
-			$this->color_matrix = strtolower($str);
-		}
-
 		public function set_crop($str) {
 			$this->crop = $str;
 		}
@@ -446,11 +441,6 @@
 			// Set x264 tune option
 			if($this->x264_tune) {
 				$args['--encoder-tune'] = $this->x264_tune;
-			}
-
-			// Set color matrix
-			if($this->color_matrix) {
-				$args['--color-matrix'] = $this->color_matrix;
 			}
 
 			// Set cropping
