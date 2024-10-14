@@ -71,6 +71,7 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x265') {
 	$handbrake->set_x264_preset($x264_preset);
 
 	// x265 supports animation tune, even though --fullhelp does not document it
+	// See https://x265.readthedocs.io/en/stable/presets.html for details
 	if($series_model->collection_id == 1)
 		$handbrake->set_x264_tune('animation');
 
