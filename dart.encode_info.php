@@ -146,24 +146,6 @@
 					$dvd_copy_command = $dvd_copy->get_executable_string();
 					echo "$dvd_copy_command\n";
 
-				} else if($container == 'pts') {
-
-					if($opt_skip_existing && ($episodes_model->progressive > 0 || $episodes_model->top_field > 0 || $episodes_model->bottom_field > 0))
-						continue;
-
-					require 'dart.dvd_copy.php';
-					$dvd_copy->input_filename($input_filename);
-					$dvd_copy->output_filename("-");
-					$dvd_copy_command = $dvd_copy->get_executable_string();
-
-					require 'dart.ffmpeg.php';
-
-					$dvd_rip_command = "$dvd_copy_command 2> /dev/null | $ffmpeg_command";
-					echo "$dvd_rip_command\n";
-
-					if($opt_pts_import)
-						echo "pts_import $filename\n";
-
 				}
 
 			}
