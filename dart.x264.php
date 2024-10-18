@@ -90,6 +90,7 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 		$x264_preset = 'medium';
 	if($force_preset)
 		$x264_preset = $force_preset;
+	if($x264_preset !== 'medium')
 	$handbrake->set_x264_preset($x264_preset);
 
 	// Set to animation tune if collection is Cartoons
