@@ -93,11 +93,7 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 	if($x264_preset !== 'medium')
 	$handbrake->set_x264_preset($x264_preset);
 
-	// Set to animation tune if collection is Cartoons
-	if($series_model->collection_id == 1)
-		$x264_tune = 'animation';
-	else
-		$x264_tune = $series_model->get_x264_tune();
+	$x264_tune = $series_model->get_x264_tune();
 
 	if($x264_tune && $video_quality && $arg_hardware != 'psp')
 		$handbrake->set_x264_tune($x264_tune);
