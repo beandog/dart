@@ -115,7 +115,8 @@
 
 			$arr = array();
 
-			$sql = "SELECT presets.x264_preset FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->id.";";
+			$sql = "SELECT s.series_x264_preset, p.presets_x264_preset FROM presets p INNER JOIN series_presets ON series_presets.preset_id = p.id JOIN series s ON s.id = sp.series_id AND series_presets.series_id = ".$this->id.";";
+			$sql = "SELECT COALESCE(s.x264_preset, p.x264_preset) FROM presets p JOIN series_presets sp ON p.id = sp.preset_id JOIN series s ON sp.series_id = s.id AND sp.series_id = ".$this->id.";";
 			$str = $this->get_one($sql);
 
 			return $str;
