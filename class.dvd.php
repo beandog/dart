@@ -116,7 +116,7 @@
 				$this->binary = "/usr/local/bin/dvd_info";
 
 			$arg_device = escapeshellarg($this->device);
-			$cmd = $this->binary." --json $arg_device 2> /dev/null";
+			$cmd = $this->binary." --json $arg_device 2> /dev/null | grep -v ^libdvdread";
 
 			if($this->debug)
 				echo "* Executing: $cmd\n";
