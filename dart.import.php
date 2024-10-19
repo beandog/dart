@@ -19,8 +19,8 @@
 	$missing_bluray_metadata = false;
 
 	if($disc_indexed && $access_device && $disc_type == 'dvd') {
-		$missing_dvd_metadata = $dvds_model->dvd_missing_metadata();
-		$missing_dvd_tracks_metadata = $dvds_model->dvd_tracks_missing_metadata();
+		$missing_dvd_metadata = $dvds_model->dvd_missing_metadata($debug);
+		$missing_dvd_tracks_metadata = $dvds_model->dvd_tracks_missing_metadata($debug);
 	}
 
 	if($disc_indexed && $access_device && $disc_type == 'bluray') {

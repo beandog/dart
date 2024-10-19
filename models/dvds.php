@@ -29,13 +29,16 @@
 
 		// Check a DVD record to see if it is missing
 		// metadata somewhere.
-		public function dvd_missing_metadata() {
+		public function dvd_missing_metadata($debug = false) {
 
 			$dvd_id = abs(intval($this->id));
 
 			// Check if the DVD doesn't have the side set
 			$sql = "SELECT COUNT(1) FROM dvds WHERE id = $dvd_id AND bluray = 0 AND side IS NULL;";
 			$count = abs(intval($this->get_one($sql)));
+
+			if($debug && $count)
+				echo "* DVD $dvd_id side IS NULL\n";
 
 			if($count)
 				return true;
@@ -122,13 +125,17 @@
 
 		// Check if any of the tracks on the DVD are missing metadata, regardless
 		// of spec.
-		public function dvd_tracks_missing_metadata() {
+		public function dvd_tracks_missing_metadata($debug = false) {
 
 			$dvd_id = abs(intval($this->id));
 
 			// Verify tracks are existent
 			$sql = "SELECT COUNT(1) FROM tracks WHERE dvd_id = $dvd_id;";
 			$count = intval($this->get_one($sql));
+
+			if($debug && !$count)
+				echo "* DVD $dvd_id has no tracks in database\n";
+
 			if(!$count)
 				return true;
 
@@ -136,48 +143,81 @@
 			$sql = "SELECT COUNT(1) FROM tracks t JOIN dvds d ON d.id = t.dvd_id JOIN audio a ON a.track_id = t.id JOIN subp s ON s.track_id = t.id WHERE d.id = $dvd_id AND (s.active IS NULL OR a.active IS NULL OR closed_captioning IS NULL);";
 			$count = $this->get_one($sql);
 
+			if($debug && $count)
+				echo "* DVD $dvd_id has $count tracks missing an active flag\n";
+
 			if($count)
 				return true;
 
 			// Check if an audio track hasn't been set
 			$sql = "SELECT COUNT(1) FROM tracks WHERE dvd_id = $dvd_id AND audio_ix IS NULL;";
 			$count = intval($this->get_one($sql));
+
+			if($debug && $count)
+				echo "* DVD $dvd_id has $count audio tracks that haven't been set\n";
+
 			if($count)
 				return true;
 
 			// Check if any subtitle tracks have not been tracked as active or not
 			$sql = "SELECT COUNT(1) FROM subp s JOIN tracks t ON s.track_id = t.id WHERE t.dvd_id = $dvd_id AND active IS NULL;";
 			$count = intval($this->get_one($sql));
+
+			if($debug && $count)
+				echo "* DVD $dvd_id has $count subtitle tracks not marked as active or not\n";
+
 			if($count)
 				return true;
 
 			// Check if closed captioning is not flagged
 			$sql = "SELECT COUNT(1) FROM tracks WHERE dvd_id = $dvd_id AND closed_captioning IS NULL;";
 			$count = intval($this->get_one($sql));
+
+			if($debug && $count)
+				echo "* DVD $dvd_id has $count tracks where closed captioning is not flagged\n";
+
 			if($count)
 				return true;
 
-			if($this->dvd_tracks_missing_cells())
+			if($this->dvd_tracks_missing_cells()) {
+				if($debug)
+					echo "DVD $dvd_id tracks are missing cells\n";
 				return true;
+			}
 
 			// Check if filesize is not set for tracks
 			$sql = "SELECT COUNT(1) FROM tracks t JOIN chapters c ON c.track_id = t.id WHERE t.dvd_id = $dvd_id AND (t.filesize IS NULL OR c.filesize IS NULL);";
 
 			$count = intval($this->get_one($sql));
+
+			if($debug && $count)
+				echo "* DVD $dvd_id has $count tracks or chapters with unset filesize\n";
+
 			if($count)
 				return true;
 
 			// Check if tracks are missing blocks
-			$sql = "SELECT COUNT(1) FROM tracks t WHERE dvd_id = $dvd_id AND blocks IS NULL;";
+			$sql = "SELECT COUNT(1) FROM tracks t WHERE dvd_id = $dvd_id AND blocks IS NULL AND vts IS NULL;";
 			$count = intval($this->get_one($sql));
+
+			if($debug && $count)
+				echo "* DVD $dvd_id has $count tracks missing blocks\n";
+
 			if($count)
 				return true;
 
 			// Check if chapters are missing blocks
 			$sql = "SELECT COUNT(1) FROM chapters c JOIN tracks t ON c.track_id = t.id WHERE t.dvd_id = $dvd_id AND c.blocks IS NULL;";
 			$count = intval($this->get_one($sql));
+
+			if($debug && $count)
+				echo "* DVD $dvd_id has $count chapters that are missing blocks\n";
+
 			if($count)
 				return true;
+
+			if($debug)
+				echo "* DVD $dvd_id has no missing tracks metadata :)\n";
 
 			return false;
 
