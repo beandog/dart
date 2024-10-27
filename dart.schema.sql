@@ -16,29 +16,6 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
-DROP DATABASE dvds;
---
--- Name: dvds; Type: DATABASE; Schema: -; Owner: steve
---
-
-CREATE DATABASE dvds WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'C.UTF8' LC_CTYPE = 'C.UTF8';
-
-
-ALTER DATABASE dvds OWNER TO steve;
-
-\connect dvds
-
-SET statement_timeout = 0;
-SET lock_timeout = 0;
-SET idle_in_transaction_session_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-SELECT pg_catalog.set_config('search_path', '', false);
-SET check_function_bodies = false;
-SET xmloption = content;
-SET client_min_messages = warning;
-SET row_security = off;
-
 --
 -- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
 --
@@ -136,7 +113,10 @@ CREATE TABLE public.blurays (
     id integer NOT NULL,
     dvd_id integer,
     disc_title character varying(255),
-    disc_id character varying(40) DEFAULT ''::character varying NOT NULL
+    provider_data character varying(255),
+    bdinfo_titles smallint,
+    hdmv_titles smallint,
+    bdj_titles smallint
 );
 
 
@@ -147,13 +127,6 @@ ALTER TABLE public.blurays OWNER TO steve;
 --
 
 COMMENT ON COLUMN public.blurays.disc_title IS 'Disc title is optional on Blu-rays';
-
-
---
--- Name: COLUMN blurays.disc_id; Type: COMMENT; Schema: public; Owner: steve
---
-
-COMMENT ON COLUMN public.blurays.disc_id IS 'AACS id';
 
 
 --
@@ -258,7 +231,8 @@ CREATE TABLE public.chapters (
     track_id integer,
     ix integer,
     length double precision,
-    filesize bigint
+    filesize bigint,
+    blocks bigint
 );
 
 
@@ -394,7 +368,8 @@ CREATE TABLE public.tracks (
     vts smallint,
     ttn smallint,
     fps double precision,
-    dvdnav smallint DEFAULT 0 NOT NULL
+    dvdnav smallint DEFAULT 0 NOT NULL,
+    blocks bigint
 );
 
 
@@ -570,7 +545,8 @@ CREATE TABLE public.series (
     detelecine smallint DEFAULT 0 NOT NULL,
     screenshots character varying(255) DEFAULT ''::character varying NOT NULL,
     start_date date,
-    ripping_id integer DEFAULT 1 NOT NULL
+    ripping_id integer DEFAULT 1 NOT NULL,
+    x264_preset character varying(255)
 );
 
 
@@ -1812,13 +1788,6 @@ ALTER TABLE ONLY public.subp
 
 ALTER TABLE ONLY public.tracks
     ADD CONSTRAINT tracks_dvd_id_fkey FOREIGN KEY (dvd_id) REFERENCES public.dvds(id) ON DELETE CASCADE;
-
-
---
--- Name: SCHEMA public; Type: ACL; Schema: -; Owner: postgres
---
-
-GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
 --
