@@ -51,7 +51,12 @@
 			$filename = "$dvdread_id.iso";
 			return $filename;
 		}
-		$series_model = new Series_Model($dvds_model->get_series_id());
+		$series_id = $dvds_model->get_series_id();
+		if(!$series_id) {
+			$filename = "$dvdread_id.iso";
+			return $filename;
+		}
+		$series_model = new Series_Model($series_id);
 		$nsix = $series_model->nsix;
 		if(!$nsix)
 			$nsix = 'NSIX';
