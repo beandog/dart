@@ -45,7 +45,12 @@
 
 		$dvd = new DVD($source);
 		$dvds_model = new Dvds_Model();
-		$dvds_model->load_dvdread_id($dvd->dvdread_id);
+		$dvdread_id = $dvd->dvdread_id;
+		$dvds_model->load_dvdread_id($dvdread_id);
+		if(!$dvds_model->id) {
+			$filename = "$dvdread_id.iso";
+			return $filename;
+		}
 		$series_model = new Series_Model($dvds_model->get_series_id());
 		$nsix = $series_model->nsix;
 		if(!$nsix)
