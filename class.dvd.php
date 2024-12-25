@@ -124,7 +124,8 @@
 			exec($cmd, $output, $retval);
 
 			if($retval !== 0 || !count($output)) {
-				echo "* dvd_info(): FAILED\n";
+				if($this->debug)
+					echo "* dvd_info(): FAILED\n";
 				return false;
 			}
 
@@ -134,7 +135,8 @@
 			$json = json_decode($str, true);
 
 			if(is_null($json)) {
-				echo "* dvd_info(): json_decode() FAILED\n";
+				if($this->debug)
+					echo "* dvd_info(): json_decode() FAILED\n";
 				return false;
 			}
 
