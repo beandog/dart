@@ -1,14 +1,76 @@
 <?php
 
-	// Check source
+	// Check source - helper function
 	function is_dvd($device) {
 
-		$arr_devices = array('/dev/bluray', '/dev/dvd', '/dev/sr0', '/dev/sr1');
+		if(get_disc_type($device) == 'dvd')
+			return true;
 
-		if(!in_array($device, $arr_devices) && pathinfo($device, PATHINFO_EXTENSION) != "iso")
-			return false;
+		return false;
 
-		return true;
+	}
+
+	// Helper function
+	function is_bluray($device) {
+
+		if(get_disc_type($device) == 'bluray')
+			return true;
+
+		return false;
+
+	}
+
+	function get_disc_type($source) {
+
+		$source = realpath($source);
+
+		if(is_dir($source) && is_dir("$source/VIDEO_TS"))
+			return 'dvd';
+
+		if(is_dir($source) && is_dir("$source/BDMV"))
+			return 'bluray';
+
+		if(substr($source, 0, 5) == '/dev/') {
+
+			// FIXME DVDDrive class has a disc_type() function, but will return the value
+			// as a DVD if it's not sure. Code calling that function needs to be cleaned up to
+			// see if there is actually no disc type at all (not a DVD or Blu-ray, such as a filename)
+			// but for now, duplicating the functionality.
+
+			$arg_device = escapeshellarg($source);
+			$command = "udevadm info $arg_device";
+			$return = 0;
+			exec($command, $arr, $return);
+
+			if(in_array("E: ID_CDROM_MEDIA_DVD=1", $arr))
+				return 'dvd';
+
+			elseif(in_array("E: ID_CDROM_MEDIA_BD=1", $arr))
+				return 'bluray';
+
+		}
+
+		$pathinfo = pathinfo($source);
+
+		// If it's an '.iso' file, AND it's either 4. or 8., then it's a Blu-ray.
+		// Otherwise, at the point, it's safe to assume it's a DVD, since that's what they all are.
+		if(array_key_exists('extension', $pathinfo) && $pathinfo['extension'] == 'iso') {
+
+			// Check if it starts with '1.'
+			if(substr($pathinfo['extension'], 1, 1) == '.') {
+
+				$collection_id = substr($pathinfo['extension'], 0, 1);
+
+				if($collection_id == 6 || $collection_id == 8)
+					return 'bluray';
+
+			}
+
+			return 'dvd';
+
+		}
+
+		return '';
 
 	}
 
@@ -39,13 +101,40 @@
 
 	function get_dvd_iso_filename($source) {
 
+		$disc_type = get_disc_type($source);
+
 		require_once 'class.dvd.php';
 		require_once 'models/dvds.php';
 		require_once 'models/series.php';
 
-		$dvd = new DVD($source);
 		$dvds_model = new Dvds_Model();
-		$dvdread_id = $dvd->dvdread_id;
+
+		if($disc_type == 'dvd') {
+
+			$dvd = new DVD($source);
+			$dvdread_id = $dvd->dvdread_id;
+
+		} elseif($disc_type == 'bluray') {
+
+			require_once 'class.bluray.php';
+			require_once 'models/blurays.php';
+
+			$bluray = new Bluray($source);
+			$blurays_model = new Blurays_Model();
+			$dvdread_id = $bluray->dvdread_id;
+			$blurays_model->load_dvdread_id($dvdread_id);
+
+			if(!$blurays_model->id) {
+				$filename = "$dvdread_id.iso";
+				return $filename;
+			}
+
+		} else {
+
+			return '';
+
+		}
+
 		$dvds_model->load_dvdread_id($dvdread_id);
 		if(!$dvds_model->id) {
 			$filename = "$dvdread_id.iso";

@@ -248,7 +248,10 @@
 		 * Get the optical disc type - DVD or Blu-ray
 		 *
 		 */
-		 function disc_type() {
+		// FIXME - don't say it's a DVD by default, since it may be looking at a non-disc
+		// See dart.functions.php for same code. Not sure where this is called, and could be a
+		// major cleanup, so skipping for now
+		function disc_type() {
 
 			if($this->debug)
 				echo "* drive::disc_type(".$this->device.")\n";

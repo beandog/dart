@@ -59,8 +59,10 @@
 	if($opt_iso_filename) {
 
 		foreach($devices as $device) {
-			echo get_dvd_iso_filename($device);
-			echo "\n";
+			$iso_filename = get_dvd_iso_filename($device);
+			if($iso_filename) {
+				echo "$iso_filename\n";
+			}
 		}
 
 		exit(0);
