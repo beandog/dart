@@ -52,7 +52,7 @@
 
 		$pathinfo = pathinfo($source);
 
-		// If it's an '.iso' file, AND it's either 4. or 8., then it's a Blu-ray.
+		// If it's an '.iso' file, AND it's either 6. or 8., then it's a Blu-ray.
 		// Otherwise, at the point, it's safe to assume it's a DVD, since that's what they all are.
 		if(array_key_exists('extension', $pathinfo) && $pathinfo['extension'] == 'iso') {
 
