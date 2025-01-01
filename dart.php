@@ -265,22 +265,14 @@
 
 		if($access_device) {
 
-			// Check if source is a Blu-ray
-			if($device_is_iso) {
-				if(is_dir("$device/BDMV")) {
-					$disc_type = 'bluray';
-					$disc_name = 'Blu-ray';
-				} elseif(is_dir("$device/VIDEO_TS")) {
-					$disc_type = "dvd";
-					$disc_name = "DVD";
-				}
-			} else {
-				$disc_type = $drive->disc_type();
-				if($disc_type == "dvd")
-					$disc_name = "DVD";
-				elseif($disc_type == "bluray")
-					$disc_name = "Blu-ray";
-			}
+			$disc_type = get_disc_type($device);
+
+			if($disc_type == "dvd")
+				$disc_name = "DVD";
+			elseif($disc_type == "bluray")
+				$disc_name = "Blu-ray";
+			else
+				goto next_device;
 
 			if(!$batch_mode)
 				echo "[$disc_name]\n";

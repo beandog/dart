@@ -52,18 +52,15 @@
 
 		}
 
-		// At this point, just run dvd_info and bluray_info and see if something happens
-		$command = "dvd_info --id $arg_device 2>&1";
+		$command = "/usr/local/bin/disc_type $arg_device 2> /dev/null";
 		exec($command, $arr, $return);
-		if($return == 0)
-			return 'dvd';
 
-		$command = "bluray_info --xchap $arg_device 2>&1";
-		exec($command, $arr, $return);
-		if($return == 0)
-			return 'bluray';
+		$str = current($arr);
 
-		return '';
+		if($str == 'dvd' || $str == 'bluray')
+			return $str;
+
+		return $str;
 
 	}
 

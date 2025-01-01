@@ -256,6 +256,9 @@
 			if($this->debug)
 				echo "* drive::disc_type(".$this->device.")\n";
 
+			$command = "/usr/local/bin/disc_type $arg_device 2> /dev/null";
+			exec($command, $arr, $return);
+
 			$arg_device = escapeshellarg($this->device);
 			$command = "udevadm info $arg_device";
 			$return = 0;
