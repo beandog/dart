@@ -558,7 +558,7 @@
 				echo "* name: $arg_name\n";
 			}
 
-			$cmd = "firejail --net=none makemkvcon --noscan --minlength=0 -r backup --decrypt disc:$arg_input $arg_output 2>&1 | tee $logfile";
+			$cmd = "makemkvcon --noscan --minlength=0 -r backup --decrypt disc:$arg_input $arg_output 2>&1 | tee $logfile";
 			if($this->debug)
 				echo "* Executing: $cmd\n";
 
@@ -596,7 +596,6 @@
 			$cmd = $this->binary." -m -k $arg_keydb $arg_device 2>&1 | grep -q 'aacs_open() failed'";
 
 			exec($cmd, $output, $retval);
-
 
 			if($retval == 0)
 				return false;
