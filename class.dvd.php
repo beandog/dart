@@ -15,7 +15,6 @@
 		public $title;
 		public $title_tracks;
 		public $longest_track;
-		public $provider_id;
 		public $size;
 		public $side;
 
@@ -100,7 +99,6 @@
 			$this->title_tracks = $this->title_tracks();
 			$this->title_track_index = $this->title_track_index();
 			$this->longest_track = $this->longest_track();
-			$this->provider_id = $this->provider_id();
 			$this->size = $this->size();
 			$this->side = $this->side();
 
@@ -378,23 +376,6 @@
 			}
 
 			return $longest_track;
-
-		}
-
-		public function provider_id() {
-
-			if(!$this->opened)
-				return null;
-
-			$dvd =& $this->dvd_info;
-
-			if(array_key_exists('provider id', $dvd['dvd'])) {
-				$provider_id = $dvd['dvd']['provider id'];
-				$provider_id = trim($provider_id);
-			} else
-				$provider_id = '';
-
-			return $provider_id;
 
 		}
 
