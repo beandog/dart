@@ -61,7 +61,6 @@
 		public $chapter_blocks;
 
 		// Bluray Metadata
-		public $provider_data;
 		public $bdinfo_titles;
 		public $hdmv_titles;
 		public $bdj_titles;
@@ -170,7 +169,6 @@
 			// Legacy metadata
 			// $this->disc_id = strtolower($this->dvd_info['bluray']['disc id']);
 			$this->disc_name = trim($this->dvd_info['bluray']['disc name']);
-			$this->provider_data = trim($this->dvd_info['bluray']['provider data']);
 			$this->bdinfo_titles = $this->dvd_info['bluray']['bdinfo titles'];
 			$this->hdmv_titles = $this->dvd_info['bluray']['hdmv titles'];
 			$this->bdj_titles = $this->dvd_info['bluray']['bd-j titles'];

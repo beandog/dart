@@ -65,11 +65,6 @@
 		}
 		*/
 
-		if(is_null($blurays_model->provider_data)) {
-			echo "* Provider: ".$dvd->provider_data."\n";
-			$blurays_model->provider_data = $dvd->provider_data;
-		}
-
 		if(is_null($blurays_model->bdinfo_titles)) {
 			echo "* BD Info Titles: ".$dvd->bdinfo_titles."\n";
 			$blurays_model->bdinfo_titles = $dvd->bdinfo_titles;
