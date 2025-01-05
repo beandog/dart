@@ -154,7 +154,7 @@
 			$display_device = basename($device);
 
 		// Determine whether we are reading the device
-		if($opt_info || $opt_encode_info || $opt_copy_info || $opt_import || $opt_archive || $opt_dump_iso) {
+		if($opt_info || $opt_encode_info || $opt_copy_info || $opt_import || $opt_archive || $opt_dump_iso || $opt_geniso) {
 			if($debug)
 				echo "* Info / Import / Archive / ISO: Enabling device access\n";
 			$access_device = true;
@@ -338,6 +338,7 @@
 		require 'dart.info.php';
 		require 'dart.encode_info.php';
 		require 'dart.iso.php';
+		require 'dart.geniso.php';
 
 		// goto point for next device -- skip here for any reason that the initial
 		// dart calls failed to acess the DVD or device, and it needs to move on.

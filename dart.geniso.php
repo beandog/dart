@@ -5,7 +5,7 @@
 	 * Create an ISO file from a directory
 	 */
 
-	if($dvds_model_id && $opt_geniso && !$broken_dvd) {
+	if($access_device && $dvds_model_id && $opt_geniso && !$broken_dvd) {
 
 		/** ISO Information **/
 		echo "[Generate ISO]\n";
@@ -43,7 +43,6 @@
 
 		$isos_dir = $backup_dir;
 		$target_iso = realpath($isos_dir).'/'.$target_iso;
-		$target_rip = realpath($isos_dir).'/'.basename($target_iso, '.iso').".R1p";
 
 		$display_iso = basename($target_iso);
 		echo "* Filename: $display_iso\n";
@@ -56,13 +55,19 @@
 		clearstatcache();
 		$target_iso_exists = file_exists($target_iso);
 
+		if(!strlen($dvds_model->title)) {
+			echo "* DVD is missing volume title!\n";
+			goto next_disc;
+		}
+
 		$arg_volname = escapeshellarg($dvds_model->title);
 		$arg_target_iso = escapeshellarg($target_iso);
 		$arg_device = escapeshellarg(realpath($device));
 
 		$cmd = "mkisofs -verbose -posix-L -iso-level 3 -input-charset utf-8 -allow-limited-size -udf -volid $arg_volname -o $arg_target_iso $arg_device";
 
-		echo "$cmd\n";
+		if($debug)
+			echo "$cmd\n";
 
 		passthru($cmd, $retval);
 

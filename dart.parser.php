@@ -99,6 +99,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_geniso', array(
+		'long_name' => '--geniso',
+		'description' => 'Create ISO from directory',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('opt_qa', array(
 		'long_name' => '--qa',
 		'description' => 'Make changes when doing a QA run',
