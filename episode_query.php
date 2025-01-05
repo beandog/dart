@@ -74,6 +74,11 @@
 
 	$filename = array_shift($filenames);
 
+	if(!file_exists($filename)) {
+		echo "File doesn't exist '$filename'\n";
+		exit;
+	}
+
 	$realpath = realpath($filename);
 	$pathinfo = pathinfo($realpath);
 	$movie = false;
