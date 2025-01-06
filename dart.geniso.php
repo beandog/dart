@@ -79,6 +79,11 @@
 		if($debug)
 			echo "$cmd\n";
 
+		if(file_exists($target_iso) && !$debug) {
+			echo "* $arg_target_iso file exists, skipping\n";
+			goto next_disc;
+		}
+
 		passthru($cmd, $retval);
 
 	}
