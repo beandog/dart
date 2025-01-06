@@ -64,11 +64,17 @@
 		$arg_target_iso = escapeshellarg($target_iso);
 		$arg_device = escapeshellarg(realpath($device));
 
-		$cmd = "mkisofs -verbose -posix-L -iso-level 3 -input-charset utf-8 -allow-limited-size -udf -volid $arg_volname -o $arg_target_iso $arg_device";
+		$cmd = "mkisofs -posix-L -iso-level 3 -input-charset utf-8 -allow-limited-size -udf -volid $arg_volname -o $arg_target_iso $arg_device";
+		if($debug)
+			$cmd = "mkisofs -verbose -posix-L -iso-level 3 -input-charset utf-8 -allow-limited-size -udf -volid $arg_volname -o $arg_target_iso $arg_device";
 
 		// cdrtools doesn't use 'allow-limited-size' option
-		if($hostname == 'tobe')
-			$cmd = "mkisofs -verbose -posix-L -iso-level 3 -input-charset utf-8 -udf -volid $arg_volname -o $arg_target_iso $arg_device";
+		if($hostname == 'tobe') {
+			$cmd = "mkisofs -posix-L -iso-level 3 -input-charset utf-8 -udf -volid $arg_volname -o $arg_target_iso $arg_device";
+			if($debug)
+				$cmd = "mkisofs -verbose -posix-L -iso-level 3 -input-charset utf-8 -udf -volid $arg_volname -o $arg_target_iso $arg_device";
+
+		}
 
 		if($debug)
 			echo "$cmd\n";
