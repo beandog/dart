@@ -1,0 +1,15 @@
+#!/bin/bash -x
+if [[ -z $ID_FS_LABEL ]]; then
+	# ID_FS_LABEL=$(busybox volname $DEVNAME)
+	ID_FS_LABEL=$(udevadm info $DEVNAME | grep ID_FS_LABEL | cut -d = -f 2- | head -n 1)
+fi
+disc_type=""
+logger "Media added - $DEVNAME"
+if [[ ! -z "$ID_CDROM_MEDIA_BD" ]]; then disc_type=bd; fi
+if [[ ! -z "$ID_CDROM_MEDIA_DVD" ]]; then disc_type=dvd; fi
+if [[ ! -z "$ID_CDROM_MEDIA_DVD_PLUS_R_DL" ]]; then disc_type=dvd; fi # DVD-R discs by Warner Archive
+if [[ ! -z "$ID_CDROM_MEDIA_CD" ]]; then disc_type=cd; fi
+if [[ ! -z "$disc_type" ]]; then
+	logger "Running spincycle -i $DEVNAME -t $disc_type -l $ID_FS_LABEL"
+	echo "/home/steve/Videos/Rip-o-Matic/spincycle -i $DEVNAME -t $disc_type -l $ID_FS_LABEL" | su - steve -c "at now"
+fi
