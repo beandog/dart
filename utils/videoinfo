@@ -1,0 +1,54 @@
+#!/bin/bash
+for video in $*; do
+	if [[ -d "$video" ]]; then continue; fi
+	mediainfo_out=`mediainfo "$video" 2> /dev/null`
+
+	# Get the height
+	get_height=0
+	height=`echo "$mediainfo_out" | grep "^Height" | awk '{print $3}'`
+	if [[ "$height" -le 480 ]]; then
+		height=480
+		get_height=1
+	elif [[ "$height" -le 576 ]]; then
+		height=576
+		get_height=1
+	elif [[ "$height" -le 720 ]]; then
+		height=720
+		get_height=1
+	elif [[ "$height" -le 1080 ]]; then
+		height=1080
+		get_height=1
+	fi
+
+	# Find out if it's progressive or not
+	frame_rate_mode=`echo "$mediainfo_out" | egrep "^Frame rate mode" | head -n 1 | awk '{print $NF}'`
+	progressive=0
+	if [[ "$frame_rate_mode" == "Constant" ]]; then
+		progressive=1
+	fi
+	fps=0
+	if [[ "$progressive" -eq 1 ]]; then
+		fps=`echo "$mediainfo_out" | egrep "^Frame rate\s{2}+" | head -n 1 | awk '{print $4}'`
+		# if [[ "$fps" == "23.976" ]]; then
+		#	fps=0
+		if [[ "$fps" == "30" ]] || [[ "$fps" == "24" ]] || [[ $fps == "25" ]]; then
+			fps=`echo $fps | cut -d . -f 1`
+		else
+			fps=0
+		fi
+	fi
+	display=""
+	if [[ "$get_height" == 1 ]] && [[ "$progressive" == 1 ]] && [[ "$fps" -gt 0 ]]; then
+		display="${height}p${fps} "
+	fi
+
+	# Print all the formats
+	echo -n "$video "
+	echo -n "$display"
+	echo "$mediainfo_out" | egrep "^Format\s{2}+" | awk '{print $3}' | while read line; do
+		echo -n "$line "
+	done
+
+	echo
+
+done

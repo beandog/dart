@@ -1,0 +1,4 @@
+# actors
+sqlite3 ~/plex.sqlite.db "DELETE FROM tags WHERE tag_type = 6;"
+# reviews
+sqlite3 ~/plex.sqlite.db "DELETE FROM tags WHERE tag_type = 10;"

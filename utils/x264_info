@@ -1,0 +1,1 @@
+mediainfo $* | grep "^Encoding settings" | cut -d ':' -f 2- | tr '/' '\n' | cut -d ' ' -f 2-
