@@ -1,0 +1,5 @@
+#!/bin/bash
+if [[ -z "$1" ]]; then device=/dev/sr0; else device="$1"; fi
+dvd_title=`dart --iso-filename $device`
+echo "Ripping $device to $dvd_title"
+ddrescue -b 2048 -n $device "${dvd_title}" "${dvd_title}.log"
