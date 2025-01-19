@@ -1,0 +1,29 @@
+#!/bin/bash -x
+
+sqlite3 ~/plex.sqlite.db "SELECT media_parts.file FROM media_items JOIN metadata_items ON media_items.metadata_item_id = metadata_items.id JOIN media_parts ON media_parts.media_item_id = media_items.id WHERE metadata_items.library_section_id = 15
+	AND originally_available_at IS NOT NULL
+	AND STRFTIME('%W', originally_available_at) = STRFTIME('%W', 'now', 'localtime')
+	AND STRFTIME('%w', originally_available_at) = '6'
+	ORDER BY media_parts.file;" | while read line; do
+
+	episode_filename=$(realpath "$line")
+	# echo $episode_filename
+
+	plex_season_dir=$(dirname "$line" | cut -d "/" -f 6-)
+	# echo $plex_season_dir
+
+	plex_episode_filename=$(basename "$line")
+	# echo $plex_episode_filename
+
+	if [[ ! -d "/opt/plex/libraries/saturday/${plex_season_dir}/" ]]; then
+		mkdir -p "/opt/plex/libraries/saturday/${plex_season_dir}/"
+	fi
+
+	if [[ ! -L "/opt/plex/libraries/saturday/${plex_season_dir}/${plex_episode_filename}" ]]; then
+		ln -s $episode_filename "/opt/plex/libraries/saturday/${plex_season_dir}/${plex_episode_filename}"
+	fi
+
+done
+
+find /opt/plex/libraries/saturday -type l -mtime +0 -delete
+find /opt/plex/libraries/saturday -type d -empty -delete
