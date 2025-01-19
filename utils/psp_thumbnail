@@ -1,0 +1,19 @@
+#!/bin/bash
+
+control_c() {
+        exit 1
+}
+trap control_c INT
+
+display_usage() {
+	echo "Usage: `basename $0` input.mp4"
+}
+
+if [[ $# -lt 1 ]]; then display_usage; exit 1; fi
+
+input=`realpath "$1"`
+output=`basename "$input" .mp4`.jpg
+
+if [[ -e "$output" ]]; then exit; fi
+
+ffmpeg -y -i "$1" -vframes 1 -ss 60 -s 160x106 "$output"
