@@ -1,0 +1,26 @@
+#!/bin/bash -x
+
+sqlite3 ~/plex.sqlite.db "SELECT media_parts.file FROM media_items JOIN metadata_items ON media_items.metadata_item_id = metadata_items.id JOIN media_parts ON media_parts.media_item_id = media_items.id WHERE metadata_items.library_section_id = 23
+	AND originally_available_at IS NOT NULL
+	AND STRFTIME('%W', originally_available_at) BETWEEN STRFTIME('%W', 'now') AND STRFTIME('%W', 'now', '+14 days')
+	ORDER BY media_parts.file;" | while read line; do
+
+	episode_filename=$(realpath "$line")
+	# echo $episode_filename
+
+	plex_season_dir=$(dirname "$line" | cut -d "/" -f 6-)
+	# echo $plex_season_dir
+
+	plex_episode_filename=$(basename "$line")
+	# echo $plex_episode_filename
+
+	if [[ ! -d "/opt/plex/libraries/now-playing/${plex_season_dir}/" ]]; then
+		mkdir -p "/opt/plex/libraries/now-playing/${plex_season_dir}/"
+	fi
+
+	ln -sf $episode_filename "/opt/plex/libraries/now-playing/${plex_season_dir}/${plex_episode_filename}"
+
+done
+
+find /opt/plex/libraries/now-playing -type l -mtime +13 -delete
+find /opt/plex/libraries/now-playing -mindepth 1 -type d -empty -delete
