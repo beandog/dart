@@ -1,0 +1,41 @@
+#!/bin/bash
+
+control_c() {
+        exit 1
+}
+trap control_c INT
+
+display_usage() {
+	echo "Usage: `basename $0` input.mp4"
+}
+
+if [[ $# -lt 1 ]]; then display_usage; exit 1; fi
+
+for input in $*; do
+	if [[ ! -e "$input" ]]; then echo "Could not find $input"; continue; fi
+
+	source_aspect=$(mediainfo ${input} | grep "^Display aspect ratio" | awk '{ print $5 }')
+
+	# extension="${input: -3}"
+	episode="`vfat_filename ${input}`"
+	output="`echo $episode | sed -e s/${input: -3}/mp4/g`"
+	jpeg="`echo $episode | sed -e s/${input: -3}/jpg/g`"
+
+	if [[ -e "$output" ]]; then continue; fi
+	echo "* $input - $output"
+
+	if [[ "$source_aspect" == "16:9" ]]; then
+		HandBrakeCLI --format av_mp4 --encoder x264 --encoder-profile main --encopts bframes=1 --encoder-preset medium --aencoder fdk_aac --mixdown stereo --subtitle none -i "$input" -o "$output" --width 480 --height 270 --custom-anamorphic --display-width 480 &> /dev/null
+		ffmpeg -y -i "$input" -vframes 1 -ss 60 -s 160x106 "$jpeg" &> /dev/null
+	elif [[ "$source_aspect" == "4:3" ]]; then
+		HandBrakeCLI --format av_mp4 --encoder x264 --encoder-profile main --encopts bframes=1 --encoder-preset medium --aencoder fdk_aac --mixdown stereo --subtitle none -i "$input" -o "$output" --width 360 --height 270 --custom-anamorphic --display-width 360 &> /dev/null
+		ffmpeg -y -i "$input" -vframes 1 -ss 60 -s 160x106 "$jpeg" &> /dev/null
+	elif [[ "$source_aspect" == "2.35:1" ]]; then
+		HandBrakeCLI --format av_mp4 --encoder x264 --encoder-profile main --encopts bframes=1 --encoder-preset medium --aencoder fdk_aac --mixdown stereo --subtitle none -i "$input" -o "$output" --width 480 --height 206 --custom-anamorphic --display-width 480 -q 25 &> /dev/null
+		ffmpeg -y -i "$input" -vframes 1 -ss 60 -s 160x106 "$jpeg" &> /dev/null
+	else
+		echo HandBrakeCLI --format av_mp4 --encoder x264 --encoder-profile main --encopts bframes=1 --encoder-preset medium --aencoder fdk_aac --mixdown stereo --maxWidth 480 --maxHeight 270 --subtitle none -i "$input" -o "$output"
+		echo ffmpeg -y -i "$input" -vframes 1 -ss 60 -s 160x106 "$jpeg"
+	fi
+
+done
