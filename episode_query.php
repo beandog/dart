@@ -36,8 +36,8 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_kodi', array(
-		'long_name' => '--kodi',
+	$parser->addOption('opt_jfin', array(
+		'long_name' => '--jfin',
 		'description' => '\'Series Name (Year)/\'',
 		'action' => 'StoreTrue',
 		'default' => false,
@@ -157,6 +157,11 @@
 
 	$episode_title = preg_replace("/[^0-9A-Za-z \-_.]/", '', $episode_metadata['title']);
 
+	$series_jfin = $episode_metadata['jfin'];
+
+	if($opt_jfin && !$series_jfin)
+		goto next_episode;
+
 	if($movie) {
 
 		$filename = $episode_title;
@@ -173,9 +178,11 @@
 	$filename .= ".".$pathinfo['extension'];
 	$episode_title .= ".".$pathinfo['extension'];
 
-	if($opt_dirname)
+	if($opt_dirname && !$opt_jfin)
 		echo $series_dirname."/";
-	if(!$movie && $opt_dirname && !$opt_kodi)
+	if($opt_dirname && $opt_jfin)
+		echo $series_dirname." [tvdbid-$series_jfin]/";
+	if(!$movie && $opt_dirname)
 		echo $season_dirname."/";
 	if($opt_filename)
 		echo $filename;
