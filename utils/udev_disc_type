@@ -1,0 +1,10 @@
+#!/bin/bash
+device=$1
+disc_type=none
+if [[ -z "$device" ]]; then device=/dev/sr0; fi;
+media=`udevadm info $device 2> /dev/null | egrep "ID_CDROM_MEDIA_(CD|DVD|BD)" | awk '{ print $2 }' | cut -d '=' -f 1`
+if [[ "$media" == ID_CDROM_MEDIA_CD ]]; then disc_type=cd; fi
+if [[ "$media" == ID_CDROM_MEDIA_DVD ]]; then disc_type=dvd; fi
+if [[ "$media" == ID_CDROM_MEDIA_BD ]]; then disc_type=bluray; fi
+if [[ -d "$device" ]]; then disc_type=dir; fi
+echo $disc_type

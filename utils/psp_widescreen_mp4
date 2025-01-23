@@ -1,0 +1,29 @@
+#!/bin/bash
+
+control_c() {
+        exit 1
+}
+trap control_c INT
+
+display_usage() {
+	echo "Usage: `basename $0` input.mp4"
+}
+
+if [[ $# -lt 1 ]]; then display_usage; exit 1; fi
+
+for input in $*; do
+	if [[ ! -e "$input" ]]; then echo "Could not find $input"; continue; fi
+
+	# extension="${input: -3}"
+	episode="`episode_query -v ${input}`"
+	output="`echo $episode | sed -e s/${input: -3}/mp4/g`"
+
+	if [[ -e "$output" ]]; then continue; fi
+
+	echo "* $input - $output"
+
+	# HandBrakeCLI --format av_mp4 --encoder x264 --encoder-profile main --encopts bframes=1 --encoder-preset medium --quality 20 --aencoder fdk_aac --mixdown stereo --maxWidth 480 --maxHeight 272 --subtitle none -i "$input" -o "$output"
+	# HandBrakeCLI --format av_mp4 --encoder x264 --encoder-profile main --encopts bframes=1 --encoder-preset medium --quality 20 --aencoder fdk_aac --mixdown stereo --subtitle none -i "$input" -o "$output" --stop-at duration:120 --width 480 --height 272 --non-anamorphic
+	# HandBrakeCLI --format av_mp4 --encoder x264 --encoder-profile main --encopts bframes=1 --encoder-preset medium --quality 20 --aencoder fdk_aac --mixdown stereo --subtitle none -i "$input" -o "$output" --stop-at duration:120 --maxWidth 480 --maxHeight 270 --custom-anamorphic --keep-display-aspect # works for widescreen
+	HandBrakeCLI --format av_mp4 --encoder x264 --encoder-profile main --encopts bframes=1 --encoder-preset medium --quality 20 --aencoder fdk_aac --mixdown stereo --subtitle none -i "$input" -o "$output" --stop-at duration:120 --width 480 --height 272 --custom-anamorphic --pixel-aspect 4:3
+done
