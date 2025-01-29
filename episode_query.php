@@ -159,9 +159,6 @@
 
 	$series_jfin = $episode_metadata['jfin'];
 
-	if($opt_jfin && !$series_jfin)
-		goto next_episode;
-
 	if($movie) {
 
 		$filename = $episode_title;
@@ -178,14 +175,27 @@
 	$filename .= ".".$pathinfo['extension'];
 	$episode_title .= ".".$pathinfo['extension'];
 
-	if($opt_dirname && !$opt_jfin)
-		echo $series_dirname."/";
-	if($opt_dirname && $opt_jfin)
-		echo $series_dirname." [tvdbid-$series_jfin]/";
-	if(!$movie && $opt_dirname)
-		echo $season_dirname."/";
-	if($opt_filename)
-		echo $filename;
+	if($opt_jfin) {
+
+		if($opt_dirname && $series_jfin)
+			echo $series_dirname." [tvdbid-$series_jfin]/";
+		else
+			echo "$series_dirname/";
+		if(!$movie && $opt_dirname)
+			echo $season_dirname."/";
+		if($opt_filename)
+			echo $filename;
+
+	} else {
+
+		if($opt_dirname)
+			echo $series_dirname."/";
+		if(!$movie && $opt_dirname)
+			echo $season_dirname."/";
+		if($opt_filename)
+			echo $filename;
+
+	}
 
 	echo "\n";
 
