@@ -177,10 +177,12 @@
 
 	if($opt_jfin) {
 
-		if($opt_dirname && $series_jfin)
-			echo $series_dirname." [tvdbid-$series_jfin]/";
-		else
-			echo "$series_dirname/";
+		if($opt_dirname) {
+			if($series_jfin)
+				echo $series_dirname." [tvdbid-$series_jfin]/";
+			else
+				echo "$series_dirname/";
+		}
 		if(!$movie && $opt_dirname)
 			echo $season_dirname."/";
 		if($opt_filename)
