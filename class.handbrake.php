@@ -1,6 +1,6 @@
 <?php
 
-	class Handbrake {
+	class HandBrake {
 
 		// Handbrake
 		public $binary = "HandBrakeCLI";

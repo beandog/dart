@@ -22,7 +22,7 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x264') {
 	if($disc_type == 'bluray')
 		$x264opts = '';
 
-	$handbrake = new Handbrake;
+	$handbrake = new HandBrake;
 	$handbrake->set_binary($handbrake_bin);
 	$handbrake->verbose($verbose);
 	$handbrake->debug($debug);
