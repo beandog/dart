@@ -20,7 +20,7 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x265') {
 
 	// HandBrake for --encode-info
 
-	$handbrake = new Handbrake;
+	$handbrake = new HandBrake;
 	$handbrake->set_binary($handbrake_bin);
 	$handbrake->verbose($verbose);
 	$handbrake->debug($debug);
@@ -102,7 +102,7 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x265') {
 	$handbrake->add_audio_track($tracks_model->audio_ix);
 
 	$audio_encoder = $series_model->get_audio_encoder();
-	if($audio_encoder == 'fdk_aac' || $audio_encoder == 'ac3' || $audio_encoder == 'flac') {
+	if($audio_encoder == 'fdk_aac' || $audio_encoder == 'ac3' || $audio_encoder == 'flac' || $audio_encoder == 'mp3') {
 		$handbrake->add_audio_encoder($audio_encoder);
 	} elseif($audio_encoder == 'fdk_aac,copy') {
 		$handbrake->add_audio_encoder('fdk_aac');

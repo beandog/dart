@@ -106,10 +106,8 @@
 			$this->add_chapters = (boolean)$bool;
 		}
 
-		public function set_audio_bitrate($int) {
-			$int = abs(intval($int));
-			if($int)
-				$this->audio_bitrate = $int;
+		public function set_audio_bitrate($str) {
+			$this->audio_bitrate = $str;
 		}
 
 		public function set_audio_downmix($str) {
