@@ -22,6 +22,7 @@
 	require_once 'class.handbrake.php';
 	require_once 'class.dvd_copy.php';
 	require_once 'class.bluray_copy.php';
+	require_once 'class.dvdrip.php';
 	require_once 'class.ffmpeg.php';
 
 	require_once 'models/dbtable.php';
@@ -81,6 +82,11 @@
 
 	if($opt_encode_info || $opt_copy_info)
 		$batch_mode = true;
+
+	// Use handbrake by default
+	$opt_handbrake = true;
+	if($opt_dvdrip)
+		$opt_handbrake = false;
 
 	if(!count($devices) && ($opt_info || $opt_encode_info || $opt_copy_info || $opt_dump_iso || $opt_import || $opt_archive))
 		$devices = $all_devices;

@@ -66,7 +66,7 @@
 					require 'dart.x264.php';
 					require 'dart.x265.php';
 
-					if($opt_encode_info) {
+					if($opt_encode_info && $opt_handbrake) {
 
 						$handbrake->input_filename($input_filename);
 						if($opt_vob)
@@ -116,6 +116,20 @@
 							echo "$handbrake_command\n";
 
 						}
+
+					}
+
+					if($opt_encode_info && $opt_dvdrip) {
+
+						$dvdrip->input_filename($input_filename);
+
+						$dvdrip->output_filename($filename);
+						$dvdrip_command = $dvdrip->get_executable_string();
+						if($opt_time)
+							$dvdrip_command = "command time -f '$filename - %E' -o '${filename}.time' $handbrake_command";
+
+						echo "$dvdrip_command\n";
+
 
 					}
 

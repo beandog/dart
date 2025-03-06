@@ -117,6 +117,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_dvdrip', array(
+		'long_name' => '--dvdrip',
+		'description' => 'Use dvd_rip instead of HandBrake',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('arg_crf', array(
 		'long_name' => '--crf',
 		'description' => 'Set encoding CRF',
