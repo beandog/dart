@@ -80,15 +80,15 @@
 
 	}
 
-	if($opt_encode_info || $opt_copy_info)
+	if($opt_encode_info || $opt_copy_info || $opt_ffplay)
 		$batch_mode = true;
 
 	// Use handbrake by default
 	$opt_handbrake = true;
-	if($opt_dvdrip || $opt_ffmpeg)
+	if($opt_dvdrip || $opt_ffmpeg || $opt_ffplay)
 		$opt_handbrake = false;
 
-	if(!count($devices) && ($opt_info || $opt_encode_info || $opt_copy_info || $opt_dump_iso || $opt_import || $opt_archive))
+	if(!count($devices) && ($opt_info || $opt_encode_info || $opt_copy_info || $opt_dump_iso || $opt_import || $opt_archive || $opt_ffplay))
 		$devices = $all_devices;
 
 	// Default max length for QA operations
@@ -160,7 +160,7 @@
 			$display_device = basename($device);
 
 		// Determine whether we are reading the device
-		if($opt_info || $opt_encode_info || $opt_copy_info || $opt_import || $opt_archive || $opt_dump_iso || $opt_geniso) {
+		if($opt_info || $opt_encode_info || $opt_copy_info || $opt_import || $opt_archive || $opt_dump_iso || $opt_geniso || $opt_ffplay) {
 			if($debug)
 				echo "* Info / Import / Archive / ISO: Enabling device access\n";
 			$access_device = true;

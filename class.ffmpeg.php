@@ -12,20 +12,22 @@
 		public $input_opts = '';
 		public $disable_stats = false;
 		public $duration = 0;
+		public $fullscreen = false;
 
 		// DVD source
 		public $input_filename = '-';
-		public $output_filename = 'ffmpeg.mkv';
+		public $output_filename = '';
+		public $dvd_track = 0;
 
 		// Chapters
-		public $start_chapter;
-		public $end_chapter;
+		public $start_chapter = 0;
+		public $stop_chapter = 0;
 
 		// Video
 		public $vcodec = '';
 		public $vcodec_opts = '';
 		public $video_filters = array();
-		public $crf = 20;
+		public $crf = 0;
 		public $tune = '';
 
 		// Audio
@@ -53,6 +55,10 @@
 			$this->duration = abs(intval($int));
 		}
 
+		public function fullscreen($bool = true) {
+			$this->fullscreen = (boolean)$bool;
+		}
+
 		/** Filename **/
 		public function input_filename($src) {
 			$this->input_filename = $src;
@@ -66,9 +72,19 @@
 			$this->input_opts = $str;
 		}
 
+		public function input_track($str) {
+			$track = abs(intval($str));
+			if($track)
+				$this->dvd_track = $track;
+		}
+
 		public function set_chapters($start, $stop) {
-			$this->start_chapter = $start;
-			$this->stop_chapter = $stop;
+			$start = abs(intval($start));
+			$stop = abs(intval($stop));
+			if($start)
+				$this->start_chapter = $start;
+			if($stop)
+				$this->stop_chapter = $stop;
 		}
 
 		public function set_vcodec($str) {
@@ -80,7 +96,9 @@
 		}
 
 		public function set_crf($str) {
-			$this->crf = abs(intval($str));
+			$crf = abs(intval($str));
+			if($crf)
+				$this->crf = $crf;
 		}
 
 		public function set_tune($str) {
@@ -136,7 +154,8 @@
 			if($this->vcodec_opts)
 				$args['vcodec_opts'] = $this->vcodec_opts;
 
-			$args['x264-params'] = "crf=".$this->crf."";
+			if($this->crf)
+				$args['x264-params'] = "crf=".$this->crf."";
 
 			if($this->tune)
 				$args['tune'] = $this->tune;
@@ -172,6 +191,9 @@
 			if($this->input_opts)
 				$cmd[] = $this->input_opts;
 
+			if($this->dvd_track)
+				$cmd[] = "-title '".$this->dvd_track."'";
+
 			if($this->start_chapter)
 				$cmd[] = "-chapter_start '".$this->start_chapter."'";
 			if($this->stop_chapter)
@@ -201,6 +223,9 @@
 			if($this->output_filename == "-")
 				$cmd[] = "-f 'null'";
 
+			if($this->fullscreen)
+				$cmd[] ="-fs";
+
 			foreach($args as $key => $value) {
 				$arg_value = escapeshellarg($value);
 				$cmd[] = "-$key $arg_value";
@@ -208,8 +233,10 @@
 
 			$str = implode(" ", $cmd);
 
-			$arg_output = escapeshellarg($this->output_filename);
-			$str .= " -y $arg_output";
+			if($this->output_filename) {
+				$arg_output = escapeshellarg($this->output_filename);
+				$str .= " -y $arg_output";
+			}
 
 			return $str;
 

@@ -1,7 +1,7 @@
 <?php
 
 	// Display encode instructions about a disc
-	if($disc_indexed && ($opt_encode_info || $opt_copy_info)) {
+	if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay)) {
 
 		$dvd_episodes = $dvds_model->get_episodes();
 
@@ -57,7 +57,50 @@
 
 			$input_filename = realpath($device);
 
-			/** DVDs **/
+			if($opt_ffplay && $disc_type == 'dvd') {
+
+				$ffmpeg = new FFMpeg();
+				$ffmpeg->set_binary('ffplay');
+
+				$ffmpeg->input_filename($input_filename);
+
+				$ffmpeg->input_track($tracks_model->ix);
+
+				if($debug)
+					$ffmpeg->debug();
+
+				if($verbose)
+					$ffmpeg->verbose();
+
+				/** Chapters **/
+				$starting_chapter = $episodes_model->starting_chapter;
+				$ending_chapter = $episodes_model->ending_chapter;
+				if($starting_chapter || $ending_chapter) {
+					$ffmpeg->set_chapters($starting_chapter, $ending_chapter);
+				}
+
+				if($opt_qa)
+					$ffmpeg->set_duration($qa_max);
+
+				$video_filters = array();
+
+				// Have a placeholder if there are *none* so that it's easier to edit command-line
+				if(!count($video_filters))
+					$ffmpeg->add_video_filter("blackdetect");
+
+				foreach($video_filters as $vf) {
+					$ffmpeg->add_video_filter($vf);
+				}
+
+				$ffmpeg->fullscreen();
+
+				$ffplay_command = $ffmpeg->get_executable_string();
+
+				echo "$ffplay_command\n";
+
+			}
+
+			/** Encode DVDs **/
 			if(!($opt_skip_existing && file_exists($filename)) && $disc_type == "dvd") {
 
 				// if($container == 'mkv' || $container == 'mp4' || $container == 'webm') {
@@ -318,7 +361,9 @@
 
 				}
 
+
 			}
+
 
 		}
 

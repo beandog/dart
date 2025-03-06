@@ -129,6 +129,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_ffplay', array(
+		'long_name' => '--ffplay',
+		'description' => 'Use ffplay to playback video directly',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('arg_crf', array(
 		'long_name' => '--crf',
 		'description' => 'Set encoding CRF',
