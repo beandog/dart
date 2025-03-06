@@ -126,7 +126,7 @@
 						$dvdrip->output_filename($filename);
 						$dvdrip_command = $dvdrip->get_executable_string();
 						if($opt_time)
-							$dvdrip_command = "command time -f '$filename - %E' -o '${filename}.time' $handbrake_command";
+							$dvdrip_command = "command time -f '$filename - %E' -o '${filename}.time' $dvdrip_command";
 
 						echo "$dvdrip_command\n";
 
