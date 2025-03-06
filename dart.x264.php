@@ -216,8 +216,7 @@ if($opt_encode_info && $opt_dvdrip && $episode_id && $video_encoder == 'x264') {
 
 	$audio_encoder = $series_model->get_audio_encoder();
 
-	if($audio_encoder == 'fdk_aac')
-		$audio_encoder = 'aac';
+	$audio_encoder = 'aac';
 
 	$dvdrip->set_acodec($audio_encoder);
 
