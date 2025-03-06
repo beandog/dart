@@ -123,6 +123,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_ffmpeg', array(
+		'long_name' => '--ffmpeg',
+		'description' => 'Use ffmpeg instead of HandBrake',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('arg_crf', array(
 		'long_name' => '--crf',
 		'description' => 'Set encoding CRF',

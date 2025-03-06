@@ -85,7 +85,7 @@
 
 	// Use handbrake by default
 	$opt_handbrake = true;
-	if($opt_dvdrip)
+	if($opt_dvdrip || $opt_ffmpeg)
 		$opt_handbrake = false;
 
 	if(!count($devices) && ($opt_info || $opt_encode_info || $opt_copy_info || $opt_dump_iso || $opt_import || $opt_archive))

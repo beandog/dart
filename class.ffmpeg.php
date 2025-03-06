@@ -17,10 +17,16 @@
 		public $input_filename = '-';
 		public $output_filename = 'ffmpeg.mkv';
 
+		// Chapters
+		public $start_chapter;
+		public $end_chapter;
+
 		// Video
 		public $vcodec = '';
 		public $vcodec_opts = '';
 		public $video_filters = array();
+		public $crf = 20;
+		public $tune = '';
 
 		// Audio
 		public $audio = true;
@@ -60,12 +66,25 @@
 			$this->input_opts = $str;
 		}
 
+		public function set_chapters($start, $stop) {
+			$this->start_chapter = $start;
+			$this->stop_chapter = $stop;
+		}
+
 		public function set_vcodec($str) {
 			$this->vcodec = $str;
 		}
 
 		public function set_vcodec_opts($str) {
 			$this->vcodec_opts = $str;
+		}
+
+		public function set_crf($str) {
+			$this->crf = abs(intval($str));
+		}
+
+		public function set_tune($str) {
+			$this->tune = $str;
 		}
 
 		public function add_video_filter($str) {
@@ -116,15 +135,21 @@
 				$args['vcodec'] = $this->vcodec;
 			if($this->vcodec_opts)
 				$args['vcodec_opts'] = $this->vcodec_opts;
-			if(count($this->video_filters)) {
-				$vf = implode(",", $this->video_filters);
-				$args['vf'] = $vf;
-			}
+
+			$args['x264-params'] = "crf=".$this->crf."";
+
+			if($this->tune)
+				$args['tune'] = $this->tune;
 
 			if($this->acodec)
 				$args['acodec'] = $this->acodec;
 			if($this->acodec_opts)
 				$args['acodec_opts'] = $this->acodec_opts;
+
+			if(count($this->video_filters)) {
+				$vf = implode(",", $this->video_filters);
+				$args['vf'] = $vf;
+			}
 
 			if($this->duration)
 				$args['t'] = $this->duration;
@@ -136,19 +161,24 @@
 		public function get_executable_string() {
 
 			$cmd[] = $this->binary;
-			$cmd[] = "-hide_banner";
-			// Generating PTS is only necessary with dvd_copy and remuxing, but not ripping
-			// It's safe to leave here though
-			$cmd[] = "-fflags '+genpts'";
-			if($this->disable_stats)
-				$cmd[] = "-nostats";
-			if($this->verbose)
-				$cmd[] = "-report";
+
+			if($this->debug)
+				$cmd[] = "-loglevel 'debug'";
+			elseif($this->verbose)
+				$cmd[] = "-loglevel 'verbose'";
+
+			$cmd[] = "-f 'dvdvideo'";
+
 			if($this->input_opts)
 				$cmd[] = $this->input_opts;
+
+			if($this->start_chapter)
+				$cmd[] = "-chapter_start '".$this->start_chapter."'";
+			if($this->stop_chapter)
+				$cmd[] = "-chapter_end '".$this->stop_chapter."'";
+
 			$arg_input = escapeshellarg($this->input_filename);
 			$cmd[] = "-i $arg_input";
-			$cmd[] = "-map '0:v'";
 
 			if(count($this->audio_streams)) {
 				foreach($this->audio_streams as $streamid) {
@@ -165,16 +195,16 @@
 
 			$args = $this->get_ffmpeg_arguments();
 
-			foreach($args as $key => $value) {
-				$arg_value = escapeshellarg($value);
-				$cmd[] = "-$key $arg_value";
-			}
-
 			if($this->ffmpeg_opts)
 				$cmd[] = $this->ffmpeg_opts;
 
 			if($this->output_filename == "-")
 				$cmd[] = "-f 'null'";
+
+			foreach($args as $key => $value) {
+				$arg_value = escapeshellarg($value);
+				$cmd[] = "-$key $arg_value";
+			}
 
 			$str = implode(" ", $cmd);
 

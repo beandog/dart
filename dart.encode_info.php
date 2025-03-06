@@ -130,6 +130,18 @@
 
 						echo "$dvdrip_command\n";
 
+					}
+
+					if($opt_encode_info && $opt_ffmpeg) {
+
+						$ffmpeg->input_filename($input_filename);
+
+						$ffmpeg->output_filename($filename);
+						$ffmpeg_command = $ffmpeg->get_executable_string();
+						if($opt_time)
+							$ffmpeg_command = "command time -f '$filename - %E' -o '${filename}.time' $ffmpeg_command";
+
+						echo "$ffmpeg_command\n";
 
 					}
 
