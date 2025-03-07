@@ -283,7 +283,7 @@ if($opt_encode_info && $opt_ffmpeg && $episode_id && $video_encoder == 'x264') {
 
 	$video_filters = array();
 
-	$video_filters[] = "bwdif";
+	$video_filters[] = "bwdif=deint=interlaced";
 
 	// Have a placeholder if there are *none* so that it's easier to edit command-line
 	if(!count($video_filters))
@@ -295,16 +295,20 @@ if($opt_encode_info && $opt_ffmpeg && $episode_id && $video_encoder == 'x264') {
 
 	/** Audio **/
 	$audio_streamid = $tracks_model->get_first_english_streamid();
-	if($audio_streamid) {
-		$ffmpeg->add_audio_stream($audio_streamid);
-		$ffmpeg->set_acodec('copy');
-	}
+	if(!$audio_streamid)
+		$audio_streamid = '0x80';
+	$ffmpeg->add_audio_stream($audio_streamid);
+
+	$ffmpeg->set_acodec('copy');
 
 	/** Subtitles **/
 	$subp_ix = $tracks_model->get_first_english_subp();
+	if(!$subp_ix)
+		$subp_ix = '0x20';
 
 	if($subp_ix) {
-		$ffmpeg->input_opts("-probesize '67108864' -analyzeduration '60000000'");
+		// Not sure if I need this now that I'm pulling straight from dvdvideo format
+		// $ffmpeg->input_opts("-probesize '67108864' -analyzeduration '60000000'");
 		$ffmpeg->add_subtitle_stream($subp_ix);
 	}
 

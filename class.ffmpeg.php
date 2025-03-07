@@ -202,6 +202,8 @@
 			$arg_input = escapeshellarg($this->input_filename);
 			$cmd[] = "-i $arg_input";
 
+			$cmd[] = "-map '0:v:0'";
+
 			if(count($this->audio_streams)) {
 				foreach($this->audio_streams as $streamid) {
 					$cmd[] = "-map 'i:$streamid'";
@@ -209,10 +211,10 @@
 			}
 
 			if(count($this->subtitle_streams)) {
-				$cmd[] = "-scodec 'copy'";
 				foreach($this->subtitle_streams as $streamid) {
 					$cmd[] = "-map 'i:$streamid?'";
 				}
+				$cmd[] = "-scodec 'copy'";
 			}
 
 			$args = $this->get_ffmpeg_arguments();
