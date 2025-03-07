@@ -257,6 +257,8 @@ if($opt_encode_info && $opt_ffmpeg && $episode_id && $video_encoder == 'x264') {
 		$ffmpeg->set_chapters($starting_chapter, $ending_chapter);
 	}
 
+	$ffmpeg->input_track($tracks_model->ix);
+
 	$video_quality = $series_model->get_crf();
 
 	if($arg_crf)
