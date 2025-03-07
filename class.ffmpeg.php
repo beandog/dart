@@ -6,7 +6,7 @@
 		public $verbose = false;
 
 		// ffmpeg
-		public $ffmpeg = 'ffmpeg';
+		public $binary = 'ffmpeg';
 		public $ffmpeg_output = '/dev/null';
 		public $ffmpeg_opts = '';
 		public $input_opts = '';
@@ -202,15 +202,16 @@
 			$arg_input = escapeshellarg($this->input_filename);
 			$cmd[] = "-i $arg_input";
 
-			$cmd[] = "-map '0:v:0'";
+			if($this->binary == 'ffmpeg')
+				$cmd[] = "-map '0:v:0'";
 
-			if(count($this->audio_streams)) {
+			if(count($this->audio_streams) && $this->binary == 'ffmpeg') {
 				foreach($this->audio_streams as $streamid) {
 					$cmd[] = "-map 'i:$streamid'";
 				}
 			}
 
-			if(count($this->subtitle_streams)) {
+			if(count($this->subtitle_streams) && $this->binary == 'ffmpeg') {
 				foreach($this->subtitle_streams as $streamid) {
 					$cmd[] = "-map 'i:$streamid?'";
 				}
