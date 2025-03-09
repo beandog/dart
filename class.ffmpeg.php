@@ -251,6 +251,7 @@
 			if($this->stop_chapter)
 				$cmd[] = "-chapter_end '".$this->stop_chapter."'";
 
+			// For DVDs, this could be 0:v, but leave it in for blurays in the future
 			$arg_input = escapeshellarg($this->input_filename);
 			$cmd[] = "-i $arg_input";
 
