@@ -17,10 +17,12 @@
 	$missing_dvd_metadata = false;
 	$missing_dvd_tracks_metadata = false;
 	$missing_bluray_metadata = false;
+	$missing_episode_metadata = false;
 
 	if($disc_indexed && $access_device && $disc_type == 'dvd') {
 		$missing_dvd_metadata = $dvds_model->dvd_missing_metadata($debug);
 		$missing_dvd_tracks_metadata = $dvds_model->dvd_tracks_missing_metadata($debug);
+		$missing_episode_metadata = $dvds_model->dvd_missing_episode_metadata();
 	}
 
 	if($disc_indexed && $access_device && $disc_type == 'bluray') {
@@ -98,6 +100,9 @@
 			echo "* Updated metadata to latest spec! :D\n";
 
 	}
+
+	if($missing_episode_metadata)
+		require 'dart.import.episodes.php';
 
 	next_disc:
 

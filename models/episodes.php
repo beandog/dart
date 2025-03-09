@@ -266,5 +266,21 @@
 
 		}
 
+		public function missing_episode_metadata() {
+
+			$episode_id = intval($this->id);
+
+			// Check for missing crop detection on episodes
+			$sql = "SELECT crop FROM episodes WHERE id = $episode_id;";
+
+			$crop = $this->get_one($sql);
+
+			if(!strlen($crop))
+				return true;
+
+			return false;
+
+		}
+
 	}
 ?>
