@@ -211,6 +211,16 @@
 			if($count)
 				return true;
 
+			// Check for missing crop detection on episodes
+			$sql = "SELECT COUNT(1) FROM view_episodes WHERE crop = '' AND dvd_id = $dvd_id;";
+
+			$count = intval($this->get_one($sql));
+
+			echo "* $count episodes missing crop values\n";
+
+			if($count)
+				return true;
+
 			if($debug)
 				echo "* DVD $dvd_id has no missing tracks metadata :)\n";
 
