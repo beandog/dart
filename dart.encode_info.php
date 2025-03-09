@@ -212,6 +212,9 @@
 						if($opt_time)
 							$ffmpeg_command = "tout $ffmpeg_command";
 
+						if($opt_log_progress)
+							$ffmpeg_command .= " -progress /tmp/$episode_id.txt";
+
 						echo "$ffmpeg_command\n";
 
 					}

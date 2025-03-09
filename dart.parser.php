@@ -51,6 +51,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_log_progress', array(
+		'long_name' => '--log-progress',
+		'description' => 'Log progess of ffmpeg encode',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('opt_copy_info', array(
 		'long_name' => '--copy-info',
 		'description' => 'Display dvd_copy instructions for a DVD',
