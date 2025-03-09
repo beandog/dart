@@ -118,7 +118,7 @@
 						$handbrake->output_filename($filename);
 						$handbrake_command = $handbrake->get_executable_string();
 						if($opt_time)
-							$handbrake_command = "command time -f '$filename - %E' -o '${filename}.time' $handbrake_command";
+							$handbrake_command = "tout $handbrake_command";
 
 						echo "$handbrake_command\n";
 
@@ -169,7 +169,7 @@
 						$dvdrip->output_filename($filename);
 						$dvdrip_command = $dvdrip->get_executable_string();
 						if($opt_time)
-							$dvdrip_command = "command time -f '$filename - %E' -o '${filename}.time' $dvdrip_command";
+							$dvdrip_command = "tout $dvdrip_command";
 
 						echo "$dvdrip_command\n";
 
@@ -182,7 +182,7 @@
 						$ffmpeg->output_filename($filename);
 						$ffmpeg_command = $ffmpeg->get_executable_string();
 						if($opt_time)
-							$ffmpeg_command = "command time -f '$filename - %E' -o '${filename}.time' $ffmpeg_command";
+							$ffmpeg_command = "tout $ffmpeg_command";
 
 						echo "$ffmpeg_command\n";
 
