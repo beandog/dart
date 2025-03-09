@@ -1,7 +1,7 @@
 <?php
 
 	// Display encode instructions about a disc
-	if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay)) {
+	if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_ffprobe)) {
 
 		$dvd_episodes = $dvds_model->get_episodes();
 
@@ -97,6 +97,34 @@
 				$ffplay_command = $ffmpeg->get_executable_string();
 
 				echo "$ffplay_command\n";
+
+			}
+
+			if($opt_ffprobe && $disc_type == 'dvd') {
+
+				$ffmpeg = new FFMpeg();
+				$ffmpeg->set_binary('ffprobe');
+
+				$ffmpeg->input_filename($input_filename);
+
+				$ffmpeg->input_track($tracks_model->ix);
+
+				if($debug)
+					$ffmpeg->debug();
+
+				if($verbose)
+					$ffmpeg->verbose();
+
+				/** Chapters **/
+				$starting_chapter = $episodes_model->starting_chapter;
+				$ending_chapter = $episodes_model->ending_chapter;
+				if($starting_chapter || $ending_chapter) {
+					$ffmpeg->set_chapters($starting_chapter, $ending_chapter);
+				}
+
+				$ffprobe_command = $ffmpeg->ffprobe();
+
+				echo "$ffprobe_command\n";
 
 			}
 

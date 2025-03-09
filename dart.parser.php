@@ -141,6 +141,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_ffprobe', array(
+		'long_name' => '--ffprobe',
+		'description' => 'Use ffprobe to get DVD information',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('arg_crf', array(
 		'long_name' => '--crf',
 		'description' => 'Set encoding CRF',
