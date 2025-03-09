@@ -145,6 +145,31 @@
 			$this->ffmpeg_opts = $str;
 		}
 
+		public function cropdetect() {
+
+			$arr[]  = $this->binary;
+			$arr[] = "-f 'dvdvideo'";
+
+			if($this->dvd_track)
+				$arr[] = "-title '".$this->dvd_track."'";
+			if($this->start_chapter)
+				$arr[] = "-chapter_start '".$this->start_chapter."'";
+			if($this->stop_chapter)
+				$arr[] = "-chapter_end '".$this->stop_chapter."'";
+
+			$arg_input = escapeshellarg($this->input_filename);
+			$arr[] = "-i $arg_input -vf 'cropdetect=round=1' -t '15' -f null - 2>&1 | grep cropdetect | tail -n 1 | grep -o '[^=]*$'";
+
+			$cmd  = implode(' ', $arr);
+
+			exec($cmd, $arr_output);
+
+			$crop = current($arr_output);
+
+			return $crop;
+
+		}
+
 		public function get_ffmpeg_arguments() {
 
 			$args = array();
