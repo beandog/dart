@@ -117,17 +117,23 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_handbrake', array(
+		'long_name' => '--handbrake',
+		'description' => 'Use HandBrake to rip DVDs',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('opt_dvdrip', array(
 		'long_name' => '--dvdrip',
-		'description' => 'Use dvd_rip instead of HandBrake',
+		'description' => 'Use dvd_rip to rip DVDs',
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
 	$parser->addOption('opt_ffmpeg', array(
 		'long_name' => '--ffmpeg',
-		'description' => 'Use ffmpeg instead of HandBrake',
+		'description' => 'Use ffmpeg to rip DVDs',
 		'action' => 'StoreTrue',
-		'default' => false,
+		'default' => true,
 	));
 	$parser->addOption('opt_ffplay', array(
 		'long_name' => '--ffplay',
