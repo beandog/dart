@@ -54,23 +54,6 @@
 
 		}
 
-		public function get_volume() {
-
-			$episode_id = intval($this->id);
-
-			$sql = "SELECT volume FROM dart_series_episodes WHERE id = $episode_id LIMIT 1;";
-
-			$var = $this->get_one($sql);
-
-			if($var === 0)
-				$var = null;
-			else
-				$var = intval($var);
-
-			return $var;
-
-		}
-
 		public function get_display_name() {
 
 			$episode_id = intval($this->id);
