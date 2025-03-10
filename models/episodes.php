@@ -73,26 +73,6 @@
 
 		}
 
-		public function get_long_title() {
-
-			$episode_id = intval($this->id);
-
-			$sql = "SELECT * FROM dart_series_episodes WHERE id = $episode_id;";
-			$arr = $this->get_row($sql);
-
-			if(!$arr)
-				return "";
-
-			extract($arr);
-
-			// Episode part
-			if($part)
-				$title .= ", Part $part";
-
-			return $title;
-
-		}
-
 		public function get_number() {
 
 			// Check to see if it is manually set

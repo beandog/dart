@@ -182,7 +182,10 @@
 		$episode_metadata['episode_number'] = $episodes_model->get_number();
 
 		// Get the long title, including the part number
-		$episode_metadata['long_title'] = $episodes_model->get_long_title();
+		$episode_metadata['long_title'] = $episode_metadata['title'];
+		if($episode_metadata['part'])
+			$episode_metadata['long_title'].", Part ".$episode_metadata['part'];
+		print_r($episode_metadata);
 
 		// Set the epix
 		$episode_metadata['epix'] = $episode_metadata['nsix'].".".str_pad($episode_id, 5, 0, STR_PAD_LEFT);
