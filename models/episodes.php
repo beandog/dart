@@ -45,7 +45,7 @@
 
 			$episode_id = intval($this->id);
 
-			$sql = "SELECT series_id FROM dart_series_episodes WHERE id = $episode_id LIMIT 1;";
+			$sql = "SELECT series_id FROM view_episodes WHERE episode_id = $episode_id LIMIT 1;";
 
 			$var = $this->get_one($sql);
 			$var = intval($var);
@@ -75,7 +75,7 @@
 
 			$episode_id = intval($this->id);
 
-			$sql = "SELECT series_title, title, part FROM dart_series_episodes WHERE id = $episode_id;";
+			$sql = "SELECT series_title, episode_title, episode_part FROM view_episodes WHERE episode_id = $episode_id;";
 
 			$arr = $this->get_row($sql);
 
