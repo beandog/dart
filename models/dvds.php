@@ -373,9 +373,14 @@
 
 		}
 
-		public function get_episodes() {
+		public function get_episodes($include_skipped = true) {
 
-			$sql = "SELECT e.id FROM dart_series_episodes e INNER JOIN tracks t ON e.track_id = t.id INNER JOIN dvds d ON t.dvd_id = d.id WHERE d.id = ".$this->id." ORDER BY e.season, e.episode_number, e.ix;";
+			if($include_skipped)
+				$str_skip = "0, 1";
+			else
+				$str_skip = "0";
+
+			$sql = "SELECT episode_id FROM view_episodes WHERE dvd_id = ".$this->id." AND episode_skip IN ($str_skip) ORDER BY episode_season, episode_number, episode_id;";
 
 			$arr = $this->get_col($sql);
 

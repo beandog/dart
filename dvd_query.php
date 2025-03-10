@@ -67,6 +67,13 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_ignore_skipped', array(
+		'long_name' => '--ignore-skipped',
+		'short_name' => '-s',
+		'description' => 'Ignore skipped episodes (default: include all episodes)',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 
 	try { $result = $parser->parse(); }
 	catch(PEAR_Exception $e) {
@@ -93,6 +100,10 @@
 	$episode_encoded = false;
 	$display_episode = '';
 	$episodes_isos = array();
+	$include_skipped = true;
+
+	if($opt_ignore_skipped)
+		$include_skipped = false;
 
 	if(is_string($devices))
 		$devices = array($devices);
@@ -126,7 +137,7 @@
 	$dvd_query['titles'] = array();
 	$container = $series_model->get_preset_format();
 
-	$dvd_episodes = $dvds_model->get_episodes();
+	$dvd_episodes = $dvds_model->get_episodes($include_skipped);
 
 	$num_episodes += count($dvd_episodes);
 
