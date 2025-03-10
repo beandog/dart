@@ -49,7 +49,7 @@
 	$parser->addOption('opt_not', array(
 		'long_name' => '--not',
 		'short_name' => '-x',
-		'description' => 'Display opposite',
+		'description' => 'Display episodes not encoded',
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
