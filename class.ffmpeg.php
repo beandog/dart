@@ -207,7 +207,7 @@
 				$args['vcodec_opts'] = $this->vcodec_opts;
 
 			if($this->crf)
-				$args['x264-params'] = "crf=".$this->crf."";
+				$args['crf'] = $this->crf;
 
 			if($this->tune)
 				$args['tune'] = $this->tune;
