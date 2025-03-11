@@ -219,20 +219,20 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 				}
 
-
-			} else if($container == 'mpg') {
-
-				require 'dart.dvd_copy.php';
-				$dvd_copy->input_filename($input_filename);
-				$dvd_copy->output_filename($filename);
-				$dvd_copy_command = $dvd_copy->get_executable_string();
-				echo "$dvd_copy_command\n";
-
 			}
 
 		}
 
-		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == "dvd") {
+		/** Copy DVD tracks **/
+		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == "dvd" && $container == "mpg") {
+
+			require 'dart.dvd_copy.php';
+			$dvd_copy->input_filename($input_filename);
+			$dvd_copy->output_filename($filename);
+			$dvd_copy_command = $dvd_copy->get_executable_string();
+			echo "$dvd_copy_command\n";
+
+		}
 
 		/** Blu-rays **/
 
@@ -394,9 +394,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			}
 
-
 		}
-
 
 	}
 
