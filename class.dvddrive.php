@@ -41,7 +41,10 @@
 				echo "* drive::access_device(".$this->device.")\n";
 
 			$cmd = $this->binary." ".$this->device." &> /dev/null";
-			passthru($cmd, $retval);
+			exec($cmd, $output, $retval);
+
+			if($this->debug)
+				echo "* drive::dvd_drive_status: ".current($output)."\n";
 
 			if($retval == 5) {
 				if($this->debug)
