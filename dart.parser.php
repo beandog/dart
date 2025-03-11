@@ -81,12 +81,6 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_vob', array(
-		'long_name' => '--vob',
-		'description' => 'Use a VOB file as encode info source',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
 	$parser->addOption('opt_skip_existing', array(
 		'long_name' => '--skip-existing',
 		'description' => 'Skip writing to existing files',

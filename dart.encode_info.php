@@ -137,8 +137,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			if($opt_encode_info && $opt_handbrake) {
 
 				$handbrake->input_filename($input_filename);
-				if($opt_vob)
-					$handbrake->input_filename(get_episode_filename($episode_id, 'vob', $arg_hardware));
 
 				$handbrake->output_filename($filename);
 				$handbrake_command = $handbrake->get_executable_string();
