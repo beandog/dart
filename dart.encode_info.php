@@ -131,93 +131,88 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		/** Encode DVDs **/
 		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == "dvd") {
 
-			// if($container == 'mkv' || $container == 'mp4' || $container == 'webm') {
-			if($container == 'mkv') {
+			require 'dart.x264.php';
+			require 'dart.x265.php';
 
-				require 'dart.x264.php';
-				require 'dart.x265.php';
+			if($opt_encode_info && $opt_handbrake) {
 
-				if($opt_encode_info && $opt_handbrake) {
+				$handbrake->input_filename($input_filename);
+				if($opt_vob)
+					$handbrake->input_filename(get_episode_filename($episode_id, 'vob', $arg_hardware));
 
-					$handbrake->input_filename($input_filename);
-					if($opt_vob)
-						$handbrake->input_filename(get_episode_filename($episode_id, 'vob', $arg_hardware));
+				$handbrake->output_filename($filename);
+				$handbrake_command = $handbrake->get_executable_string();
+				if($opt_time)
+					$handbrake_command = "tout $handbrake_command";
 
-					$handbrake->output_filename($filename);
-					$handbrake_command = $handbrake->get_executable_string();
-					if($opt_time)
-						$handbrake_command = "tout $handbrake_command";
+				echo "$handbrake_command\n";
 
-					echo "$handbrake_command\n";
+				if($opt_qa) {
 
-					if($opt_qa) {
+					$handbrake->set_duration(90);
 
-						$handbrake->set_duration(90);
-
-						foreach(array('18', '20', '22', '24') as $qa_crf) {
-							$handbrake->set_video_quality($qa_crf);
-							$qa_filename = str_replace(".mkv", ".480p$fps.$video_encoder.q${qa_crf}.mkv", $filename);
-							$handbrake->output_filename($qa_filename);
-							$handbrake_command = $handbrake->get_executable_string();
-							echo "$handbrake_command\n";
-						}
-
-						$qa_filename = str_replace(".mkv", ".DETEL.mkv", $filename);
-						$handbrake->detelecine(true);
-						$handbrake->decomb(false);
-						$handbrake->comb_detect(false);
+					foreach(array('18', '20', '22', '24') as $qa_crf) {
+						$handbrake->set_video_quality($qa_crf);
+						$qa_filename = str_replace(".mkv", ".480p$fps.$video_encoder.q${qa_crf}.mkv", $filename);
 						$handbrake->output_filename($qa_filename);
 						$handbrake_command = $handbrake->get_executable_string();
 						echo "$handbrake_command\n";
-
-						$qa_filename = str_replace(".mkv", ".DECOMB.mkv", $filename);
-						$handbrake->detelecine(false);
-						$handbrake->decomb(true);
-						$handbrake->comb_detect(false);
-						$handbrake->output_filename($qa_filename);
-						$handbrake_command = $handbrake->get_executable_string();
-						echo "$handbrake_command\n";
-
-						$qa_filename = str_replace(".mkv", ".PERMISSIVE.mkv", $filename);
-						$handbrake->detelecine(false);
-						$handbrake->decomb(true);
-						$handbrake->comb_detect(true);
-						$handbrake->output_filename($qa_filename);
-						$handbrake_command = $handbrake->get_executable_string();
-						echo "$handbrake_command\n";
-
 					}
 
-				}
+					$qa_filename = str_replace(".mkv", ".DETEL.mkv", $filename);
+					$handbrake->detelecine(true);
+					$handbrake->decomb(false);
+					$handbrake->comb_detect(false);
+					$handbrake->output_filename($qa_filename);
+					$handbrake_command = $handbrake->get_executable_string();
+					echo "$handbrake_command\n";
 
-				if($opt_encode_info && $opt_dvdrip) {
+					$qa_filename = str_replace(".mkv", ".DECOMB.mkv", $filename);
+					$handbrake->detelecine(false);
+					$handbrake->decomb(true);
+					$handbrake->comb_detect(false);
+					$handbrake->output_filename($qa_filename);
+					$handbrake_command = $handbrake->get_executable_string();
+					echo "$handbrake_command\n";
 
-					$dvdrip->input_filename($input_filename);
-
-					$dvdrip->output_filename($filename);
-					$dvdrip_command = $dvdrip->get_executable_string();
-					if($opt_time)
-						$dvdrip_command = "tout $dvdrip_command";
-
-					echo "$dvdrip_command\n";
-
-				}
-
-				if($opt_encode_info && $opt_ffmpeg) {
-
-					$ffmpeg->input_filename($input_filename);
-
-					$ffmpeg->output_filename($filename);
-					$ffmpeg_command = $ffmpeg->get_executable_string();
-					if($opt_time)
-						$ffmpeg_command = "tout $ffmpeg_command";
-
-					if($opt_log_progress)
-						$ffmpeg_command .= " -progress /tmp/$episode_id.txt";
-
-					echo "$ffmpeg_command\n";
+					$qa_filename = str_replace(".mkv", ".PERMISSIVE.mkv", $filename);
+					$handbrake->detelecine(false);
+					$handbrake->decomb(true);
+					$handbrake->comb_detect(true);
+					$handbrake->output_filename($qa_filename);
+					$handbrake_command = $handbrake->get_executable_string();
+					echo "$handbrake_command\n";
 
 				}
+
+			}
+
+			if($opt_encode_info && $opt_dvdrip) {
+
+				$dvdrip->input_filename($input_filename);
+
+				$dvdrip->output_filename($filename);
+				$dvdrip_command = $dvdrip->get_executable_string();
+				if($opt_time)
+					$dvdrip_command = "tout $dvdrip_command";
+
+				echo "$dvdrip_command\n";
+
+			}
+
+			if($opt_encode_info && $opt_ffmpeg) {
+
+				$ffmpeg->input_filename($input_filename);
+
+				$ffmpeg->output_filename($filename);
+				$ffmpeg_command = $ffmpeg->get_executable_string();
+				if($opt_time)
+					$ffmpeg_command = "tout $ffmpeg_command";
+
+				if($opt_log_progress)
+					$ffmpeg_command .= " -progress /tmp/$episode_id.txt";
+
+				echo "$ffmpeg_command\n";
 
 			}
 
