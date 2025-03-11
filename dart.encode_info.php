@@ -233,8 +233,12 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			$ffmpeg->set_crf($video_quality);
 
 			if($video_encoder == 'x264') {
-				$ffmpeg->set_tune($series_model->get_x264_tune());
 				$ffmpeg->set_vcodec('libx264');
+				$ffmpeg->set_tune($series_model->get_x264_tune());
+			}
+
+			if($video_encoder == 'x265') {
+				$ffmpeg->set_vcodec('libx265');
 			}
 
 			if($opt_qa)
