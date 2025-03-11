@@ -147,10 +147,55 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == "dvd" && $opt_encode_info && $opt_dvdrip) {
 
-			$dvdrip->input_filename($input_filename);
+			$dvdrip = new DVDRip;
+			$dvdrip->verbose($verbose);
+			$dvdrip->debug($debug);
+
+			// Unsupported, auto-sets based on NTSC or PAL
+			// $fps = $series_model->get_preset_fps();
+
+			/** Files **/
+
+			$dvdrip->input_filename($device);
+			$dvdrip->input_track($tracks_model->ix);
+
+			/** Video **/
+
+			$dvdrip->set_vcodec($video_encoder);
+			$video_quality = $series_model->get_crf();
+
+			if($arg_crf)
+				$video_quality = abs(intval($arg_crf));
+
+			$dvdrip->set_video_quality($video_quality);
+
+			/** Audio **/
+
+			$dvdrip->set_acodec('en');
+
+			$audio_encoder = $series_model->get_audio_encoder();
+
+			$audio_encoder = 'aac';
+
+			$dvdrip->set_acodec($audio_encoder);
+
+			$dvdrip->set_audio_lang('en');
+
+			/** Subtitles **/
+
+			$dvdrip->set_subtitle_lang('en');
+
+			/** Chapters **/
+			$starting_chapter = $episodes_model->starting_chapter;
+			$ending_chapter = $episodes_model->ending_chapter;
+			if($starting_chapter || $ending_chapter) {
+				$dvdrip->set_chapters($starting_chapter, $ending_chapter);
+			}
 
 			$dvdrip->output_filename($filename);
+
 			$dvdrip_command = $dvdrip->get_executable_string();
+
 			if($opt_time)
 				$dvdrip_command = "tout $dvdrip_command";
 
