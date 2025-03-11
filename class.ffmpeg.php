@@ -264,10 +264,9 @@
 				}
 			}
 
+			// This should probably be okay ........ just assume first is English
 			if(count($this->subtitle_streams) && $this->binary == 'ffmpeg') {
-				foreach($this->subtitle_streams as $streamid) {
-					$cmd[] = "-map 'i:$streamid?'";
-				}
+				$cmd[] = "-map 'i:0x20?'";
 				$cmd[] = "-scodec 'copy'";
 			}
 
