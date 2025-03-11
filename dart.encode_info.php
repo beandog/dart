@@ -129,52 +129,48 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		}
 
 		/** Encode DVDs **/
-		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == "dvd") {
+		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == "dvd" && $opt_encode_info && $opt_handbrake) {
 
 			require 'dart.x264.php';
 			require 'dart.x265.php';
 
-			if($opt_encode_info && $opt_handbrake) {
+			$handbrake->input_filename($input_filename);
 
-				$handbrake->input_filename($input_filename);
+			$handbrake->output_filename($filename);
+			$handbrake_command = $handbrake->get_executable_string();
+			if($opt_time)
+				$handbrake_command = "tout $handbrake_command";
 
-				$handbrake->output_filename($filename);
-				$handbrake_command = $handbrake->get_executable_string();
-				if($opt_time)
-					$handbrake_command = "tout $handbrake_command";
+			echo "$handbrake_command\n";
 
-				echo "$handbrake_command\n";
+		}
 
-			}
+		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == "dvd" && $opt_encode_info && $opt_dvdrip) {
 
-			if($opt_encode_info && $opt_dvdrip) {
+			$dvdrip->input_filename($input_filename);
 
-				$dvdrip->input_filename($input_filename);
+			$dvdrip->output_filename($filename);
+			$dvdrip_command = $dvdrip->get_executable_string();
+			if($opt_time)
+				$dvdrip_command = "tout $dvdrip_command";
 
-				$dvdrip->output_filename($filename);
-				$dvdrip_command = $dvdrip->get_executable_string();
-				if($opt_time)
-					$dvdrip_command = "tout $dvdrip_command";
+			echo "$dvdrip_command\n";
 
-				echo "$dvdrip_command\n";
+		}
 
-			}
+		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == "dvd" && $opt_encode_info && $opt_ffmpeg) {
 
-			if($opt_encode_info && $opt_ffmpeg) {
+			$ffmpeg->input_filename($input_filename);
 
-				$ffmpeg->input_filename($input_filename);
+			$ffmpeg->output_filename($filename);
+			$ffmpeg_command = $ffmpeg->get_executable_string();
+			if($opt_time)
+				$ffmpeg_command = "tout $ffmpeg_command";
 
-				$ffmpeg->output_filename($filename);
-				$ffmpeg_command = $ffmpeg->get_executable_string();
-				if($opt_time)
-					$ffmpeg_command = "tout $ffmpeg_command";
+			if($opt_log_progress)
+				$ffmpeg_command .= " -progress /tmp/$episode_id.txt";
 
-				if($opt_log_progress)
-					$ffmpeg_command .= " -progress /tmp/$episode_id.txt";
-
-				echo "$ffmpeg_command\n";
-
-			}
+			echo "$ffmpeg_command\n";
 
 		}
 
