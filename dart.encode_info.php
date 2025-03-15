@@ -314,7 +314,54 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		/** Blu-rays **/
 
-		if($disc_type == "bluray") {
+		if($disc_type == "bluray" && $opt_ffmpeg) {
+
+			$episodes_model = new Episodes_Model($episode_id);
+
+			if($episodes_model->skip)
+				continue;
+
+			if(file_exists($filename) && $opt_skip_existing)
+				continue;
+
+			$ffmpeg = new FFMpeg();
+			$ffmpeg->set_disc_type('bluray');
+
+			if($debug)
+				$ffmpeg->debug();
+
+			if($verbose)
+				$ffmpeg->verbose();
+
+			$ffmpeg->input_filename($device);
+
+			$ffmpeg->input_track($tracks_model->ix);
+
+			$starting_chapter = $episodes_model->starting_chapter;
+			if($starting_chapter) {
+				$ffmpeg->set_chapters($starting_chapter, null);
+			}
+
+			if($opt_qa)
+				$ffmpeg->set_duration($qa_max);
+				$filename = "ffmpeg-qa-$filename";
+			}
+
+			$ffmpeg->output_filename($filename);
+
+			$ffmpeg_command = $ffmpeg->get_executable_string();
+
+			if($opt_time)
+				$ffmpeg_command = "tout $ffmpeg_command";
+
+			if($opt_log_progress)
+				$ffmpeg_command .= " -progress /tmp/$episode_id.txt";
+
+			echo "$ffmpeg_command\n";
+
+		}
+
+		if($disc_type == "bluray" && !$opt_ffmpeg) {
 
 			$display_txt = true;
 			$display_m2ts = true;
