@@ -314,10 +314,9 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		/** Blu-rays **/
 
-		if($opt_ffprobe && $disc_type == 'bluray') {
+		if($disc_type == 'bluray' && ($opt_ffprobe || $opt_ffplay)) {
 
 			$ffmpeg = new FFMpeg();
-			$ffmpeg->set_binary('ffprobe');
 			$ffmpeg->set_disc_type('bluray');
 
 			$ffmpeg->input_filename($device);
@@ -334,9 +333,15 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			if($starting_chapter)
 				$ffmpeg->set_chapters($starting_chapter, null);
 
-			$ffprobe_command = $ffmpeg->ffprobe();
+			if($opt_ffprobe) {
+				$ffmpeg->set_binary('ffprobe');
+				$ffmpeg_command = $ffmpeg->ffprobe();
+			} elseif($opt_ffplay) {
+				$ffmpeg->set_binary('ffplay');
+				$ffmpeg_command = $ffmpeg->get_executable_string();
+			}
 
-			echo "$ffprobe_command\n";
+			echo "$ffmpeg_command\n";
 
 		}
 
