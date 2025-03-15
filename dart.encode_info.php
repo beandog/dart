@@ -86,7 +86,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			// Have a placeholder if there are *none* so that it's easier to edit command-line
 			if(!count($video_filters))
-				$ffmpeg->add_video_filter("blackdetect");
+				$ffmpeg->add_video_filter("bwdif=deint=interlaced");
 
 			foreach($video_filters as $vf) {
 				$ffmpeg->add_video_filter($vf);
@@ -258,7 +258,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			// Have a placeholder if there are *none* so that it's easier to edit command-line
 			if(!count($video_filters))
-				$ffmpeg->add_video_filter("blackdetect");
+				$ffmpeg->add_video_filter("bwdif=deint=interlaced");
 
 			foreach($video_filters as $vf) {
 				$ffmpeg->add_video_filter($vf);
