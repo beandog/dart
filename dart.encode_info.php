@@ -342,7 +342,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 				$ffmpeg->set_chapters($starting_chapter, null);
 			}
 
-			if($opt_qa)
+			if($opt_qa) {
 				$ffmpeg->set_duration($qa_max);
 				$filename = "ffmpeg-qa-$filename";
 			}
