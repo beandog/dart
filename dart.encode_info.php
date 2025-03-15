@@ -314,6 +314,9 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		/** Blu-rays **/
 
+		// Note that ffmpeg-7.1.1 doesn't copy chapters by default (unlike dvdvideo). If you want
+		// them in there, you'll have to do it another way. Right now, I haven't used chapters in
+		// years, so I'm okay without them.
 		if($disc_type == "bluray" && $opt_ffmpeg) {
 
 			$episodes_model = new Episodes_Model($episode_id);
