@@ -314,6 +314,32 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		/** Blu-rays **/
 
+		if($opt_ffprobe && $disc_type == 'bluray') {
+
+			$ffmpeg = new FFMpeg();
+			$ffmpeg->set_binary('ffprobe');
+			$ffmpeg->set_disc_type('bluray');
+
+			$ffmpeg->input_filename($device);
+
+			$ffmpeg->input_track($tracks_model->ix);
+
+			if($debug)
+				$ffmpeg->debug();
+
+			if($verbose)
+				$ffmpeg->verbose();
+
+			$starting_chapter = $episodes_model->starting_chapter;
+			if($starting_chapter)
+				$ffmpeg->set_chapters($starting_chapter, null);
+
+			$ffprobe_command = $ffmpeg->ffprobe();
+
+			echo "$ffprobe_command\n";
+
+		}
+
 		// Note that ffmpeg-7.1.1 doesn't copy chapters by default (unlike dvdvideo). If you want
 		// them in there, you'll have to do it another way. Right now, I haven't used chapters in
 		// years, so I'm okay without them.

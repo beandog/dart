@@ -163,8 +163,6 @@
 				$arr[] = "-chapter_end '".$this->stop_chapter."'";
 
 			$arg_input = escapeshellarg($this->input_filename);
-			if($this->disc_type == 'bluray')
-				$arg_input = "bluray:$arg_input";
 			$arr[] = "-i $arg_input -vf 'cropdetect=round=1' -t '15' -f null - 2>&1 | grep cropdetect | tail -n 1 | grep -o '[^=]*$'";
 
 			$cmd  = implode(' ', $arr);
@@ -186,16 +184,22 @@
 			elseif($this->verbose)
 				$cmd[] = "-loglevel 'verbose'";
 
-			$arr[] = "-f 'dvdvideo'";
+			if($this->disc_type == 'dvd')
+				$arr[] = "-f 'dvdvideo'";
 
-			if($this->dvd_track)
+			if($this->dvd_track && $this->disc_type == 'dvd')
 				$arr[] = "-title '".$this->dvd_track."'";
+			if($this->dvd_track && $this->disc_type == 'bluray')
+				$arr[] = "-playlist '".$this->dvd_track."'";
 			if($this->start_chapter)
 				$arr[] = "-chapter_start '".$this->start_chapter."'";
-			if($this->stop_chapter)
-				$arr[] = "-chapter_end '".$this->stop_chapter."'";
+			// ffmpeg 7.1.1 doesn't support end chapter
+			// if($this->stop_chapter)
+			//	$arr[] = "-chapter_end '".$this->stop_chapter."'";
 
 			$arg_input = escapeshellarg($this->input_filename);
+			if($this->disc_type == 'bluray')
+				$arg_input = "bluray:$arg_input";
 			$arr[] = "-i $arg_input";
 
 			$cmd  = implode(' ', $arr);
