@@ -13,6 +13,7 @@
 		public $disable_stats = false;
 		public $duration = 0;
 		public $fullscreen = false;
+		public $disc_type = 'dvd';
 
 		// DVD source
 		public $input_filename = '-';
@@ -66,6 +67,10 @@
 
 		public function output_filename($str) {
 			$this->output_filename = $str;
+		}
+
+		public function set_disc_type($str) {
+			$this->disc_type = $str;
 		}
 
 		public function input_opts($str) {
@@ -243,8 +248,11 @@
 			if($this->input_opts)
 				$cmd[] = $this->input_opts;
 
-			if($this->dvd_track)
+			if($this->dvd_track && $this->disc_type == 'dvd')
 				$cmd[] = "-title '".$this->dvd_track."'";
+
+			if($this->dvd_track && $this->disc_type == 'bluray')
+				$cmd[] = "-playlist '".$this->dvd_track."'";
 
 			if($this->start_chapter)
 				$cmd[] = "-chapter_start '".$this->start_chapter."'";
@@ -255,19 +263,32 @@
 			$arg_input = escapeshellarg($this->input_filename);
 			$cmd[] = "-i $arg_input";
 
-			if($this->binary == 'ffmpeg')
-				$cmd[] = "-map '0:v:0'";
+			if($this->disc_type == 'dvd' && $this->binary == 'ffmpeg') {
 
-			if(count($this->audio_streams) && $this->binary == 'ffmpeg') {
-				foreach($this->audio_streams as $streamid) {
-					$cmd[] = "-map 'i:$streamid'";
+				$cmd[] = "-map 'v:0'";
+
+				if(count($this->audio_streams) && $this->binary == 'ffmpeg') {
+					foreach($this->audio_streams as $streamid) {
+						$cmd[] = "-map 'i:$streamid'";
+					}
 				}
+
+				// This should probably be okay ........ just assume first is English
+				if(count($this->subtitle_streams) && $this->binary == 'ffmpeg') {
+					$cmd[] = "-map 'i:0x20?'";
+					$cmd[] = "-scodec 'copy'";
+				}
+
 			}
 
-			// This should probably be okay ........ just assume first is English
-			if(count($this->subtitle_streams) && $this->binary == 'ffmpeg') {
-				$cmd[] = "-map 'i:0x20?'";
-				$cmd[] = "-scodec 'copy'";
+			if($this->disc_type == 'bluray' && $this->binary == 'ffmpeg') {
+
+				$cmd[] = "-map 'v:0'";
+				$cmd[] = "-map 'i:0x1100'";
+				$cmd[] = "-map 'i:0x1200?";
+
+				$cmd[] = "-codec 'copy'";
+
 			}
 
 			$args = $this->get_ffmpeg_arguments();
