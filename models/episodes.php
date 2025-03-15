@@ -62,14 +62,14 @@
 
 			$arr = $this->get_row($sql);
 
-			if(empty($arr[2]))
-				array_pop($arr);
+			$title = current($arr).": ";
+			if($arr['episode_title'])
+				$title .= $arr['episode_title'];
 
-			$arr = array_unique($arr);
+			if($arr['episode_part'])
+				$title .= ", Part ".$arr['episode_part'];
 
-			$str = implode(": ", $arr);
-
-			return $str;
+			return $title;
 
 		}
 
