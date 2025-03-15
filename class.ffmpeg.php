@@ -163,6 +163,8 @@
 				$arr[] = "-chapter_end '".$this->stop_chapter."'";
 
 			$arg_input = escapeshellarg($this->input_filename);
+			if($this->disc_type == 'bluray')
+				$arg_input = "bluray:$arg_input";
 			$arr[] = "-i $arg_input -vf 'cropdetect=round=1' -t '15' -f null - 2>&1 | grep cropdetect | tail -n 1 | grep -o '[^=]*$'";
 
 			$cmd  = implode(' ', $arr);
@@ -243,7 +245,8 @@
 			elseif($this->verbose)
 				$cmd[] = "-loglevel 'verbose'";
 
-			$cmd[] = "-f 'dvdvideo'";
+			if($this->disc_type == 'dvd')
+				$cmd[] = "-f 'dvdvideo'";
 
 			if($this->input_opts)
 				$cmd[] = $this->input_opts;
@@ -261,6 +264,8 @@
 
 			// For DVDs, this could be 0:v, but leave it in for blurays in the future
 			$arg_input = escapeshellarg($this->input_filename);
+			if($this->disc_type == 'bluray')
+				$arg_input = "bluray:$arg_input";
 			$cmd[] = "-i $arg_input";
 
 			if($this->disc_type == 'dvd' && $this->binary == 'ffmpeg') {
@@ -285,7 +290,7 @@
 
 				$cmd[] = "-map 'v:0'";
 				$cmd[] = "-map 'i:0x1100'";
-				$cmd[] = "-map 'i:0x1200?";
+				$cmd[] = "-map 'i:0x1200?'";
 
 				$cmd[] = "-codec 'copy'";
 
