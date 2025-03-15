@@ -180,9 +180,9 @@
 			$arr[]  = $this->binary;
 
 			if($this->debug)
-				$cmd[] = "-loglevel 'debug'";
+				$arr[] = "-loglevel 'debug'";
 			elseif($this->verbose)
-				$cmd[] = "-loglevel 'verbose'";
+				$arr[] = "-loglevel 'verbose'";
 
 			if($this->disc_type == 'dvd')
 				$arr[] = "-f 'dvdvideo'";
