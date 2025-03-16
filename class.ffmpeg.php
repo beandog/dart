@@ -79,8 +79,7 @@
 
 		public function input_track($str) {
 			$track = abs(intval($str));
-			if($track)
-				$this->dvd_track = $track;
+			$this->dvd_track = $track;
 		}
 
 		public function set_chapters($start, $stop) {
@@ -189,7 +188,7 @@
 
 			if($this->dvd_track && $this->disc_type == 'dvd')
 				$arr[] = "-title '".$this->dvd_track."'";
-			if($this->dvd_track && $this->disc_type == 'bluray')
+			if($this->disc_type == 'bluray')
 				$arr[] = "-playlist '".$this->dvd_track."'";
 			if($this->start_chapter)
 				$arr[] = "-chapter_start '".$this->start_chapter."'";
@@ -258,7 +257,7 @@
 			if($this->dvd_track && $this->disc_type == 'dvd')
 				$cmd[] = "-title '".$this->dvd_track."'";
 
-			if($this->dvd_track && $this->disc_type == 'bluray')
+			if($this->disc_type == 'bluray')
 				$cmd[] = "-playlist '".$this->dvd_track."'";
 
 			if($this->start_chapter)
