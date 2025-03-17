@@ -190,11 +190,10 @@
 				$arr[] = "-title '".$this->dvd_track."'";
 			if($this->disc_type == 'bluray')
 				$arr[] = "-playlist '".$this->dvd_track."'";
-			if($this->start_chapter)
+			if($this->start_chapter && $this->disc_type == 'dvd')
 				$arr[] = "-chapter_start '".$this->start_chapter."'";
-			// ffmpeg 7.1.1 doesn't support end chapter
-			// if($this->stop_chapter)
-			//	$arr[] = "-chapter_end '".$this->stop_chapter."'";
+			if($this->start_chapter && $this->disc_type == 'bluray')
+				$arr[] = "-chapter '".$this->start_chapter."'";
 
 			$arg_input = escapeshellarg($this->input_filename);
 			if($this->disc_type == 'bluray')
@@ -260,10 +259,13 @@
 			if($this->disc_type == 'bluray')
 				$cmd[] = "-playlist '".$this->dvd_track."'";
 
-			if($this->start_chapter)
+			if($this->start_chapter && $this->disc_type == 'dvd')
 				$cmd[] = "-chapter_start '".$this->start_chapter."'";
-			if($this->stop_chapter)
+			if($this->stop_chapter && $this->disc_type == 'dvd')
 				$cmd[] = "-chapter_end '".$this->stop_chapter."'";
+
+			if($this->start_chapter && $this->disc_type == 'bluray')
+				$cmd[] = "-chapter '".$this->start_chapter."'";
 
 			$arg_input = escapeshellarg($this->input_filename);
 			if($this->disc_type == 'bluray')
