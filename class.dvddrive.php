@@ -215,7 +215,9 @@
 			$cmd = "umount $arg_device &> /dev/null";
 			exec($cmd);
 
-			$cmd = $this->dvd_eject_binary." $arg_device";
+			// dvd_eject in general has bugs, don't use it
+			// $cmd = $this->dvd_eject_binary." $arg_device";
+			$cmd = "eject $arg_device";
 			passthru($cmd, $retval);
 
 			if($retval === 0 || $retval === 2)
