@@ -176,33 +176,33 @@
 
 		public function ffprobe() {
 
-			$arr[]  = $this->binary;
+			$cmd[] = $this->binary;
 
 			if($this->debug)
-				$arr[] = "-loglevel 'debug'";
+				$cmd[] = "-loglevel 'debug'";
 			elseif($this->verbose)
-				$arr[] = "-loglevel 'verbose'";
+				$cmd[] = "-loglevel 'verbose'";
 
 			if($this->disc_type == 'dvd')
-				$arr[] = "-f 'dvdvideo'";
+				$cmd[] = "-f 'dvdvideo'";
 
 			if($this->dvd_track && $this->disc_type == 'dvd')
-				$arr[] = "-title '".$this->dvd_track."'";
+				$cmd[] = "-title '".$this->dvd_track."'";
 			if($this->disc_type == 'bluray')
-				$arr[] = "-playlist '".$this->dvd_track."'";
+				$cmd[] = "-playlist '".$this->dvd_track."'";
 			if($this->start_chapter && $this->disc_type == 'dvd')
-				$arr[] = "-chapter_start '".$this->start_chapter."'";
+				$cmd[] = "-chapter_start '".$this->start_chapter."'";
 			if($this->start_chapter && $this->disc_type == 'bluray')
-				$arr[] = "-chapter '".$this->start_chapter."'";
+				$cmd[] = "-chapter '".$this->start_chapter."'";
 
 			$arg_input = escapeshellarg($this->input_filename);
 			if($this->disc_type == 'bluray')
 				$arg_input = "bluray:$arg_input";
-			$arr[] = "-i $arg_input";
+			$cmd[] = "-i $arg_input";
 
-			$cmd  = implode(' ', $arr);
+			$str = implode(' ', $cmd);
 
-			return $cmd;
+			return $str;
 
 		}
 
