@@ -198,8 +198,6 @@
 
 		/**
 		 * Open the DVD tray
-		 *
-		 * Pass *all* control / decss / check of the drive to dvd_eject
 		 */
 		function eject() {
 
@@ -208,17 +206,9 @@
 
 			$arg_device = escapeshellarg($this->device);
 
-			// dvd_eject has a race condition if tray is closed, immediately mounted, and then ejected.
-			// It will also check if it's mounted, but do it here so it skips that
-			// process completely.
-			// This is a workaround until I can debug the race condition in dvd_eject
-			$cmd = "umount $arg_device &> /dev/null";
-			exec($cmd);
-
 			// dvd_eject in general has bugs, don't use it
-			// $cmd = $this->dvd_eject_binary." $arg_device";
 			$cmd = "eject $arg_device";
-			passthru($cmd, $retval);
+			exec($cmd, $arr, $retval);
 
 			if($retval === 0 || $retval === 2)
 				return true;
