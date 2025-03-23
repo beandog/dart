@@ -153,6 +153,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_ffpipe', array(
+		'long_name' => '--ffpipe',
+		'description' => 'Use dvd_copy to pipe to ffmpeg',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('opt_remux', array(
 		'long_name' => '--remux',
 		'description' => 'Remux a DVD episode using ffmpeg for debuging',

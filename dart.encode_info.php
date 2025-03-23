@@ -312,6 +312,99 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		}
 
+		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == "dvd" && $opt_encode_info && $opt_ffpipe) {
+
+			require 'dart.dvd_copy.php';
+			$dvd_copy->input_filename($input_filename);
+			$dvd_copy->output_filename('-');
+			$dvd_copy_command = $dvd_copy->get_executable_string();
+
+			$ffmpeg = new FFMpeg();
+			$ffmpeg->set_binary('ffmpeg');
+			$ffmpeg->disc_type = 'dvdcopy';
+
+			if($debug)
+				$ffmpeg->debug();
+
+			if($verbose)
+				$ffmpeg->verbose();
+
+			$ffmpeg->input_filename('-');
+
+			$video_quality = $series_model->get_crf();
+
+			if($arg_crf)
+				$video_quality = abs(intval($arg_crf));
+
+			$ffmpeg->set_crf($video_quality);
+
+			if($video_encoder == 'x264') {
+				$ffmpeg->set_vcodec('libx264');
+				$ffmpeg->set_tune($series_model->get_x264_tune());
+			}
+
+			if($video_encoder == 'x265') {
+				$ffmpeg->set_vcodec('libx265');
+			}
+
+			if($opt_qa)
+				$ffmpeg->set_duration($qa_max);
+
+			// Set video filters based on frame info
+			$crop = $episodes_model->crop;
+
+			if($crop != null && $crop != '720:480:0:0')
+				$ffmpeg->add_video_filter("crop=$crop");
+
+			$fps = $series_model->get_preset_fps();
+
+			$video_filters = array();
+
+			$video_filters[] = "bwdif=deint=interlaced";
+
+			// Have a placeholder if there are *none* so that it's easier to edit command-line
+			if(!count($video_filters))
+				$ffmpeg->add_video_filter("bwdif=deint=interlaced");
+
+			foreach($video_filters as $vf) {
+				$ffmpeg->add_video_filter($vf);
+			}
+
+			/** Audio **/
+			$audio_streamid = $tracks_model->get_first_english_streamid();
+			if(!$audio_streamid)
+				$audio_streamid = '0x80';
+			$ffmpeg->add_audio_stream($audio_streamid);
+
+			$ffmpeg->set_acodec('copy');
+
+			$subp_ix = $tracks_model->get_first_english_subp();
+			if(!$subp_ix)
+				$subp_ix = '0x20';
+
+			if($subp_ix) {
+				// Not sure if I need this now that I'm pulling straight from dvdvideo format
+				// $ffmpeg->input_opts("-probesize '67108864' -analyzeduration '60000000'");
+				$ffmpeg->add_subtitle_stream($subp_ix);
+			}
+
+			if($opt_qa) {
+				$filename = "ffmpeg-qa-$filename";
+			}
+
+			$ffmpeg->output_filename($filename);
+
+			$ffmpeg_command = $ffmpeg->get_executable_string();
+
+			if($opt_log_progress)
+				$ffmpeg_command .= " -progress /tmp/$episode_id.txt";
+
+			$ffpipe_command = "$dvd_copy_command 2> /dev/null | $ffmpeg_command";
+
+			echo "$ffpipe_command\n";
+
+		}
+
 		if($opt_remux && $disc_type == "dvd") {
 
 			$remux_filename = "remux-${episode_id}.mkv";
