@@ -312,6 +312,25 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		}
 
+		if($opt_remux && $disc_type == "dvd") {
+
+			$remux_filename = "remux-${episode_id}.mkv";
+
+			if(!($opt_skip_existing && file_exists($remux_filename))) {
+
+				require 'dart.dvd_copy.php';
+				$dvd_copy->input_filename($input_filename);
+				$dvd_copy->output_filename('-');
+				$dvd_copy_command = $dvd_copy->get_executable_string();
+
+				$dvd_remux_command = "$dvd_copy_command | ffmpeg -fflags +genpts -i - -codec copy $remux_filename";
+
+				echo "$dvd_remux_command\n";
+
+			}
+
+		}
+
 		/** Blu-rays **/
 
 		if($disc_type == 'bluray' && ($opt_ffprobe || $opt_ffplay)) {

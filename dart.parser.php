@@ -153,6 +153,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_remux', array(
+		'long_name' => '--remux',
+		'description' => 'Remux a DVD episode using ffmpeg for debuging',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('arg_crf', array(
 		'long_name' => '--crf',
 		'description' => 'Set encoding CRF',
