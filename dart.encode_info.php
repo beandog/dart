@@ -418,7 +418,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 				$dvd_copy->output_filename('-');
 				$dvd_copy_command = $dvd_copy->get_executable_string();
 
-				$dvd_remux_command = "$dvd_copy_command | ffmpeg -fflags +genpts -i - -codec copy $remux_filename";
+				$dvd_remux_command = "$dvd_copy_command | ffmpeg -fflags +genpts -i - -codec copy -y $remux_filename";
 
 				echo "$dvd_remux_command\n";
 
