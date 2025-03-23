@@ -329,6 +329,8 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			if($verbose)
 				$ffmpeg->verbose();
 
+			$ffmpeg->generate_pts();
+
 			$ffmpeg->input_filename('-');
 
 			$video_quality = $series_model->get_crf();

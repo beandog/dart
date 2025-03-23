@@ -14,6 +14,7 @@
 		public $duration = 0;
 		public $fullscreen = false;
 		public $disc_type = 'dvd';
+		public $genpts = false;
 
 		// DVD source
 		public $input_filename = '-';
@@ -58,6 +59,10 @@
 
 		public function fullscreen($bool = true) {
 			$this->fullscreen = (boolean)$bool;
+		}
+
+		public function generate_pts($bool = true) {
+			$this->genpts = true;
 		}
 
 		/** Filename **/
@@ -246,6 +251,9 @@
 				$cmd[] = "-loglevel 'debug'";
 			elseif($this->verbose)
 				$cmd[] = "-loglevel 'verbose'";
+
+			if($this->genpts)
+				$cmd[] = "-fflags +genpts";
 
 			if($this->disc_type == 'dvd')
 				$cmd[] = "-f 'dvdvideo'";
