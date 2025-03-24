@@ -247,10 +247,13 @@
 
 			$cmd[] = $this->binary;
 
-			if($this->debug)
+			if($this->debug) {
+				$cmd[] = "-report";
 				$cmd[] = "-loglevel 'debug'";
-			elseif($this->verbose)
+			} elseif($this->verbose) {
+				$cmd[] = "-report";
 				$cmd[] = "-loglevel 'verbose'";
+			}
 
 			if($this->genpts)
 				$cmd[] = "-fflags +genpts";
