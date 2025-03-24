@@ -274,7 +274,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			/** Subtitles **/
 			$subp_ix = $tracks_model->get_first_english_subp();
-			if(!$subp_ix)
+			if(!$subp_ix && ($tracks_model->get_num_active_subp_tracks() == 1))
 				$subp_ix = '0x20';
 
 			if($subp_ix) {
@@ -381,7 +381,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			$ffmpeg->set_acodec('copy');
 
 			$subp_ix = $tracks_model->get_first_english_subp();
-			if(!$subp_ix)
+			if(!$subp_ix && ($tracks_model->get_num_active_subp_tracks() == 1))
 				$subp_ix = '0x20';
 
 			if($subp_ix) {
