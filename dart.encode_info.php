@@ -283,6 +283,11 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 				$ffmpeg->add_subtitle_stream($subp_ix);
 			}
 
+			// Ignore closed captioning completely since ffmpeg garbles it.
+			if($tracks_model->has_closed_captioning()) {
+				$ffmpeg->remove_closed_captioning();
+			}
+
 			if($opt_qa) {
 				$filename = "ffmpeg-qa-$filename";
 			}

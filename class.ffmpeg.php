@@ -40,6 +40,7 @@
 
 		// Subtitles
 		public $subtitle_streams = array();
+		public $remove_cc = false;
 
 		public function debug($bool = true) {
 			$this->debug = $this->verbose = (boolean)$bool;
@@ -85,6 +86,12 @@
 		public function input_track($str) {
 			$track = abs(intval($str));
 			$this->dvd_track = $track;
+		}
+
+		// Closed captioning streams in ffmpeg are always garbled, so allow removing them
+		// https://trac.ffmpeg.org/wiki/HowToExtractAndRemoveClosedCaptions
+		public function remove_closed_captioning() {
+			$this->remove_cc = true;
 		}
 
 		public function set_chapters($start, $stop) {
@@ -326,6 +333,9 @@
 				$arg_value = escapeshellarg($value);
 				$cmd[] = "-$key $arg_value";
 			}
+
+			if($this->remove_cc)
+				$cmd[] = "-bsf:v 'filter_units=remove_types=6'";
 
 			$str = implode(" ", $cmd);
 
