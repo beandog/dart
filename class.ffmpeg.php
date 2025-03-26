@@ -17,7 +17,7 @@
 		public $genpts = false;
 
 		// DVD source
-		public $input_filename = '-';
+		public $input_filenames = array();
 		public $output_filename = '';
 		public $dvd_track = 0;
 
@@ -68,7 +68,7 @@
 
 		/** Filename **/
 		public function input_filename($src) {
-			$this->input_filename = $src;
+			$this->input_filenames[] = $src;
 		}
 
 		public function output_filename($str) {
@@ -285,14 +285,21 @@
 			if($this->start_chapter && $this->disc_type == 'bluray')
 				$cmd[] = "-chapter '".$this->start_chapter."'";
 
-			$arg_input = escapeshellarg($this->input_filename);
+			$input_filename = array_shift($this->input_filenames);
+			$arg_input = escapeshellarg($input_filename);
 			if($this->disc_type == 'bluray')
 				$arg_input = "bluray:$arg_input";
 			$cmd[] = "-i $arg_input";
 
+			$maps = count($this->input_filenames);
+			foreach($this->input_filenames as $input_filename) {
+				$arg_input = escapeshellarg($input_filename);
+				$cmd[] = "-i $arg_input";
+			}
+
 			if(($this->disc_type == 'dvd'|| $this->disc_type = 'dvdcopy')  && $this->binary == 'ffmpeg') {
 
-				$cmd[] = "-map 'v:0'";
+				$cmd[] = "-map 'v'";
 
 				if(count($this->audio_streams) && $this->binary == 'ffmpeg') {
 					foreach($this->audio_streams as $streamid) {
@@ -317,6 +324,12 @@
 				$cmd[] = "-codec 'copy'";
 
 			}
+
+			for($map = 0; $map < $maps; $map++)
+				$cmd[] = "-map '". ($map + 1)."'";
+
+			if(count($this->subtitle_streams) || count($this->input_filenames))
+				$cmd[] = "-metadata:s:s 'language=eng'";
 
 			$args = $this->get_ffmpeg_arguments();
 
