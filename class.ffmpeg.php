@@ -297,7 +297,7 @@
 				$cmd[] = "-i $arg_input";
 			}
 
-			if(($this->disc_type == 'dvd'|| $this->disc_type = 'dvdcopy')  && $this->binary == 'ffmpeg') {
+			if(($this->disc_type == 'dvd'|| $this->disc_type == 'dvdcopy') && $this->binary == 'ffmpeg') {
 
 				$cmd[] = "-map 'v'";
 
