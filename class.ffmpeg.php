@@ -183,6 +183,9 @@
 
 			$cmd  = implode(' ', $arr);
 
+			if($this->debug)
+				echo "* Executing $cmd\n";
+
 			exec($cmd, $arr_output);
 
 			$crop = current($arr_output);
