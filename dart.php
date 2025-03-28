@@ -80,9 +80,6 @@
 
 	}
 
-	if($opt_remux || $opt_ffpipe || $opt_ssa)
-		$opt_encode_info = true;
-
 	if($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_ffprobe || $opt_remux || $opt_ffpipe || $opt_ssa)
 		$batch_mode = true;
 
