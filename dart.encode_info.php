@@ -327,7 +327,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == "dvd" && $opt_encode_info && $opt_ffpipe) {
 
 			require 'dart.dvd_copy.php';
-			$dvd_copy->input_filename($input_filename);
+			$dvd_copy->input_filename($device);
 			$dvd_copy->output_filename('-');
 			$dvd_copy_command = $dvd_copy->get_executable_string();
 
