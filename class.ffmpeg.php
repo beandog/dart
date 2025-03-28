@@ -17,6 +17,7 @@
 		public $genpts = false;
 
 		// DVD source
+		public $input_filename = '';
 		public $input_filenames = array();
 		public $output_filename = '';
 		public $dvd_track = 0;
@@ -68,7 +69,11 @@
 
 		/** Filename **/
 		public function input_filename($src) {
-			$this->input_filenames[] = $src;
+			$this->input_filename = realpath($src);
+		}
+
+		public function add_input_filename($src) {
+			$this->input_filenames[] = realpath($src);
 		}
 
 		public function output_filename($str) {
@@ -163,7 +168,7 @@
 
 		public function cropdetect() {
 
-			$arr[]  = $this->binary;
+			$arr[] = $this->binary;
 			$arr[] = "-f 'dvdvideo'";
 
 			if($this->dvd_track)
