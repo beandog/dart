@@ -445,7 +445,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		if($opt_ssa && $disc_type == "dvd" && $tracks_model->has_closed_captioning()) {
 
-			$ssa_filename = "subs-${episode_id}.ssa";
+			$ssa_filename = "subs-".$episode_id."-".$series_model->nsix.".ssa";
 
 			if(!($opt_skip_existing && file_exists($ssa_filename))) {
 
