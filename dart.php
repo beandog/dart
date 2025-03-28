@@ -80,15 +80,17 @@
 
 	}
 
-	if($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_ffprobe || $opt_remux || $opt_ffpipe)
+	if($opt_remux || $opt_ffpipe || $opt_ssa)
+		$opt_encode_info = true;
+
+	if($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_ffprobe || $opt_remux || $opt_ffpipe || $opt_ssa)
 		$batch_mode = true;
 
-	// Use handbrake by default
 	$opt_ffmpeg = true;
-	if($opt_dvdrip || $opt_handbrake || $opt_bluraycopy || $opt_ffplay || $opt_ffprobe || $opt_remux || $opt_ffpipe)
+	if($opt_dvdrip || $opt_handbrake || $opt_bluraycopy || $opt_ffplay || $opt_ffprobe || $opt_remux || $opt_ffpipe || $opt_ssa)
 		$opt_ffmpeg = false;
 
-	if(!count($devices) && ($opt_info || $opt_encode_info || $opt_copy_info || $opt_dump_iso || $opt_import || $opt_archive || $opt_ffplay || $opt_ffprobe || $opt_remux || $opt_ffpipe))
+	if(!count($devices) && ($opt_info || $opt_encode_info || $opt_copy_info || $opt_dump_iso || $opt_import || $opt_archive || $opt_ffplay || $opt_ffprobe || $opt_remux || $opt_ffpipe || $opt_ssa))
 		$devices = $all_devices;
 
 	// Default max length for QA operations
@@ -160,7 +162,7 @@
 			$display_device = basename($device);
 
 		// Determine whether we are reading the device
-		if($opt_info || $opt_encode_info || $opt_copy_info || $opt_import || $opt_archive || $opt_dump_iso || $opt_geniso || $opt_ffplay || $opt_ffprobe || $opt_remux || $opt_ffpipe) {
+		if($opt_info || $opt_encode_info || $opt_copy_info || $opt_import || $opt_archive || $opt_dump_iso || $opt_geniso || $opt_ffplay || $opt_ffprobe || $opt_remux || $opt_ffpipe || $opt_ssa) {
 			if($debug)
 				echo "* Info / Import / Archive / ISO: Enabling device access\n";
 			$access_device = true;

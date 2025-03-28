@@ -165,6 +165,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_ssa', array(
+		'long_name' => '--ssa',
+		'description' => 'Export SSA subtitles using ffmpeg',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('arg_crf', array(
 		'long_name' => '--crf',
 		'description' => 'Set encoding CRF',

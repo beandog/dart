@@ -1,6 +1,6 @@
 <?php
 
-if(($opt_copy_info || $opt_remux || $opt_ffpipe) && $episode_id) {
+if(($opt_copy_info || $opt_remux || $opt_ffpipe || $opt_ssa) && $episode_id) {
 
 	$dvd_copy = new DVDCopy();
 	$dvd_copy->set_binary('dvd_copy');
