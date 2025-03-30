@@ -547,7 +547,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		}
 
-		if($disc_type == "bluray" && $opt_bluraycopy) {
+		if($disc_type == "bluray" && $opt_bluraycopy && !$opt_ffpipe) {
 
 			$display_txt = true;
 			$display_m2ts = true;
@@ -704,6 +704,33 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 				echo "$handbrake_command\n";
 
 			}
+
+		}
+
+		if($disc_type == "bluray" && $opt_ffpipe) {
+
+			$bluray_mkv = substr($filename, 0, strlen($filename) - 3)."mkv";
+
+			$bluray_playlist = $tracks_model->ix;
+
+			if(file_exists($bluray_mkv) && $opt_skip_existing)
+				continue;
+
+			$bluray_copy->input_track($bluray_playlist);
+			$bluray_copy->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
+
+			$bluray_chapters->input_track($bluray_playlist);
+			$bluray_chapters->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
+
+			$bluray_copy->output_filename("-");
+
+			$bluray_copy_command = $bluray_copy->get_executable_string();
+
+			$bluray_ffmpeg_command = "ffmpeg -i '-' -map 'v:0' -map 'a:0' -map 'i:0x1200?' -codec copy -y '$bluray_mkv'";
+
+			$bluray_ffpipe_command = "$bluray_copy_command 2> /dev/null | $bluray_ffmpeg_command";
+
+			echo "$bluray_ffpipe_command\n";
 
 		}
 
