@@ -728,6 +728,9 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			$bluray_ffmpeg_command = "ffmpeg -i '-' -map 'v:0' -map 'a:0' -map 'i:0x1200?' -codec copy -y '$bluray_mkv'";
 
+			if($opt_time)
+				$bluray_ffmpeg_command = "tout $bluray_ffmpeg_command";
+
 			$bluray_ffpipe_command = "$bluray_copy_command 2> /dev/null | $bluray_ffmpeg_command";
 
 			echo "$bluray_ffpipe_command\n";
