@@ -206,17 +206,20 @@
 				echo "* name: $arg_name\n";
 			}
 
-			$cmd = "dvdbackup -M -p -i $arg_input -o $arg_output -n $arg_name 2>&1 | tee $logfile";
+			$dvd_backup_command = "dvd_backup $arg_input -n $arg_name";
 			if($this->debug)
-				echo "* Executing: $cmd\n";
+				$dvd_backup_command .= " -v";
+			$dvd_backup_command .= " 2>&1 | tee $logfile";
+			if($this->debug)
+				echo "* Executing: $dvd_backup_command\n";
 
 			$success = true;
 			$retval = 0;
 
-			passthru($cmd, $retval);
+			passthru($dvd_backup_command, $retval);
 
 			if($this->debug)
-				echo "* dvdbackup return value: $retval\n";
+				echo "* dvd_backup return value: $retval\n";
 
 			if($retval !== 0)
 				$success = false;
