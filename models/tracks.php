@@ -185,5 +185,26 @@
 
 		}
 
+		/**
+		 * Find out what subtitle type there is, prioritizing:
+		 * - Any English vobsub active track
+		 * - Only one vobsub active track
+		 * - Closed captioning
+		 */
+		function get_subtitle_type() {
+
+			if($this->get_num_active_subp_tracks('en'))
+				return 'vobsub';
+
+			if($this->get_num_active_subp_tracks() == 1)
+				return 'vobsub';
+
+			if($this->has_closed_captioning())
+				return 'cc';
+
+			return '';
+
+		}
+
 	}
 ?>
