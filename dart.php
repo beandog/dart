@@ -108,6 +108,9 @@
 		$dvds_model = new Dvds_Model;
 		$dvd_episodes = array();
 
+		// Not new by default
+		$new_dvd = false;
+
 		// Internal flags if there are issues impossible to circumvent
 		$broken_dvd = false;
 
