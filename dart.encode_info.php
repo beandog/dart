@@ -129,6 +129,9 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		}
 
 		/** Encode DVDs **/
+		/*
+		 * Classic ripping using HandBrake
+		 */
 		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == "dvd" && $opt_encode_info && $opt_handbrake) {
 
 			require 'dart.x264.php';
@@ -145,6 +148,9 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		}
 
+		/*
+		 * Use in-development dvd_rip
+		 */
 		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == "dvd" && $opt_encode_info && $opt_dvdrip) {
 
 			$dvdrip = new DVDRip;
@@ -203,6 +209,9 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		}
 
+		/**
+		 * Rip DVDs directly from source using ffmpeg
+		 */
 		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == "dvd" && $opt_encode_info && $opt_ffmpeg) {
 
 			$ffmpeg = new FFMpeg();
@@ -324,6 +333,9 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		}
 
+		/**
+		 * Rip DVDs using dvd_copy piped to ffmpeg
+		 */
 		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == "dvd" && $opt_encode_info && $opt_ffpipe) {
 
 			require 'dart.dvd_copy.php';
@@ -424,6 +436,9 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		}
 
+		/**
+		 * Remux titles using dvd_copy + ffmpeg
+		 */
 		if($opt_remux && $disc_type == "dvd") {
 
 			$remux_filename = "remux-${episode_id}.mkv";
@@ -443,6 +458,9 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		}
 
+		/**
+		 * Extract SSA subtitles from DVDs
+		 */
 		if($opt_ssa && $disc_type == "dvd" && $tracks_model->has_closed_captioning()) {
 
 			$ssa_filename = "subs-".$episode_id."-".$series_model->nsix.".ssa";
