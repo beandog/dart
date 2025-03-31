@@ -62,7 +62,6 @@
 
 		// Subtitles
 		public $subtitle_tracks = array();
-		public $srt_language = 'eng';
 		public $closed_captioning = false;
 		public $closed_captioning_ix = null;
 

@@ -31,7 +31,6 @@
 
 		// Subtitles
 		public $subtitle_tracks = array();
-		public $srt_language = 'eng';
 		public $closed_captioning = false;
 
 		public function debug($bool = true) {
