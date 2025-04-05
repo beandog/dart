@@ -1,7 +1,7 @@
 <?php
 
 // Display encode instructions about a disc
-if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_ffprobe)) {
+if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_ffprobe || $opt_scan)) {
 
 	$dvd_episodes = $dvds_model->get_episodes();
 
@@ -125,6 +125,32 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			$ffprobe_command = $ffmpeg->ffprobe();
 
 			echo "$ffprobe_command\n";
+
+		}
+
+		if($opt_scan && $disc_type == 'dvd') {
+
+			$handbrake_command = "HandBrakeCLI --input '".escapeshellcmd(realpath($device))."'";
+
+			$tracks_model = new Tracks_Model($episodes_model->track_id);
+
+			$handbrake_command .= " --title '".$tracks_model->ix."'";
+
+			if($opt_no_dvdnav || $series_model->dvdnav == 0)
+				$handbrake_command .= " --no-dvdnav";
+
+			$starting_chapter = $episodes_model->starting_chapter;
+			$ending_chapter = $episodes_model->ending_chapter;
+
+			if($starting_chapter)
+				$handbrake_command .= "--chapters '".$starting_chapter."-";
+			if($ending_chapter)
+				$handbrake_command .= "$ending_chapter";
+			if($starting_chapter || $ending_chapter)
+				$handbrake_command .= "'";
+
+			$handbrake_command .= " --scan 2>&1";
+			echo "$handbrake_command\n";
 
 		}
 

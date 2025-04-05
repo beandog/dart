@@ -159,6 +159,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_scan', array(
+		'long_name' => '--scan',
+		'description' => 'Use HandBrake to get DVD information',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('opt_remux', array(
 		'long_name' => '--remux',
 		'description' => 'Remux a DVD episode using ffmpeg for debugging',
