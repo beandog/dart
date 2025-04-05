@@ -322,7 +322,12 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 				$ffmpeg->add_subtitle_stream($subp_ix);
 			}
 
-			// Ignore closed captioning completely since ffmpeg garbles it.
+			// Remove closed captioning. There are only 367 cartoon episodes that have CC and *not* vobsub
+			// TMNT '87 (208), TMNT 2012 (119), Droopy, and Scooby-Doo Show
+			// It adds an extra step to encoding because they have to be extracted first as well.
+			// Another reason they are being removed is that ffmpeg garbles them, they do not play
+			// at the correct index time.
+			// See 'view_episode_eng_subs' database view
 			if($tracks_model->has_closed_captioning()) {
 				$ffmpeg->remove_closed_captioning();
 			}
@@ -447,7 +452,12 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 				$ffmpeg->add_subtitle_stream($subp_ix);
 			}
 
-			// Ignore closed captioning completely since ffmpeg garbles it.
+			// Remove closed captioning. There are only 367 cartoon episodes that have CC and *not* vobsub
+			// TMNT '87 (208), TMNT 2012 (119), Droopy, and Scooby-Doo Show
+			// It adds an extra step to encoding because they have to be extracted first.
+			// Another reason they are being removed is that ffmpeg garbles them, they do not play
+			// at the correct index time.
+			// See 'view_episode_eng_subs' database view
 			if($tracks_model->has_closed_captioning()) {
 				$ffmpeg->remove_closed_captioning();
 			}

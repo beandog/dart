@@ -719,6 +719,11 @@
 			// Avoid false positives: "English (Closed Caption) (iso639-2: eng) (Bitmap)(VOBSUB)"
 			// I have seen *one* DVD where the language is und for the CC, the rest
 			// all being eng. I'm not going to scan for language. :)
+
+			// In 1.9.2 there are these two possibilities:
+			// English Closed Caption (4:3) [VOBSUB]
+			// English, Closed Caption [CC608]
+
 			$closed_captioning = preg_grep("/.*Closed Caption(\s.*CC608|s?.*Text.*CC*)/", $arr);
 
 			if(count($closed_captioning)) {
