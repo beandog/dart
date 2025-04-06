@@ -42,7 +42,7 @@
 
 		}
 
-		function get_video_encoder() {
+		function get_vcodec() {
 
 			$series_id = abs(intval($this->id));
 

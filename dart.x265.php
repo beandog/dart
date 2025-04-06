@@ -1,6 +1,6 @@
 <?php
 
-if($opt_encode_info && $episode_id && $video_encoder == 'x265') {
+if($opt_encode_info && $episode_id && $vcodec == 'x265') {
 
 	/**
 	 * Handbrake
@@ -35,7 +35,7 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x265') {
 	/** Video **/
 
 	$fps = $series_model->get_preset_fps();
-	$handbrake->set_video_encoder('x265');
+	$handbrake->set_vcodec('x265');
 	$video_quality = $series_model->get_crf();
 
 	if(strlen($arg_crf))

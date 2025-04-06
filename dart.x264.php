@@ -1,6 +1,6 @@
 <?php
 
-if($opt_encode_info && $opt_handbrake && $episode_id && $video_encoder == 'x264') {
+if($opt_encode_info && $opt_handbrake && $episode_id && $vcodec == 'x264') {
 
 	/**
 	 * Handbrake
@@ -28,7 +28,7 @@ if($opt_encode_info && $opt_handbrake && $episode_id && $video_encoder == 'x264'
 
 	$fps = $series_model->get_preset_fps();
 
-	if($video_encoder == 'x264') {
+	if($vcodec == 'x264') {
 
 		switch($arg_hardware) {
 
@@ -62,7 +62,7 @@ if($opt_encode_info && $opt_handbrake && $episode_id && $video_encoder == 'x264'
 
 	/** Video **/
 
-	$handbrake->set_video_encoder($video_encoder);
+	$handbrake->set_vcodec($vcodec);
 	$video_quality = $series_model->get_crf();
 
 	if($arg_crf)

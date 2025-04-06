@@ -45,7 +45,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		$tracks_model = new Tracks_Model($episodes_model->track_id);
 		$series_model = new Series_Model($episodes_model->get_series_id());
 		$container = $series_model->get_preset_format();
-		$video_encoder = $series_model->get_video_encoder();
+		$vcodec = $series_model->get_vcodec();
 
 		if($opt_copy_info)
 			$container = 'mpg';
@@ -203,7 +203,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			/** Video **/
 
-			$dvdrip->set_vcodec($video_encoder);
+			$dvdrip->set_vcodec($vcodec);
 			$video_quality = $series_model->get_crf();
 
 			if($arg_crf)
@@ -277,12 +277,12 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			$ffmpeg->set_crf($video_quality);
 
-			if($video_encoder == 'x264') {
+			if($vcodec == 'x264') {
 				$ffmpeg->set_vcodec('libx264');
 				$ffmpeg->set_tune($series_model->get_x264_tune());
 			}
 
-			if($video_encoder == 'x265') {
+			if($vcodec == 'x265') {
 				$ffmpeg->set_vcodec('libx265');
 			}
 
@@ -408,12 +408,12 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			$ffmpeg->set_crf($video_quality);
 
-			if($video_encoder == 'x264') {
+			if($vcodec == 'x264') {
 				$ffmpeg->set_vcodec('libx264');
 				$ffmpeg->set_tune($series_model->get_x264_tune());
 			}
 
-			if($video_encoder == 'x265') {
+			if($vcodec == 'x265') {
 				$ffmpeg->set_vcodec('libx265');
 			}
 
