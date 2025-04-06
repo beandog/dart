@@ -186,6 +186,7 @@
 
 		}
 
+		// FIXME get rid of this old view
 		public function get_metadata() {
 
 			$episode_id = intval($this->id);
