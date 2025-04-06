@@ -491,6 +491,9 @@
 				$cmd[] = "$key $arg_value";
 			}
 
+			// Always deinterlace :)
+			$cmd[] = "'--bwdif=bob'";
+
 			$options = $this->get_options();
 
 			foreach($options as $str)
