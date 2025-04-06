@@ -3,6 +3,9 @@
 // Display encode instructions about a disc
 if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_ffprobe || $opt_scan)) {
 
+	// Override DVD encoder if disc is flagged with bugs
+	$dvd_encoder = $dvds_model->get_encoder();
+
 	$dvd_episodes = $dvds_model->get_episodes();
 
 	// On QA run, only encode the first one
@@ -248,7 +251,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		/**
 		 * Rip DVDs directly from source using ffmpeg
 		 */
-		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == "dvd" && $opt_encode_info && $opt_ffmpeg) {
+		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == "dvd" && $opt_encode_info && ($opt_ffmpeg || $dvd_encoder == 'ffmpeg')) {
 
 			$ffmpeg = new FFMpeg();
 			$ffmpeg->set_binary('ffmpeg');
@@ -383,7 +386,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		/**
 		 * Rip DVDs using dvd_copy piped to ffmpeg
 		 */
-		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == "dvd" && $opt_encode_info && $opt_ffpipe) {
+		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == "dvd" && $opt_encode_info && ($opt_ffpipe || $dvd_encoder == 'ffpipe')) {
 
 			require 'dart.dvd_copy.php';
 			$dvd_copy->input_filename($device);
