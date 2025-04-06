@@ -9,7 +9,6 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x265') {
 	 * and builds a new HandBrake object.
 	 */
 
-	$detelecine = false;
 	$subs_support = true;
 	$chapters_support = true;
 	$optimize_support = true;
@@ -67,17 +66,9 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x265') {
 
 	/** frameinfo **/
 
-	// If PAL format, detelecining is not needed
-	if($tracks_model->format == 'PAL') {
-		$detelecine = false;
-		$fps = 25;
-	}
-
 	// Set framerate
 	if($fps)
 		$handbrake->set_video_framerate($fps);
-
-	$handbrake->detelecine($detelecine);
 
 	/*
 	if($container == 'mp4' && $optimize_support)

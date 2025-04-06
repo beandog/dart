@@ -116,16 +116,6 @@
 
 		}
 
-		function get_preset_detelecine() {
-
-			$sql = "SELECT presets.detelecine FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->id.";";
-
-			$str = $this->get_one($sql);
-
-			return $str;
-
-		}
-
 		function get_preset_fps() {
 
 			$sql = "SELECT presets.fps FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->id.";";

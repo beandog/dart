@@ -27,7 +27,6 @@
 		public $video_encoder;
 		public $video_quality;
 		public $video_framerate;
-		public $detelecine;
 		public $max_height;
 		public $max_width;
 		public $height;
@@ -174,10 +173,6 @@
 			$this->audio = (boolean)$bool;
 		}
 
-		public function detelecine($bool = true) {
-			$this->detelecine = (boolean)$bool;
-		}
-
 		public function dvdnav($bool = true) {
 			$this->dvdnav = (boolean)$bool;
 		}
@@ -302,10 +297,6 @@
 			// Check for muxing chapters
 			if($this->add_chapters)
 				$options[] = "--markers";
-
-			// Check for detelecine filter
-			if($this->detelecine)
-				$options[] = "--detelecine";
 
 			// Check for auto anamorphic
 			if($this->auto_anamorphic)
