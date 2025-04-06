@@ -24,7 +24,7 @@
 		public $dvd_num_subtitles;
 
 		// Video
-		public $video_encoder;
+		public $vcodec;
 		public $video_quality;
 		public $video_framerate;
 		public $max_height;
@@ -112,8 +112,8 @@
 
 		}
 
-		public function set_video_encoder($str) {
-			$this->video_encoder = $str;
+		public function set_vcodec($str) {
+			$this->vcodec = $str;
 		}
 
 		public function set_video_quality($int) {
@@ -348,7 +348,7 @@
 			 **/
 
 			// Set encoder
-			$args['--encoder'] = $this->video_encoder;
+			$args['--encoder'] = $this->vcodec;
 
 			// Add video quality
 			if(!is_null($this->video_quality)) {
