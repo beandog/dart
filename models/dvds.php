@@ -459,6 +459,23 @@
 
 		}
 
+		// Override encoder if there is a bug for the disc
+		public function get_encoder() {
+
+			$sql = "SELECT b.name FROM dvd_bugs db JOIN bugs b ON db.bug_id = b.id WHERE db.dvd_id = ".$this->id.";";
+			$arr = $this->get_col($sql);
+
+			$var = 'handbrake';
+
+			if(in_array('ffpipe', $arr))
+				$var = 'ffpipe';
+			elseif(in_array('ffmpeg', $arr))
+				$var = 'ffmpeg';
+
+			return $var;
+
+		}
+
 		public function find_dvdread_id($dvdread_id) {
 
 			$dvdread_id = trim($dvdread_id);
