@@ -214,7 +214,6 @@
 			'video' => array(
 				'standard' => $episode_metadata['format'],
 				'aspect_ratio' => $episode_metadata['aspect'],
-				'grayscale' => $episode_metadata['grayscale'],
 				'closed_captioning' => $episode_metadata['closed_captioning'],
 			),
 

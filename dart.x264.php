@@ -65,7 +65,6 @@ if($opt_encode_info && $opt_handbrake && $episode_id && $video_encoder == 'x264'
 
 	$handbrake->set_video_encoder($video_encoder);
 	$video_quality = $series_model->get_crf();
-	$handbrake->grayscale($series_model->grayscale);
 
 	if($arg_crf)
 		$video_quality = abs(intval($arg_crf));

@@ -28,7 +28,6 @@
 		public $video_quality;
 		public $video_framerate;
 		public $detelecine;
-		public $grayscale;
 		public $max_height;
 		public $max_width;
 		public $height;
@@ -183,10 +182,6 @@
 			$this->dvdnav = (boolean)$bool;
 		}
 
-		public function grayscale($bool = true) {
-			$this->grayscale = (boolean)$bool;
-		}
-
 		public function set_max_height($int) {
 
 			$int = abs(intval($int));
@@ -311,10 +306,6 @@
 			// Check for detelecine filter
 			if($this->detelecine)
 				$options[] = "--detelecine";
-
-			// Check for grayscale
-			if($this->grayscale)
-				$options[] = "--grayscale";
 
 			// Check for auto anamorphic
 			if($this->auto_anamorphic)
