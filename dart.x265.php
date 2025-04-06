@@ -1,6 +1,6 @@
 <?php
 
-if($opt_encode_info && $episode_id && $vcodec == 'x265') {
+if($opt_encode_info && $dvd_encoder == 'handbrake' && $episode_id && $vcodec == 'x265') {
 
 	/**
 	 * Handbrake

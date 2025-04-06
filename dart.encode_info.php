@@ -6,6 +6,13 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 	// Override DVD encoder if disc is flagged with bugs
 	$dvd_encoder = $dvds_model->get_encoder();
 
+	if($opt_handbrake)
+		$dvd_encoder = 'handbrake';
+	elseif($opt_ffmpeg)
+		$dvd_encoder = 'ffmpeg';
+	elseif($opt_ffprobe)
+		$dvd_encoder = 'ffprobe';
+
 	$dvd_episodes = $dvds_model->get_episodes();
 
 	// On QA run, only encode the first one
@@ -161,7 +168,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		/*
 		 * Classic ripping using HandBrake
 		 */
-		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == "dvd" && $opt_encode_info && $opt_handbrake) {
+		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == "dvd" && $opt_encode_info && $dvd_encoder == 'handbrake') {
 
 			require 'dart.x264.php';
 			require 'dart.x265.php';
@@ -251,7 +258,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		/**
 		 * Rip DVDs directly from source using ffmpeg
 		 */
-		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == "dvd" && $opt_encode_info && ($opt_ffmpeg || $dvd_encoder == 'ffmpeg')) {
+		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == "dvd" && $opt_encode_info && $dvd_encoder == 'ffmpeg') {
 
 			$ffmpeg = new FFMpeg();
 			$ffmpeg->set_binary('ffmpeg');
