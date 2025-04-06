@@ -183,6 +183,12 @@
 		'action' => 'StoreString',
 		'default' => '',
 	));
+	$parser->addOption('opt_fast', array(
+		'long_name' => '--fast',
+		'description' => 'Speed up encoding by using ultrafast preset',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('arg_hardware', array(
 		'long_name' => '--hardware',
 		'description' => 'Override target hardware',

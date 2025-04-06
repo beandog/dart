@@ -166,11 +166,17 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			$handbrake->input_filename($input_filename);
 
 			$handbrake->output_filename($filename);
+
 			if($opt_qa) {
 				$handbrake->output_filename("hb-qa-$filename");
 				$handbrake->set_duration(60);
 			}
+
 			$handbrake_command = $handbrake->get_executable_string();
+
+			if($opt_fast)
+				$handbrake_command .= " --encoder-preset 'ultrafast'";
+
 			if($opt_time)
 				$handbrake_command = "tout $handbrake_command";
 
