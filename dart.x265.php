@@ -9,8 +9,6 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x265') {
 	 * and builds a new HandBrake object.
 	 */
 
-	$deinterlace = false;
-	$decomb = false;
 	$detelecine = false;
 	$subs_support = true;
 	$chapters_support = true;
@@ -69,15 +67,6 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x265') {
 
 	/** frameinfo **/
 
-	if($series_model->get_preset_decomb() || $series_model->decomb)
-		$decomb = true;
-	if($series_model->get_preset_detelecine() || $series_model->detelecine)
-		$detelecine = true;
-	if($series_model->get_preset_decomb() == 2 || $series_model->decomb == 2)
-		$comb_detect = true;
-	else
-		$comb_detect = false;
-
 	// If PAL format, detelecining is not needed
 	if($tracks_model->format == 'PAL') {
 		$detelecine = false;
@@ -89,8 +78,6 @@ if($opt_encode_info && $episode_id && $video_encoder == 'x265') {
 		$handbrake->set_video_framerate($fps);
 
 	$handbrake->detelecine($detelecine);
-	$handbrake->decomb($decomb);
-	$handbrake->comb_detect($comb_detect);
 
 	/*
 	if($container == 'mp4' && $optimize_support)
