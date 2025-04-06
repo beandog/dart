@@ -79,14 +79,14 @@ if($opt_encode_info && $episode_id && $vcodec == 'x265') {
 
 	$handbrake->add_audio_track($tracks_model->audio_ix);
 
-	$audio_encoder = $series_model->get_audio_encoder();
-	if($audio_encoder == 'fdk_aac' || $audio_encoder == 'ac3' || $audio_encoder == 'flac' || $audio_encoder == 'mp3') {
-		$handbrake->add_audio_encoder($audio_encoder);
-	} elseif($audio_encoder == 'fdk_aac,copy') {
-		$handbrake->add_audio_encoder('fdk_aac');
-		$handbrake->add_audio_encoder('copy');
+	$acodec = $series_model->get_acodec();
+	if($acodec == 'fdk_aac' || $acodec == 'ac3' || $acodec == 'flac' || $acodec == 'mp3') {
+		$handbrake->add_acodec($acodec);
+	} elseif($acodec == 'fdk_aac,copy') {
+		$handbrake->add_acodec('fdk_aac');
+		$handbrake->add_acodec('copy');
 	} else {
-		$handbrake->add_audio_encoder('copy');
+		$handbrake->add_acodec('copy');
 	}
 
 	/** Subtitles **/

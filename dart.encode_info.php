@@ -215,11 +215,11 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			$dvdrip->set_acodec('en');
 
-			$audio_encoder = $series_model->get_audio_encoder();
+			$acodec = $series_model->get_acodec();
 
-			$audio_encoder = 'aac';
+			$acodec = 'aac';
 
-			$dvdrip->set_acodec($audio_encoder);
+			$dvdrip->set_acodec($acodec);
 
 			$dvdrip->set_audio_lang('en');
 
@@ -746,7 +746,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 					// FIXME? this probably shouldn't be here, HandBrake would add it directly
 					// $handbrake->add_audio_track(1);
 
-					$handbrake->add_audio_encoder('flac');
+					$handbrake->add_acodec('flac');
 				}
 
 				// There are edge cases where the first audio track is Dolby
@@ -766,7 +766,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 				if($primary_format == 'ac3' && $secondary_format == 'truhd') {
 					$handbrake->add_audio_track(1);
-					$handbrake->add_audio_encoder('flac');
+					$handbrake->add_acodec('flac');
 				}
 
 				if($debug)

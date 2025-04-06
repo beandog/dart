@@ -54,7 +54,7 @@
 
 		}
 
-		function get_audio_encoder() {
+		function get_acodec() {
 
 			$sql = "SELECT presets.acodec FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->id.";";
 

@@ -42,7 +42,7 @@
 
 		// Audio
 		public $audio = true;
-		public $audio_encoders = array();
+		public $acodecs = array();
 		public $audio_tracks = array();
 		public $audio_streams = array();
 		public $audio_bitrate;
@@ -162,11 +162,11 @@
 		}
 
 		// FIXME limit to set audio encoders
-		public function add_audio_encoder($str) {
+		public function add_acodec($str) {
 			if($str == 'flac')
 				$str = 'flac24';
 			if(!is_null($str))
-				$this->audio_encoders[] = $str;
+				$this->acodecs[] = $str;
 		}
 
 		public function enable_audio($bool = true) {
@@ -428,8 +428,8 @@
 				}
 
 				// Add audio encoders
-				if(count($this->audio_encoders)) {
-					$str = implode(",", $this->audio_encoders);
+				if(count($this->acodecs)) {
+					$str = implode(",", $this->acodecs);
 					$args['--aencoder'] = $str;
 				}
 
