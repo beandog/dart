@@ -10,11 +10,6 @@
 		public $dvd_copy_opts = '';
 		public $dvd_copy_output = '/dev/null';
 
-		// avconv / ffmpeg
-		public $encoder = 'avconv';
-		public $encoder_opts = '';
-		public $encoder_output = '/dev/null';
-
 		// DVD source
 		public $input_filename = '/dev/sr0';
 		public $output_filename = 'dvd_copy.mpg';
