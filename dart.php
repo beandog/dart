@@ -83,9 +83,9 @@
 	if($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe || $opt_ssa)
 		$batch_mode = true;
 
-	$opt_ffmpeg = true;
-	if($opt_dvdrip || $opt_handbrake || $opt_bluraycopy || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe || $opt_ssa)
-		$opt_ffmpeg = false;
+	$opt_handbrake = true;
+	if($opt_dvdrip || $opt_ffmpeg || $opt_bluraycopy || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe || $opt_ssa)
+		$opt_handbrake = false;
 
 	if(!count($devices) && ($opt_info || $opt_encode_info || $opt_copy_info || $opt_dump_iso || $opt_import || $opt_archive || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe || $opt_ssa))
 		$devices = $all_devices;

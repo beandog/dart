@@ -139,7 +139,7 @@
 		'long_name' => '--ffmpeg',
 		'description' => 'Use ffmpeg to rip DVDs',
 		'action' => 'StoreTrue',
-		'default' => true,
+		'default' => false,
 	));
 	$parser->addOption('opt_ffplay', array(
 		'long_name' => '--ffplay',
