@@ -282,6 +282,9 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 				$ffmpeg->set_tune($series_model->get_x264_tune());
 			}
 
+			if($opt_fast)
+				$ffmpeg->set_preset('ultrafast');
+
 			if($vcodec == 'x265') {
 				$ffmpeg->set_vcodec('libx265');
 			}
@@ -412,6 +415,9 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 				$ffmpeg->set_vcodec('libx264');
 				$ffmpeg->set_tune($series_model->get_x264_tune());
 			}
+
+			if($opt_fast)
+				$ffmpeg->set_preset('ultrafast');
 
 			if($vcodec == 'x265') {
 				$ffmpeg->set_vcodec('libx265');
