@@ -32,6 +32,7 @@
 		public $video_filters = array();
 		public $crf = 0;
 		public $tune = '';
+		public $preset = '';
 
 		// Audio
 		public $audio = true;
@@ -130,6 +131,10 @@
 
 		public function set_tune($str) {
 			$this->tune = $str;
+		}
+
+		public function set_preset($str) {
+			$this->preset = $str;
 		}
 
 		public function add_video_filter($str) {
@@ -246,6 +251,9 @@
 
 			if($this->tune)
 				$args['tune'] = $this->tune;
+
+			if($this->preset)
+				$args['preset'] = $this->preset;
 
 			if($this->acodec)
 				$args['acodec'] = $this->acodec;
