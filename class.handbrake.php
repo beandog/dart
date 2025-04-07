@@ -27,6 +27,7 @@
 		public $vcodec;
 		public $video_quality;
 		public $video_framerate;
+		public $video_format = 'ntsc';
 		public $max_height;
 		public $max_width;
 		public $height;
@@ -51,7 +52,6 @@
 
 		// Container
 		public $add_chapters;
-		public $format;
 		public $starting_chapter;
 		public $ending_chapter;
 
@@ -319,9 +319,7 @@
 				$options[] = "--all-audio";
 
 			// Set constant framerate
-			if(!is_null($this->video_framerate)) {
-				$options[] = '--cfr';
-			}
+			$options[] = '--cfr';
 
 			return $options;
 
@@ -372,8 +370,10 @@
 			}
 
 			// Set video framerate
-			if(!is_null($this->video_framerate)) {
-				$args['--rate'] = $this->video_framerate;
+			if($this->video_format == 'pal') {
+				$args['--rate'] = 50;
+			} else {
+				$args['--rate'] = 59.94;
 			}
 
 			// Set H.264 profile (needed for PSP)
@@ -463,11 +463,6 @@
 			 * Container
 			 */
 
-			// Add format
-			if(!is_null($this->format)) {
-				$args['--format'] = $this->format;
-			}
-
 			// Add chapters
 			if(!empty($this->starting_chapter)) {
 				$args['--chapters'] = $this->starting_chapter."-";
@@ -540,6 +535,10 @@
 
 			$this->preset = $preset;
 
+		}
+
+		public function set_video_format($str) {
+			$this->video_format = $str;
 		}
 
 		public function get_x264opts() {
