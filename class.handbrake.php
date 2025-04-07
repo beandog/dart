@@ -538,7 +538,7 @@
 		}
 
 		public function set_video_format($str) {
-			$this->video_format = $str;
+			$this->video_format = strtolower($str);
 		}
 
 		public function get_x264opts() {
