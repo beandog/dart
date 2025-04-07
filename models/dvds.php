@@ -465,12 +465,14 @@
 			$sql = "SELECT b.name FROM dvd_bugs db JOIN bugs b ON db.bug_id = b.id WHERE db.dvd_id = ".$this->id.";";
 			$arr = $this->get_col($sql);
 
-			$var = 'handbrake';
+			$var = '';
 
-			if(in_array('ffpipe', $arr))
-				$var = 'ffpipe';
-			elseif(in_array('ffmpeg', $arr))
+			if(in_array('ffmpeg', $arr))
 				$var = 'ffmpeg';
+			elseif(in_array('ffpipe', $arr))
+				$var = 'ffpipe';
+			elseif(in_array('handbrake', $arr))
+				$var = 'handbrake';
 
 			return $var;
 

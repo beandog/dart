@@ -6,6 +6,10 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 	// Override DVD encoder if disc is flagged with bugs
 	$dvd_encoder = $dvds_model->get_encoder();
 
+	// Default encoder
+	if($dvd_encoder == '')
+		$dvd_encoder = 'ffmpeg';
+
 	if($opt_handbrake)
 		$dvd_encoder = 'handbrake';
 	elseif($opt_ffmpeg)
