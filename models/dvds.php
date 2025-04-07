@@ -459,20 +459,25 @@
 
 		}
 
-		// Override encoder if there is a bug for the disc
+		// Override encoder if there is a bug for the disc or set by the series
 		public function get_encoder() {
 
+			// Check for bugs
 			$sql = "SELECT b.name FROM dvd_bugs db JOIN bugs b ON db.bug_id = b.id WHERE db.dvd_id = ".$this->id.";";
 			$arr = $this->get_col($sql);
 
 			$var = '';
 
 			if(in_array('ffmpeg', $arr))
-				$var = 'ffmpeg';
+				return('ffmpeg');
 			elseif(in_array('ffpipe', $arr))
-				$var = 'ffpipe';
+				return('ffpipe');
 			elseif(in_array('handbrake', $arr))
-				$var = 'handbrake';
+				return('handbrake');
+
+			// Get encoder override from series
+			$sql = "SELECT r.name FROM dvds JOIN series_dvds ON dvds.id = series_dvds.dvd_id JOIN series ON series.id = series_dvds.series_id JOIN ripping r ON series.ripping_id = r.id WHERE dvds.id = ".$this->id.";";
+			$var = $this->get_one($sql);
 
 			return $var;
 
