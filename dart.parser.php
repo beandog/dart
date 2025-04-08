@@ -189,6 +189,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_slow', array(
+		'long_name' => '--slow',
+		'description' => 'Use slow preset for encoding',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('arg_hardware', array(
 		'long_name' => '--hardware',
 		'description' => 'Override target hardware',

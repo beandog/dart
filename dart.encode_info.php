@@ -194,6 +194,8 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			if($opt_fast)
 				$handbrake_command .= " --encoder-preset 'ultrafast'";
+			elseif($opt_slow)
+				$handbrake_command .= " --encoder-preset 'slow'";
 
 			if($opt_time)
 				$handbrake_command = "tout $handbrake_command";
@@ -302,6 +304,8 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			if($opt_fast)
 				$ffmpeg->set_preset('ultrafast');
+			elseif($opt_slow)
+				$ffmpeg->set_preset('slow');
 
 			if($vcodec == 'x265') {
 				$ffmpeg->set_vcodec('libx265');
@@ -436,6 +440,8 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			if($opt_fast)
 				$ffmpeg->set_preset('ultrafast');
+			elseif($opt_slow)
+				$ffmpeg->set_preset('slow');
 
 			if($vcodec == 'x265') {
 				$ffmpeg->set_vcodec('libx265');
