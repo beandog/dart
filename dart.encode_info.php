@@ -185,10 +185,17 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			$handbrake->output_filename($filename);
 
+			$prefix = '';
 			if($opt_qa) {
-				$handbrake->output_filename("hb-qa-$filename");
+				$prefix = "hb-qa-";
 				$handbrake->set_duration(60);
 			}
+			if($arg_crf)
+				$prefix .= "q-$arg_crf-";
+
+			$filename = $prefix.$filename;
+
+			$handbrake->output_filename($filename);
 
 			$handbrake_command = $handbrake->get_executable_string();
 
@@ -373,9 +380,13 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			if(file_exists($ssa_filename))
 				$ffmpeg->input_filename($ssa_filename);
 
-			if($opt_qa) {
-				$filename = "ffmpeg-qa-$filename";
-			}
+			$prefix = '';
+			if($opt_qa)
+				$prefix = "ffmpeg-qa-";
+			if($arg_crf)
+				$prefix .= "q-$arg_crf-";
+
+			$filename = $prefix.$filename;
 
 			$ffmpeg->output_filename($filename);
 
@@ -498,9 +509,13 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 				$ffmpeg->remove_closed_captioning();
 			}
 
-			if($opt_qa) {
-				$filename = "ffmpeg-qa-$filename";
-			}
+			$prefix = '';
+			if($opt_qa)
+				$prefix = "ffmpeg-qa-";
+			if($arg_crf)
+				$prefix .= "q-$arg_crf-";
+
+			$filename = $prefix.$filename;
 
 			$ffmpeg->output_filename($filename);
 
@@ -629,12 +644,16 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 				$ffmpeg->set_chapters($starting_chapter, null);
 			}
 
-			if($opt_qa) {
+			if($opt_qa)
 				$ffmpeg->set_duration($qa_max);
-				$filename = "ffmpeg-qa-$filename";
-			}
 
-			$ffmpeg->output_filename($filename);
+			$prefix = '';
+			if($opt_qa)
+				$prefix = "ffmpeg-qa-";
+			if($arg_crf)
+				$prefix .= "q-$arg_crf-";
+
+			$filename = $prefix.$filename;
 
 			$ffmpeg_command = $ffmpeg->get_executable_string();
 
