@@ -192,6 +192,10 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			}
 			if($arg_crf)
 				$prefix .= "q-$arg_crf-";
+			if($opt_fast)
+				$prefix .= "fast-";
+			elseif($opt_slow)
+				$prefix .= "slow-";
 
 			$filename = $prefix.$filename;
 
@@ -385,6 +389,10 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 				$prefix = "ffmpeg-qa-";
 			if($arg_crf)
 				$prefix .= "q-$arg_crf-";
+			if($opt_fast)
+				$prefix .= "fast-";
+			elseif($opt_slow)
+				$prefix .= "slow-";
 
 			$filename = $prefix.$filename;
 
@@ -514,6 +522,10 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 				$prefix = "ffmpeg-qa-";
 			if($arg_crf)
 				$prefix .= "q-$arg_crf-";
+			if($opt_fast)
+				$prefix .= "fast-";
+			elseif($opt_slow)
+				$prefix .= "slow-";
 
 			$filename = $prefix.$filename;
 
@@ -652,6 +664,10 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 				$prefix = "ffmpeg-qa-";
 			if($arg_crf)
 				$prefix .= "q-$arg_crf-";
+			if($opt_fast)
+				$prefix .= "fast-";
+			elseif($opt_slow)
+				$prefix .= "slow-";
 
 			$filename = $prefix.$filename;
 
