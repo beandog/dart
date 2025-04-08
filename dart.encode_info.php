@@ -498,6 +498,9 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			$ffmpeg_command = $ffmpeg->get_executable_string();
 
+			if($opt_time)
+				$ffmpeg_command = "tout $ffmpeg_command";
+
 			if($opt_log_progress)
 				$ffmpeg_command .= " -progress /tmp/$episode_id.txt";
 
