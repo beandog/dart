@@ -16,6 +16,8 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		$dvd_encoder = 'ffmpeg';
 	elseif($opt_ffprobe)
 		$dvd_encoder = 'ffprobe';
+	elseif($opt_ffpipe)
+		$dvd_encoder = 'ffpipe';
 
 	$dvd_episodes = $dvds_model->get_episodes();
 
