@@ -526,7 +526,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			$prefix = '';
 			if($opt_qa)
-				$prefix = "ffmpeg-qa-";
+				$prefix = "ffpipe-qa-";
 			if($arg_vcodec)
 				$prefix .= "$arg_vcodec-";
 			if($arg_crf)
