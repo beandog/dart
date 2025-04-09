@@ -63,6 +63,9 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		$container = $series_model->get_preset_format();
 		$vcodec = $series_model->get_vcodec();
 
+		if($arg_vcodec)
+			$vcodec = $arg_vcodec;
+
 		if($opt_copy_info)
 			$container = 'mpg';
 
@@ -190,6 +193,8 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 				$prefix = "hb-qa-";
 				$handbrake->set_duration(60);
 			}
+			if($arg_vcodec)
+				$prefix .= "$arg_vcodec-";
 			if($arg_crf)
 				$prefix .= "q-$arg_crf-";
 			if($opt_fast)
@@ -387,6 +392,8 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			$prefix = '';
 			if($opt_qa)
 				$prefix = "ffmpeg-qa-";
+			if($arg_vcodec)
+				$prefix .= "$arg_vcodec-";
 			if($arg_crf)
 				$prefix .= "q-$arg_crf-";
 			if($opt_fast)
@@ -520,6 +527,8 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			$prefix = '';
 			if($opt_qa)
 				$prefix = "ffmpeg-qa-";
+			if($arg_vcodec)
+				$prefix .= "$arg_vcodec-";
 			if($arg_crf)
 				$prefix .= "q-$arg_crf-";
 			if($opt_fast)
@@ -662,6 +671,8 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			$prefix = '';
 			if($opt_qa)
 				$prefix = "ffmpeg-qa-";
+			if($arg_vcodec)
+				$prefix .= "$arg_vcodec-";
 			if($arg_crf)
 				$prefix .= "q-$arg_crf-";
 			if($opt_fast)

@@ -241,8 +241,18 @@
 
 			$args = array();
 
-			if($this->vcodec)
-				$args['vcodec'] = $this->vcodec;
+			if($this->vcodec) {
+
+				$vcodec = $this->vcodec;
+
+				if($vcodec == 'x265')
+					$vcodec = 'libx264';
+				elseif($vcodec == 'x265')
+					$vcodec = 'libx265';
+
+				$args['vcodec'] = $vcodec;
+
+			}
 			if($this->vcodec_opts)
 				$args['vcodec_opts'] = $this->vcodec_opts;
 
