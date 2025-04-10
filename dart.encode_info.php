@@ -173,6 +173,25 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		}
 
+		// Filename overrides
+		$prefix = '';
+		if($opt_qa && $dvd_encoder == 'handbrake')
+			$prefix = "hb-qa-";
+		elseif($opt_qa && $dvd_encoder == 'ffmpeg')
+			$prefix = "ffmpeg-qa-";
+		elseif($opt_qa && $dvd_encoder == 'ffpipe')
+			$prefix = "ffpipe-qa-";
+		if($arg_vcodec)
+			$prefix .= "$arg_vcodec-";
+		if($arg_crf)
+			$prefix .= "q-$arg_crf-";
+		if($opt_fast)
+			$prefix .= "fast-";
+		elseif($opt_slow)
+			$prefix .= "slow-";
+
+		$filename = $prefix.$filename;
+
 		/** Encode DVDs **/
 		/*
 		 * Classic ripping using HandBrake
@@ -188,21 +207,8 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			$handbrake->output_filename($filename);
 
-			$prefix = '';
-			if($opt_qa) {
-				$prefix = "hb-qa-";
+			if($opt_qa)
 				$handbrake->set_duration(60);
-			}
-			if($arg_vcodec)
-				$prefix .= "$arg_vcodec-";
-			if($arg_crf)
-				$prefix .= "q-$arg_crf-";
-			if($opt_fast)
-				$prefix .= "fast-";
-			elseif($opt_slow)
-				$prefix .= "slow-";
-
-			$filename = $prefix.$filename;
 
 			$handbrake->output_filename($filename);
 
@@ -282,6 +288,8 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		}
 
 		/**
+		 * Next-generation DVD Ripping
+		 *
 		 * Rip DVDs directly from source using ffmpeg
 		 */
 		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == "dvd" && $opt_encode_info && $dvd_encoder == 'ffmpeg') {
@@ -388,20 +396,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			$ssa_filename = "subs-${str_episode_id}.ssa";
 			if(file_exists($ssa_filename))
 				$ffmpeg->input_filename($ssa_filename);
-
-			$prefix = '';
-			if($opt_qa)
-				$prefix = "ffmpeg-qa-";
-			if($arg_vcodec)
-				$prefix .= "$arg_vcodec-";
-			if($arg_crf)
-				$prefix .= "q-$arg_crf-";
-			if($opt_fast)
-				$prefix .= "fast-";
-			elseif($opt_slow)
-				$prefix .= "slow-";
-
-			$filename = $prefix.$filename;
 
 			$ffmpeg->output_filename($filename);
 
@@ -523,20 +517,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			if($tracks_model->has_closed_captioning()) {
 				$ffmpeg->remove_closed_captioning();
 			}
-
-			$prefix = '';
-			if($opt_qa)
-				$prefix = "ffpipe-qa-";
-			if($arg_vcodec)
-				$prefix .= "$arg_vcodec-";
-			if($arg_crf)
-				$prefix .= "q-$arg_crf-";
-			if($opt_fast)
-				$prefix .= "fast-";
-			elseif($opt_slow)
-				$prefix .= "slow-";
-
-			$filename = $prefix.$filename;
 
 			$ffmpeg->output_filename($filename);
 
@@ -667,20 +647,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			if($opt_qa)
 				$ffmpeg->set_duration($qa_max);
-
-			$prefix = '';
-			if($opt_qa)
-				$prefix = "ffmpeg-qa-";
-			if($arg_vcodec)
-				$prefix .= "$arg_vcodec-";
-			if($arg_crf)
-				$prefix .= "q-$arg_crf-";
-			if($opt_fast)
-				$prefix .= "fast-";
-			elseif($opt_slow)
-				$prefix .= "slow-";
-
-			$filename = $prefix.$filename;
 
 			$ffmpeg_command = $ffmpeg->get_executable_string();
 
