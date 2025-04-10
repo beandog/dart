@@ -111,7 +111,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			if(!count($video_filters))
 				$ffmpeg->add_video_filter("bwdif=deint=interlaced");
 
-			$ffmpeg->set_fps('59.94');
+			// $ffmpeg->set_fps('59.94');
 
 			foreach($video_filters as $vf)
 				$ffmpeg->add_video_filter($vf);
@@ -359,7 +359,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			if(!count($video_filters))
 				$ffmpeg->add_video_filter("bwdif=deint=interlaced");
 
-			$ffmpeg->set_fps('59.94');
+			// $ffmpeg->set_fps('59.94');
 
 			foreach($video_filters as $vf)
 				$ffmpeg->add_video_filter($vf);
@@ -493,7 +493,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			if(!count($video_filters))
 				$ffmpeg->add_video_filter("bwdif=deint=interlaced");
 
-			$ffmpeg->set_fps('59.94');
+			// $ffmpeg->set_fps('59.94');
 
 			foreach($video_filters as $vf)
 				$ffmpeg->add_video_filter($vf);

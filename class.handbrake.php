@@ -370,11 +370,13 @@
 			}
 
 			// Set video framerate
+			/*
 			if($this->video_format == 'pal') {
 				$args['--rate'] = 50;
 			} else {
 				$args['--rate'] = 59.94;
 			}
+			*/
 
 			// Set H.264 profile (needed for PSP)
 			if(!is_null($this->h264_profile)) {
