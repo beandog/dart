@@ -1,7 +1,7 @@
 <?php
 
 // Display encode instructions about a disc
-if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_ffprobe || $opt_scan)) {
+if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux)) {
 
 	// Override DVD encoder if disc is flagged with bugs
 	$dvd_encoder = $dvds_model->get_encoder();
@@ -18,6 +18,8 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		$dvd_encoder = 'ffprobe';
 	elseif($opt_ffpipe)
 		$dvd_encoder = 'ffpipe';
+	elseif($opt_copy_info)
+		$dvd_encoder = 'dvd_copy';
 	elseif($opt_remux)
 		$dvd_encoder = 'remux';
 
@@ -414,7 +416,8 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		}
 
 		/** Copy DVD tracks **/
-		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == "dvd" && $container == "mpg") {
+
+		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == 'dvd' && $dvd_encoder == 'dvd_copy') {
 
 			require 'dart.dvd_copy.php';
 			$dvd_copy->input_filename($input_filename);
@@ -539,18 +542,18 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		/**
 		 * Remux titles using dvd_copy + ffmpeg
 		 */
-		if($disc_type == 'dvd' && $dvd_encoder = 'remux') {
+		if($disc_type == 'dvd' && $dvd_encoder == 'remux') {
 
-			$remux_filename = "remux-${episode_id}.mkv";
+			$filename = "remux-$filename";
 
-			if(!($opt_skip_existing && file_exists($remux_filename))) {
+			if(!($opt_skip_existing && file_exists($filename))) {
 
 				require 'dart.dvd_copy.php';
 				$dvd_copy->input_filename($input_filename);
 				$dvd_copy->output_filename('-');
 				$dvd_copy_command = $dvd_copy->get_executable_string();
 
-				$dvd_remux_command = "$dvd_copy_command | ffmpeg -fflags +genpts -i - -codec copy -y $remux_filename";
+				$dvd_remux_command = "$dvd_copy_command 2> /dev/null | ffmpeg -fflags +genpts -i - -codec copy -y $filename";
 
 				echo "$dvd_remux_command\n";
 
