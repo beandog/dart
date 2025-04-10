@@ -18,6 +18,8 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		$dvd_encoder = 'ffprobe';
 	elseif($opt_ffpipe)
 		$dvd_encoder = 'ffpipe';
+	elseif($opt_remux)
+		$dvd_encoder = 'remux';
 
 	$dvd_episodes = $dvds_model->get_episodes();
 
@@ -537,7 +539,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		/**
 		 * Remux titles using dvd_copy + ffmpeg
 		 */
-		if($opt_remux && $disc_type == "dvd") {
+		if($disc_type == 'dvd' && $dvd_encoder = 'remux') {
 
 			$remux_filename = "remux-${episode_id}.mkv";
 
