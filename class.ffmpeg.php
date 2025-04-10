@@ -31,6 +31,7 @@
 		public $vcodec_opts = '';
 		public $video_filters = array();
 		public $crf = 0;
+		public $fps = '';
 		public $tune = '';
 		public $preset = '';
 
@@ -127,6 +128,10 @@
 			$crf = abs(intval($str));
 			if($crf)
 				$this->crf = $crf;
+		}
+
+		public function set_fps($str) {
+			$this->fps = $str;
 		}
 
 		public function set_tune($str) {
@@ -274,6 +279,9 @@
 				$vf = implode(",", $this->video_filters);
 				$args['vf'] = $vf;
 			}
+
+			if($this->fps)
+				$args['r'] = $this->fps;
 
 			if($this->duration)
 				$args['t'] = $this->duration;
