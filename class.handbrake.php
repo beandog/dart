@@ -370,13 +370,12 @@
 			}
 
 			// Set video framerate
-			/*
+			// bwdif bob will cause stuttaring on playback on Sony 4K TV
 			if($this->video_format == 'pal') {
 				$args['--rate'] = 50;
 			} else {
 				$args['--rate'] = 59.94;
 			}
-			*/
 
 			// Set H.264 profile (needed for PSP)
 			if(!is_null($this->h264_profile)) {
