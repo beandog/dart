@@ -94,17 +94,6 @@
 
 		}
 
-		function get_x264_preset() {
-
-			$arr = array();
-
-			$sql = "SELECT COALESCE(s.x264_preset, p.x264_preset) FROM presets p JOIN series_presets sp ON p.id = sp.preset_id JOIN series s ON sp.series_id = s.id AND sp.series_id = ".$this->id.";";
-			$str = $this->get_one($sql);
-
-			return $str;
-
-		}
-
 		function get_x264_tune() {
 
 			$arr = array();

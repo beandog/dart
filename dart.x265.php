@@ -48,9 +48,7 @@ if($opt_encode_info && $dvd_encoder == 'handbrake' && $episode_id && $vcodec == 
 	/** x265 **/
 
 	if($video_quality) {
-		$x264_preset = $series_model->get_x264_preset();
-		if(!$x264_preset)
-			$x264_preset = 'medium';
+		$x264_preset = 'medium';
 		$handbrake->set_x264_preset($x264_preset);
 	}
 
