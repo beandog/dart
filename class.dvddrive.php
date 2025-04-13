@@ -29,7 +29,7 @@
 		/** Hardware **/
 
 		function set_debug($bool = true) {
-			$this->debug = $bool;
+			$this->debug = boolval($bool);
 		}
 
 		/**
