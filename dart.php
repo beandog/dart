@@ -22,6 +22,7 @@
 	require_once 'class.handbrake.php';
 	require_once 'class.dvd_copy.php';
 	require_once 'class.bluray_copy.php';
+	require_once 'class.bluray_chapters.php';
 	require_once 'class.dvdrip.php';
 	require_once 'class.ffmpeg.php';
 
