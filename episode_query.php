@@ -60,14 +60,6 @@
 	extract($result->args);
 	extract($result->options);
 
-	/*
-	$hardware = 'main';
-
-	if($opt_vfat) {
-		$hardware = 'vfat';
-	}
-	*/
-
 	/** Start everything **/
 
 	start:

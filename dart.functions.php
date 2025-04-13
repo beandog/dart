@@ -165,7 +165,7 @@
 
 	}
 
-	function get_episode_filename($episode_id, $container = 'mkv', $hardware = 'main') {
+	function get_episode_filename($episode_id, $container = 'mkv') {
 
 		require_once 'models/dvds.php';
 		require_once 'models/tracks.php';
@@ -178,48 +178,6 @@
 		$dvds_model = new Dvds_Model($episode_metadata['dvd_id']);
 		$tracks_model = new Tracks_Model($episodes_model->track_id);
 		$series_model = new Series_Model($episodes_model->get_series_id());
-
-		switch($hardware) {
-
-			case 'psp':
-			case 'sansa':
-			case 'vfat':
-			// An episode can override series title if it is in format (Series Title)
-			if(substr($episode_metadata['title'], 0, 1) == "(") {
-				$episode_metadata['series_title'] = substr($episode_metadata['title'], 1, strpos($episode_metadata['title'], ")"));
-				$episode_metadata['title'] = substr($episode_metadata['title'], strpos($episode_metadata['title'], ')') + 2);
-			}
-			$filename = '';
-			if($episode_metadata['series_title'] != $episode_metadata['title'] && $episode_metadata['season']) {
-				$filename = $episode_metadata['series_title'];
-				$filename .= " - ";
-				$filename .= "s";
-				$filename .= str_pad($episode_metadata['season'], 2, 0, STR_PAD_LEFT);
-				$filename .= "e";
-				$filename .= str_pad($episodes_model->get_number(), 2, 0, STR_PAD_LEFT);
-			}
-			if($episode_metadata['title']) {
-				if($filename)
-					$filename .= " - ";
-				$filename .= $episode_metadata['title'];
-			}
-			if($episode_metadata['part']) {
-				$filename .= " - Part ".$episode_metadata['part'];
-			}
-			$filename = preg_replace('/[^0-9A-Za-z \-_.]/', '', $filename);
-			$filename .= ".$container";
-			break;
-
-			default:
-			$filename = str_pad($dvds_model->get_collection_id(), 1, '0');
-			$filename .= ".".str_pad($dvds_model->get_series_id(), 3, '0', STR_PAD_LEFT);
-			$filename .= ".".str_pad($dvds_model->id, 4, '0', STR_PAD_LEFT);
-			$filename .= ".".str_pad($episode_id, 5, 0, STR_PAD_LEFT);
-			$filename .= ".".$series_model->nsix;
-			$filename .= ".$container";
-			break;
-
-		}
 
 		return $filename;
 

@@ -23,6 +23,7 @@ if($opt_encode_info && $dvd_encoder == 'handbrake' && $episode_id && $vcodec == 
 
 	$fps = $series_model->get_preset_fps();
 
+	/*
 	if($vcodec == 'x264') {
 
 		switch($arg_hardware) {
@@ -43,6 +44,7 @@ if($opt_encode_info && $dvd_encoder == 'handbrake' && $episode_id && $vcodec == 
 		}
 
 	}
+	*/
 
 	/** Files **/
 
@@ -79,7 +81,7 @@ if($opt_encode_info && $dvd_encoder == 'handbrake' && $episode_id && $vcodec == 
 
 	$x264_tune = $series_model->get_x264_tune();
 
-	if($x264_tune && $video_quality && $arg_hardware != 'psp')
+	if($x264_tune && $video_quality)
 		$handbrake->set_x264_tune($x264_tune);
 
 	/** Frame and fields **/
