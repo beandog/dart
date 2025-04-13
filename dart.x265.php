@@ -13,46 +13,39 @@ if($opt_encode_info && $dvd_encoder == 'handbrake' && $episode_id && $vcodec == 
 	$chapters_support = true;
 	$force_preset = false;
 
-	// HandBrake for --encode-info
-
 	$handbrake = new HandBrake;
 	$handbrake->set_binary($handbrake_bin);
 	$handbrake->verbose($verbose);
 	$handbrake->debug($debug);
 
+	$fps = $series_model->get_preset_fps();
 	/** Files **/
 
 	$handbrake->input_filename($device);
-	$handbrake->input_track($tracks_model->ix);
+	if($disc_type == 'dvd')
+		$handbrake->input_track($tracks_model->ix);
 
 	/** Video **/
 
-	$fps = $series_model->get_preset_fps();
-	$handbrake->set_vcodec('x265');
+	$handbrake->set_vcodec($vcodec);
 	$video_quality = $series_model->get_crf();
 
-	if(strlen($arg_crf))
+	if($arg_crf)
 		$video_quality = abs(intval($arg_crf));
 
-	// Handbrake sets default CRF to 22 for x265, override here
-	if(is_null($video_quality))
-		$handbrake->set_video_quality(28);
-	elseif($video_quality > 0)
-		$handbrake->set_video_quality($video_quality);
+	$handbrake->set_video_quality($video_quality);
 
-	/** x265 **/
 
-	if($video_quality) {
-		$x264_preset = 'medium';
-		$handbrake->set_x264_preset($x264_preset);
-	}
+	$x264_preset = 'medium';
+	if($force_preset)
+		$x264_preset = $force_preset;
+	if($video_preset != 'medium')
+	$handbrake->set_x264_preset($x264_preset);
 
-	// x265 supports animation tune, even though --fullhelp does not document it
-	// See https://x265.readthedocs.io/en/stable/presets.html for details
-	if($series_model->collection_id == 1)
-		$handbrake->set_x264_tune('animation');
+	$x264_tune = $series_model->get_x264_tune();
 
-	/** frameinfo **/
+
+	/** Frame and fields **/
 
 	// Set framerate
 	if($fps)
@@ -60,11 +53,14 @@ if($opt_encode_info && $dvd_encoder == 'handbrake' && $episode_id && $vcodec == 
 
 	/** Audio **/
 
-	$handbrake->add_audio_track($tracks_model->audio_ix);
+	if($disc_type == 'dvd')
+		$handbrake->add_audio_track($tracks_model->audio_ix);
 
 	$acodec = $series_model->get_acodec();
 	if($acodec == 'fdk_aac' || $acodec == 'ac3' || $acodec == 'flac' || $acodec == 'mp3') {
 		$handbrake->add_acodec($acodec);
+		if($acodec == 'mp3')
+			$handbrake->set_audio_bitrate('320k');
 	} elseif($acodec == 'fdk_aac,copy') {
 		$handbrake->add_acodec('fdk_aac');
 		$handbrake->add_acodec('copy');
@@ -76,15 +72,11 @@ if($opt_encode_info && $dvd_encoder == 'handbrake' && $episode_id && $vcodec == 
 
 	$scan_subp_tracks = false;
 
-	$has_closed_captioning = $tracks_model->has_closed_captioning();
-	$num_subp_tracks = $tracks_model->get_num_subp_tracks();
-	$num_active_subp_tracks = $tracks_model->get_num_active_subp_tracks();
-	$num_active_en_subp_tracks = $tracks_model->get_num_active_subp_tracks('en');
-
 	// Check for a subtitle track
 	if($subs_support) {
 
 		$subp_ix = $tracks_model->get_first_english_subp();
+		$has_closed_captioning = $tracks_model->has_closed_captioning();
 
 		// If we have a VobSub one, add it
 		// Otherwise, check for a CC stream, and add that
@@ -92,7 +84,8 @@ if($opt_encode_info && $dvd_encoder == 'handbrake' && $episode_id && $vcodec == 
 			$handbrake->add_subtitle_track($subp_ix);
 			$d_subtitles = "VOBSUB";
 		} elseif($has_closed_captioning) {
-			$closed_captioning_ix = $num_active_subp_tracks + 1;
+			$num_subp_tracks = $tracks_model->get_num_active_subp_tracks();
+			$closed_captioning_ix = $num_subp_tracks + 1;
 			$handbrake->add_subtitle_track($closed_captioning_ix);
 			$d_subtitles = "Closed Captioning";
 		} else {

@@ -19,7 +19,6 @@ if($opt_encode_info && $dvd_encoder == 'handbrake' && $episode_id && $vcodec == 
 	$handbrake->debug($debug);
 
 	$fps = $series_model->get_preset_fps();
-
 	/** Files **/
 
 	$handbrake->input_filename($device);
@@ -36,17 +35,16 @@ if($opt_encode_info && $dvd_encoder == 'handbrake' && $episode_id && $vcodec == 
 
 	$handbrake->set_video_quality($video_quality);
 
-	/** x264 **/
 
 	$x264_preset = 'medium';
 	if($force_preset)
 		$x264_preset = $force_preset;
 	if($x264_preset != 'medium')
-	$handbrake->set_x264_preset($x264_preset);
+		$handbrake->set_x264_preset($x264_preset);
 
 	$x264_tune = $series_model->get_x264_tune();
 
-	if($x264_tune && $video_quality)
+	if($vcodec == 'x264' && $x264_tune && $video_quality)
 		$handbrake->set_x264_tune($x264_tune);
 
 	/** Frame and fields **/
@@ -88,8 +86,6 @@ if($opt_encode_info && $dvd_encoder == 'handbrake' && $episode_id && $vcodec == 
 			$handbrake->add_subtitle_track($subp_ix);
 			$d_subtitles = "VOBSUB";
 		} elseif($has_closed_captioning) {
-			// In older versions of HB, it would count empty subp tracks
-			// $num_subp_tracks = $tracks_model->get_num_subp_tracks();
 			$num_subp_tracks = $tracks_model->get_num_active_subp_tracks();
 			$closed_captioning_ix = $num_subp_tracks + 1;
 			$handbrake->add_subtitle_track($closed_captioning_ix);
@@ -97,7 +93,6 @@ if($opt_encode_info && $dvd_encoder == 'handbrake' && $episode_id && $vcodec == 
 		} else {
 			$d_subtitles = "None :(";
 		}
-
 
 	}
 
