@@ -42,7 +42,6 @@
 		public $audio_tracks = array();
 		public $audio_streams = array();
 		public $audio_bitrate;
-		public $audio_mixdown;
 		public $audio_fallback;
 
 		// Container
@@ -97,14 +96,6 @@
 
 		public function set_audio_bitrate($str) {
 			$this->audio_bitrate = $str;
-		}
-
-		public function set_audio_downmix($str) {
-
-			$str = trim($str);
-			if(strlen($str))
-				$this->audio_mixdown = $str;
-
 		}
 
 		public function set_vcodec($str) {
@@ -396,13 +387,7 @@
 					$args['--ab'] = $this->audio_bitrate;
 				}
 
-				if($this->audio_mixdown) {
-					$args['--mixdown'] = $this->audio_mixdown;
-
-				}
-
 			}
-
 
 			/** Subtitles **/
 
