@@ -10,7 +10,6 @@
 		public $ffmpeg_output = '/dev/null';
 		public $ffmpeg_opts = '';
 		public $input_opts = '';
-		public $disable_stats = false;
 		public $duration = 0;
 		public $fullscreen = false;
 		public $disc_type = 'dvd';
@@ -152,10 +151,6 @@
 
 		public function set_acodec_opts($str) {
 			$this->acodec_opts = $str;
-		}
-
-		public function disable_stats() {
-			$this->disable_stats = true;
 		}
 
 		public function add_audio_stream($streamid = '0x80') {
