@@ -36,11 +36,6 @@
 
 		if(substr($source, 0, 5) == '/dev/') {
 
-			// FIXME DVDDrive class has a disc_type() function, but will return the value
-			// as a DVD if it's not sure. Code calling that function needs to be cleaned up to
-			// see if there is actually no disc type at all (not a DVD or Blu-ray, such as a filename)
-			// but for now, duplicating the functionality.
-
 			$command = "udevadm info $arg_device";
 			exec($command, $arr, $return);
 
