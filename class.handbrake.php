@@ -42,7 +42,6 @@
 		public $audio_tracks = array();
 		public $audio_streams = array();
 		public $audio_bitrate;
-		public $audio_fallback;
 
 		// Container
 		public $add_chapters;
@@ -197,11 +196,6 @@
 
 		public function set_crop($str) {
 			$this->crop = $str;
-		}
-
-		// FIXME do checks for audio types
-		public function set_audio_fallback($str) {
-			$this->audio_fallback = $str;
 		}
 
 		public function add_subtitle_track($int) {
@@ -375,12 +369,6 @@
 				if(count($this->acodecs)) {
 					$str = implode(",", $this->acodecs);
 					$args['--aencoder'] = $str;
-				}
-
-				// Set fallback audio encoder -- this is used if Handbrake
-				// cannot copy or encode the audio with previous arguments
-				if($this->audio_fallback) {
-					$args['--audio-fallback'] = $this->audio_fallback;
 				}
 
 				if($this->audio_bitrate) {
