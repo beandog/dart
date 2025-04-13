@@ -70,7 +70,7 @@
 		public $cell_first_sector;
 		public $cell_last_sector;
 
-		function __construct($device = "/dev/dvd", $debug = false) {
+		function __construct($device = "/dev/sr0", $debug = false) {
 
 			$this->device = realpath($device);
 			$this->debug = boolval($debug);

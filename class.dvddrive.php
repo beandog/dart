@@ -9,7 +9,7 @@
 		public $arr_drive_status;
 		public $disc_type;
 
-		function __construct($device = "/dev/dvd") {
+		function __construct($device = "/dev/sr0") {
 
 			$this->device = realpath($device);
 

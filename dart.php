@@ -2,7 +2,7 @@
 <?php
 
 	// Defaults
-	$all_devices = array('/dev/dvd');
+	$all_devices = array('/dev/sr0');
 	$export_dir = getenv('HOME').'/dvds/';
 	$hostname = php_uname('n');
 	$container = "mkv";
