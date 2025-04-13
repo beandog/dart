@@ -242,10 +242,10 @@
 		/**
 		 * Get the optical disc type - DVD or Blu-ray
 		 *
+		 * Currently unused, dart.functions.php has get_disc_type, but keeping this here
+		 * if needed.
+		 *
 		 */
-		// FIXME - don't say it's a DVD by default, since it may be looking at a non-disc
-		// See dart.functions.php for same code. Not sure where this is called, and could be a
-		// major cleanup, so skipping for now
 		function disc_type() {
 
 			if($this->debug)
@@ -254,17 +254,9 @@
 			$command = "/usr/local/bin/disc_type $arg_device 2> /dev/null";
 			exec($command, $arr, $return);
 
-			$arg_device = escapeshellarg($this->device);
-			$command = "udevadm info $arg_device";
-			$return = 0;
-			exec($command, $arr, $return);
+			$disc_type = current($arr);
 
-			if(in_array("E: ID_CDROM_MEDIA_DVD=1", $arr))
-				$this->disc_type = "dvd";
-			elseif(in_array("E: ID_CDROM_MEDIA_BD=1", $arr))
-				$this->disc_type = "bluray";
-			else
-				$this->disc_type = "dvd";
+			$this->disc_type = $disc_type;
 
 			return $this->disc_type;
 
