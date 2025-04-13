@@ -46,11 +46,11 @@
 		public $remove_cc = false;
 
 		public function debug($bool = true) {
-			$this->debug = $this->verbose = (boolean)$bool;
+			$this->debug = $this->verbose = boolval($bool);
 		}
 
 		public function verbose($bool = true) {
-			$this->verbose = (boolean)$bool;
+			$this->verbose = boolval($bool);
 		}
 
 		public function set_binary($str) {
@@ -62,7 +62,7 @@
 		}
 
 		public function fullscreen($bool = true) {
-			$this->fullscreen = (boolean)$bool;
+			$this->fullscreen = boolval($bool);
 		}
 
 		public function generate_pts($bool = true) {

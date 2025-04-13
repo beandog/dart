@@ -29,11 +29,11 @@
 		public $closed_captioning = false;
 
 		public function debug($bool = true) {
-			$this->debug = $this->verbose = (boolean)$bool;
+			$this->debug = $this->verbose = boolval($bool);
 		}
 
 		public function verbose($bool = true) {
-			$this->verbose = (boolean)$bool;
+			$this->verbose = boolval($bool);
 		}
 
 		public function set_binary($str) {

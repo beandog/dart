@@ -61,11 +61,11 @@
 		public $closed_captioning_ix = null;
 
 		function debug($bool = true) {
-			$this->debug = $this->verbose = (boolean)$bool;
+			$this->debug = $this->verbose = boolval($bool);
 		}
 
 		function verbose($bool = true) {
-			$this->verbose = (boolean)$bool;
+			$this->verbose = boolval($bool);
 		}
 
 		public function set_binary($str) {
@@ -97,7 +97,7 @@
 		}
 
 		public function add_chapters($bool = true) {
-			$this->add_chapters = (boolean)$bool;
+			$this->add_chapters = boolval($bool);
 		}
 
 		public function set_audio_bitrate($str) {
@@ -170,11 +170,11 @@
 		}
 
 		public function enable_audio($bool = true) {
-			$this->audio = (boolean)$bool;
+			$this->audio = boolval($bool);
 		}
 
 		public function dvdnav($bool = true) {
-			$this->dvdnav = (boolean)$bool;
+			$this->dvdnav = boolval($bool);
 		}
 
 		public function set_max_height($int) {
@@ -223,7 +223,7 @@
 
 		/*
 		public function set_http_optimize($bool = true) {
-			$this->http_optimize = (bool)$bool;
+			$this->http_optimize = boolval($bool);
 		}
 		*/
 
