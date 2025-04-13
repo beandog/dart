@@ -90,11 +90,6 @@ if($opt_encode_info && $dvd_encoder == 'handbrake' && $episode_id && $vcodec == 
 	if($fps)
 		$handbrake->set_video_framerate($fps);
 
-	/*
-	if($container == 'mp4' && $optimize_support)
-		$handbrake->set_http_optimize();
-	*/
-
 	/** Audio **/
 
 	if($disc_type == 'dvd')

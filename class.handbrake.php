@@ -9,7 +9,6 @@
 		public $dvdnav = true;
 		public $preset;
 		public $track;
-		public $http_optimize;
 		public $flags = array();
 		public $args = array();
 		public $scan_complete = false;
@@ -221,12 +220,6 @@
 			$this->x264_tune = $str;
 		}
 
-		/*
-		public function set_http_optimize($bool = true) {
-			$this->http_optimize = boolval($bool);
-		}
-		*/
-
 		public function set_crop($str) {
 			$this->crop = $str;
 		}
@@ -305,10 +298,6 @@
 			// Check for no-dvdnav
 			if(!$this->dvdnav)
 				$options[] = "--no-dvdnav";
-
-			// Check for HTTP optimization
-			if($this->http_optimize)
-				$options[] = "--optimize";
 
 			// If audio is enabled and no tracks have been specifically selected,
 			// then choose the first English one for DVD. For Blu-ray, there can bee
