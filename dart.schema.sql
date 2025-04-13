@@ -307,7 +307,6 @@ CREATE TABLE public.dvds (
     title character varying(255) DEFAULT ''::character varying NOT NULL,
     filesize bigint,
     side smallint,
-    skip smallint DEFAULT 0 NOT NULL,
     notes character varying DEFAULT ''::character varying NOT NULL,
     bluray smallint DEFAULT 0 NOT NULL,
     package_title character varying(255) DEFAULT ''::character varying NOT NULL
