@@ -625,7 +625,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		// Note that ffmpeg-7.1.1 doesn't copy chapters by default (unlike dvdvideo). If you want
 		// them in there, you'll have to do it another way. Right now, I haven't used chapters in
 		// years, so I'm okay without them.
-		if($disc_type == "bluray" && $opt_ffmpeg) {
+		if($disc_type == 'bluray' && $dvd_encoder == 'ffmpeg') {
 
 			$episodes_model = new Episodes_Model($episode_id);
 
@@ -645,13 +645,13 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 				$ffmpeg->verbose();
 
 			$ffmpeg->input_filename($device);
+			$ffmpeg->output_filename($filename);
 
 			$ffmpeg->input_track($tracks_model->ix);
 
 			$starting_chapter = $episodes_model->starting_chapter;
-			if($starting_chapter) {
+			if($starting_chapter)
 				$ffmpeg->set_chapters($starting_chapter, null);
-			}
 
 			if($opt_qa)
 				$ffmpeg->set_duration($qa_max);
