@@ -201,7 +201,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == "dvd" && $opt_encode_info && $dvd_encoder == 'handbrake') {
 
 			require 'dart.x264.php';
-			require 'dart.x265.php';
 
 			$handbrake->input_filename($input_filename);
 
