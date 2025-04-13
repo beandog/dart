@@ -36,9 +36,6 @@
 		public $x264 = array();
 		public $crop;
 
-		public $h264_profile; // Needed for PSP
-		public $h264_level;
-
 		// Audio
 		public $audio = true;
 		public $acodecs = array();
@@ -199,18 +196,6 @@
 			$this->width = abs(intval($int));
 		}
 
-		// PSP
-		public function set_h264_profile($str) {
-			if($str)
-				$this->h264_profile = $str;
-		}
-
-		// PSP
-		public function set_h264_level($str) {
-			if($str)
-				$this->h264_level = $str;
-		}
-
 		public function set_x264_preset($str) {
 			$this->x264_preset = $str;
 		}
@@ -359,16 +344,6 @@
 				$args['--rate'] = 50;
 			} else {
 				$args['--rate'] = 59.94;
-			}
-
-			// Set H.264 profile (needed for PSP)
-			if(!is_null($this->h264_profile)) {
-				$args['--encoder-profile'] = $this->h264_profile;
-			}
-
-			// Set H.264 level (needed for PSP)
-			if(!is_null($this->h264_level)) {
-				$args['--encoder-level'] = $this->h264_level;
 			}
 
 			// Set x264 preset
