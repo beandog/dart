@@ -82,7 +82,6 @@
 			if($var)
 				return $var;
 
-
 			/**
 			 * I'm taking a different approach here. Instead of trying to write one
 			 * massive query that checks all conditions, this one looks at three
@@ -146,10 +145,6 @@
 
 			$count1 = count(array_unique($episodes));
 
-// 			echo "# episodes on PREVIOUS DISCS: $count1\n";
-
-//  			echo "$sql\n";
-
 			// Find the # of episodes ON THE CURRENT DISC before this episode
 			// TESTING Added a check for complete-series DVDs, where the query
 			// looks at the volume as well, not just the season.
@@ -174,10 +169,6 @@
 				"WHERE e2.episode_id = ".$this->id.
 				";";
 			$count2 = $this->get_one($sql);
-
-// 			echo "$count2\n";
-
-// 			echo "# PREVIOUS EPISODES on SAME DISC: $count2\n";
 
  			// Add one because we start counting at 1, not 0
  			$count = $count1 + $count2 + 1;
