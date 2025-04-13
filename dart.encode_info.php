@@ -160,9 +160,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			$handbrake_command .= " --title '".$tracks_model->ix."'";
 
-			if($opt_no_dvdnav || $series_model->dvdnav == 0)
-				$handbrake_command .= " --no-dvdnav";
-
 			$starting_chapter = $episodes_model->starting_chapter;
 			$ending_chapter = $episodes_model->ending_chapter;
 

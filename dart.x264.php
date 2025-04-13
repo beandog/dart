@@ -55,11 +55,6 @@ if($opt_encode_info && $dvd_encoder == 'handbrake' && $episode_id && $vcodec == 
 	if($disc_type == 'dvd')
 		$handbrake->input_track($tracks_model->ix);
 
-	/** Encoding **/
-
-	if(($opt_no_dvdnav || $series_model->dvdnav == 0) && $disc_type == 'dvd')
-		$handbrake->dvdnav(false);
-
 	/** Video **/
 
 	$handbrake->set_vcodec($vcodec);

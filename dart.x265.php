@@ -27,11 +27,6 @@ if($opt_encode_info && $dvd_encoder == 'handbrake' && $episode_id && $vcodec == 
 	$handbrake->input_filename($device);
 	$handbrake->input_track($tracks_model->ix);
 
-	/** Encoding **/
-
-	if(($opt_no_dvdnav || $series_model->dvdnav == 0) && $disc_type == 'dvd')
-		$handbrake->dvdnav(false);
-
 	/** Video **/
 
 	$fps = $series_model->get_preset_fps();
