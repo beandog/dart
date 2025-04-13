@@ -489,7 +489,6 @@ CREATE TABLE public.tracks (
     vts smallint,
     ttn smallint,
     fps double precision,
-    dvdnav smallint DEFAULT 0 NOT NULL,
     blocks bigint
 );
 
