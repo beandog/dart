@@ -163,17 +163,6 @@
 
 		}
 
-		function get_audio_details($audio_stream_id) {
-
-			$track_id = intval($this->id);
-
-			$sql = "SELECT format, channels FROM audio WHERE track_id = $track_id AND streamid = '".pg_escape_string($audio_stream_id)."';";
-			$arr = $this->get_row($sql);
-
-			return $arr;
-
-		}
-
 		/**
 		 * Find out what subtitle type there is, prioritizing:
 		 * - Any English vobsub active track

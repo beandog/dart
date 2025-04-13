@@ -9,11 +9,8 @@ if($opt_encode_info && $dvd_encoder == 'handbrake' && $episode_id && $vcodec == 
 	 * and builds a new HandBrake object.
 	 */
 
-	$h264_profile = '';
-	$h264_level = '';
 	$subs_support = true;
 	$chapters_support = true;
-	$optimize_support = true;
 	$force_preset = false;
 
 	$handbrake = new HandBrake;
@@ -22,29 +19,6 @@ if($opt_encode_info && $dvd_encoder == 'handbrake' && $episode_id && $vcodec == 
 	$handbrake->debug($debug);
 
 	$fps = $series_model->get_preset_fps();
-
-	/*
-	if($vcodec == 'x264') {
-
-		switch($arg_hardware) {
-
-			case 'psp':
-				$h264_profile = 'main';
-				$h264_level = '2.1';
-				$subs_support = false;
-				$chapters_support = false;
-				$optimize_support = false;
-				$force_preset = 'medium';
-				$handbrake->set_x264opts('bframes=1');
-				$handbrake->set_max_width(480);
-				$handbrake->set_max_height(272);
-				$handbrake->set_audio_downmix('stereo');
-				break;
-
-		}
-
-	}
-	*/
 
 	/** Files **/
 
@@ -61,15 +35,6 @@ if($opt_encode_info && $dvd_encoder == 'handbrake' && $episode_id && $vcodec == 
 		$video_quality = abs(intval($arg_crf));
 
 	$handbrake->set_video_quality($video_quality);
-
-	$format = $tracks_model->format;
-
-	/** H.264 **/
-
-	if($h264_profile)
-		$handbrake->set_h264_profile($h264_profile);
-	if($h264_level)
-		$handbrake->set_h264_level($h264_level);
 
 	/** x264 **/
 

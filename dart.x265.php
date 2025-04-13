@@ -11,9 +11,7 @@ if($opt_encode_info && $dvd_encoder == 'handbrake' && $episode_id && $vcodec == 
 
 	$subs_support = true;
 	$chapters_support = true;
-	$optimize_support = true;
 	$force_preset = false;
-
 
 	// HandBrake for --encode-info
 
