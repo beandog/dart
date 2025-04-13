@@ -56,8 +56,7 @@ CREATE TABLE public.audio (
     format character varying(255) DEFAULT ''::character varying NOT NULL,
     channels smallint DEFAULT 0 NOT NULL,
     streamid character varying(255) DEFAULT ''::character varying NOT NULL,
-    active smallint,
-    passthrough smallint
+    active smallint
 );
 
 
