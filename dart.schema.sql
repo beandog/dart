@@ -585,8 +585,7 @@ ALTER VIEW public.dart_series_episodes OWNER TO steve;
 CREATE TABLE public.dvd_bugs (
     id integer NOT NULL,
     dvd_id integer NOT NULL,
-    bug_id integer NOT NULL,
-    description text DEFAULT ''::text NOT NULL
+    bug_id integer NOT NULL
 );
 
 
