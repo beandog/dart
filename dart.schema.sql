@@ -389,7 +389,6 @@ CREATE TABLE public.series (
     nsix character varying(255) DEFAULT ''::character varying NOT NULL,
     qa_notes text DEFAULT ''::text NOT NULL,
     tvdb character varying(255) DEFAULT ''::character varying NOT NULL,
-    library_id integer,
     upgrade_id integer,
     active smallint DEFAULT 1 NOT NULL,
     crf smallint,
@@ -637,41 +636,6 @@ ALTER SEQUENCE public.dvds_id_seq OWNER TO steve;
 --
 
 ALTER SEQUENCE public.dvds_id_seq OWNED BY public.dvds.id;
-
-
---
--- Name: libraries; Type: TABLE; Schema: public; Owner: steve
---
-
-CREATE TABLE public.libraries (
-    id integer NOT NULL,
-    collection_id integer DEFAULT 1 NOT NULL,
-    name character varying(255) NOT NULL,
-    plex_dir character varying(255) DEFAULT ''::character varying NOT NULL
-);
-
-
-ALTER TABLE public.libraries OWNER TO steve;
-
---
--- Name: libraries_id_seq; Type: SEQUENCE; Schema: public; Owner: steve
---
-
-CREATE SEQUENCE public.libraries_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.libraries_id_seq OWNER TO steve;
-
---
--- Name: libraries_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: steve
---
-
-ALTER SEQUENCE public.libraries_id_seq OWNED BY public.libraries.id;
 
 
 --
@@ -1072,13 +1036,6 @@ ALTER TABLE ONLY public.dvds ALTER COLUMN id SET DEFAULT nextval('public.dvds_id
 
 
 --
--- Name: libraries id; Type: DEFAULT; Schema: public; Owner: steve
---
-
-ALTER TABLE ONLY public.libraries ALTER COLUMN id SET DEFAULT nextval('public.libraries_id_seq'::regclass);
-
-
---
 -- Name: presets id; Type: DEFAULT; Schema: public; Owner: steve
 --
 
@@ -1231,14 +1188,6 @@ ALTER TABLE public.episodes CLUSTER ON episodes_pkey;
 
 
 --
--- Name: libraries libraries_pkey; Type: CONSTRAINT; Schema: public; Owner: steve
---
-
-ALTER TABLE ONLY public.libraries
-    ADD CONSTRAINT libraries_pkey PRIMARY KEY (id);
-
-
---
 -- Name: presets presets_pkey; Type: CONSTRAINT; Schema: public; Owner: steve
 --
 
@@ -1369,14 +1318,6 @@ ALTER TABLE ONLY public.episodes
 
 
 --
--- Name: libraries libraries_collection_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: steve
---
-
-ALTER TABLE ONLY public.libraries
-    ADD CONSTRAINT libraries_collection_id_fkey FOREIGN KEY (collection_id) REFERENCES public.collections(id) ON DELETE CASCADE;
-
-
---
 -- Name: series_dvds series_dvds_dvd_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: steve
 --
 
@@ -1390,14 +1331,6 @@ ALTER TABLE ONLY public.series_dvds
 
 ALTER TABLE ONLY public.series_dvds
     ADD CONSTRAINT series_dvds_series_id_fkey FOREIGN KEY (series_id) REFERENCES public.series(id) ON UPDATE CASCADE ON DELETE CASCADE;
-
-
---
--- Name: series series_library_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: steve
---
-
-ALTER TABLE ONLY public.series
-    ADD CONSTRAINT series_library_id_fkey FOREIGN KEY (library_id) REFERENCES public.libraries(id) ON DELETE SET NULL;
 
 
 --
