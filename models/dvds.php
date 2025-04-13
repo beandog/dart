@@ -451,14 +451,6 @@
 
 		}
 
-		public function get_bugs() {
-
-			$sql = "SELECT bugs FROM dvds WHERE id = ".$this->id.";";
-			$var = $this->get_one($sql);
-			return $var;
-
-		}
-
 		// Override encoder if there is a bug for the disc or set by the series
 		public function get_encoder() {
 
