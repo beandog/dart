@@ -53,7 +53,7 @@
 	));
 	$parser->addOption('opt_log_progress', array(
 		'long_name' => '--log-progress',
-		'description' => 'Log progess of ffmpeg encode',
+		'description' => 'Log progress of ffmpeg encode',
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
