@@ -407,13 +407,6 @@
 				$args['--stop-at'] = "duration:".$this->duration;
 			}
 
-			// Set x264 encoding options
-			// This should always be set last, since it can
-			// override both the preset and tune options.
-			if(count($this->x264)) {
-				$args['--encopts'] = $this->get_x264opts();
-			}
-
 			/**
 			 * Audio
 			 **/
@@ -516,22 +509,6 @@
 
 		}
 
-		public function set_x264opts($str) {
-
-			if(!$str) {
-				$this->x264 = array();
-				return;
-			}
-
-			$arr = explode(":", $str);
-
-			foreach($arr as $str2) {
-				$arr2 = explode("=", $str2);
-				$this->set_x264($arr2[0], $arr2[1]);
-			}
-
-		}
-
 		public function set_preset($preset) {
 
 			$this->preset = $preset;
@@ -540,20 +517,6 @@
 
 		public function set_video_format($str) {
 			$this->video_format = strtolower($str);
-		}
-
-		public function get_x264opts() {
-
-			if($this->x264) {
-
-				foreach($this->x264 as $key => $value)
-					$arr[] = "$key=$value";
-
-				$str = implode(":", $arr);
-			}
-
-			return $str;
-
 		}
 
 		/**

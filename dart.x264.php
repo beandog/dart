@@ -16,15 +16,10 @@ if($opt_encode_info && $dvd_encoder == 'handbrake' && $episode_id && $vcodec == 
 	$optimize_support = true;
 	$force_preset = false;
 
-	if($disc_type == 'bluray')
-		$x264opts = '';
-
 	$handbrake = new HandBrake;
 	$handbrake->set_binary($handbrake_bin);
 	$handbrake->verbose($verbose);
 	$handbrake->debug($debug);
-	if(isset($x264opts))
-		$handbrake->set_x264opts($x264opts);
 
 	$fps = $series_model->get_preset_fps();
 

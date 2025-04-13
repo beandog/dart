@@ -73,27 +73,6 @@
 
 		}
 
-		function get_x264opts() {
-
-			$arr = array();
-
-			$sql = "SELECT presets.x264opts FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->id.";";
-			$str = $this->get_one($sql);
-
-			if(strlen($str))
-				$arr[] = $str;
-
-			if(count($arr) > 1)
-				$var = implode(":", $arr);
-			elseif(count($arr))
-				$var = current($arr);
-			else
-				$var = '';
-
-			return $var;
-
-		}
-
 		function get_x264_tune() {
 
 			$arr = array();

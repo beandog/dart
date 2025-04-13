@@ -36,9 +36,6 @@ if($opt_encode_info && $dvd_encoder == 'handbrake' && $episode_id && $vcodec == 
 	if(strlen($arg_crf))
 		$video_quality = abs(intval($arg_crf));
 
-	if($video_quality === 0)
-		$handbrake->set_x264opts("lossless=1");
-
 	// Handbrake sets default CRF to 22 for x265, override here
 	if(is_null($video_quality))
 		$handbrake->set_video_quality(28);
