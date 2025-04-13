@@ -31,7 +31,6 @@
 		public $max_width;
 		public $height;
 		public $width;
-		public $auto_anamorphic;
 		public $x264_preset;
 		public $x264_tune;
 		public $x264 = array();
@@ -290,10 +289,6 @@
 			// Check for muxing chapters
 			if($this->add_chapters)
 				$options[] = "--markers";
-
-			// Check for auto anamorphic
-			if($this->auto_anamorphic)
-				$options[] = "--auto-anamorphic";
 
 			// Check for no-dvdnav
 			if(!$this->dvdnav)
