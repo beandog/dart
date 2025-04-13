@@ -648,9 +648,6 @@ CREATE TABLE public.presets (
     acodec character varying DEFAULT 'copy'::character varying NOT NULL,
     x264_preset character varying(255) DEFAULT 'medium'::character varying NOT NULL,
     x264_tune character varying(255) DEFAULT ''::character varying NOT NULL,
-    deinterlace smallint DEFAULT 0 NOT NULL,
-    decomb smallint DEFAULT 0 NOT NULL,
-    detelecine smallint DEFAULT 0 NOT NULL,
     fps character varying DEFAULT '30'::character varying,
     vcodec character varying(4) DEFAULT 'x264'::character varying NOT NULL
 );
