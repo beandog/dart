@@ -319,6 +319,9 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			$ffmpeg->set_crf($video_quality);
 
+			if($fps)
+				$ffmpeg->set_fps($fps);
+
 			if($vcodec == 'x264') {
 				$ffmpeg->set_vcodec('libx264');
 				$ffmpeg->set_tune($series_model->get_x264_tune());
