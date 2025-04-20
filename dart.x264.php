@@ -9,10 +9,6 @@ if($opt_encode_info && $dvd_encoder == 'handbrake' && $episode_id && ($vcodec ==
 	 * and builds a new HandBrake object.
 	 */
 
-	$subs_support = true;
-	$chapters_support = true;
-	$force_preset = false;
-
 	$handbrake = new HandBrake;
 	$handbrake->set_binary($handbrake_bin);
 	$handbrake->verbose($verbose);
@@ -34,16 +30,14 @@ if($opt_encode_info && $dvd_encoder == 'handbrake' && $episode_id && ($vcodec ==
 
 	$handbrake->set_video_quality($video_quality);
 
-
-	$x264_preset = 'medium';
-	if($force_preset)
-		$x264_preset = $force_preset;
-	if($x264_preset != 'medium')
-		$handbrake->set_x264_preset($x264_preset);
+	if($opt_fast)
+		$handbrake->set_x264_preset('ultrafast');
+	elseif($opt_slow)
+		$handbrake->set_x264_preset('slow');
 
 	$x264_tune = $series_model->get_x264_tune();
 
-	if($vcodec == 'x264' && $x264_tune && $video_quality)
+	if($vcodec == 'x264' && $x264_tune)
 		$handbrake->set_x264_tune($x264_tune);
 
 	/** Frame and fields **/
@@ -71,37 +65,28 @@ if($opt_encode_info && $dvd_encoder == 'handbrake' && $episode_id && ($vcodec ==
 
 	/** Subtitles **/
 
-	$scan_subp_tracks = false;
-
 	// Check for a subtitle track
-	if($subs_support) {
 
-		$subp_ix = $tracks_model->get_first_english_subp();
-		$has_closed_captioning = $tracks_model->has_closed_captioning();
+	$subp_ix = $tracks_model->get_first_english_subp();
+	$has_closed_captioning = $tracks_model->has_closed_captioning();
 
-		// If we have a VobSub one, add it
-		// Otherwise, check for a CC stream, and add that
-		if($subp_ix) {
-			$handbrake->add_subtitle_track($subp_ix);
-			$d_subtitles = "VOBSUB";
-		} elseif($has_closed_captioning) {
-			$num_subp_tracks = $tracks_model->get_num_active_subp_tracks();
-			$closed_captioning_ix = $num_subp_tracks + 1;
-			$handbrake->add_subtitle_track($closed_captioning_ix);
-			$d_subtitles = "Closed Captioning";
-		} else {
-			$d_subtitles = "None :(";
-		}
-
+	// If we have a VobSub one, add it
+	// Otherwise, check for a CC stream, and add that
+	if($subp_ix) {
+		$handbrake->add_subtitle_track($subp_ix);
+		$d_subtitles = "VOBSUB";
+	} elseif($has_closed_captioning) {
+		$num_subp_tracks = $tracks_model->get_num_active_subp_tracks();
+		$closed_captioning_ix = $num_subp_tracks + 1;
+		$handbrake->add_subtitle_track($closed_captioning_ix);
+		$d_subtitles = "Closed Captioning";
+	} else {
+		$d_subtitles = "None :(";
 	}
 
 	/** Chapters **/
 
-	if($chapters_support) {
-		$handbrake->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
-		$handbrake->add_chapters();
-	}
-
-	$handbrake_command = $handbrake->get_executable_string();
+	$handbrake->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
+	$handbrake->add_chapters();
 
 }
