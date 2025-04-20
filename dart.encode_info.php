@@ -224,11 +224,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			$handbrake_command = $handbrake->get_executable_string();
 
-			if($opt_fast)
-				$handbrake_command .= " --encoder-preset 'ultrafast'";
-			elseif($opt_slow)
-				$handbrake_command .= " --encoder-preset 'slow'";
-
 			if($opt_time)
 				$handbrake_command = "tout $handbrake_command";
 
