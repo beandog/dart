@@ -68,6 +68,12 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		$vcodec = $series_model->get_vcodec();
 		$video_deint = $dvds_model->get_deint();
 		$video_format = strtolower($tracks_model->format);
+
+		// A note about setting fps with ffmpeg: use 'vf=fps' to set it, instead of '-r fps'. See
+		// https://trac.ffmpeg.org/wiki/ChangingFrameRate for reasoning.
+		// "The -r value also acts as an indication to the encoder of how long each frame is, and can affect the ratecontrol decisions made by the encoder."
+		// "fps, as a filter, needs to be inserted in a filtergraph, and will always generate a CFR stream. It offers five rounding modes that affect which source frames are dropped or duplicated in order to achieve the target framerate. See the documentation of the fps filter for details."
+		// https://ffmpeg.org/ffmpeg-filters.html#fps
 		$fps = $series_model->get_fps();
 		if($video_format == 'pal' && $fps == '29.97')
 			$fps = 25;
@@ -103,12 +109,11 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 				$ffmpeg->verbose();
 
 			/** Video **/
-			$video_filters = array();
+			$deint_filter = "bwdif=deint=$video_deint";
+			$ffmpeg->add_video_filter($deint_filter);
 
-			$ffmpeg->add_video_filter("bwdif=deint=$video_deint");
-
-			foreach($video_filters as $vf)
-				$ffmpeg->add_video_filter($vf);
+			if($fps)
+				$ffmpeg->add_video_filter("fps=$fps");
 
 			/** Chapters **/
 			$starting_chapter = $episodes_model->starting_chapter;
@@ -319,9 +324,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			$ffmpeg->set_crf($video_quality);
 
-			if($fps)
-				$ffmpeg->set_fps($fps);
-
 			if($vcodec == 'x264') {
 				$ffmpeg->set_vcodec('libx264');
 				$ffmpeg->set_tune($series_model->get_x264_tune());
@@ -338,16 +340,14 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			// Set video filters based on frame info
 			$crop = $episodes_model->crop;
-
 			if($crop != null && $crop != '720:480:0:0')
 				$ffmpeg->add_video_filter("crop=$crop");
 
-			$video_filters = array();
+			$deint_filter = "bwdif=deint=$video_deint";
+			$ffmpeg->add_video_filter($deint_filter);
 
-			$ffmpeg->add_video_filter("bwdif=deint=$video_deint");
-
-			foreach($video_filters as $vf)
-				$ffmpeg->add_video_filter($vf);
+			if($fps)
+				$ffmpeg->add_video_filter("fps=$fps");
 
 			/** Audio **/
 			$audio_streamid = $tracks_model->get_first_english_streamid();
@@ -466,16 +466,14 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			// Set video filters based on frame info
 			$crop = $episodes_model->crop;
-
 			if($crop != null && $crop != '720:480:0:0')
 				$ffmpeg->add_video_filter("crop=$crop");
 
-			$video_filters = array();
+			$deint_filter = "bwdif=deint=$video_deint";
+			$ffmpeg->add_video_filter($deint_filter);
 
-			$ffmpeg->add_video_filter("bwdif=deint=$video_deint");
-
-			foreach($video_filters as $vf)
-				$ffmpeg->add_video_filter($vf);
+			if($fps)
+				$ffmpeg->add_video_filter("fps=$fps");
 
 			/** Audio **/
 			$audio_streamid = $tracks_model->get_first_english_streamid();
