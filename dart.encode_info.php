@@ -306,16 +306,12 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 				$ffmpeg->verbose();
 
 			$ffmpeg->input_filename($device);
-
-			/** Chapters **/
-			$starting_chapter = $episodes_model->starting_chapter;
-			$ending_chapter = $episodes_model->ending_chapter;
-			if($starting_chapter || $ending_chapter) {
-				$ffmpeg->set_chapters($starting_chapter, $ending_chapter);
-			}
-
 			$ffmpeg->input_track($tracks_model->ix);
 
+			if($opt_qa)
+				$ffmpeg->set_duration($qa_max);
+
+			/** Video **/
 			$video_quality = $series_model->get_crf();
 
 			if($arg_crf)
@@ -337,9 +333,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 				$ffmpeg->set_vcodec('libx265');
 			}
 
-			if($opt_qa)
-				$ffmpeg->set_duration($qa_max);
-
 			// Set video filters based on frame info
 			$crop = $episodes_model->crop;
 
@@ -360,6 +353,13 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			$ffmpeg->add_audio_stream($audio_streamid);
 
 			$ffmpeg->set_acodec('copy');
+
+			/** Chapters **/
+			$starting_chapter = $episodes_model->starting_chapter;
+			$ending_chapter = $episodes_model->ending_chapter;
+			if($starting_chapter || $ending_chapter) {
+				$ffmpeg->set_chapters($starting_chapter, $ending_chapter);
+			}
 
 			/** Subtitles **/
 			$subp_ix = $tracks_model->get_first_english_subp();
