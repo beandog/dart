@@ -382,11 +382,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 				$ffmpeg->remove_closed_captioning();
 			}
 
-			/*
-			$srt_filename = "subs-${episode_id}.srt";
-			if(file_exists($srt_filename))
-				$ffmpeg->input_filename($srt_filename);
-			*/
 			$str_episode_id = str_pad($episode_id, 5, 0, STR_PAD_LEFT);
 			$ssa_filename = "subs-${str_episode_id}.ssa";
 			if(file_exists($ssa_filename))
