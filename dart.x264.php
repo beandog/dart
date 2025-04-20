@@ -18,7 +18,6 @@ if($opt_encode_info && $dvd_encoder == 'handbrake' && $episode_id && ($vcodec ==
 	$handbrake->verbose($verbose);
 	$handbrake->debug($debug);
 
-	$fps = $series_model->get_preset_fps();
 	/** Files **/
 
 	$handbrake->input_filename($device);
