@@ -747,62 +747,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			if($display_mkv && !$bluray_encode)
 				echo "$mkvmerge_command\n";
 
-			if($bluray_encode) {
-
-				require 'dart.x264.php';
-
-				$handbrake->input_filename($device);
-
-				// HandBrake orders titles by index
-				$counter = 1;
-				foreach($dvd->dvd_info['playlists'] as $key => $arr) {
-					if($key == $bluray_playlist) {
-						$handbrake->input_track($counter);
-						break;
-					}
-					$counter++;
-				}
-
-				$handbrake->add_audio_track(1);
-
-				if($bluray_encode_audio) {
-
-					// FIXME? this probably shouldn't be here, HandBrake would add it directly
-					// $handbrake->add_audio_track(1);
-
-					$handbrake->add_acodec('flac');
-				}
-
-				// There are edge cases where the first audio track is Dolby
-				// Digital, and the second audio track is Dolby TrueHD. In
-				// these cases, the primary track is not ac3, but truhd. They
-				// will show incorrectly in bluray_info, and mediainfo from the
-				// m2ts files, but when remuxed or re-encoded they will properly
-				// show the correct codec.
-				// In these cases, also duplicate the truhd track as flac.
-				$audio_id = $audio_model->find_audio_id($tracks_model->id, 2);
-				if($audio_id) {
-					$audio_model->load($audio_id);
-					$secondary_format = $audio_model->format;
-				} else {
-					$secondary_format = '';
-				}
-
-				if($primary_format == 'ac3' && $secondary_format == 'truhd') {
-					$handbrake->add_audio_track(1);
-					$handbrake->add_acodec('flac');
-				}
-
-				if($debug)
-					$handbrake->set_duration(300);
-
-				$handbrake->output_filename($bluray_mkv);
-				$handbrake_command = $handbrake->get_executable_string();
-
-				echo "$handbrake_command\n";
-
-			}
-
 		}
 
 		if($disc_type == "bluray" && $opt_ffpipe) {
