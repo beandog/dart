@@ -66,6 +66,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		$series_model = new Series_Model($episodes_model->get_series_id());
 		$container = $series_model->get_preset_format();
 		$vcodec = $series_model->get_vcodec();
+		$video_deint = $dvds_model->get_deint();
 		$video_format = strtolower($tracks_model->format);
 		$fps = $series_model->get_fps();
 		if($video_format == 'pal' && $fps == '29.97')
@@ -104,9 +105,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			/** Video **/
 			$video_filters = array();
 
-			// Have a placeholder if there are *none* so that it's easier to edit command-line
-			if(!count($video_filters))
-				$ffmpeg->add_video_filter("bwdif=deint=interlaced");
+			$ffmpeg->add_video_filter("bwdif=deint=$video_deint");
 
 			foreach($video_filters as $vf)
 				$ffmpeg->add_video_filter($vf);
@@ -349,11 +348,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			$video_filters = array();
 
-			$video_filters[] = "bwdif=deint=interlaced";
-
-			// Have a placeholder if there are *none* so that it's easier to edit command-line
-			if(!count($video_filters))
-				$ffmpeg->add_video_filter("bwdif=deint=interlaced");
+			$ffmpeg->add_video_filter("bwdif=deint=$video_deint");
 
 			foreach($video_filters as $vf)
 				$ffmpeg->add_video_filter($vf);
@@ -479,11 +474,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			$video_filters = array();
 
-			$video_filters[] = "bwdif=deint=interlaced";
-
-			// Have a placeholder if there are *none* so that it's easier to edit command-line
-			if(!count($video_filters))
-				$ffmpeg->add_video_filter("bwdif=deint=interlaced");
+			$ffmpeg->add_video_filter("bwdif=deint=$video_deint");
 
 			foreach($video_filters as $vf)
 				$ffmpeg->add_video_filter($vf);
