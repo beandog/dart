@@ -74,14 +74,10 @@ if($opt_encode_info && $dvd_encoder == 'handbrake' && $episode_id && ($vcodec ==
 	// Otherwise, check for a CC stream, and add that
 	if($subp_ix) {
 		$handbrake->add_subtitle_track($subp_ix);
-		$d_subtitles = "VOBSUB";
 	} elseif($has_closed_captioning) {
 		$num_subp_tracks = $tracks_model->get_num_active_subp_tracks();
 		$closed_captioning_ix = $num_subp_tracks + 1;
 		$handbrake->add_subtitle_track($closed_captioning_ix);
-		$d_subtitles = "Closed Captioning";
-	} else {
-		$d_subtitles = "None :(";
 	}
 
 	/** Chapters **/
