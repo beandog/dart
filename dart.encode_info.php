@@ -101,6 +101,16 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			if($verbose)
 				$ffmpeg->verbose();
 
+			/** Video **/
+			$video_filters = array();
+
+			// Have a placeholder if there are *none* so that it's easier to edit command-line
+			if(!count($video_filters))
+				$ffmpeg->add_video_filter("bwdif=deint=interlaced");
+
+			foreach($video_filters as $vf)
+				$ffmpeg->add_video_filter($vf);
+
 			/** Chapters **/
 			$starting_chapter = $episodes_model->starting_chapter;
 			$ending_chapter = $episodes_model->ending_chapter;
@@ -110,15 +120,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			if($opt_qa)
 				$ffmpeg->set_duration($qa_max);
-
-			$video_filters = array();
-
-			// Have a placeholder if there are *none* so that it's easier to edit command-line
-			if(!count($video_filters))
-				$ffmpeg->add_video_filter("bwdif=deint=interlaced");
-
-			foreach($video_filters as $vf)
-				$ffmpeg->add_video_filter($vf);
 
 			$ffmpeg->fullscreen();
 
