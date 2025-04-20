@@ -451,6 +451,18 @@
 
 		}
 
+		public function get_deint() {
+
+			$sql = "SELECT COUNT(1) FROM dvd_bugs db JOIN bugs b ON db.bug_id = b.id WHERE db.dvd_id = ".$this->id." AND b.name = 'deint-all';";
+			$var = $this->get_one($sql);
+
+			if($var)
+				return 'all';
+
+			return 'interlaced';
+
+		}
+
 		// Override encoder if there is a bug for the disc or set by the series
 		public function get_encoder() {
 
