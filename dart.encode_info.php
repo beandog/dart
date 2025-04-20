@@ -66,6 +66,12 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		$series_model = new Series_Model($episodes_model->get_series_id());
 		$container = $series_model->get_preset_format();
 		$vcodec = $series_model->get_vcodec();
+		$video_format = strtolower($tracks_model->format);
+		$fps = $series_model->get_fps();
+		if($video_format == 'pal' && $fps == '29.97')
+			$fps = 25;
+		if($video_format == 'pal' && $fps == '59.94')
+			$fps = 50;
 
 		if($arg_vcodec)
 			$vcodec = $arg_vcodec;
@@ -110,8 +116,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			// Have a placeholder if there are *none* so that it's easier to edit command-line
 			if(!count($video_filters))
 				$ffmpeg->add_video_filter("bwdif=deint=interlaced");
-
-			// $ffmpeg->set_fps('59.94');
 
 			foreach($video_filters as $vf)
 				$ffmpeg->add_video_filter($vf);
@@ -236,9 +240,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			$dvdrip->verbose($verbose);
 			$dvdrip->debug($debug);
 
-			// Unsupported, auto-sets based on NTSC or PAL
-			// $fps = $series_model->get_preset_fps();
-
 			/** Files **/
 
 			$dvdrip->input_filename($device);
@@ -345,8 +346,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			if($crop != null && $crop != '720:480:0:0')
 				$ffmpeg->add_video_filter("crop=$crop");
 
-			$fps = $series_model->get_preset_fps();
-
 			$video_filters = array();
 
 			$video_filters[] = "bwdif=deint=interlaced";
@@ -354,9 +353,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			// Have a placeholder if there are *none* so that it's easier to edit command-line
 			if(!count($video_filters))
 				$ffmpeg->add_video_filter("bwdif=deint=interlaced");
-
-			// FIXME check for deint-all bug
-			// $ffmpeg->set_fps('59.94');
 
 			foreach($video_filters as $vf)
 				$ffmpeg->add_video_filter($vf);
@@ -480,8 +476,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			if($crop != null && $crop != '720:480:0:0')
 				$ffmpeg->add_video_filter("crop=$crop");
 
-			$fps = $series_model->get_preset_fps();
-
 			$video_filters = array();
 
 			$video_filters[] = "bwdif=deint=interlaced";
@@ -489,8 +483,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			// Have a placeholder if there are *none* so that it's easier to edit command-line
 			if(!count($video_filters))
 				$ffmpeg->add_video_filter("bwdif=deint=interlaced");
-
-			// $ffmpeg->set_fps('59.94');
 
 			foreach($video_filters as $vf)
 				$ffmpeg->add_video_filter($vf);
