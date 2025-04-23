@@ -357,8 +357,7 @@
 
 			}
 
-			if(count($this->subtitle_streams) || count($this->input_filenames))
-				$cmd[] = "-metadata:s:s 'language=eng'";
+			$cmd[] = "-metadata:s:s 'language=eng'";
 
 			$args = $this->get_ffmpeg_arguments();
 
