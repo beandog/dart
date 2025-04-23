@@ -690,6 +690,13 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			$ffmpeg->input_track($tracks_model->ix);
 
+			$ffmpeg->add_audio_stream('0x1100');
+
+			// HD Blu-rays, first PGS is 0x1200
+			// UHD Blu-rays, first PGS is 0x12a0
+			$ffmpeg->add_subtitle_stream('0x1200?');
+			$ffmpeg->add_subtitle_stream('0x12a0?');
+
 			$starting_chapter = $episodes_model->starting_chapter;
 			if($starting_chapter)
 				$ffmpeg->set_chapters($starting_chapter, null);

@@ -344,20 +344,28 @@
 
 			}
 
-			// HD Blu-rays, first PGS is 0x1200
-			// UHD Blu-rays, first PGS is 0x12a0
 			if($this->disc_type == 'bluray' && $this->binary == 'ffmpeg') {
 
 				$cmd[] = "-map 'v:0'";
-				$cmd[] = "-map 'i:0x1100'";
-				$cmd[] = "-map 'i:0x1200?'";
-				$cmd[] = "-map 'i:0x12a0?'";
+
+				if(count($this->audio_streams)) {
+					foreach($this->audio_streams as $streamid) {
+						$cmd[] = "-map 'i:$streamid'";
+					}
+				}
+
+				if(count($this->subtitle_streams)) {
+					foreach($this->subtitle_streams as $streamid) {
+						$cmd[] = "-map 'i:$streamid'";
+					}
+				}
 
 				$cmd[] = "-codec 'copy'";
 
 			}
 
-			$cmd[] = "-metadata:s:s 'language=eng'";
+			if(count($this->subtitle_streams) || count($this->input_filenames))
+				$cmd[] = "-metadata:s:s 'language=eng'";
 
 			$args = $this->get_ffmpeg_arguments();
 
