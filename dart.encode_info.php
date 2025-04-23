@@ -731,7 +731,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			$bluray_m2ts = substr($filename, 0, strlen($filename) - 3)."m2ts";
 			$bluray_txt = substr($filename, 0, strlen($filename) - 3)."txt";
 			$bluray_vc1 = substr($filename, 0, strlen($filename) - 3)."VC1.mkv";
-			$bluray_flac = substr($filename, 0, strlen($filename) - 3)."flac";
 			$bluray_mkv = substr($filename, 0, strlen($filename) - 3)."mkv";
 
 			$bluray_playlist = $tracks_model->ix;
@@ -770,8 +769,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			$bluray_chapters->output_filename($bluray_txt);
 			$bluray_chapters_command = $bluray_chapters->get_executable_string();
 
-			$bluray_ffmpeg_command = "ffmpeg -i '$bluray_m2ts' -map '0:a:0' -acodec 'flac' -y '$bluray_flac'";
-
 			$mkvmerge = new Mkvmerge();
 			$mkvmerge->add_video_track(0);
 
@@ -802,12 +799,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			if($bluray_encode)
 				$mkvmerge->output_filename($bluray_vc1);
 
-			if($bluray_encode_audio) {
-				$mkvmerge->add_input_filename($bluray_flac);
-				// Make FLAC primary audio stream
-				$mkvmerge->set_track_order('0:0,1:0,0:1');
-			}
-
 			$mkvmerge_command = $mkvmerge->get_executable_string();
 
 			if($display_txt && !$bluray_encode)
@@ -815,9 +806,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			if($display_m2ts && !$bluray_encode)
 				echo "$bluray_m2ts_command\n";
-
-			if($bluray_encode_audio && !file_exists($bluray_flac))
-				echo "$bluray_ffmpeg_command\n";
 
 			if($display_mkv && !$bluray_encode)
 				echo "$mkvmerge_command\n";
