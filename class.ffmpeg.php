@@ -344,11 +344,14 @@
 
 			}
 
+			// HD Blu-rays, first PGS is 0x1200
+			// UHD Blu-rays, first PGS is 0x12a0
 			if($this->disc_type == 'bluray' && $this->binary == 'ffmpeg') {
 
 				$cmd[] = "-map 'v:0'";
 				$cmd[] = "-map 'i:0x1100'";
 				$cmd[] = "-map 'i:0x1200?'";
+				$cmd[] = "-map 'i:0x12a0?'";
 
 				$cmd[] = "-codec 'copy'";
 
