@@ -10,6 +10,10 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 	if($dvd_encoder == '')
 		$dvd_encoder = 'ffmpeg';
 
+	// Using ffmpeg to rip Blu-rays is experimental, use bluray_copy + mkvmerge by default
+	if($disc_type == 'bluray')
+		$dvd_encoder = 'bluraycopy';
+
 	if($opt_handbrake)
 		$dvd_encoder = 'handbrake';
 	elseif($opt_ffmpeg)
@@ -716,7 +720,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		}
 
-		if($disc_type == "bluray" && $opt_bluraycopy && !$opt_ffpipe) {
+		if($disc_type == "bluray" && $dvd_encoder = 'bluraycopy' && !$opt_ffpipe && !$opt_ffmpeg) {
 
 			$display_txt = true;
 			$display_m2ts = true;
