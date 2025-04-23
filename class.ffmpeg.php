@@ -364,8 +364,9 @@
 
 			}
 
-			if(count($this->subtitle_streams) || count($this->input_filenames))
-				$cmd[] = "-metadata:s:s 'language=eng'";
+			// Always set all audio *and* subtitle streams as English
+			// Blu-ray audio streams probed with ffmpeg do not see language code, so this will fix that as well
+			$cmd[] = "-metadata:s 'language=eng'";
 
 			$args = $this->get_ffmpeg_arguments();
 
