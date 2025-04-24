@@ -724,7 +724,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		}
 
-		if($disc_type == 'bluray' && $dvd_encoder == 'bluraycopy' && !$opt_ffplay && !$opt_ffmpeg) {
+		if($disc_type == 'bluray' && (($dvd_encoder == 'bluraycopy' && !$opt_ffplay && !$opt_ffmpeg) || $opt_bluraycopy)) {
 
 			$display_txt = true;
 			$display_m2ts = true;
