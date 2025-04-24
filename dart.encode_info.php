@@ -797,12 +797,10 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		if($disc_type == 'bluray' && $tracks_model->codec != 'vc1' && $dvd_encoder == 'ffpipe') {
 
-			$bluray_mkv = substr($filename, 0, strlen($filename) - 3)."mkv";
+			if(file_exists($filename) && $opt_skip_existing)
+				continue;
 
 			$bluray_playlist = $tracks_model->ix;
-
-			if(file_exists($bluray_mkv) && $opt_skip_existing)
-				continue;
 
 			$bluray_copy->input_track($bluray_playlist);
 			$bluray_copy->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
@@ -819,7 +817,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			if($opt_qa)
 				$bluray_ffmpeg_command .= " -t '$qa_max'";
 
-			$bluray_ffmpeg_command .= " -y '$bluray_mkv'";
+			$bluray_ffmpeg_command .= " -y '$filename'";
 
 			if($opt_time)
 				$bluray_ffmpeg_command = "tout $bluray_ffmpeg_command";
