@@ -849,6 +849,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			/** Subtitles **/
 			$ffmpeg->add_subtitle_stream('0x1200?');
+			$ffmpeg->add_subtitle_stream('0x12a0?');
 
 			$ffmpeg->output_filename($filename);
 
