@@ -816,7 +816,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		}
 
-		if($disc_type == 'bluray' && $opt_ffpipe) {
+		if($disc_type == 'bluray' && $dvd_encoder == 'ffpipe') {
 
 			$bluray_mkv = substr($filename, 0, strlen($filename) - 3)."mkv";
 
