@@ -365,9 +365,9 @@
 					}
 				}
 
-				if($this->binary == 'ffmpeg')
+				if($this->binary == 'ffmpeg' || ($this->binary == 'ffpipe' && $this->vcodec == ''))
 					$cmd[] = "-codec 'copy'";
-				elseif($this->binary == 'ffpipe')
+				elseif($this->binary == 'ffpipe' && $this->vcodec != '')
 					$cmd[] = "-acodec 'copy' -scodec 'copy'";
 
 			}
