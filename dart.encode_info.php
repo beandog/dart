@@ -724,7 +724,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		}
 
-		if($disc_type == 'bluray' && (($dvd_encoder == 'bluraycopy' && !$opt_ffplay && !$opt_ffmpeg) || $opt_bluraycopy)) {
+		if($disc_type == 'bluray' && $tracks_model->codec != 'vc1' && (($dvd_encoder == 'bluraycopy' && !$opt_ffplay && !$opt_ffmpeg) || $opt_bluraycopy)) {
 
 			$display_txt = true;
 			$display_m2ts = true;
@@ -816,7 +816,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		}
 
-		if($disc_type == 'bluray' && $dvd_encoder == 'ffpipe') {
+		if($disc_type == 'bluray' && $tracks_model->codec != 'vc1' && $dvd_encoder == 'ffpipe') {
 
 			$bluray_mkv = substr($filename, 0, strlen($filename) - 3)."mkv";
 
@@ -848,6 +848,75 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			$bluray_ffpipe_command = "$bluray_copy_command 2> /dev/null | $bluray_ffmpeg_command";
 
 			echo "$bluray_ffpipe_command\n";
+
+		}
+
+		// Forcing ffpipe for VC1 instead of allowing ffmpeg to account for any *possible* anomalies with chapters
+		if($disc_type == 'bluray' && $tracks_model->codec == 'vc1') {
+
+			if(file_exists($filename) && $opt_skip_existing)
+				continue;
+
+			$bluray_copy->input_track($tracks_model->ix);
+			$bluray_copy->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
+
+			$bluray_chapters->input_track($tracks_model->ix);
+			$bluray_chapters->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
+
+			$bluray_copy->output_filename("-");
+
+			$bluray_copy_command = $bluray_copy->get_executable_string();
+
+			$ffmpeg = new FFMpeg();
+			$ffmpeg->set_binary('ffpipe');
+			$ffmpeg->set_disc_type('bluray');
+
+			if($debug)
+				$ffmpeg->debug();
+
+			if($verbose)
+				$ffmpeg->verbose();
+
+			$ffmpeg->input_filename('-');
+
+			if($opt_qa)
+				$ffmpeg->set_duration($qa_max);
+
+			/** Video **/
+			$video_quality = $series_model->get_crf();
+
+			if($arg_crf)
+				$video_quality = abs(intval($arg_crf));
+
+			$ffmpeg->set_crf($video_quality);
+
+			$ffmpeg->set_vcodec('libx264');
+
+			if($opt_fast)
+				$ffmpeg->set_preset('ultrafast');
+			elseif($opt_slow)
+				$ffmpeg->set_preset('slow');
+
+			/** Audio **/
+			$ffmpeg->add_audio_stream('0x1100');
+			$ffmpeg->set_acodec('copy');
+
+			/** Subtitles **/
+			$ffmpeg->add_subtitle_stream('0x1200?');
+
+			$ffmpeg->output_filename($filename);
+
+			$ffmpeg_command = $ffmpeg->get_executable_string();
+
+			if($opt_time)
+				$ffmpeg_command = "tout $ffmpeg_command";
+
+			if($opt_log_progress)
+				$ffmpeg_command .= " -progress /tmp/$episode_id.txt";
+
+			$ffpipe_command = "$bluray_copy_command 2> /dev/null | $ffmpeg_command";
+
+			echo "$ffpipe_command\n";
 
 		}
 
