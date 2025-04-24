@@ -3,6 +3,10 @@
 // Display encode instructions about a disc
 if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux)) {
 
+	// Override in conifg.local.php
+	if(!isset($qa_max))
+		$qa_max = 60;
+
 	// Override DVD encoder if disc is flagged with bugs
 	$dvd_encoder = $dvds_model->get_encoder();
 
@@ -291,7 +295,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			$handbrake->output_filename($filename);
 
 			if($opt_qa)
-				$handbrake->set_duration(60);
+				$handbrake->set_duration($qa_max);
 
 			$handbrake->output_filename($filename);
 
@@ -834,7 +838,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			$bluray_ffmpeg_command = "ffmpeg -i '-' -map 'v:0' -map 'a:0' -map 'i:0x1200?' -map 'i:0x12a0?' -codec copy";
 
 			if($opt_qa)
-				$bluray_ffmpeg_command .= " -t '60'";
+				$bluray_ffmpeg_command .= " -t '$qa_max'";
 
 			$bluray_ffmpeg_command .= " -y '$bluray_mkv'";
 
