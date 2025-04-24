@@ -7,11 +7,11 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 	$dvd_encoder = $dvds_model->get_encoder();
 
 	// Default encoder
-	if($dvd_encoder == '')
+	if($disc_type == 'dvd' && $dvd_encoder == '')
 		$dvd_encoder = 'ffmpeg';
 
 	// Using ffmpeg to rip Blu-rays is experimental, use bluray_copy + mkvmerge by default
-	if($disc_type == 'bluray')
+	if($disc_type == 'bluray' && $dvd_encoder == '')
 		$dvd_encoder = 'bluraycopy';
 
 	if($opt_handbrake)
