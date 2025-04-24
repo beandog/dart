@@ -212,7 +212,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		/*
 		 * Classic ripping using HandBrake
 		 */
-		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == "dvd" && $opt_encode_info && $dvd_encoder == 'handbrake') {
+		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == 'dvd' && $opt_encode_info && $dvd_encoder == 'handbrake') {
 
 			$handbrake = new HandBrake;
 			$handbrake->set_binary($handbrake_bin);
@@ -307,7 +307,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		/*
 		 * Use in-development dvd_rip
 		 */
-		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == "dvd" && $opt_encode_info && $opt_dvdrip) {
+		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == 'dvd' && $opt_encode_info && $opt_dvdrip) {
 
 			$dvdrip = new DVDRip;
 			$dvdrip->verbose($verbose);
@@ -367,7 +367,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		 *
 		 * Rip DVDs directly from source using ffmpeg
 		 */
-		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == "dvd" && $opt_encode_info && $dvd_encoder == 'ffmpeg') {
+		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == 'dvd' && $opt_encode_info && $dvd_encoder == 'ffmpeg') {
 
 			$ffmpeg = new FFMpeg();
 			$ffmpeg->set_binary('ffmpeg');
@@ -487,7 +487,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		/**
 		 * Rip DVDs using dvd_copy piped to ffmpeg
 		 */
-		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == "dvd" && $opt_encode_info && ($opt_ffpipe || $dvd_encoder == 'ffpipe')) {
+		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == 'dvd' && $opt_encode_info && ($opt_ffpipe || $dvd_encoder == 'ffpipe')) {
 
 			require 'dart.dvd_copy.php';
 			$dvd_copy->input_filename($device);
@@ -612,7 +612,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		/**
 		 * Extract SSA subtitles from DVDs
 		 */
-		if($opt_ssa && $disc_type == "dvd" && $tracks_model->has_closed_captioning()) {
+		if($opt_ssa && $disc_type == 'dvd' && $tracks_model->has_closed_captioning()) {
 
 			$str_episode_id = str_pad($episode_id, 5, 0, STR_PAD_LEFT);
 			$ssa_filename = "subs-".$str_episode_id."-".$series_model->nsix.".ssa";
@@ -720,7 +720,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		}
 
-		if($disc_type == "bluray" && $dvd_encoder == 'bluraycopy' && !$opt_ffplay && !$opt_ffmpeg) {
+		if($disc_type == 'bluray' && $dvd_encoder == 'bluraycopy' && !$opt_ffplay && !$opt_ffmpeg) {
 
 			$display_txt = true;
 			$display_m2ts = true;
@@ -812,7 +812,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		}
 
-		if($disc_type == "bluray" && $opt_ffpipe) {
+		if($disc_type == 'bluray' && $opt_ffpipe) {
 
 			$bluray_mkv = substr($filename, 0, strlen($filename) - 3)."mkv";
 
