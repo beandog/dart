@@ -76,6 +76,10 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		$video_deint = $dvds_model->get_deint();
 		$video_format = strtolower($tracks_model->format);
 
+		// Forcing ffpipe for VC1 instead of allowing ffmpeg to account for any *possible* anomalies
+		if($disc_type == 'bluray' && $tracks_model->codec == 'vc1')
+			$dvd_encoder = 'ffpipe';
+
 		// A note about setting fps with ffmpeg: use 'vf=fps' to set it, instead of '-r fps'. See
 		// https://trac.ffmpeg.org/wiki/ChangingFrameRate for reasoning.
 		// "For variable frame rate formats, like Matroska, the -r value acts as a ceiling, so that a lower frame rate input stream will pass through, and a higher frame rate stream, will have frames dropped, in order to match the target rate."
@@ -792,8 +796,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		}
 
-		// Forcing ffpipe for VC1 instead of allowing ffmpeg to account for any *possible* anomalies with chapters
-		if($disc_type == 'bluray' && ($tracks_model->codec == 'vc1' || $dvd_encoder == 'ffpipe')) {
+		if($disc_type == 'bluray' && $dvd_encoder == 'ffpipe') {
 
 			if(file_exists($filename) && $opt_skip_existing)
 				continue;
