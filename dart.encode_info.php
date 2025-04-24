@@ -729,21 +729,15 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			$display_txt = true;
 			$display_m2ts = true;
 			$display_mkv = true;
-			$bluray_encode = false;
-			$bluray_encode_audio = false;
 
 			$bluray_m2ts = substr($filename, 0, strlen($filename) - 3)."m2ts";
 			$bluray_txt = substr($filename, 0, strlen($filename) - 3)."txt";
-			$bluray_vc1 = substr($filename, 0, strlen($filename) - 3)."VC1.mkv";
 			$bluray_mkv = substr($filename, 0, strlen($filename) - 3)."mkv";
 
 			$bluray_playlist = $tracks_model->ix;
 
 			if(file_exists($bluray_mkv) && $opt_skip_existing)
 				continue;
-
-			if($tracks_model->codec == "vc1")
-				$bluray_encode = true;
 
 			if(file_exists($bluray_txt) && $opt_skip_existing)
 				$display_txt = false;
@@ -759,14 +753,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			$bluray_chapters->input_track($bluray_playlist);
 			$bluray_chapters->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
-
-			// Re-encode TrueHD into a second Dolby Digital Plus stream if necessary
-			$audio_model = new Audio_Model();
-			$audio_id = $audio_model->find_audio_id($tracks_model->id, 1);
-			$audio_model->load($audio_id);
-			$primary_format = $audio_model->format;
-			if($primary_format == 'truhd')
-				$bluray_encode_audio = true;
 
 			$bluray_copy->output_filename($bluray_m2ts);
 			$bluray_m2ts_command = $bluray_copy->get_executable_string();
@@ -800,18 +786,15 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			$mkvmerge->output_filename($bluray_mkv);
 			$mkvmerge->add_chapters($bluray_txt);
 
-			if($bluray_encode)
-				$mkvmerge->output_filename($bluray_vc1);
-
 			$mkvmerge_command = $mkvmerge->get_executable_string();
 
-			if($display_txt && !$bluray_encode)
+			if($display_txt)
 				echo "$bluray_chapters_command\n";
 
-			if($display_m2ts && !$bluray_encode)
+			if($display_m2ts)
 				echo "$bluray_m2ts_command\n";
 
-			if($display_mkv && !$bluray_encode)
+			if($display_mkv)
 				echo "$mkvmerge_command\n";
 
 		}
