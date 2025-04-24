@@ -285,7 +285,11 @@
 
 		public function get_executable_string() {
 
-			$cmd[] = $this->binary;
+			$binary = 'ffmpeg';
+			if($this->binary == 'ffprobe')
+				$binary = 'ffprobe';
+
+			$cmd[] = $binary;
 
 			if($this->debug) {
 				$cmd[] = "-report";
@@ -307,7 +311,7 @@
 			if($this->dvd_track && $this->disc_type == 'dvd')
 				$cmd[] = "-title '".$this->dvd_track."'";
 
-			if($this->disc_type == 'bluray')
+			if($this->disc_type == 'bluray' && $this->binary != 'ffpipe')
 				$cmd[] = "-playlist '".$this->dvd_track."'";
 
 			if($this->start_chapter && $this->disc_type == 'dvd')
@@ -320,7 +324,7 @@
 
 			$arg_input = escapeshellarg($this->input_filename);
 
-			if($this->disc_type == 'bluray')
+			if($this->disc_type == 'bluray' && $this->binary != 'ffpipe')
 				$arg_input = "bluray:$arg_input";
 			$cmd[] = "-i $arg_input";
 
@@ -345,7 +349,7 @@
 
 			}
 
-			if($this->disc_type == 'bluray' && $this->binary == 'ffmpeg') {
+			if($this->disc_type == 'bluray' && ($this->binary == 'ffmpeg' || $this->binary == 'ffpipe')) {
 
 				$cmd[] = "-map 'v:0'";
 
@@ -361,7 +365,10 @@
 					}
 				}
 
-				$cmd[] = "-codec 'copy'";
+				if($this->binary == 'ffmpeg')
+					$cmd[] = "-codec 'copy'";
+				elseif($this->binary == 'ffpipe')
+					$cmd[] = "-acodec 'copy' -scodec 'copy'";
 
 			}
 
