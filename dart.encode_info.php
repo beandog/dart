@@ -899,7 +899,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			/** Audio **/
 			$ffmpeg->add_audio_stream('0x1100');
-			$ffmpeg->set_acodec('copy');
 
 			/** Subtitles **/
 			$ffmpeg->add_subtitle_stream('0x1200?');
