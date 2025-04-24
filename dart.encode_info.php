@@ -736,18 +736,16 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			$bluray_m2ts = substr($filename, 0, strlen($filename) - 3)."m2ts";
 			$bluray_txt = substr($filename, 0, strlen($filename) - 3)."txt";
 
-			$bluray_playlist = $tracks_model->ix;
-
 			if(file_exists($bluray_txt) && $opt_skip_existing)
 				$display_txt = false;
 
 			if(file_exists($bluray_m2ts) && $opt_skip_existing)
 				$display_m2ts = false;
 
-			$bluray_copy->input_track($bluray_playlist);
+			$bluray_copy->input_track($tracks_model->ix);
 			$bluray_copy->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
 
-			$bluray_chapters->input_track($bluray_playlist);
+			$bluray_chapters->input_track($tracks_model->ix);
 			$bluray_chapters->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
 
 			$bluray_copy->output_filename($bluray_m2ts);
@@ -800,12 +798,10 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			if(file_exists($filename) && $opt_skip_existing)
 				continue;
 
-			$bluray_playlist = $tracks_model->ix;
-
-			$bluray_copy->input_track($bluray_playlist);
+			$bluray_copy->input_track($tracks_model->ix);
 			$bluray_copy->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
 
-			$bluray_chapters->input_track($bluray_playlist);
+			$bluray_chapters->input_track($tracks_model->ix);
 			$bluray_chapters->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
 
 			$bluray_copy->output_filename("-");
