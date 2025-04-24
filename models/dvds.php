@@ -99,25 +99,6 @@
 
 		}
 
-		// Check for missing data on a CD
-		public function missing_cd_metadata() {
-
-			$dvd_id = abs(intval($this->id));
-
-			$sql = "SELECT COUNT(1) FROM tracks WHERE dvd_id = $dvd_id;";
-			$var = $this->get_one($sql);
-			if(!$var)
-				return true;
-
-			$sql = "SELECT COUNT(1) FROM tracks WHERE dvd_id = $dvd_id AND length IS NULL;";
-			$var = $this->get_one($sql);
-			if($var)
-				return true;
-
-			return false;
-
-		}
-
 		// Check if any of the tracks on the DVD are missing metadata, regardless
 		// of spec.
 		public function dvd_tracks_missing_metadata($debug = false) {
