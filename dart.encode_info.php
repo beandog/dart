@@ -378,7 +378,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		// Extract SSA subtitles from DVDs
 		$dvd_bugs = $dvds_model->get_bugs();
 		$dvd_encode_ssa = false;
-		if(in_array('cc-only', $dvd_bugs) && $tracks_model->has_closed_captioning() && ($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'ffpipe')); {
+		if($opt_ssa && in_array('cc-only', $dvd_bugs) && $tracks_model->has_closed_captioning() && ($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'ffpipe')) {
 
 			$dvd_encode_ssa = true;
 
