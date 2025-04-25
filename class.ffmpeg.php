@@ -43,6 +43,7 @@
 		// Subtitles
 		public $subtitle_streams = array();
 		public $remove_cc = false;
+		public $ssa_filename = '';
 
 		public function debug($bool = true) {
 			$this->debug = $this->verbose = boolval($bool);
@@ -81,6 +82,11 @@
 				$this->input_filenames[] = $src;
 			else
 				$this->input_filenames[] = realpath($src);
+		}
+
+		// Don't use realpath here, because the file may be created right before this transcode
+		public function add_ssa_filename($src) {
+			$this->ssa_filename = $src;
 		}
 
 		public function output_filename($str) {
@@ -328,6 +334,11 @@
 				$arg_input = "bluray:$arg_input";
 			$cmd[] = "-i $arg_input";
 
+			if($this->ssa_filename && $binary == 'ffmpeg') {
+				$arg_ssa_filename = escapeshellarg($this->ssa_filename);
+				$cmd[] = "-i $arg_ssa_filename";
+			}
+
 			if(($this->disc_type == 'dvd'|| $this->disc_type == 'dvdcopy') && $this->binary == 'ffmpeg') {
 
 				$cmd[] = "-map 'v'";
@@ -372,6 +383,9 @@
 
 			}
 
+			if($this->ssa_filename && $binary == 'ffmpeg')
+				$cmd[] = "-map '1'";
+
 			// Always set all audio *and* subtitle streams as English
 			// Blu-ray audio streams probed with ffmpeg do not see language code, so this will fix that as well
 			$cmd[] = "-metadata:s 'language=eng'";
@@ -394,6 +408,9 @@
 
 			if($this->remove_cc)
 				$cmd[] = "-bsf:v 'filter_units=remove_types=6'";
+
+			if($this->ssa_filename && $binary == 'ffmpeg')
+				$cmd[] = "-scodec 'copy'";
 
 			$str = implode(" ", $cmd);
 
