@@ -374,6 +374,36 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		 *
 		 * Rip DVDs directly from source using ffmpeg
 		 */
+
+		// Extract SSA subtitles from DVDs
+		$dvd_bugs = $dvds_model->get_bugs();
+		$dvd_encode_ssa = false;
+		if(&& in_array('cc-only', $dvd_bugs) && $tracks_model->has_closed_captioning() && ($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'ffpipe')); {
+
+			$dvd_encode_ssa = true;
+
+			$str_episode_id = str_pad($episode_id, 5, 0, STR_PAD_LEFT);
+			$ssa_filename = "subs-".$str_episode_id."-".$series_model->nsix.".ssa";
+
+			$ssa_filename = "subs-".basename($filename, '.mkv').".ssa";
+
+			if(!($opt_skip_existing && file_exists($ssa_filename))) {
+
+				require 'dart.dvd_copy.php';
+				$dvd_copy->input_filename($input_filename);
+				$dvd_copy->output_filename('-');
+				$dvd_copy_command = $dvd_copy->get_executable_string();
+
+				$arg_filename = escapeshellarg($ssa_filename);
+
+				$dvd_ssa_command = "$dvd_copy_command 2> /dev/null | ffmpeg -f lavfi -i 'movie=pipe\\\\:0[out+subcc]' -y $arg_filename";
+
+				echo "$dvd_ssa_command\n";
+
+			}
+
+		}
+
 		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == 'dvd' && $opt_encode_info && $dvd_encoder == 'ffmpeg') {
 
 			$ffmpeg = new FFMpeg();
@@ -450,20 +480,14 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 				$ffmpeg->add_subtitle_stream($subp_ix);
 			}
 
-			// Remove closed captioning. There are only 367 cartoon episodes that have CC and *not* vobsub
-			// TMNT '87 (208), TMNT 2012 (119), Droopy, and Scooby-Doo Show
-			// It adds an extra step to encoding because they have to be extracted first as well.
-			// Another reason they are being removed is that ffmpeg garbles them, they do not play
-			// at the correct index time.
-			// See 'view_episode_eng_subs' database view
-			if($tracks_model->has_closed_captioning()) {
+			// When copying closed captioning with ffmpeg, the time indexes are always off, so
+			// drop it completely.
+			if($tracks_model->has_closed_captioning())
 				$ffmpeg->remove_closed_captioning();
-			}
 
-			$str_episode_id = str_pad($episode_id, 5, 0, STR_PAD_LEFT);
-			$ssa_filename = "subs-${str_episode_id}.ssa";
-			if(file_exists($ssa_filename))
-				$ffmpeg->input_filename($ssa_filename);
+			// Use an external SSA file instead of existing closed captioning
+			if($dvd_encode_ssa)
+				$ffmpeg->add_ssa_filename($ssa_filename);
 
 			$ffmpeg->output_filename($filename);
 
@@ -611,31 +635,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 				$dvd_remux_command = "$dvd_copy_command 2> /dev/null | ffmpeg -fflags +genpts -i - -codec copy -y $filename";
 
 				echo "$dvd_remux_command\n";
-
-			}
-
-		}
-
-		/**
-		 * Extract SSA subtitles from DVDs
-		 */
-		if($opt_ssa && $disc_type == 'dvd' && $tracks_model->has_closed_captioning()) {
-
-			$str_episode_id = str_pad($episode_id, 5, 0, STR_PAD_LEFT);
-			$ssa_filename = "subs-".$str_episode_id."-".$series_model->nsix.".ssa";
-
-			if(!($opt_skip_existing && file_exists($ssa_filename))) {
-
-				require 'dart.dvd_copy.php';
-				$dvd_copy->input_filename($input_filename);
-				$dvd_copy->output_filename('-');
-				$dvd_copy_command = $dvd_copy->get_executable_string();
-
-				$arg_filename = escapeshellarg($ssa_filename);
-
-				$dvd_ssa_command = "$dvd_copy_command 2> /dev/null | ffmpeg -f lavfi -i 'movie=pipe\\\\:0[out+subcc]' -y $arg_filename";
-
-				echo "$dvd_ssa_command\n";
 
 			}
 
