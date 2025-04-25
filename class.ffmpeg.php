@@ -17,7 +17,6 @@
 
 		// DVD source
 		public $input_filename = '';
-		public $input_filenames = array();
 		public $output_filename = '';
 		public $dvd_track = 0;
 
@@ -75,13 +74,6 @@
 				$this->input_filename = '-';
 			else
 				$this->input_filename = realpath($src);
-		}
-
-		public function add_input_filename($src) {
-			if($src == '-')
-				$this->input_filenames[] = $src;
-			else
-				$this->input_filenames[] = realpath($src);
 		}
 
 		// Don't use realpath here, because the file may be created right before this transcode
