@@ -432,6 +432,16 @@
 
 		}
 
+		public function get_bugs() {
+
+			$sql = "SELECT name FROM dvd_bugs WHERE dvd_id = ".$this->id.";";
+			$sql = "SELECT b.name FROM dvd_bugs db JOIN bugs b ON db.bug_id = b.id WHERE db.dvd_id = ".$this->id." ORDER BY b.name;";
+			$arr = $this->get_col($sql);
+
+			return $arr;
+
+		}
+
 		public function get_deint() {
 
 			$sql = "SELECT COUNT(1) FROM dvd_bugs db JOIN bugs b ON db.bug_id = b.id WHERE db.dvd_id = ".$this->id." AND b.name = 'deint-all';";
