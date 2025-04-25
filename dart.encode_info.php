@@ -43,6 +43,8 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		}
 	}
 
+	$input_filename = realpath($device);
+
 	if($disc_type == 'bluray') {
 
 		$bluray_copy = new BlurayCopy();
@@ -54,10 +56,10 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		if($verbose)
 			$bluray_copy->verbose();
 
-		$bluray_copy->input_filename($device);
+		$bluray_copy->input_filename($input_filename);
 
 		$bluray_chapters = new BlurayChapters();
-		$bluray_chapters->input_filename($device);
+		$bluray_chapters->input_filename($input_filename);
 
 	}
 
@@ -102,8 +104,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			$container = 'mkv';
 
 		$filename = get_episode_filename($episode_id, $container);
-
-		$input_filename = realpath($device);
 
 		if($opt_ffplay && $disc_type == 'dvd') {
 
@@ -175,7 +175,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		if($opt_scan && $disc_type == 'dvd') {
 
-			$handbrake_command = "HandBrakeCLI --input '".escapeshellcmd(realpath($device))."'";
+			$handbrake_command = "HandBrakeCLI --input '".escapeshellcmd($input_filename)."'";
 
 			$tracks_model = new Tracks_Model($episodes_model->track_id);
 
@@ -228,7 +228,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			/** Files **/
 
-			$handbrake->input_filename($device);
+			$handbrake->input_filename($input_filename);
 			$handbrake->input_track($tracks_model->ix);
 
 			/** Video **/
@@ -322,7 +322,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			/** Files **/
 
-			$dvdrip->input_filename($device);
+			$dvdrip->input_filename($input_filename);
 			$dvdrip->input_track($tracks_model->ix);
 
 			/** Video **/
@@ -385,7 +385,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			if($verbose)
 				$ffmpeg->verbose();
 
-			$ffmpeg->input_filename($device);
+			$ffmpeg->input_filename($input_filename);
 			$ffmpeg->input_track($tracks_model->ix);
 
 			if($opt_qa)
@@ -497,7 +497,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == 'dvd' && $opt_encode_info && ($opt_ffpipe || $dvd_encoder == 'ffpipe')) {
 
 			require 'dart.dvd_copy.php';
-			$dvd_copy->input_filename($device);
+			$dvd_copy->input_filename($input_filename);
 			$dvd_copy->output_filename('-');
 			$dvd_copy_command = $dvd_copy->get_executable_string();
 
@@ -648,7 +648,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			$ffmpeg = new FFMpeg();
 			$ffmpeg->set_disc_type('bluray');
 
-			$ffmpeg->input_filename($device);
+			$ffmpeg->input_filename($input_filename);
 
 			$ffmpeg->input_track($tracks_model->ix);
 
@@ -696,7 +696,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			if($verbose)
 				$ffmpeg->verbose();
 
-			$ffmpeg->input_filename($device);
+			$ffmpeg->input_filename($input_filename);
 			$ffmpeg->output_filename($filename);
 
 			$ffmpeg->input_track($tracks_model->ix);
