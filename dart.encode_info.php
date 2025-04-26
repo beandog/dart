@@ -53,6 +53,12 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		if($episodes_model->skip)
 			continue;
 
+		$filename = $episodes_model->get_filename($container);
+
+		// Skip existing output files
+		if(in_array($dvd_encoder, array('handbrake', 'ffmpeg', 'ffpipe', 'remux')) && file_exists($filename) && $opt_skip_existing)
+			continue;
+
 		$tracks_model = new Tracks_Model($episodes_model->track_id);
 		$series_model = new Series_Model($episodes_model->get_series_id());
 		$vcodec = $series_model->get_vcodec();
@@ -79,7 +85,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		if($disc_type == 'dvd' && $opt_copy_info)
 			$container = 'mpg';
 
-		$filename = $episodes_model->get_filename($container);
 
 		if($disc_type == 'dvd' && $opt_ffplay) {
 
@@ -199,9 +204,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		 */
 		if($disc_type == 'dvd' && $opt_encode_info && $dvd_encoder == 'handbrake') {
 
-			if(file_exists($filename) && $opt_skip_existing)
-				continue;
-
 			$handbrake = new HandBrake;
 			$handbrake->set_binary($handbrake_bin);
 			$handbrake->verbose($verbose);
@@ -297,9 +299,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		 */
 		if($disc_type == 'dvd' && $opt_encode_info && $opt_dvdrip) {
 
-			if(file_exists($filename) && $opt_skip_existing)
-				continue;
-
 			$dvdrip = new DVDRip;
 			$dvdrip->verbose($verbose);
 			$dvdrip->debug($debug);
@@ -388,7 +387,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		}
 
-		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == 'dvd' && $opt_encode_info && $dvd_encoder == 'ffmpeg') {
+		if($disc_type == 'dvd' && $opt_encode_info && $dvd_encoder == 'ffmpeg') {
 
 			$ffmpeg = new FFMpeg();
 			$ffmpeg->set_binary('ffmpeg');
@@ -491,9 +490,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		if($disc_type == 'dvd' && $dvd_encoder == 'dvd_copy') {
 
-			if(file_exists($filename) && $opt_skip_existing)
-				continue;
-
 			require 'dart.dvd_copy.php';
 			$dvd_copy->input_filename($input_filename);
 			$dvd_copy->output_filename($filename);
@@ -506,9 +502,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		 * Rip DVDs using dvd_copy piped to ffmpeg
 		 */
 		if($disc_type == 'dvd' && $opt_encode_info && ($opt_ffpipe || $dvd_encoder == 'ffpipe')) {
-
-			if(file_exists($filename) && $opt_skip_existing)
-				continue;
 
 			require 'dart.dvd_copy.php';
 			$dvd_copy->input_filename($input_filename);
@@ -668,9 +661,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		// years, so I'm okay without them.
 		if($disc_type == 'bluray' && ($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'ffpipe')) {
 
-			if(file_exists($filename) && $opt_skip_existing)
-				continue;
-
 			$episodes_model = new Episodes_Model($episode_id);
 
 			if($episodes_model->skip)
@@ -773,9 +763,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		// Also this is a FIXME because tracks_model isn't working. Not going to fix for now, until
 		// this option is restored.
 		if($disc_type == 'bluray' && $tracks_model->codec != 'vc1' && (($dvd_encoder == 'bluraycopy' && !$opt_ffplay && !$opt_ffmpeg) || $opt_bluraycopy)) {
-
-			if(file_exists($filename) && $opt_skip_existing)
-				continue;
 
 			$display_txt = true;
 			$display_m2ts = true;
