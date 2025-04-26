@@ -42,14 +42,6 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	/*
-	$parser->addOption('opt_vfat', array(
-		'long_name' => '--vfat',
-		'description' => 'Filenames for removable media (PSP, Sansa)',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
-	*/
 
 	try { $result = $parser->parse(); }
 	catch(PEAR_Exception $e) {
