@@ -125,8 +125,9 @@
 			$arr = get_episode_filenames($device, $opt_skip_existing);
 
 			foreach($arr as $filename) {
-				if(!($opt_skip_existing && file_exists($filename)))
-					echo "$filename\n";
+				if($opt_skip_existing && file_exists($filename))
+					continue;
+				echo "$filename\n";
 			}
 
 		}
