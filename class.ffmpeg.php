@@ -324,9 +324,6 @@
 
 				$cmd[] = "-map 'v'";
 
-				if($this->disc_type == 'dvd')
-					$this->set_acodec('copy');
-
 				if(count($this->audio_streams) && $this->binary == 'ffmpeg') {
 					foreach($this->audio_streams as $streamid) {
 						$cmd[] = "-map 'i:$streamid'";
