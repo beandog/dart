@@ -145,7 +145,7 @@
 
 	}
 
-	function get_episode_filenames($source, $skip_existing) {
+	function get_episode_filenames($source) {
 
 		$arg_source = escapeshellarg(realpath($source));
 		exec("disc_type $arg_source 2> /dev/null", $output, $retval);
