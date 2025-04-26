@@ -104,13 +104,13 @@
 
 		foreach($devices as $device) {
 
-			$dvd_iso_filename = get_dvd_iso_filename($source);
+			$dvd_iso_filename = get_dvd_iso_filename($device);
 
 			// PHP will complain if source is a directory, so make it look like a file
-			$source = dirname($source)."/".basename($source);
+			$source = dirname($device)."/".basename($device);
 
 			if(!file_exists($dvd_iso_filename))
-				rename($source, $dvd_iso_filename);
+				rename($device, $dvd_iso_filename);
 
 		}
 
