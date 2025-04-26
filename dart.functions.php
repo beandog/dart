@@ -12,23 +12,8 @@
 
 		$arg_device = escapeshellarg($source);
 
-		$return = 0;
-
-		if(substr($source, 0, 5) == '/dev/') {
-
-			$command = "udevadm info $arg_device";
-			exec($command, $arr, $return);
-
-			if(in_array("E: ID_CDROM_MEDIA_DVD=1", $arr))
-				return 'dvd';
-
-			elseif(in_array("E: ID_CDROM_MEDIA_BD=1", $arr))
-				return 'bluray';
-
-		}
-
 		$command = "/usr/local/bin/disc_type $arg_device 2> /dev/null";
-		exec($command, $arr, $return);
+		exec($command, $arr, $retval);
 
 		$str = current($arr);
 
