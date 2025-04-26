@@ -105,7 +105,9 @@
 
 	$device = array_shift($devices);
 
-	if(get_disc_type($device) != 'dvd')
+	$disc_type = shell_exec("disc_type ".escapeshellarg(realpath($device))." 2> /dev/null");
+
+	if($disc_type != 'dvd')
 		goto next_device;
 
 	$dvd_query = array();
