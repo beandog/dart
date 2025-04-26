@@ -57,6 +57,13 @@
 		$access_device = true;
 	}
 
+	// Just kept for reference and fun
+	function beep_error() {
+		// system("beep -f 1000 -n -f 2000 -n -f 1500 -n -f 1750 -n -f 1750 -n -f 1750")
+		// Stole this from beep manpage
+		// system("beep -f 1000 -r 2 -n -r 5 -l 10 --new");
+	}
+
 	if($opt_iso_filename) {
 
 		foreach($devices as $device) {
