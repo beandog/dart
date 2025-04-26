@@ -339,6 +339,9 @@
 				goto next_device;
 			}
 
+			if($disc_type == 'bluray' && $opt_copy_info)
+				goto next_device;
+
 			if(!$batch_mode)
 				echo "[$disc_name]\n";
 
