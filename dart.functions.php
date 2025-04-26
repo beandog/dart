@@ -1,25 +1,5 @@
 <?php
 
-	// Check source - helper function
-	function is_dvd($device) {
-
-		if(get_disc_type($device) == 'dvd')
-			return true;
-
-		return false;
-
-	}
-
-	// Helper function
-	function is_bluray($device) {
-
-		if(get_disc_type($device) == 'bluray')
-			return true;
-
-		return false;
-
-	}
-
 	function get_disc_type($source) {
 
 		$source = realpath($source);

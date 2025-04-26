@@ -105,7 +105,7 @@
 
 	$device = array_shift($devices);
 
-	if(!is_dvd($device))
+	if(get_disc_type($device) != 'dvd')
 		goto next_device;
 
 	$dvd_query = array();
