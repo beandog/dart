@@ -43,10 +43,9 @@
 	if($opt_import || $new_dvd || $missing_dvd_metadata || $missing_dvd_tracks_metadata || $missing_bluray_metadata)
 		$allow_import = true;
 
-	// If only creating the ISO is requested, then skip import. This is
-	// common when there are problems accessing the DVD, and import is
-	// expected to fail.
-	if($opt_dump_iso && !$opt_import)
+	// If backing up the DVD, then skip importing it. This is useful when there
+	// are problems accessing the DVD, and import is expected to fail.
+	if($opt_backup && !$opt_import)
 		$allow_import = false;
 
 	// Currently setting importing Blu-rays to force only, as dvdread indexing has changed
