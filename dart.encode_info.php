@@ -294,21 +294,17 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		}
 
+		// Use dvd_rip
 		/*
-		 * Use in-development dvd_rip
-		 */
+		// Skipping for now as it will probably be removed or replaced
 		if($disc_type == 'dvd' && $opt_encode_info && $opt_dvdrip) {
 
 			$dvdrip = new DVDRip;
 			$dvdrip->verbose($verbose);
 			$dvdrip->debug($debug);
 
-			/** Files **/
-
 			$dvdrip->input_filename($input_filename);
 			$dvdrip->input_track($tracks_model->ix);
-
-			/** Video **/
 
 			$dvdrip->set_vcodec($vcodec);
 			$video_quality = $series_model->get_crf();
@@ -317,8 +313,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 				$video_quality = abs(intval($arg_crf));
 
 			$dvdrip->set_video_quality($video_quality);
-
-			/** Audio **/
 
 			$dvdrip->set_acodec('en');
 
@@ -330,11 +324,8 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			$dvdrip->set_audio_lang('en');
 
-			/** Subtitles **/
-
 			$dvdrip->set_subtitle_lang('en');
 
-			/** Chapters **/
 			$starting_chapter = $episodes_model->starting_chapter;
 			$ending_chapter = $episodes_model->ending_chapter;
 			if($starting_chapter || $ending_chapter) {
@@ -351,6 +342,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			echo "$dvdrip_command\n";
 
 		}
+		*/
 
 		/**
 		 * Next-generation DVD Ripping

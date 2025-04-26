@@ -103,12 +103,14 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	/*
 	$parser->addOption('opt_dvdrip', array(
 		'long_name' => '--dvdrip',
 		'description' => 'Use dvd_rip to rip DVDs',
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	*/
 	$parser->addOption('opt_bluraycopy', array(
 		'long_name' => '--bluraycopy',
 		'description' => 'Use bluray_copy to rip Blu-rays',
