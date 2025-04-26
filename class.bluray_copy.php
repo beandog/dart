@@ -6,7 +6,7 @@
 		public $verbose = false;
 
 		// bluray_copy
-		public $bluray_copy = 'bluray_copy';
+		public $binary = 'bluray_copy';
 		public $bluray_copy_opts = '';
 		public $bluray_copy_output = '/dev/null';
 
