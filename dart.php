@@ -334,10 +334,8 @@
 			else
 				goto next_device;
 
-			if($disc_type == 'bluray' && $opt_backup) {
-				echo "Backing up Blu-rays not supported\n";
+			if($disc_type == 'bluray' && $opt_backup)
 				goto next_device;
-			}
 
 			if($disc_type == 'bluray' && $opt_copy_info)
 				goto next_device;
