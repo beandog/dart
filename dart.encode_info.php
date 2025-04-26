@@ -757,6 +757,11 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		}
 
+		/*
+		// Legacy mkvmerge -- needs to scan file and parse JSON output for correct track IDs.
+		// Currently it's broken, and has to be changed manually a lot.
+		// Also this is a FIXME because tracks_model isn't working. Not going to fix for now, until
+		// this option is restored.
 		if($disc_type == 'bluray' && $tracks_model->codec != 'vc1' && (($dvd_encoder == 'bluraycopy' && !$opt_ffplay && !$opt_ffmpeg) || $opt_bluraycopy)) {
 
 			if(file_exists($filename) && $opt_skip_existing)
@@ -834,6 +839,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 				echo "$mkvmerge_command\n";
 
 		}
+		*/
 
 	}
 
