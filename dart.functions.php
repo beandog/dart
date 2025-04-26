@@ -67,6 +67,8 @@
 			$filename = "$dvdread_id.iso";
 			return $filename;
 		}
+
+		// FIXME pull this from dvds_model
 		$series_id = $dvds_model->get_series_id();
 		if(!$series_id) {
 			$filename = "$dvdread_id.iso";
