@@ -336,7 +336,7 @@
 
 			if($disc_type == 'bluray' && $opt_backup) {
 				echo "Backing up Blu-rays not supported\n";
-				exit;
+				goto next_device;
 			}
 
 			if(!$batch_mode)
