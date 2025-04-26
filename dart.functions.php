@@ -215,29 +215,4 @@
 
 	}
 
-	function get_episode_filename($episode_id, $container = 'mkv') {
-
-		require_once 'models/dvds.php';
-		require_once 'models/tracks.php';
-		require_once 'models/series.php';
-		require_once 'models/episodes.php';
-
-		$episodes_model = new Episodes_Model($episode_id);
-		$episode_metadata = $episodes_model->get_metadata();
-
-		$dvds_model = new Dvds_Model($episode_metadata['dvd_id']);
-		$tracks_model = new Tracks_Model($episodes_model->track_id);
-		$series_model = new Series_Model($episodes_model->get_series_id());
-
-		$filename = str_pad($dvds_model->get_collection_id(), 1, '0');
-		$filename .= ".".str_pad($dvds_model->get_series_id(), 3, '0', STR_PAD_LEFT);
-		$filename .= ".".str_pad($dvds_model->id, 4, '0', STR_PAD_LEFT);
-		$filename .= ".".str_pad($episode_id, 5, 0, STR_PAD_LEFT);
-		$filename .= ".".$series_model->nsix;
-		$filename .= ".$container";
-
-		return $filename;
-
-	}
-
 ?>

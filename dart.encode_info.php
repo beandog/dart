@@ -103,7 +103,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		if($disc_type == 'bluray')
 			$container = 'mkv';
 
-		$filename = get_episode_filename($episode_id, $container);
+		$filename = $episodes_model->get_filename($container);
 
 		if($opt_ffplay && $disc_type == 'dvd') {
 
