@@ -73,7 +73,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		$tracks_model = new Tracks_Model($episodes_model->track_id);
 		$series_model = new Series_Model($episodes_model->get_series_id());
-		$container = $series_model->get_preset_format();
 		$vcodec = $series_model->get_vcodec();
 		$video_deint = $dvds_model->get_deint();
 		$video_format = strtolower($tracks_model->format);
@@ -97,11 +96,10 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		if($arg_vcodec)
 			$vcodec = $arg_vcodec;
 
-		if($opt_copy_info)
-			$container = 'mpg';
+		$container = 'mkv';
 
-		if($disc_type == 'bluray')
-			$container = 'mkv';
+		if($disc_type == 'dvd' && $opt_copy_info)
+			$container = 'mpg';
 
 		$filename = $episodes_model->get_filename($container);
 
