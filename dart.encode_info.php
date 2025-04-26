@@ -81,7 +81,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		$filename = $episodes_model->get_filename($container);
 
-		if($opt_ffplay && $disc_type == 'dvd') {
+		if($disc_type == 'dvd' && $opt_ffplay) {
 
 			$ffmpeg = new FFMpeg();
 			$ffmpeg->set_binary('ffplay');
@@ -123,7 +123,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		}
 
-		if($opt_ffprobe && $disc_type == 'dvd') {
+		if($disc_type == 'dvd' && $opt_ffprobe) {
 
 			$ffmpeg = new FFMpeg();
 			$ffmpeg->set_binary('ffprobe');
@@ -151,7 +151,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		}
 
-		if($opt_scan && $disc_type == 'dvd') {
+		if($disc_type == 'dvd' && $opt_scan) {
 
 			$handbrake_command = "HandBrakeCLI --input '".escapeshellcmd($input_filename)."'";
 
