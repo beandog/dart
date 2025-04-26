@@ -25,7 +25,7 @@
 		public $stop_chapter = 0;
 
 		// Video
-		public $vcodec = '';
+		public $vcodec = 'copy';
 		public $vcodec_opts = '';
 		public $video_filters = array();
 		public $crf = 0;
@@ -35,11 +35,12 @@
 
 		// Audio
 		public $audio = true;
-		public $acodec = '';
+		public $acodec = 'copy';
 		public $acodec_opts = '';
 		public $audio_streams = array();
 
 		// Subtitles
+		public $scodec = 'copy';
 		public $subtitle_streams = array();
 		public $remove_cc = false;
 		public $ssa_filename = '';
@@ -237,18 +238,15 @@
 
 			$args = array();
 
-			if($this->vcodec) {
+			if($this->vcodec != 'copy') {
 
-				$vcodec = $this->vcodec;
-
-				if($vcodec == 'x265')
-					$vcodec = 'libx264';
-				elseif($vcodec == 'x265')
-					$vcodec = 'libx265';
-
-				$args['vcodec'] = $vcodec;
+				if($this->vcodec == 'x265')
+					$this->vcodec = 'libx264';
+				elseif($this->vcodec == 'x265')
+					$this->vcodec = 'libx265';
 
 			}
+
 			if($this->vcodec_opts)
 				$args['vcodec_opts'] = $this->vcodec_opts;
 
@@ -261,8 +259,6 @@
 			if($this->preset)
 				$args['preset'] = $this->preset;
 
-			if($this->acodec)
-				$args['acodec'] = $this->acodec;
 			if($this->acodec_opts)
 				$args['acodec_opts'] = $this->acodec_opts;
 
@@ -347,7 +343,6 @@
 				// This should probably be okay ........ just assume first is English
 				if(count($this->subtitle_streams) && $this->binary == 'ffmpeg') {
 					$cmd[] = "-map 'i:0x20?'";
-					$cmd[] = "-scodec 'copy'";
 				}
 
 			}
@@ -368,12 +363,11 @@
 					}
 				}
 
-				if($this->binary == 'ffmpeg' || ($this->binary == 'ffpipe' && $this->vcodec == ''))
-					$cmd[] = "-codec 'copy'";
-				elseif($this->binary == 'ffpipe' && $this->vcodec != '')
-					$cmd[] = "-acodec 'copy' -scodec 'copy'";
-
 			}
+
+			$cmd[] = "-vcodec '".$this->vcodec."'";
+			$cmd[] = "-acodec '".$this->acodec."'";
+			$cmd[] = "-scodec '".$this->scodec."'";
 
 			if($this->ssa_filename && $binary == 'ffmpeg')
 				$cmd[] = "-map '1'";
@@ -400,9 +394,6 @@
 
 			if($this->remove_cc)
 				$cmd[] = "-bsf:v 'filter_units=remove_types=6'";
-
-			if($this->ssa_filename && $binary == 'ffmpeg')
-				$cmd[] = "-scodec 'copy'";
 
 			$str = implode(" ", $cmd);
 
