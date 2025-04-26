@@ -263,9 +263,6 @@
 				$args['vf'] = $vf;
 			}
 
-			if($this->fps)
-				$args['r'] = $this->fps;
-
 			if($this->duration)
 				$args['t'] = $this->duration;
 
