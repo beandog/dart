@@ -237,7 +237,7 @@
 
 		}
 
-		public function get_filename() {
+		public function get_filename($container = 'mkv') {
 
 			$episode_id = intval($this->id);
 
@@ -255,7 +255,7 @@
 			$str .= ".".str_pad($series_id, 3, '0', STR_PAD_LEFT);
 			$str .= ".".str_pad($dvd_id, 4, '0', STR_PAD_LEFT);
 			$str .= ".$nsix";
-			$str .= ".".str_pad($episode_id, 5, 0, STR_PAD_LEFT).".mkv";
+			$str .= ".".str_pad($episode_id, 5, 0, STR_PAD_LEFT).".$container";
 
 			return $str;
 
