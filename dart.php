@@ -50,6 +50,9 @@
 	// I don't use 'dart --import' anymore, but it is still used
 	$opt_import = false;
 
+	// I never pass this as an option, but if it is flagged, it means to back up the DVD
+	$opt_dump_iso = false;
+
 	// --backup is basically a shortcut for ripping an ISO and importing it plus
 	// setting it in batch mode so it will eject the disc after finished.
 	// Designed for use with a udev trigger so that discs will auto-rip

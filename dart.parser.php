@@ -49,12 +49,6 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_dump_iso', array(
-		'long_name' => '--iso',
-		'description' => 'Copy the DVD filesystem to an ISO',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
 	$parser->addOption('opt_backup', array(
 		'long_name' => '--backup',
 		'description' => 'Backup to an ISO in batch mode',
