@@ -30,9 +30,6 @@
 		$missing_dvd_tracks_metadata = $dvds_model->bluray_playlists_missing_metadata($debug);
 	}
 
-	if($opt_archive && !$missing_dvd_metadata && !$missing_dvd_tracks_metadata)
-		echo "* Archive:\tNo legacy metadata! :D\n";
-
 	// Some conditions apply where importing may be skipped.
 
 	// Set this to say if we *can* import it, if requested
@@ -43,13 +40,13 @@
 	if(!$disc_indexed)
 		$new_dvd = true;
 
-	if($opt_import || $opt_archive || $new_dvd || $missing_dvd_metadata || $missing_dvd_tracks_metadata || $missing_bluray_metadata)
+	if($opt_import || $new_dvd || $missing_dvd_metadata || $missing_dvd_tracks_metadata || $missing_bluray_metadata)
 		$allow_import = true;
 
 	// If only creating the ISO is requested, then skip import. This is
 	// common when there are problems accessing the DVD, and import is
 	// expected to fail.
-	if($opt_dump_iso && (!$opt_import && !$opt_archive))
+	if($opt_dump_iso && !$opt_import)
 		$allow_import = false;
 
 	// Currently setting importing Blu-rays to force only, as dvdread indexing has changed

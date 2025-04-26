@@ -115,7 +115,7 @@
 	if($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe || $opt_ssa)
 		$batch_mode = true;
 
-	if(!count($devices) && ($opt_info || $opt_encode_info || $opt_copy_info || $opt_dump_iso || $opt_import || $opt_archive || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe || $opt_ssa))
+	if(!count($devices) && ($opt_info || $opt_encode_info || $opt_copy_info || $opt_dump_iso || $opt_import || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe || $opt_ssa))
 		$devices = $all_devices;
 
 	// Default max length for QA operations
@@ -190,7 +190,7 @@
 			$display_device = basename($device);
 
 		// Determine whether we are reading the device
-		if($opt_info || $opt_encode_info || $opt_copy_info || $opt_import || $opt_archive || $opt_dump_iso || $opt_geniso || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe || $opt_ssa) {
+		if($opt_info || $opt_encode_info || $opt_copy_info || $opt_import || $opt_dump_iso || $opt_geniso || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe || $opt_ssa) {
 			if($debug)
 				echo "* Info / Import / Archive / ISO: Enabling device access\n";
 			$access_device = true;
@@ -382,7 +382,7 @@
 
 		// If archiving, everything would have happened by now,
 		// so eject the drive.
-		if((($opt_archive) || ($opt_import && $new_dvd)) && $device_is_hardware && $drive->is_closed()) {
+		if($opt_import && $new_dvd && $device_is_hardware && $drive->is_closed()) {
 			if(!$batch_mode)
 				echo "* Ready to archive next disc, opening tray!\n";
 			$drive->eject();

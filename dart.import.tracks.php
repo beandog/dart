@@ -26,8 +26,6 @@
 
 	if($missing_dvd_tracks_metadata && !$new_dvd)
 		echo "* Updating DVD tracks metadata: ";
-	elseif($opt_archive && !$new_dvd)
-		echo "* Checking tracks for full archival: ";
 	elseif($opt_import && $new_dvd)
 		echo "* Importing $dvd_title_tracks tracks: ";
 
@@ -157,11 +155,9 @@
 		if($debug)
 			echo "* Missing playlists metadata\n";
 		echo "* Updating BD playlists metadata: ";
-	}
-	elseif($opt_archive && !$new_dvd)
-		echo "* Checking playlists for full archival: ";
-	elseif($opt_import && $new_dvd)
+	} elseif($opt_import && $new_dvd) {
 		echo "* Importing $num_playlists tracks: ";
+	}
 
 	foreach($bd_playlists as $playlist) {
 
