@@ -161,19 +161,4 @@
 
 	}
 
-	function rename_iso($source) {
-
-		$dvd_iso_filename = get_dvd_iso_filename($source);
-		$bool = true;
-		// PHP will complain if source is a directory, so make it look like a file
-		$source = dirname($source)."/".basename($source);
-
-		if(!file_exists($dvd_iso_filename)) {
-			$bool = rename($source, $dvd_iso_filename);
-		}
-
-		return $bool;
-
-	}
-
 ?>

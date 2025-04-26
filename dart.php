@@ -73,7 +73,15 @@
 	if($opt_rename_iso) {
 
 		foreach($devices as $device) {
-			rename_iso($device);
+
+			$dvd_iso_filename = get_dvd_iso_filename($source);
+
+			// PHP will complain if source is a directory, so make it look like a file
+			$source = dirname($source)."/".basename($source);
+
+			if(!file_exists($dvd_iso_filename))
+				rename($source, $dvd_iso_filename);
+
 		}
 
 		exit(0);
