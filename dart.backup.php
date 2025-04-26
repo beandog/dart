@@ -1,13 +1,13 @@
 <?php
 	/**
-	 * --dump-iso
+	 * --backup
 	 *
 	 * Copy a disc's content to the harddrive
 	 */
 
 	// Continue if we can access the device (source file)
 	// and it has a database record.
-	if($access_device && $dvds_model_id && $opt_dump_iso && !$broken_dvd) {
+	if($access_device && $dvds_model_id && $opt_backup && !$broken_dvd) {
 
 		/** ISO Information **/
 		echo "[ISO]\n";
@@ -80,7 +80,7 @@
 			// If we have access to the device, and we
 			// are trying to dump it, and the output filename
 			// already exists, just eject the drive.
-			if($target_iso_exists && $opt_dump_iso) {
+			if($target_iso_exists && $opt_backup) {
 				echo "* Filename: $display_iso exists\n";
 				if($batch_mode) {
 					if($debug) {
@@ -103,7 +103,7 @@
 				$opt_title_sets = false;
 
 			// Dump the DVD contents to an ISO on the filesystem
-			if(!$target_iso_exists && !$is_ripping && $opt_dump_iso && $access_device && !$opt_title_sets) {
+			if(!$target_iso_exists && !$is_ripping && $opt_backup && $access_device && !$opt_title_sets) {
 
 				$logfile = "/tmp/dvdbackup.log";
 
@@ -123,7 +123,7 @@
 			}
 
 			// Dump the DVD title sets individually
-			if(!$target_iso_exists && !$is_ripping && $opt_dump_iso && $access_device && $opt_title_sets) {
+			if(!$target_iso_exists && !$is_ripping && $opt_backup && $access_device && $opt_title_sets) {
 
 				$arr_title_sets = $dvds_model->get_title_sets();
 				$str_title_sets = implode(' ', $arr_title_sets);

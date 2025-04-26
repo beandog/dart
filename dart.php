@@ -50,14 +50,10 @@
 	// I don't use 'dart --import' anymore, but it is still used
 	$opt_import = false;
 
-	// I never pass this as an option, but if it is flagged, it means to back up the DVD
-	$opt_dump_iso = false;
-
 	// --backup is basically a shortcut for ripping an ISO and importing it plus
 	// setting it in batch mode so it will eject the disc after finished.
 	// Designed for use with a udev trigger so that discs will auto-rip
 	if($opt_backup) {
-		$opt_dump_iso = true;
 		$opt_import = true;
 		$batch_mode = true;
 		$access_device = true;
@@ -121,7 +117,7 @@
 	if($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe || $opt_ssa)
 		$batch_mode = true;
 
-	if(!count($devices) && ($opt_info || $opt_encode_info || $opt_copy_info || $opt_dump_iso || $opt_import || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe || $opt_ssa))
+	if(!count($devices) && ($opt_info || $opt_encode_info || $opt_copy_info || $opt_backup || $opt_import || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe || $opt_ssa))
 		$devices = $all_devices;
 
 	// Default max length for QA operations
@@ -196,7 +192,7 @@
 			$display_device = basename($device);
 
 		// Determine whether we are reading the device
-		if($opt_info || $opt_encode_info || $opt_copy_info || $opt_import || $opt_dump_iso || $opt_geniso || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe || $opt_ssa) {
+		if($opt_info || $opt_encode_info || $opt_copy_info || $opt_import || $opt_backup || $opt_geniso || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe || $opt_ssa) {
 			if($debug)
 				echo "* Info / Import / Archive / ISO: Enabling device access\n";
 			$access_device = true;
@@ -379,7 +375,7 @@
 		require 'dart.import.php';
 		require 'dart.info.php';
 		require 'dart.encode_info.php';
-		require 'dart.iso.php';
+		require 'dart.backup.php';
 		require 'dart.geniso.php';
 
 		// goto point for next device -- skip here for any reason that the initial
