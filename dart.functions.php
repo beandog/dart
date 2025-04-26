@@ -1,5 +1,6 @@
 <?php
 
+	/*
 	function get_disc_type($source) {
 
 		$source = realpath($source);
@@ -23,6 +24,7 @@
 		return $str;
 
 	}
+	*/
 
 	function get_dvd_iso_filename($source) {
 

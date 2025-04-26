@@ -66,6 +66,27 @@
 		// system("beep -f 1000 -r 2 -n -r 5 -l 10 --new");
 	}
 
+	function get_disc_type($source) {
+
+		$source = realpath($source);
+
+		if(is_dir($source) && is_dir("$source/VIDEO_TS"))
+			return 'dvd';
+
+		if(is_dir($source) && is_dir("$source/BDMV"))
+			return 'bluray';
+
+		$arg_device = escapeshellarg($source);
+
+		$str = shell_exec("disc_type $arg_device 2> /dev/null");
+
+		if($str == 'dvd' || $str == 'bluray')
+			return $str;
+
+		return $str;
+
+	}
+
 	if($opt_iso_filename) {
 
 		foreach($devices as $device) {
