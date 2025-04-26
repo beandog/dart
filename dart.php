@@ -78,7 +78,7 @@
 
 		$arg_device = escapeshellarg($source);
 
-		$str = shell_exec("disc_type $arg_device 2> /dev/null");
+		$str = trim(shell_exec("disc_type $arg_device 2> /dev/null"));
 
 		if($str == 'dvd' || $str == 'bluray')
 			return $str;
