@@ -254,8 +254,9 @@
 			$str = str_pad($collection_id, 1, '0');
 			$str .= ".".str_pad($series_id, 3, '0', STR_PAD_LEFT);
 			$str .= ".".str_pad($dvd_id, 4, '0', STR_PAD_LEFT);
+			$str .= ".".str_pad($episode_id, 5, 0, STR_PAD_LEFT);
 			$str .= ".$nsix";
-			$str .= ".".str_pad($episode_id, 5, 0, STR_PAD_LEFT).".$container";
+			$str .= ".$container";
 
 			return $str;
 
