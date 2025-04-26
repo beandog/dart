@@ -197,7 +197,10 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		/*
 		 * Classic ripping using HandBrake
 		 */
-		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == 'dvd' && $opt_encode_info && $dvd_encoder == 'handbrake') {
+		if($disc_type == 'dvd' && $opt_encode_info && $dvd_encoder == 'handbrake') {
+
+			if(file_exists($filename) && $opt_skip_existing)
+				continue;
 
 			$handbrake = new HandBrake;
 			$handbrake->set_binary($handbrake_bin);
@@ -292,7 +295,10 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		/*
 		 * Use in-development dvd_rip
 		 */
-		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == 'dvd' && $opt_encode_info && $opt_dvdrip) {
+		if($disc_type == 'dvd' && $opt_encode_info && $opt_dvdrip) {
+
+			if(file_exists($filename) && $opt_skip_existing)
+				continue;
 
 			$dvdrip = new DVDRip;
 			$dvdrip->verbose($verbose);
@@ -483,7 +489,10 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		/** Copy DVD tracks **/
 
-		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == 'dvd' && $dvd_encoder == 'dvd_copy') {
+		if($disc_type == 'dvd' && $dvd_encoder == 'dvd_copy') {
+
+			if(file_exists($filename) && $opt_skip_existing)
+				continue;
 
 			require 'dart.dvd_copy.php';
 			$dvd_copy->input_filename($input_filename);
@@ -496,7 +505,10 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		/**
 		 * Rip DVDs using dvd_copy piped to ffmpeg
 		 */
-		if(!($opt_skip_existing && file_exists($filename)) && $disc_type == 'dvd' && $opt_encode_info && ($opt_ffpipe || $dvd_encoder == 'ffpipe')) {
+		if($disc_type == 'dvd' && $opt_encode_info && ($opt_ffpipe || $dvd_encoder == 'ffpipe')) {
+
+			if(file_exists($filename) && $opt_skip_existing)
+				continue;
 
 			require 'dart.dvd_copy.php';
 			$dvd_copy->input_filename($input_filename);
