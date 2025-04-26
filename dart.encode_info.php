@@ -45,24 +45,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 	$input_filename = realpath($device);
 
-	if($disc_type == 'bluray') {
-
-		$bluray_copy = new BlurayCopy();
-		$bluray_copy->set_binary('bluray_copy');
-
-		if($debug)
-			$bluray_copy->debug();
-
-		if($verbose)
-			$bluray_copy->verbose();
-
-		$bluray_copy->input_filename($input_filename);
-
-		$bluray_chapters = new BlurayChapters();
-		$bluray_chapters->input_filename($input_filename);
-
-	}
-
 	// Display the episode names
 	foreach($dvd_episodes as $episode_id) {
 
@@ -742,15 +724,24 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			if(file_exists($bluray_m2ts) && $opt_skip_existing)
 				$display_m2ts = false;
 
+			$bluray_copy = new BlurayCopy();
+
 			$bluray_copy->input_track($tracks_model->ix);
+
 			$bluray_copy->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
+			$bluray_copy->output_filename($bluray_m2ts);
+
+			$bluray_m2ts_command = $bluray_copy->get_executable_string();
+
+			$bluray_chapters = new BlurayChapters();
+
+			$bluray_chapters->input_filename($input_filename);
 
 			$bluray_chapters->input_track($tracks_model->ix);
-			$bluray_chapters->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
 
-			$bluray_copy->output_filename($bluray_m2ts);
-			$bluray_m2ts_command = $bluray_copy->get_executable_string();
+			$bluray_chapters->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
 			$bluray_chapters->output_filename($bluray_txt);
+
 			$bluray_chapters_command = $bluray_chapters->get_executable_string();
 
 			$mkvmerge = new Mkvmerge();
@@ -798,10 +789,18 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			if(file_exists($filename) && $opt_skip_existing)
 				continue;
 
+			$bluray_copy = new BlurayCopy();
+			$bluray_copy->input_filename($input_filename);
+
 			$bluray_copy->input_track($tracks_model->ix);
 			$bluray_copy->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
 
+			$bluray_chapters = new BlurayChapters();
+
+			$bluray_chapters->input_filename($input_filename);
+
 			$bluray_chapters->input_track($tracks_model->ix);
+
 			$bluray_chapters->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
 
 			$bluray_copy->output_filename("-");
