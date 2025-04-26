@@ -100,6 +100,8 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			$deint_filter = "bwdif=deint=$video_deint";
 			$ffmpeg->add_video_filter($deint_filter);
 
+			// Not sure if I really need this or not, at the very least, you can be sure it matches
+			// what the encode would look like.
 			if($fps)
 				$ffmpeg->add_video_filter("fps=$fps");
 
