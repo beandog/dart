@@ -45,14 +45,6 @@
 
 	}
 
-	function safe_filename_title($str = 'Title') {
-
-		$str = preg_replace("/[^A-Za-z0-9 \-,\.\?':!_]/", '', $str);
-		$str = str_replace("/", "-", $str);
-		return $str;
-
-	}
-
 	function get_dvd_iso_filename($source) {
 
 		$disc_type = get_disc_type($source);
