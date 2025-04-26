@@ -1,5 +1,0 @@
-#!/bin/bash
-random_iso=$(find /home/steve/Media/Laundry-Basket/ -mindepth 1 -maxdepth 1 -name '*.iso' | sort -R | head -n 1)
-test -z "$random_iso" && exit
-random_iso=$(realpath "$random_iso")
-echo "$random_iso"
