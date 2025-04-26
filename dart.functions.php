@@ -145,6 +145,61 @@
 
 	}
 
+	function get_episode_filenames($source, $skip_existing) {
+
+		$arg_source = escapeshellarg(realpath($source));
+		exec("disc_type $arg_source 2> /dev/null", $output, $retval);
+
+		$disc_type = current($output);
+
+		if($disc_type == 'dvd') {
+
+			require_once 'class.dvd.php';
+			require_once 'models/dvds.php';
+
+			$dvds_model = new Dvds_Model();
+			$dvd = new DVD($source);
+			if(is_null($dvd->dvd_info))
+				return array();
+
+		} elseif($disc_type == 'bluray') {
+
+			require_once 'class.bluray.php';
+			require_once 'models/blurays.php';
+
+			$dvd = new Bluray($source);
+			$dvds_model = new Blurays_Model();
+			$dvdread_id = $dvd->dvdread_id;
+
+		} else {
+
+			return array();
+
+		}
+
+		$dvdread_id = $dvd->dvdread_id;
+
+		$dvds_model->load_dvdread_id($dvdread_id);
+
+		if(!$dvds_model->id)
+			return array();
+
+		$arr_episodes = $dvds_model->get_episodes(false);
+
+		$filenames = array();
+
+		foreach($arr_episodes as $episode_id) {
+
+			$episodes_model = new Episodes_Model($episode_id);
+
+			$filenames[] = $episodes_model->get_filename();
+
+		}
+
+		return $filenames;
+
+	}
+
 	function rename_iso($source) {
 
 		$dvd_iso_filename = get_dvd_iso_filename($source);

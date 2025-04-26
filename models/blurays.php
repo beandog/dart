@@ -96,6 +96,21 @@
 
 		}
 
+		public function get_episodes($include_skipped = true) {
+
+			if($include_skipped)
+				$str_skip = "0, 1";
+			else
+				$str_skip = "0";
+
+			$sql = "SELECT episode_id FROM view_episodes WHERE dvd_id = ".$this->dvd_id." AND episode_skip IN ($str_skip) ORDER BY episode_season, episode_number, episode_id;";
+
+			$arr = $this->get_col($sql);
+
+			return $arr;
+
+		}
+
 		// Holder function from DVDs model
 		function has_max_tracks() {
 

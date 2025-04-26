@@ -80,6 +80,21 @@
 
 	}
 
+	if($opt_episode_filenames) {
+
+		foreach($devices as $device) {
+
+			$arr = get_episode_filenames($device, $opt_skip_existing);
+
+			foreach($arr as $filename)
+				echo "$filename\n";
+
+		}
+
+		exit(0);
+
+	}
+
 	if($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe || $opt_ssa)
 		$batch_mode = true;
 

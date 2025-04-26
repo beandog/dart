@@ -93,6 +93,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_episode_filenames', array(
+		'long_name' => '--episode-filenames',
+		'description' => 'Print episode filenames',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('opt_geniso', array(
 		'long_name' => '--geniso',
 		'description' => 'Create ISO from directory',

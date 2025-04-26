@@ -237,5 +237,29 @@
 
 		}
 
+		public function get_filename() {
+
+			$episode_id = intval($this->id);
+
+			$sql = "SELECT s.collection_id, s.nsix, sd.series_id, t.dvd_id FROM episodes e JOIN tracks t ON e.track_id = t.id JOIN dvds d ON t.dvd_id = d.id JOIN series_dvds sd ON d.id = sd.dvd_id JOIN series s ON sd.series_id = s.id WHERE e.id = $episode_id LIMIT 1;";
+
+			$arr = $this->get_row($sql);
+
+			if(!$arr)
+				return "";
+
+			extract($arr);
+
+			// Get the target filename
+			$str = str_pad($collection_id, 1, '0');
+			$str .= ".".str_pad($series_id, 3, '0', STR_PAD_LEFT);
+			$str .= ".".str_pad($dvd_id, 4, '0', STR_PAD_LEFT);
+			$str .= ".$nsix";
+			$str .= ".".str_pad($episode_id, 5, 0, STR_PAD_LEFT).".mkv";
+
+			return $str;
+
+		}
+
 	}
 ?>
