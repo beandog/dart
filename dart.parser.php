@@ -19,13 +19,6 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_import', array(
-		'short_name' => '-i',
-		'long_name' => '--import',
-		'description' => 'Import DVD metadata into database',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
 	$parser->addOption('opt_force', array(
 		'long_name' => '--force',
 		'description' => 'Force import of new Blu-ray',
