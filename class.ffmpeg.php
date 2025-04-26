@@ -7,7 +7,6 @@
 
 		// ffmpeg
 		public $binary = 'ffmpeg';
-		public $ffmpeg_output = '/dev/null';
 		public $ffmpeg_opts = '';
 		public $input_opts = '';
 		public $duration = 0;
@@ -29,12 +28,10 @@
 		public $vcodec_opts = '';
 		public $video_filters = array();
 		public $crf = 0;
-		public $fps = '';
 		public $tune = '';
 		public $preset = '';
 
 		// Audio
-		public $audio = true;
 		public $acodec = 'copy';
 		public $acodec_opts = '';
 		public $audio_streams = array();
@@ -126,10 +123,6 @@
 			$crf = abs(intval($str));
 			if($crf)
 				$this->crf = $crf;
-		}
-
-		public function set_fps($str) {
-			$this->fps = $str;
 		}
 
 		public function set_tune($str) {
