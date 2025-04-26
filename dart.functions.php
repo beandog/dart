@@ -1,31 +1,5 @@
 <?php
 
-	/*
-	function get_disc_type($source) {
-
-		$source = realpath($source);
-
-		if(is_dir($source) && is_dir("$source/VIDEO_TS"))
-			return 'dvd';
-
-		if(is_dir($source) && is_dir("$source/BDMV"))
-			return 'bluray';
-
-		$arg_device = escapeshellarg($source);
-
-		$command = "/usr/local/bin/disc_type $arg_device 2> /dev/null";
-		exec($command, $arr, $retval);
-
-		$str = current($arr);
-
-		if($str == 'dvd' || $str == 'bluray')
-			return $str;
-
-		return $str;
-
-	}
-	*/
-
 	function get_dvd_iso_filename($source) {
 
 		$disc_type = get_disc_type($source);
