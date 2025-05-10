@@ -110,6 +110,10 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			if($fps)
 				$ffmpeg->add_video_filter("fps=$fps");
 
+			$crop = $episodes_model->crop;
+			if($crop != null && $crop != '720:480:0:0')
+				$ffmpeg->add_video_filter("crop=$crop");
+
 			/** Chapters **/
 			$starting_chapter = $episodes_model->starting_chapter;
 			$ending_chapter = $episodes_model->ending_chapter;
