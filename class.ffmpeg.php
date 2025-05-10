@@ -265,11 +265,7 @@
 
 		public function get_executable_string() {
 
-			$binary = 'ffmpeg';
-			if($this->binary == 'ffprobe')
-				$binary = 'ffprobe';
-
-			$cmd[] = $binary;
+			$cmd[] = $this->binary;
 
 			if($this->debug) {
 				$cmd[] = "-report";
@@ -308,7 +304,7 @@
 				$arg_input = "bluray:$arg_input";
 			$cmd[] = "-i $arg_input";
 
-			if($this->ssa_filename && $binary == 'ffmpeg') {
+			if($this->ssa_filename && $this->binary == 'ffmpeg') {
 				$arg_ssa_filename = escapeshellarg($this->ssa_filename);
 				$cmd[] = "-i $arg_ssa_filename";
 			}
@@ -348,16 +344,19 @@
 
 			}
 
-			$cmd[] = "-vcodec '".$this->vcodec."'";
-			$cmd[] = "-acodec '".$this->acodec."'";
-			$cmd[] = "-scodec '".$this->scodec."'";
+			if($this->binary != 'ffplay') {
+				$cmd[] = "-vcodec '".$this->vcodec."'";
+				$cmd[] = "-acodec '".$this->acodec."'";
+				$cmd[] = "-scodec '".$this->scodec."'";
+			}
 
-			if($this->ssa_filename && $binary == 'ffmpeg')
+			if($this->ssa_filename && $this->binary == 'ffmpeg')
 				$cmd[] = "-map '1'";
 
 			// Always set all audio *and* subtitle streams as English
 			// Blu-ray audio streams probed with ffmpeg do not see language code, so this will fix that as well
-			$cmd[] = "-metadata:s 'language=eng'";
+			if($this->binary != 'ffplay')
+				$cmd[] = "-metadata:s 'language=eng'";
 
 			$args = $this->get_ffmpeg_arguments();
 
