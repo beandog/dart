@@ -970,6 +970,31 @@ CREATE VIEW public.view_episodes AS
 ALTER VIEW public.view_episodes OWNER TO steve;
 
 --
+-- Name: view_series_dvds; Type: VIEW; Schema: public; Owner: steve
+--
+
+CREATE VIEW public.view_series_dvds AS
+ SELECT (((((((s.collection_id || '.'::text) || lpad((sd.series_id)::text, 3, '0'::text)) || '.'::text) || lpad((d.id)::text, 4, '0'::text)) || '.'::text) || (s.nsix)::text) || '.iso'::text) AS dvd_iso,
+    s.collection_id,
+    sd.series_id,
+    sd.dvd_id,
+    s.nsix,
+    d.dvdread_id,
+    d.side,
+    d.bluray,
+    d.title AS disc_title,
+    d.filesize,
+    s.active AS series_active,
+    s.title AS series_title
+   FROM ((public.series s
+     LEFT JOIN public.series_dvds sd ON ((sd.series_id = s.id)))
+     JOIN public.dvds d ON ((sd.dvd_id = d.id)))
+  ORDER BY s.collection_id, sd.series_id, sd.dvd_id;
+
+
+ALTER VIEW public.view_series_dvds OWNER TO steve;
+
+--
 -- Name: audio id; Type: DEFAULT; Schema: public; Owner: steve
 --
 
