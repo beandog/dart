@@ -242,6 +242,8 @@
 			}
 
 			// Check if there are zero subtitles
+			// Not real sure why this is in here, it's not unusual for a track to have no subtitles.
+			/*
 			$sql = "SELECT COUNT(1) FROM subp s JOIN tracks t ON s.track_id = t.id WHERE t.dvd_id = $dvd_id;";
 			$count = intval($this->get_one($sql));
 			if(!$count) {
@@ -249,6 +251,7 @@
 					echo "* Zero subtitles\n";
 				return true;
 			}
+			*/
 
 			// Check if any subtitles are missing language
 			$sql = "SELECT COUNT(1) FROM subp s JOIN tracks t ON s.track_id = t.id WHERE t.dvd_id = $dvd_id AND langcode = '';";
