@@ -623,6 +623,9 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		if($disc_type == 'bluray' && ($opt_ffprobe || $opt_ffplay)) {
 
+			$dvd_bugs = $dvds_model->get_bugs();
+			$dvd_encode_ssa = false;
+
 			$ffmpeg = new FFMpeg();
 			$ffmpeg->set_disc_type('bluray');
 
@@ -725,6 +728,10 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			$ffmpeg->input_track($tracks_model->ix);
 
 			$ffmpeg->add_audio_stream('0x1100');
+
+			// Add audio downmix for stereo where needed through ffmpeg audio filters
+			if(in_array('stereo', $dvd_bugs) && ($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'ffpipe'))
+				$ffmpeg->add_stereo_downmix();
 
 			// HD Blu-rays, first PGS is 0x1200
 			// UHD Blu-rays, first PGS is 0x12a0
