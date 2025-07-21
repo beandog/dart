@@ -139,7 +139,7 @@
 			$this->dvdread_id = $dvdread_id;
 
 			// Get bluray_json
-			$cmd = $this->binary." --duplicates --json $arg_device";
+			$cmd = $this->binary." --json $arg_device";
 			if(!$this->debug)
 				$cmd .= " 2> /dev/null";
 
