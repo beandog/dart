@@ -305,6 +305,10 @@
 		 */
 		public function size() {
 
+			// Getting size on fbsd not supported
+			if(PHP_OS == "FreeBSD")
+				return 0;
+
 			// Running stat on a single image file not supported right now
 			$kb_size = 0;
 

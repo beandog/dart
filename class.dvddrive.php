@@ -143,12 +143,20 @@
 			if($this->debug)
 				echo "* drive::has_media(".$this->device.")\n";
 
+			if(PHP_OS == "FreeBSD") {
+
+				$disc_type = $this->disc_type();
+
+				if($disc_type == "bluray" || $disc_type == "dvd")
+					return true;
+				else
+					return false;
+
+			}
+
 			$this->wait_until_ready();
 
 			$status = $this->get_status();
-
-			if(PHP_OS == "FreeBSD" && $status == 2)
-				return true;
 
 			if($status == 4)
 				return true;
@@ -265,7 +273,7 @@
 			if($this->debug)
 				echo "* drive::disc_type(".$this->device.")\n";
 
-			$command = "/usr/local/bin/disc_type $arg_device 2> /dev/null";
+			$command = "/usr/local/bin/disc_type ".$this->device." 2> /dev/null";
 			exec($command, $arr, $return);
 
 			$disc_type = current($arr);
