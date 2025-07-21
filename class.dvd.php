@@ -392,6 +392,9 @@
 				$b_size = $stat['size'];
 			} else {
 
+				if(PHP_OS == "FreeBSD")
+					return 0;
+
 				$block_device = basename($this->device, "/dev/");
 				$num_sectors = intval(file_get_contents("/sys/block/$block_device/size"));
 				$b_size = $num_sectors * 512;
