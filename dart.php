@@ -3,6 +3,8 @@
 
 	// Defaults
 	$all_devices = array('/dev/sr0');
+	if(PHP_OS == "FreeBSD")
+		$all_devices = array('/dev/cd0');
 	$export_dir = getenv('HOME').'/dvds/';
 	$hostname = php_uname('n');
 	$container = "mkv";

@@ -46,6 +46,9 @@
 			if($this->debug)
 				echo "* drive::dvd_drive_status: ".current($output)."\n";
 
+			if(PHP_OS == "FreeBSD")
+				return true;
+
 			if($retval == 5) {
 				if($this->debug)
 					echo "* drive::access_device: device exists, but is not a DVD drive\n";
@@ -71,6 +74,9 @@
 
 			if($this->debug)
 				echo "* drive::wait_until_ready(".$this->device.")\n";
+
+			if(PHP_OS == "FreeBSD")
+				return true;
 
 			do {
 				sleep(2);
@@ -140,6 +146,10 @@
 			$this->wait_until_ready();
 
 			$status = $this->get_status();
+
+			if(PHP_OS == "FreeBSD" && $status == 2)
+				return true;
+
 			if($status == 4)
 				return true;
 			else
@@ -190,6 +200,10 @@
 				echo "* drive::is_ready(".$this->device.")\n";
 
 			$status = $this->get_status();
+
+			if(PHP_OS == "FreeBSD")
+				return true;
+
 			if($status != 3)
 				return true;
 			else
