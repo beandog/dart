@@ -165,6 +165,12 @@
 		'action' => 'StoreString',
 		'default' => '',
 	));
+	$parser->addOption('arg_acodec', array(
+		'long_name' => '--acodec',
+		'description' => 'Use audio codec',
+		'action' => 'StoreString',
+		'default' => '',
+	));
 	$parser->addOption('arg_crf', array(
 		'long_name' => '--crf',
 		'description' => 'Set encoding CRF',

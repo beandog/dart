@@ -247,16 +247,19 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			$handbrake->add_audio_track($tracks_model->audio_ix);
 
 			$acodec = $series_model->get_acodec();
-			if($acodec == 'fdk_aac' || $acodec == 'ac3' || $acodec == 'flac' || $acodec == 'mp3') {
-				$handbrake->add_acodec($acodec);
-				if($acodec == 'mp3')
-					$handbrake->set_audio_bitrate('320k');
-			} elseif($acodec == 'fdk_aac,copy') {
-				$handbrake->add_acodec('fdk_aac');
-				$handbrake->add_acodec('copy');
-			} else {
-				$handbrake->add_acodec('copy');
-			}
+
+			if($arg_acodec && ($arg_acodec == "mp3" || $arg_acodec == "aac" || $arg_acodec == "flac"))
+				$acodec = $arg_acodec;
+
+			if($acodec == 'aac')
+				$acodec = 'fdk_aac';
+			elseif($acodec == 'flac')
+				$acodec = 'flac16';
+
+			if($acodec == 'mp3')
+				$handbrake->set_audio_bitrate('320k');
+
+			$handbrake->add_acodec($acodec);
 
 			/** Subtitles **/
 
@@ -383,6 +386,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		}
 
+		// DVD encoding with ffmpeg and libdvdread
 		if($disc_type == 'dvd' && $opt_encode_info && $dvd_encoder == 'ffmpeg') {
 
 			$ffmpeg = new FFMpeg();
@@ -439,7 +443,17 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 				$audio_streamid = '0x80';
 			$ffmpeg->add_audio_stream($audio_streamid);
 
-			$ffmpeg->set_acodec('copy');
+			$acodec = $series_model->get_acodec();
+
+			if($arg_acodec && ($arg_acodec == "mp3" || $arg_acodec == "aac" || $arg_acodec == "flac"))
+				$acodec = $arg_acodec;
+
+			if($acodec == "aac")
+				$acodec = "libfdk_aac";
+			elseif($acodec == "mp3")
+				$acodec = "libmp3lame";
+
+			$ffmpeg->set_acodec($acodec);
 
 			/** Chapters **/
 			$starting_chapter = $episodes_model->starting_chapter;
@@ -559,7 +573,17 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 				$audio_streamid = '0x80';
 			$ffmpeg->add_audio_stream($audio_streamid);
 
-			$ffmpeg->set_acodec('copy');
+			$acodec = $series_model->get_acodec();
+
+			if($arg_acodec && ($arg_acodec == "mp3" || $arg_acodec == "aac" || $arg_acodec == "flac"))
+				$acodec = $arg_acodec;
+
+			if($acodec == "aac")
+				$acodec = "libfdk_aac";
+			elseif($acodec == "mp3")
+				$acodec = "libmp3lame";
+
+			$ffmpeg->set_acodec($acodec);
 
 			$subp_ix = $tracks_model->get_first_english_subp();
 			if(!$subp_ix && ($tracks_model->get_num_active_subp_tracks() == 1))
