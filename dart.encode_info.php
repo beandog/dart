@@ -111,7 +111,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 				$ffmpeg->add_video_filter("fps=$fps");
 
 			$crop = $episodes_model->crop;
-			if($crop != null && $crop != '720:480:0:0')
+			if($crop != null && !$opt_nocrop && $crop != '720:480:0:0')
 				$ffmpeg->add_video_filter("crop=$crop");
 
 			/** Chapters **/
@@ -193,6 +193,8 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			$prefix = "ffpipe-qa-";
 		if($arg_vcodec)
 			$prefix .= "$arg_vcodec-";
+		if($arg_acodec)
+			$prefix .= "$arg_acodec-";
 		if($arg_crf)
 			$prefix .= "q-$arg_crf-";
 		if($opt_fast)
@@ -428,7 +430,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			// Set video filters based on frame info
 			$crop = $episodes_model->crop;
-			if($crop != null && $crop != '720:480:0:0')
+			if($crop != null && !$opt_nocrop && $crop != '720:480:0:0')
 				$ffmpeg->add_video_filter("crop=$crop");
 
 			$deint_filter = "bwdif=deint=$video_deint";
@@ -558,7 +560,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			// Set video filters based on frame info
 			$crop = $episodes_model->crop;
-			if($crop != null && $crop != '720:480:0:0')
+			if($crop != null && !$opt_nocrop && $crop != '720:480:0:0')
 				$ffmpeg->add_video_filter("crop=$crop");
 
 			$deint_filter = "bwdif=deint=$video_deint";

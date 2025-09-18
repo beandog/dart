@@ -141,6 +141,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_nocrop', array(
+		'long_name' => '--nocrop',
+		'description' => 'Do not crop video with ffmpeg',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('opt_scan', array(
 		'long_name' => '--scan',
 		'description' => 'Use HandBrake to get DVD information',
