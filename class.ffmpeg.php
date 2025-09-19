@@ -24,6 +24,7 @@
 		public $stop_chapter = 0;
 
 		// Video
+		public $container = '';
 		public $vcodec = 'copy';
 		public $vcodec_opts = '';
 		public $video_filters = array();
@@ -82,6 +83,7 @@
 
 		public function output_filename($str) {
 			$this->output_filename = $str;
+			$this->container = pathinfo($str, PATHINFO_EXTENSION);
 		}
 
 		public function set_disc_type($str) {
@@ -256,10 +258,16 @@
 			if($this->acodec_opts)
 				$args['acodec_opts'] = $this->acodec_opts;
 
+			if($this->acodec == 'libfdk_aac')
+				$args['vbr'] = 5;
+
 			if(count($this->video_filters)) {
 				$vf = implode(",", $this->video_filters);
 				$args['vf'] = $vf;
 			}
+
+			if($this->container == 'mp4')
+				$args['movflags'] = '+faststart';
 
 			if($this->duration)
 				$args['t'] = $this->duration;

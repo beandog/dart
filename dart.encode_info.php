@@ -45,6 +45,13 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 	$input_filename = realpath($device);
 
+	$container = 'mkv';
+
+	if($opt_mp4)
+		$container = 'mp4';
+	elseif($opt_mkv)
+		$container = 'mkv';
+
 	// Display the episode names
 	foreach($dvd_episodes as $episode_id) {
 
@@ -80,11 +87,8 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		if($arg_vcodec)
 			$vcodec = $arg_vcodec;
 
-		$container = 'mkv';
-
 		if($disc_type == 'dvd' && $opt_copy_info)
 			$container = 'mpg';
-
 
 		if($disc_type == 'dvd' && $opt_ffplay) {
 
@@ -253,12 +257,12 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			if($arg_acodec && ($arg_acodec == "mp3" || $arg_acodec == "aac" || $arg_acodec == "flac"))
 				$acodec = $arg_acodec;
 
-			if($acodec == 'aac')
+			if($acodec == 'aac') {
 				$acodec = 'fdk_aac';
-			elseif($acodec == 'flac')
+				$handbrake->set_audio_vbr(5);
+			} elseif($acodec == 'flac')
 				$acodec = 'flac16';
-
-			if($acodec == 'mp3')
+			elseif($acodec == 'mp3')
 				$handbrake->set_audio_bitrate('320k');
 
 			$handbrake->add_acodec($acodec);

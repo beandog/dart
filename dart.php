@@ -7,8 +7,6 @@
 		$all_devices = array('/dev/cd0');
 	$export_dir = getenv('HOME').'/dvds/';
 	$hostname = php_uname('n');
-	$container = "mkv";
-	$extension = ".mkv";
 	$batch_mode = false;
 
 	// Overrides to defaults

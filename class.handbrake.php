@@ -23,6 +23,7 @@
 		public $dvd_num_subtitles;
 
 		// Video
+		public $container = '';
 		public $vcodec;
 		public $video_quality;
 		public $video_framerate;
@@ -42,6 +43,7 @@
 		public $audio_tracks = array();
 		public $audio_streams = array();
 		public $audio_bitrate;
+		public $audio_vbr;
 
 		// Container
 		public $add_chapters;
@@ -82,6 +84,7 @@
 
 		public function output_filename($str) {
 			$this->output = $str;
+			$this->container = pathinfo($str, PATHINFO_EXTENSION);
 		}
 
 		public function input_track($str) {
@@ -95,6 +98,10 @@
 
 		public function set_audio_bitrate($str) {
 			$this->audio_bitrate = $str;
+		}
+
+		public function set_audio_vbr($int) {
+			$this->audio_vbr = abs(intval($int));
 		}
 
 		public function set_vcodec($str) {
@@ -275,6 +282,10 @@
 			// Set constant framerate
 			$options[] = '--cfr';
 
+			// MP4
+			if($this->container == 'mp4')
+				$options[] = 'optimize';
+
 			return $options;
 
 		}
@@ -373,6 +384,10 @@
 
 				if($this->audio_bitrate) {
 					$args['--ab'] = $this->audio_bitrate;
+				}
+
+				if($this->audio_vbr) {
+					$args['--aq'] = $this->audio_vbr;
 				}
 
 			}

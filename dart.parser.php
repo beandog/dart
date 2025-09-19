@@ -195,6 +195,18 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_mkv', array(
+		'long_name' => '--mkv',
+		'description' => 'Use Matroska container',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
+	$parser->addOption('opt_mp4', array(
+		'long_name' => '--mp4',
+		'description' => 'Use MP4 container',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 
 	try { $result = $parser->parse(); }
 	catch(PEAR_Exception $e) {
