@@ -62,8 +62,6 @@
 				$cmd[] = "$key $arg_value";
 			}
 
-			$cmd[] = "-d";
-
 			$cmd[] = "--xchap";
 
 			$cmd[] = "> ".escapeshellarg($this->output_filename);

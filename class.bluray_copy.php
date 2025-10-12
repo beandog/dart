@@ -79,7 +79,7 @@
 			$str = implode(" ", $cmd);
 
 			$arg_output = escapeshellarg($this->output_filename);
-			$str .= " -d -o $arg_output";
+			$str .= " -o $arg_output";
 
 			return $str;
 
