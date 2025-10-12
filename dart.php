@@ -353,11 +353,20 @@
 			else
 				goto next_device;
 
-			if($disc_type == 'bluray' && $opt_backup)
+			if($disc_type == 'bluray' && $opt_backup) {
+				echo "Use --makemkv to backup a Blu-ray\n";
 				goto next_device;
+			}
 
-			if($disc_type == 'bluray' && $opt_copy_info)
+			if($disc_type == 'bluray' && ($opt_copy_info || $opt_remux)) {
+				echo "Use --encode-info with --ffmpeg or --ffpipe to copy or remux playlists\n";
 				goto next_device;
+			}
+
+			if($disc_type == 'bluray' && $opt_scan) {
+				echo "Scanning a Blu-ray with HandBrake not supported\n";
+				goto next_device;
+			}
 
 			if(!$batch_mode)
 				echo "[$disc_name]\n";
