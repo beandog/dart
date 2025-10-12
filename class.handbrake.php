@@ -3,7 +3,6 @@
 	class HandBrake {
 
 		// Handbrake
-		public $binary = "HandBrakeCLI";
 		public $verbose = false;
 		public $debug = false;
 		public $dvdnav = true;
@@ -61,10 +60,6 @@
 
 		function verbose($bool = true) {
 			$this->verbose = boolval($bool);
-		}
-
-		public function set_binary($str) {
-			$this->binary = $str;
 		}
 
 		public function set_disc_type($str) {
@@ -435,7 +430,7 @@
 			foreach($options as $str)
 				$cmd[] = escapeshellarg($str);
 
-			$str = $this->binary." ".implode(" ", $cmd);
+			$str = "HandBrakeCLI ".implode(" ", $cmd);
 
 			$arg_input = escapeshellarg($this->input);
 			$arg_output = escapeshellarg($this->output);
@@ -491,7 +486,7 @@
 				$options = "--title ".$this->track;
 
 			$arg_input = escapeshellarg($this->input);
-			$cmd = $this->binary." --scan --verbose $options --input $arg_input 2>&1";
+			$cmd = "HandBrakeCLI --scan --verbose $options --input $arg_input 2>&1";
 
 			$output_file = tempnam(sys_get_temp_dir(), "handbrake-scan");
 

@@ -215,7 +215,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		if($disc_type == 'dvd' && $opt_encode_info && $dvd_encoder == 'handbrake') {
 
 			$handbrake = new HandBrake;
-			$handbrake->set_binary($handbrake_bin);
 			$handbrake->verbose($verbose);
 			$handbrake->debug($debug);
 
