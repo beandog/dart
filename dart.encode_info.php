@@ -93,7 +93,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		if($disc_type == 'dvd' && $opt_ffplay) {
 
 			$ffmpeg = new FFMpeg();
-			$ffmpeg->set_binary('ffplay');
+			$ffmpeg->set_encoder('ffplay');
 
 			$ffmpeg->input_filename($input_filename);
 
@@ -139,7 +139,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		if($disc_type == 'dvd' && $opt_ffprobe) {
 
 			$ffmpeg = new FFMpeg();
-			$ffmpeg->set_binary('ffprobe');
+			$ffmpeg->set_encoder('ffprobe');
 
 			$ffmpeg->input_filename($input_filename);
 
@@ -395,7 +395,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		if($disc_type == 'dvd' && $opt_encode_info && $dvd_encoder == 'ffmpeg') {
 
 			$ffmpeg = new FFMpeg();
-			$ffmpeg->set_binary('ffmpeg');
+			$ffmpeg->set_encoder('ffmpeg');
 
 			if($debug)
 				$ffmpeg->debug();
@@ -524,7 +524,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			$dvd_copy_command = $dvd_copy->get_executable_string();
 
 			$ffmpeg = new FFMpeg();
-			$ffmpeg->set_binary('ffmpeg');
+			$ffmpeg->set_encoder('ffmpeg');
 			$ffmpeg->disc_type = 'dvdcopy';
 
 			if($debug)
@@ -673,10 +673,10 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 				$ffmpeg->set_chapters($starting_chapter, null);
 
 			if($opt_ffprobe) {
-				$ffmpeg->set_binary('ffprobe');
+				$ffmpeg->set_encoder('ffprobe');
 				$ffmpeg_command = $ffmpeg->ffprobe();
 			} elseif($opt_ffplay) {
-				$ffmpeg->set_binary('ffplay');
+				$ffmpeg->set_encoder('ffplay');
 				$ffmpeg_command = $ffmpeg->get_executable_string();
 			}
 
@@ -707,13 +707,13 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			if($dvd_encoder == 'ffmpeg') {
 
-				$ffmpeg->set_binary('ffmpeg');
+				$ffmpeg->set_encoder('ffmpeg');
 
 				$ffmpeg->input_filename($input_filename);
 
 			} elseif($dvd_encoder == 'ffpipe') {
 
-				$ffmpeg->set_binary('ffpipe');
+				$ffmpeg->set_encoder('ffpipe');
 
 				$ffmpeg->input_filename('-');
 
