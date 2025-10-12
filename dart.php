@@ -92,6 +92,8 @@
 		if(!count($devices))
 			$devices = $all_devices;
 
+		$dvds_model_id = null;
+
 		foreach($devices as $device)
 			require 'dart.backup.php';
 
