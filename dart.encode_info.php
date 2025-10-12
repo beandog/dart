@@ -705,13 +705,16 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			$ffmpeg->set_disc_type('bluray');
 
-			$ffmpeg->set_binary('ffmpeg');
 
 			if($dvd_encoder == 'ffmpeg') {
+
+				$ffmpeg->set_binary('ffmpeg');
 
 				$ffmpeg->input_filename($input_filename);
 
 			} elseif($dvd_encoder == 'ffpipe') {
+
+				$ffmpeg->set_binary('ffpipe');
 
 				$ffmpeg->input_filename('-');
 

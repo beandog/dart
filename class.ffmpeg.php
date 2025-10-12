@@ -278,7 +278,12 @@
 
 		public function get_executable_string() {
 
-			$cmd[] = $this->binary;
+			$encoder = 'ffmpeg';
+
+			if($this->binary == 'ffprobe')
+				$encoder = 'ffprobe';
+
+			$cmd[] = $encoder;
 
 			if($this->debug) {
 				$cmd[] = "-report";
