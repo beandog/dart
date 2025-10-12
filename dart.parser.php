@@ -123,12 +123,6 @@
 		'default' => false,
 	));
 	*/
-	$parser->addOption('opt_bluraycopy', array(
-		'long_name' => '--bluraycopy',
-		'description' => 'Use bluray_copy to rip Blu-rays',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
 	$parser->addOption('opt_ffmpeg', array(
 		'long_name' => '--ffmpeg',
 		'description' => 'Use ffmpeg to rip DVDs',
