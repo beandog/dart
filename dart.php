@@ -102,6 +102,9 @@
 
 	if($opt_iso_filename) {
 
+		if(!count($devices))
+			$devices = $all_devices;
+
 		foreach($devices as $device) {
 			$iso_filename = get_dvd_iso_filename($device);
 			if($iso_filename) {
@@ -132,6 +135,9 @@
 	}
 
 	if($opt_episode_filenames) {
+
+		if(!count($devices))
+			$devices = $all_devices;
 
 		foreach($devices as $device) {
 
