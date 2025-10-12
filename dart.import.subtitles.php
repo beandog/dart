@@ -52,7 +52,6 @@
 	if(is_null($tracks_model->closed_captioning) && $disc_type == 'dvd') {
 
 		$handbrake = new HandBrake;
-		$handbrake->set_binary($handbrake_bin);
 		$handbrake->input_filename($device);
 		$handbrake->input_track($title_track);
 
