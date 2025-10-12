@@ -6,7 +6,7 @@
 		public $verbose = false;
 
 		// ffmpeg
-		public $binary = 'ffmpeg';
+		public $encoder = 'ffmpeg';
 		public $ffmpeg_opts = '';
 		public $input_opts = '';
 		public $duration = 0;
@@ -52,8 +52,8 @@
 			$this->verbose = boolval($bool);
 		}
 
-		public function set_binary($str) {
-			$this->binary = $str;
+		public function set_encoder($str) {
+			$this->encoder = $str;
 		}
 
 		public function set_duration($int) {
@@ -176,7 +176,7 @@
 
 		public function cropdetect() {
 
-			$arr[] = $this->binary;
+			$arr[] = $this->encoder;
 			$arr[] = "-f 'dvdvideo'";
 
 			if($this->dvd_track)
@@ -204,7 +204,7 @@
 
 		public function ffprobe() {
 
-			$cmd[] = $this->binary;
+			$cmd[] = $this->encoder;
 
 			if($this->debug)
 				$cmd[] = "-loglevel 'debug'";
@@ -280,7 +280,7 @@
 
 			$encoder = 'ffmpeg';
 
-			if($this->binary == 'ffprobe')
+			if($this->encoder == 'ffprobe')
 				$encoder = 'ffprobe';
 
 			$cmd[] = $encoder;
@@ -305,7 +305,7 @@
 			if($this->dvd_track && $this->disc_type == 'dvd')
 				$cmd[] = "-title '".$this->dvd_track."'";
 
-			if($this->disc_type == 'bluray' && $this->binary != 'ffpipe')
+			if($this->disc_type == 'bluray' && $this->encoder != 'ffpipe')
 				$cmd[] = "-playlist '".$this->dvd_track."'";
 
 			if($this->start_chapter && $this->disc_type == 'dvd')
@@ -318,33 +318,33 @@
 
 			$arg_input = escapeshellarg($this->input_filename);
 
-			if($this->disc_type == 'bluray' && $this->binary != 'ffpipe')
+			if($this->disc_type == 'bluray' && $this->encoder != 'ffpipe')
 				$arg_input = "bluray:$arg_input";
 			$cmd[] = "-i $arg_input";
 
-			if($this->ssa_filename && $this->binary == 'ffmpeg') {
+			if($this->ssa_filename && $this->encoder == 'ffmpeg') {
 				$arg_ssa_filename = escapeshellarg($this->ssa_filename);
 				$cmd[] = "-i $arg_ssa_filename";
 			}
 
-			if(($this->disc_type == 'dvd'|| $this->disc_type == 'dvdcopy') && $this->binary == 'ffmpeg') {
+			if(($this->disc_type == 'dvd'|| $this->disc_type == 'dvdcopy') && $this->encoder == 'ffmpeg') {
 
 				$cmd[] = "-map 'v'";
 
-				if(count($this->audio_streams) && $this->binary == 'ffmpeg') {
+				if(count($this->audio_streams) && $this->encoder == 'ffmpeg') {
 					foreach($this->audio_streams as $streamid) {
 						$cmd[] = "-map 'i:$streamid'";
 					}
 				}
 
 				// This should probably be okay ........ just assume first is English
-				if(count($this->subtitle_streams) && $this->binary == 'ffmpeg') {
+				if(count($this->subtitle_streams) && $this->encoder == 'ffmpeg') {
 					$cmd[] = "-map 'i:0x20?'";
 				}
 
 			}
 
-			if($this->disc_type == 'bluray' && ($this->binary == 'ffmpeg' || $this->binary == 'ffpipe')) {
+			if($this->disc_type == 'bluray' && ($this->encoder == 'ffmpeg' || $this->encoder == 'ffpipe')) {
 
 				$cmd[] = "-map 'v:0'";
 
@@ -370,19 +370,19 @@
 
 			}
 
-			if($this->binary != 'ffplay') {
+			if($this->encoder != 'ffplay') {
 				$cmd[] = "-vcodec '".$this->vcodec."'";
 				if(!$this->stereo_downmix)
 					$cmd[] = "-acodec '".$this->acodec."'";
 				$cmd[] = "-scodec '".$this->scodec."'";
 			}
 
-			if($this->ssa_filename && $this->binary == 'ffmpeg')
+			if($this->ssa_filename && $this->encoder == 'ffmpeg')
 				$cmd[] = "-map '1'";
 
 			// Always set all audio *and* subtitle streams as English
 			// Blu-ray audio streams probed with ffmpeg do not see language code, so this will fix that as well
-			if($this->binary != 'ffplay')
+			if($this->encoder != 'ffplay')
 				$cmd[] = "-metadata:s 'language=eng'";
 
 			$args = $this->get_ffmpeg_arguments();
