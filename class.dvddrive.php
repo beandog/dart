@@ -4,8 +4,6 @@
 
 		public $device;
 		public $debug;
-		public $binary = '/usr/bin/dvd_drive_status';
-		public $dvd_eject_binary = '/usr/bin/dvd_eject';
 		public $arr_drive_status;
 		public $disc_type;
 
@@ -16,11 +14,6 @@
 			$this->debug = false;
 
 			$this->arr_drive_status = array("", "CDS_NO_DISC", "CDS_TRAY_OPEN", "CDS_DRIVE_NOT_READY", "CDS_DISK_OK", "CDS_ERR_DEVTYPE", "CDS_ERR_OPEN");
-
-			if(file_exists('/usr/local/bin/dvd_drive_status'))
-				$this->binary = '/usr/local/bin/dvd_drive_status';
-			if(file_exists('/usr/local/bin/dvd_eject'))
-				$this->dvd_eject_binary = '/usr/local/bin/dvd_eject';
 
 			$this->disc_type = '';
 
@@ -40,7 +33,7 @@
 			if($this->debug)
 				echo "* drive::access_device(".$this->device.")\n";
 
-			$cmd = $this->binary." ".$this->device." &> /dev/null";
+			$cmd = "dvd_drive_status ".$this->device." &> /dev/null";
 			exec($cmd, $output, $retval);
 
 			if($this->debug)
@@ -125,7 +118,7 @@
 				echo "* drive::get_status(".$this->device.")\n";
 
 			$arg_device = escapeshellarg($this->device);
-			$command = $this->binary." $arg_device";
+			$command = "dvd_drive_status $arg_device";
 			$return = 0;
 			exec($command, $arr, $return);
 
@@ -251,7 +244,7 @@
 				echo "* drive::close(".$this->device.")\n";
 
 			$arg_device = escapeshellarg($this->device);
-			$cmd = $this->dvd_eject_binary." -t $arg_device";
+			$cmd = "dvd_eject -t $arg_device";
 			passthru($cmd, $retval);
 
 			if($retval === 0)

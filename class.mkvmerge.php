@@ -6,7 +6,6 @@
 		public $verbose = false;
 
 		// mkvmerge
-		public $binary = 'mkvmerge';
 		public $chapters = '';
 		public $mkvmerge_opts = '';
 		public $mkvmerge_output = '/dev/null';
@@ -32,10 +31,6 @@
 
 		public function verbose($bool = true) {
 			$this->verbose = boolval($bool);
-		}
-
-		public function set_binary($str) {
-			$this->binary = $str;
 		}
 
 		/** Filename **/
@@ -102,7 +97,7 @@
 
 			$cmd = array();
 
-			$cmd[] = $this->binary;
+			$cmd[] = "mkvmerge";
 
 			$args = $this->get_arguments();
 

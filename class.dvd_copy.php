@@ -36,10 +36,6 @@
 			$this->verbose = boolval($bool);
 		}
 
-		public function set_binary($str) {
-			$this->binary = $str;
-		}
-
 		/** Filename **/
 		public function input_filename($src) {
 			$this->input_filename = realpath($src);
@@ -88,7 +84,7 @@
 
 		public function get_executable_string() {
 
-			$cmd[] = $this->binary;
+			$cmd[] = 'dvd_copy';
 			$arg_input = escapeshellarg($this->input_filename);
 			$cmd[] = $arg_input;
 

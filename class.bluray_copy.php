@@ -6,7 +6,6 @@
 		public $verbose = false;
 
 		// bluray_copy
-		public $binary = 'bluray_copy';
 		public $bluray_copy_opts = '';
 		public $bluray_copy_output = '/dev/null';
 
@@ -21,10 +20,6 @@
 
 		public function verbose($bool = true) {
 			$this->verbose = boolval($bool);
-		}
-
-		public function set_binary($str) {
-			$this->binary = $str;
 		}
 
 		/** Filename **/
@@ -65,7 +60,7 @@
 
 		public function get_executable_string() {
 
-			$cmd[] = $this->binary;
+			$cmd[] = 'bluray_copy';
 			$arg_input = escapeshellarg($this->input_filename);
 			$cmd[] = $arg_input;
 

@@ -2,17 +2,10 @@
 
 	class BlurayChapters {
 
-		// bluray_info
-		public $binary = 'bluray_info';
-
 		// Blu-ray source
 		public $track;
 		public $input_filename = '/dev/sr0';
 		public $output_filename = 'bluray_chapters.txt';
-
-		public function set_binary($str) {
-			$this->binary = $str;
-		}
 
 		/** Filename **/
 		public function input_filename($src) {
@@ -52,7 +45,7 @@
 
 		public function get_executable_string() {
 
-			$cmd[] = $this->binary;
+			$cmd[] = 'bluray_info';
 			$cmd[] = escapeshellarg($this->input_filename);
 
 			$args = $this->get_arguments();

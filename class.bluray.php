@@ -5,7 +5,6 @@
 		public $device;
 		public $is_iso;
 		public $debug;
-		public $binary = '/usr/bin/bluray_info';
 
 		public $opened;
 
@@ -107,11 +106,6 @@
 
 		private function bluray_json() {
 
-			if(file_exists("/usr/local/bin/bluray_info"))
-				$this->binary = "/usr/local/bin/bluray_info";
-			if(file_exists("/usr/bin/bluray_info"))
-				$this->binary = "/usr/bin/bluray_info";
-
 			$arg_device = escapeshellarg($this->device);
 
 			// Get bluray_id
@@ -139,7 +133,7 @@
 			$this->dvdread_id = $dvdread_id;
 
 			// Get bluray_json
-			$cmd = $this->binary." --json $arg_device";
+			$cmd = "bluray_info --json $arg_device";
 			if(!$this->debug)
 				$cmd .= " 2> /dev/null";
 
@@ -595,7 +589,7 @@
 			$arg_device = escapeshellarg($this->device);
 			$arg_keydb = escapeshellarg($filename);
 
-			$cmd = $this->binary." -m -k $arg_keydb $arg_device 2>&1 | grep -q 'aacs_open() failed'";
+			$cmd = "bluray_info -m -k $arg_keydb $arg_device 2>&1 | grep -q 'aacs_open() failed'";
 
 			exec($cmd, $output, $retval);
 
