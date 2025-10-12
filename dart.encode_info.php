@@ -757,7 +757,8 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			$ffmpeg->input_track($tracks_model->ix);
 
-			$ffmpeg->add_audio_stream('0x1100');
+			$audio_streamid = $tracks_model->get_first_english_streamid('bluray');
+			$ffmpeg->add_audio_stream($audio_streamid);
 
 			// Add audio downmix for stereo where needed through ffmpeg audio filters
 			if(in_array('stereo', $dvd_bugs) && ($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'ffpipe'))

@@ -62,9 +62,14 @@
 
 		}
 
-		public function get_first_english_streamid() {
+		public function get_first_english_streamid($disc_type = 'dvd') {
 
-			$sql = "SELECT COALESCE(streamid, '0x80') FROM audio WHERE track_id = ".$this->id." AND langcode = 'en' AND active = 1 ORDER BY streamid LIMIT 1;";
+			if($disc_type == 'dvd')
+				$sql = "SELECT COALESCE(streamid, '0x80') FROM audio WHERE track_id = ".$this->id." AND langcode = 'en' AND active = 1 ORDER BY streamid LIMIT 1;";
+			elseif($disc_type == 'bluray')
+				$sql = "SELECT COALESCE(streamid, '0x1100') FROM audio WHERE track_id = ".$this->id." AND langcode = 'eng' AND active = 1 ORDER BY streamid LIMIT 1;";
+			else
+				return '';
 
 			$var = $this->get_one($sql);
 
