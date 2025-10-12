@@ -770,8 +770,11 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			// HD Blu-rays, first PGS is 0x1200
 			// UHD Blu-rays, first PGS is 0x12a0
-			$ffmpeg->add_subtitle_stream('0x1200?');
-			$ffmpeg->add_subtitle_stream('0x12a0?');
+			$nsix = $series_model->nsix;
+			if(substr($nsix, 0, 2) == '4K')
+				$ffmpeg->add_subtitle_stream('0x12a0?');
+			else
+				$ffmpeg->add_subtitle_stream('0x1200?');
 
 			$starting_chapter = $episodes_model->starting_chapter;
 			if($starting_chapter)
