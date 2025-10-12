@@ -87,6 +87,19 @@
 
 	}
 
+	// Backing up with MakeMKV, don't do any disc access
+	if($opt_makemkv) {
+
+		if(!count($devices))
+			$devices = $all_devices;
+
+		foreach($devices as $device)
+			require 'dart.backup.php';
+
+		exit(0);
+
+	}
+
 	if($opt_iso_filename) {
 
 		foreach($devices as $device) {

@@ -5,9 +5,52 @@
 	 * Copy a disc's content to the harddrive
 	 */
 
+	// Use MakeMKV to backup device
+	// Don't do any checks outside of arguments, since scanning discs is a pain with MakeMKV, especially UHD
+	// Only print the command for now
+	// Use 64 MB for cache, which is the smallest option in the GUI; default for Blu-rays is 1 GB
+	if($opt_backup && $opt_makemkv) {
+
+		$device = realpath($device);
+
+		// MakeMKV sees disc ids backwards
+		if($device == "/dev/sr0")
+			$makemkv_disc = 1;
+		elseif($device == "/dev/sr1")
+			$makemkv_disc = 0;
+
+		$disc_type = get_disc_type($device);
+
+		// Dump to current directory by default -- not scanning device to get name
+		$backup_dir = "makemkv.$disc_type.".basename($device).".iso";
+		if($arg_backup_dir)
+			$backup_dir = $arg_backup_dir;
+
+		// Forcing skip-existing here since backing up a bluray takes a long time
+		if(is_dir($backup_dir))
+			goto next_disc;
+
+		// Getting commands in the right order is tricky, so don't change
+		$cmd = "makemkvcon backup --decrypt --cache=64 --noscan -r";
+
+		if($verbose)
+			$makemkv_args = $cmd .= " --progress=-same";
+
+		$cmd .= " disc:$makemkv_disc $backup_dir";
+
+		if($opt_time)
+			$cmd = "tout $cmd";
+
+		echo "$cmd\n";
+		echo "dart --rename-iso ".escapeshellarg(realpath(getcwd())."/".$backup_dir)."\n";
+
+		goto next_disc;
+
+	}
+
 	// Continue if we can access the device (source file)
 	// and it has a database record.
-	if($access_device && $dvds_model_id && $opt_backup && !$broken_dvd) {
+	if($access_device && $dvds_model_id && $opt_backup && !$broken_dvd && !$opt_makemkv) {
 
 		/** ISO Information **/
 		echo "[ISO]\n";

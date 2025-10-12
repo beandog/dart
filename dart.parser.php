@@ -51,7 +51,19 @@
 	));
 	$parser->addOption('opt_backup', array(
 		'long_name' => '--backup',
-		'description' => 'Backup to an ISO in batch mode',
+		'description' => 'Backup device to filesystem',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
+	$parser->addOption('arg_backup_dir', array(
+		'long_name' => '--dirname',
+		'description' => 'Set target backup directory',
+		'action' => 'StoreString',
+		'default' => '',
+	));
+	$parser->addOption('opt_makemkv', array(
+		'long_name' => '--makemkv',
+		'description' => 'Use MakeMKV for backup',
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
