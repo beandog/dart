@@ -100,7 +100,7 @@
 				$arg_target_rip = escapeshellarg($target_rip);
 				$arg_target_iso = escapeshellarg($target_iso);
 
-				$logfile = str_replace('.iso', '.log', $target_iso);
+				$logfile = "/tmp/".str_replace('.iso', '.log', basename($target_iso));
 				$arg_logfile = escapeshellarg($logfile);
 
 				echo "* Backing up $arg_device to $arg_target_iso\n";
@@ -113,7 +113,7 @@
 						$dvd_backup_command .= " -v";
 
 					echo "* Executing: $dvd_backup_command\n";
-					echo "* Watch '$logfile' for output\n";
+					echo "* Watch $arg_logfile for output\n";
 
 					$dvd_backup_command .= " 2>&1 | tee $arg_logfile";
 
