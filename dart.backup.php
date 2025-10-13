@@ -58,8 +58,8 @@
 		clearstatcache();
 		$target_iso_exists = file_exists($target_iso);
 
-		// Operations on a block device
-		if($device_is_hardware) {
+		// Operations on a block device or ISO
+		if($device_is_hardware || $device_is_iso) {
 
 			$target_rip_exists = file_exists($target_rip);
 
