@@ -174,59 +174,6 @@
 
 		}
 
-		public function dvdbackup($filename, $logfile = '/dev/null') {
-
-			$bool = false;
-
-			if(!$this->opened)
-				return null;
-
-			if($this->debug) {
-				echo "* dvd->dvdbackup($filename)\n";
-				echo "* Logging to $logfile\n";
-			}
-
-			$arg_input = escapeshellarg($this->device);
-			$arg_logfile = escapeshellarg($logfile);
-
-			$target_dir = dirname($filename);
-			$target_rip = $target_dir."/".basename($filename, '.iso').".R1p";
-			$arg_name = basename($target_rip);
-			$arg_output = escapeshellarg(dirname($filename));
-
-			if($this->debug) {
-				echo "* input: $arg_input\n";
-				echo "* output: $arg_output\n";
-				echo "* name: $arg_name\n";
-			}
-
-			$dvd_backup_command = "dvd_backup $arg_input -n $arg_name";
-			if($this->debug)
-				$dvd_backup_command .= " -v";
-			$dvd_backup_command .= " 2>&1 | tee $logfile";
-			if($this->debug)
-				echo "* Executing: $dvd_backup_command\n";
-
-			$success = true;
-			$retval = 0;
-
-			passthru($dvd_backup_command, $retval);
-
-			if($this->debug)
-				echo "* dvd_backup return value: $retval\n";
-
-			if($retval !== 0)
-				$success = false;
-
-			$bool = rename($target_dir.'/'.$arg_name, $filename);
-
-			if($bool === false)
-				$success = false;
-
-			return $success;
-
-		}
-
 		public function dvdbackup_title_set($filename, $title_set = 1, $logfile = '/dev/null') {
 
 			$bool = false;

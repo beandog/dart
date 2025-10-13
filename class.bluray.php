@@ -520,59 +520,6 @@
 
 		}
 
-		/** Backup using bluray_backup **/
-		public function dvdbackup($filename) {
-
-			$bool = false;
-
-			if(!$this->opened)
-				return null;
-
-			if($this->debug) {
-				echo "* bluray->bluray_backup($filename)\n";
-			}
-
-			$arg_input = escapeshellarg($this->device);
-
-			$target_dir = dirname($filename);
-			$target_rip = $target_dir."/".basename($filename, '.iso').".R1p";
-			$arg_name = basename($target_rip);
-			$arg_output = escapeshellarg($arg_name);
-
-			if($this->debug) {
-				echo "* input: $arg_input\n";
-				echo "* output: $arg_output\n";
-				echo "* name: $arg_name\n";
-			}
-
-			$bluray_backup_command = "bluray_backup $arg_input -d $arg_output";
-
-			if($this->debug) {
-				$bluray_backup_command .= " -s";
-				echo "* Not backing up m2ts files\n";
-				echo "* Executing: $bluray_backup_command\n";
-			}
-
-			$success = true;
-			$retval = 0;
-
-			passthru($bluray_backup_command, $retval);
-
-			if($this->debug)
-				echo "* bluray_backup return value: $retval\n";
-
-			if($retval !== 0)
-				$success = false;
-
-			$bool = rename($target_dir.'/'.$arg_name, $filename);
-
-			if($bool === false)
-				$success = false;
-
-			return $success;
-
-		}
-
 		/** KEYDB.cfg testing **/
 		public function test_keydb($filename) {
 

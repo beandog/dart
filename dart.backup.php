@@ -96,19 +96,55 @@
 			// Dump the DVD contents to an ISO on the filesystem
 			if(!$target_iso_exists && !$is_ripping && $opt_backup && $access_device && !$opt_title_sets) {
 
-				echo "* Backing up $device to $target_iso\n";
-				$dvd_dump_iso_success = $dvd->dvdbackup($target_iso);
+				$arg_device = escapeshellarg($device);
+				$arg_target_rip = escapeshellarg($target_rip);
+				$arg_target_iso = escapeshellarg($target_iso);
+
+				$logfile = str_replace('.iso', '.log', $target_iso);
+				$arg_logfile = escapeshellarg($logfile);
+
+				echo "* Backing up $arg_device to $arg_target_iso\n";
 
 				if($disc_type == 'dvd') {
 
-					if($dvd_dump_iso_success) {
-						echo "* Backup successful. Ready for another :D\n";
-						if(file_exists($target_rip) && !file_exists($target_iso))
-							rename($target_rip, $target_iso);
-					} else {
-						echo "* DVD extraction failed :(\n";
-						rename($target_rip, "$target_rip.FAIL");
+					$dvd_backup_command = "dvd_backup $arg_device -n $arg_target_rip";
+
+					if($debug)
+						$dvd_backup_command .= " -v";
+
+					echo "* Executing: $dvd_backup_command\n";
+					echo "* Watch '$logfile' for output\n";
+
+					$dvd_backup_command .= " 2>&1 | tee $arg_logfile";
+
+					passthru($dvd_backup_command, $retval);
+
+				} elseif($disc_type == 'bluray') {
+
+					$bluray_backup_command = "bluray_backup $arg_device -d $arg_target_rip";
+
+					if($debug) {
+						$bluray_backup_command .= " -s";
+						echo "* Not backing up m2ts video files\n";
+						echo "* Executing: $bluray_backup_command\n";
 					}
+
+					passthru($bluray_backup_command, $retval);
+
+				}
+
+				if($retval === 0) {
+
+					echo "* Backup successful. Ready for another :D\n";
+
+					if(file_exists($target_rip) && !file_exists($target_iso))
+						rename($target_rip, $target_iso);
+
+				} else {
+
+					echo "* Backup failed! :(\n";
+
+					rename($target_rip, "$target_rip.FAIL");
 
 				}
 
