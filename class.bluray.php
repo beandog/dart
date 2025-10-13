@@ -545,7 +545,8 @@
 				echo "* name: $arg_name\n";
 			}
 
-			$bluray_backup_command = "bluray_backup $arg_input -d $arg_output";
+			$bluray_backup_command = "bluray_backup $arg_input -d $arg_output 2>&1";
+			// passthru($bluray_backup_command);
 
 			echo "$bluray_backup_command\n";
 			echo "dart --rename-iso ".escapeshellarg(realpath(getcwd())."/".$arg_name)."\n";
