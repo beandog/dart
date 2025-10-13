@@ -354,11 +354,6 @@
 			else
 				goto next_device;
 
-			if($disc_type == 'bluray' && $opt_backup) {
-				echo "Use --makemkv to backup a Blu-ray\n";
-				goto next_device;
-			}
-
 			if($disc_type == 'bluray' && ($opt_copy_info || $opt_remux)) {
 				echo "Use --encode-info with --ffmpeg or --ffpipe to copy or remux playlists\n";
 				goto next_device;

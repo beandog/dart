@@ -66,7 +66,10 @@
 			// Check if the drive is already ripping
 			$is_ripping = false;
 			$output = array();
-			exec("pgrep -af dvdbackup", $output, $retval);
+			if($disc_type == 'dvd')
+				exec("pgrep -af dvdbackup", $output, $retval);
+			elseif($disc_type == 'bluray')
+				exec("pgrep -af bluray_backup", $output, $retval);
 			if($retval === 0) {
 				$pattern = "/".basename($target_rip)."$/";
 				$num_procs = count(preg_grep($pattern, $output));
@@ -75,25 +78,13 @@
 			}
 
 			if($is_ripping)
-				echo "* dvbackup in progress for $device to ".basename($target_rip)."\n";
+				echo "* Backup in progress for $device to ".basename($target_rip)."\n";
 
 			// If we have access to the device, and we
 			// are trying to dump it, and the output filename
 			// already exists, just eject the drive.
 			if($target_iso_exists && $opt_backup) {
 				echo "* Filename: $display_iso exists\n";
-				if($batch_mode) {
-					if($debug) {
-						echo "* Batch mode: enabled\n";
-						echo "* Ejecting disk\n";
-					}
-					$drive->eject();
-				} else {
-					if($debug) {
-						echo "* Batch mode: disabled\n";
-						echo "* Not ejecting disk\n";
-					}
-				}
 			}
 
 			// See if backing up individual title sets
@@ -105,19 +96,20 @@
 			// Dump the DVD contents to an ISO on the filesystem
 			if(!$target_iso_exists && !$is_ripping && $opt_backup && $access_device && !$opt_title_sets) {
 
-				$logfile = "/tmp/dvdbackup.log";
+				echo "* Backing up $device to $target_iso\n";
+				$dvd_dump_iso_success = $dvd->dvdbackup($target_iso);
 
-				echo "* Dumping $device to $target_iso\n";
-				$dvd_dump_iso_success = $dvd->dvdbackup($target_iso, $logfile);
+				if($disc_type == 'dvd') {
 
-				if($dvd_dump_iso_success) {
-					echo "* DVD copy successful. Ready for another :D\n";
-					if(file_exists($target_rip) && !file_exists($target_iso))
-						rename($target_rip, $target_iso);
-					$drive->eject();
-				} else {
-					echo "* DVD extraction failed :(\n";
-					rename($target_rip, "$target_rip.FAIL");
+					if($dvd_dump_iso_success) {
+						echo "* Backup successful. Ready for another :D\n";
+						if(file_exists($target_rip) && !file_exists($target_iso))
+							rename($target_rip, $target_iso);
+					} else {
+						echo "* DVD extraction failed :(\n";
+						rename($target_rip, "$target_rip.FAIL");
+					}
+
 				}
 
 			}
@@ -130,8 +122,6 @@
 
 				echo "* Title sets: $str_title_sets\n";
 
-				$logfile = "/tmp/dvdbackup.log";
-
 				foreach($arr_title_sets as $title_set) {
 
 					$title_set_filename = "$target_rip/VIDEO_TS/VTS_". str_pad($title_set, 2, 0, STR_PAD_LEFT) ."_1.VOB";
@@ -143,7 +133,7 @@
 
 					echo "* Dumping $device VTS $title_set to $target_iso\n";
 
-					$dvd_dump_iso_success = $dvd->dvdbackup_title_set($target_iso, $title_set, $logfile);
+					$dvd_dump_iso_success = $dvd->dvdbackup_title_set($target_iso, $title_set);
 
 					if(!$dvd_dump_iso_success) {
 						echo "* DVD extraction failed :(\n";
@@ -153,10 +143,9 @@
 
 				 }
 
-				echo "* DVD copy successful. Ready for another :D\n";
+				echo "* Backup successful. Ready for another :D\n";
 				if(file_exists($target_rip) && !file_exists($target_iso))
 					rename($target_rip, $target_iso);
-				$drive->eject();
 
 			}
 

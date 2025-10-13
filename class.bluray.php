@@ -520,28 +520,19 @@
 
 		}
 
-		/** Backup using MakeMKV **/
-		public function dvdbackup($filename, $logfile = '/dev/null') {
+		/** Backup using bluray_backup **/
+		public function dvdbackup($filename) {
 
 			$bool = false;
 
 			if(!$this->opened)
 				return null;
 
-			$logfile = realpath($logfile);
-
 			if($this->debug) {
-				echo "* dvd->dvdbackup($filename)\n";
-				echo "* Logging to $logfile\n";
+				echo "* bluray->bluray_backup($filename)\n";
 			}
 
-			// tobe
-			if(realpath($this->device) == '/dev/sr0')
-				$arg_input = 0;
-			else
-				$arg_input = 1;
-
-			$arg_logfile = escapeshellarg($logfile);
+			$arg_input = escapeshellarg($this->device);
 
 			$target_dir = dirname($filename);
 			$target_rip = $target_dir."/".basename($filename, '.iso').".R1p";
@@ -554,17 +545,35 @@
 				echo "* name: $arg_name\n";
 			}
 
-			$cmd = "makemkvcon --noscan --minlength=0 -r backup --decrypt disc:$arg_input $arg_output 2>&1 | tee $logfile";
-			if($this->debug)
-				echo "* Executing: $cmd\n";
+			$bluray_backup_command = "bluray_backup $arg_input -d $arg_output";
+
+			echo "$bluray_backup_command\n";
+			echo "dart --rename-iso ".escapeshellarg(realpath(getcwd())."/".$arg_name)."\n";
+
+			return true;
+
+			// BIG FAT WARNING -- bluray_backup (2.0 at writing) will DIE when run through tee, both
+			// in here and normally, so DO NOT run it!
+			// Also, passthru() will not display any output until *after* the program has executed.
+			// Both bugs are in bluray_backup, so only use this is you are okay with no progress
+
+			/**
+			$bluray_backup_command = "bluray_backup $arg_input -d $arg_output -s";
+
+			if($this->debug) {
+				// $bluray_backup_command .= " -s";
+				echo "* Not backing up m2ts files\n";
+				echo "* Executing: $bluray_backup_command\n";
+			}
 
 			$success = true;
 			$retval = 0;
 
-			passthru($cmd, $retval);
+			// passthru($bluray_backup_command, $retval);
+			system($bluray_backup_command);
 
 			if($this->debug)
-				echo "* makemkvcon return value: $retval\n";
+				echo "* bluray_backup return value: $retval\n";
 
 			if($retval !== 0)
 				$success = false;
@@ -575,6 +584,8 @@
 				$success = false;
 
 			return $success;
+
+			*/
 
 		}
 
