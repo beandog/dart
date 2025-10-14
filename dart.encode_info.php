@@ -699,6 +699,8 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			$ffmpeg->set_disc_type('bluray');
 
+			$acodec = $series_model->get_acodec();
+			$ffmpeg->set_acodec($acodec);
 
 			if($dvd_encoder == 'ffmpeg') {
 
