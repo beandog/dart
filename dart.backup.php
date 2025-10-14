@@ -204,7 +204,7 @@
 	// Use 64 MB for cache, which is the smallest option in the GUI; default for Blu-rays is 1 GB
 	if($opt_backup && $opt_makemkv) {
 
-		// MakeMKV sees disc ids backwards
+		// MakeMKV sees disc ids backwards on tails
 		if($device == "/dev/sr0")
 			$makemkv_disc = 1;
 		elseif($device == "/dev/sr1")
@@ -233,7 +233,6 @@
 		goto next_disc;
 
 	}
-
 
 	next_disc:
 
