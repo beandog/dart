@@ -91,6 +91,25 @@
 			$dvds_model->bluray = 1;
 		}
 
+		// Adding all UDF data at once since it's all pulled in by the class
+		if($access_device && ($device_is_hardware || $device_is_image) && $blurays_model->udf_uuid == '' && count($udf_info)) {
+
+			echo "* UDF UUID: ".$udf_info['uuid']."\n";
+			echo "* UDF blocksize: ".$udf_info['blocksize']."\n";
+			echo "* UDF blocks: ".$udf_info['blocks']."\n";
+			echo "* UDF revision: ".$udf_info['udfrev']."\n";
+			echo "* UDF # dirs: ".$udf_info['numdirs']."\n";
+			echo "* UDF # files: ".$udf_info['numfiles']."\n";
+
+			$blurays_model->udf_uuid = $udf_info['uuid'];
+			$blurays_model->udf_blocksize = $udf_info['blocksize'];
+			$blurays_model->udf_blocks = $udf_info['blocks'];
+			$blurays_model->udf_udfrev = $udf_info['udfrev'];
+			$blurays_model->udf_numdirs = $udf_info['numdirs'];
+			$blurays_model->udf_numfiles = $udf_info['numfiles'];
+
+		}
+
 	}
 
 	// Flag it as indexed
