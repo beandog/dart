@@ -23,6 +23,7 @@
 	require_once 'class.bluray_chapters.php';
 	require_once 'class.dvdrip.php';
 	require_once 'class.ffmpeg.php';
+	require_once 'class.udf.php';
 
 	require_once 'models/dbtable.php';
 	require_once 'models/dvds.php';
@@ -195,6 +196,9 @@
 		// Is the source filename a block device
 		$device_is_hardware = false;
 
+		// Is the source an ISO file with .iso extension
+		$device_is_image = false;
+
 		// Can we poll the file or device
 		$access_device = false;
 
@@ -214,9 +218,15 @@
 
 		// Check if source filename is a block device or not
 		$device_dirname = dirname(realpath($device));
+		$pathinfo = pathinfo(realpath($device));
 		if($device_dirname == "/dev") {
 			$device_is_hardware = true;
 			$device_is_iso = false;
+			$device_is_image = false;
+		} elseif(is_file($device) && (strtolower($pathinfo['extension']) == 'iso')) {
+			$device_is_hardware = false;
+			$device_is_iso = true;
+			$device_is_image = true;
 		} else {
 			$device_is_hardware = false;
 			$device_is_iso = true;
@@ -367,10 +377,18 @@
 			if(!$batch_mode)
 				echo "[$disc_name]\n";
 
-			if($disc_type == "dvd")
+			$udf_info = array();
+
+			if($disc_type == "dvd") {
 				$dvd = new DVD($device, $debug);
-			elseif($disc_type == "bluray")
+			} elseif($disc_type == "bluray") {
+				var_dump($device_is_iso);
+				if($device_is_hardware) {
+					$udf = new UDF($device, $debug);
+					$udf_info = $udf->udf_info;
+				}
 				$dvd = new Bluray($device, $debug);
+			}
 
 			if(!$dvd->opened) {
 				echo "* Opening $device FAILED\n";
