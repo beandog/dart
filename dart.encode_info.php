@@ -253,14 +253,15 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			$acodec = $series_model->get_acodec();
 
-			if($arg_acodec && ($arg_acodec == "aac" || $arg_acodec == "flac"))
+			if($arg_acodec && ($arg_acodec == 'aac' || $arg_acodec == 'flac'))
 				$acodec = $arg_acodec;
 
 			if($acodec == 'aac') {
 				$acodec = 'fdk_aac';
 				$handbrake->set_audio_vbr(5);
-			} elseif($acodec == 'flac')
+			} elseif($acodec == 'flac') {
 				$acodec = 'flac16';
+			}
 
 			$handbrake->add_acodec($acodec);
 
@@ -448,11 +449,11 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			$acodec = $series_model->get_acodec();
 
-			if($arg_acodec && ($arg_acodec == "aac" || $arg_acodec == "flac"))
+			if($arg_acodec && ($arg_acodec == 'aac' || $arg_acodec == 'flac'))
 				$acodec = $arg_acodec;
 
-			if($acodec == "aac")
-				$acodec = "libfdk_aac";
+			if($acodec == 'aac')
+				$acodec = 'libfdk_aac';
 
 			$ffmpeg->set_acodec($acodec);
 
@@ -576,11 +577,11 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			$acodec = $series_model->get_acodec();
 
-			if($arg_acodec && ($arg_acodec == "aac" || $arg_acodec == "flac"))
+			if($arg_acodec && ($arg_acodec == 'aac' || $arg_acodec == 'flac'))
 				$acodec = $arg_acodec;
 
-			if($acodec == "aac")
-				$acodec = "libfdk_aac";
+			if($acodec == 'aac')
+				$acodec = 'libfdk_aac';
 
 			$ffmpeg->set_acodec($acodec);
 
