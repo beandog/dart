@@ -382,7 +382,6 @@
 			if($disc_type == "dvd") {
 				$dvd = new DVD($device, $debug);
 			} elseif($disc_type == "bluray") {
-				var_dump($device_is_iso);
 				if($device_is_hardware) {
 					$udf = new UDF($device, $debug);
 					$udf_info = $udf->udf_info;
