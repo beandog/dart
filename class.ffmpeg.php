@@ -40,7 +40,6 @@
 		public $acodec = 'copy';
 		public $acodec_opts = '';
 		public $audio_streams = array();
-		public $stereo_downmix = false;
 
 		// Subtitles
 		public $scodec = 'copy';
@@ -161,10 +160,6 @@
 
 		public function set_acodec_opts($str) {
 			$this->acodec_opts = $str;
-		}
-
-		public function add_stereo_downmix() {
-			$this->stereo_downmix = true;
 		}
 
 		public function add_audio_stream($streamid = '0x80') {
@@ -363,18 +358,10 @@
 
 				$cmd[] = "-map 'v:0'";
 
-				if(count($this->audio_streams) && !$this->stereo_downmix) {
+				if(count($this->audio_streams)) {
 					foreach($this->audio_streams as $streamid) {
 						$cmd[] = "-map 'i:$streamid'";
 					}
-				}
-
-				if(count($this->audio_streams) && $this->stereo_downmix) {
-
-					$streamid = current($this->audio_streams);
-
-					$cmd[] = "-filter_complex '[a:0]compand=0|0:1|1:-90/-900|-70/-70|-30/-9|0/-3:6:0:0:0[filtered]' -map '[filtered]' -c:a:0 'ac3' -ac '2' -ab '640k' -map 'i:$streamid' -c:a:1 'copy'";
-
 				}
 
 				if(count($this->subtitle_streams)) {
@@ -387,8 +374,7 @@
 
 			if(!$this->ffplay) {
 				$cmd[] = "-vcodec '".$this->vcodec."'";
-				if(!$this->stereo_downmix)
-					$cmd[] = "-acodec '".$this->acodec."'";
+				$cmd[] = "-acodec '".$this->acodec."'";
 				$cmd[] = "-scodec '".$this->scodec."'";
 			}
 
