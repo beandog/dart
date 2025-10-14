@@ -23,6 +23,7 @@
 	require_once 'class.bluray_chapters.php';
 	require_once 'class.dvdrip.php';
 	require_once 'class.ffmpeg.php';
+	require_once 'class.mkvmerge.php';
 	require_once 'class.udf.php';
 
 	require_once 'models/dbtable.php';
