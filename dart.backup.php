@@ -204,8 +204,6 @@
 	// Use 64 MB for cache, which is the smallest option in the GUI; default for Blu-rays is 1 GB
 	if($opt_backup && $opt_makemkv) {
 
-		$device = realpath($device);
-
 		// MakeMKV sees disc ids backwards
 		if($device == "/dev/sr0")
 			$makemkv_disc = 1;
@@ -224,17 +222,12 @@
 			goto next_disc;
 
 		// Getting commands in the right order is tricky, so don't change
-		$cmd = "makemkvcon backup --decrypt --cache=64 --noscan -r";
-
-		if($verbose)
-			$makemkv_args = $cmd .= " --progress=-same";
-
-		$cmd .= " disc:$makemkv_disc $backup_dir";
+		$makemkv_backup_command = "makemkvcon backup --decrypt --cache=64 --noscan -r --progress=-same disc:$makemkv_disc $backup_dir";
 
 		if($opt_time)
-			$cmd = "tout $cmd";
+			$makemkv_backup_command = "tout $makemkv_backup_command";
 
-		echo "$cmd\n";
+		echo "$makemkv_backup_command\n";
 		echo "dart --rename-iso ".escapeshellarg(realpath(getcwd())."/".$backup_dir)."\n";
 
 		goto next_disc;
