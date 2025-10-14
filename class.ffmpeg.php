@@ -155,6 +155,8 @@
 		}
 
 		public function set_acodec($str) {
+			if($str == 'aac')
+				$str = 'libfdk_aac';
 			$this->acodec = $str;
 		}
 
