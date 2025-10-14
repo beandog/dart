@@ -13,6 +13,8 @@
 
 		function __construct($device = "/dev/bluray", $debug = false) {
 
+			$this->udf_info = array();
+
 			// Get udfinfo
 			$arg_device = escapeshellarg($device);
 			$cmd = "udfinfo $arg_device";
@@ -26,7 +28,8 @@
 			exec($cmd, $output, $retval);
 
 			if($retval !== 0 || !count($output)) {
-				echo "* udfinfo FAILED\n";
+				if($debug)
+					echo "* udfinfo FAILED\n";
 				return false;
 			}
 
@@ -37,7 +40,7 @@
 
 			extract($arr_udfinfo);
 
-			$this->udf_info = array(
+			$udf_info = array(
 				'uuid' => $uuid,
 				'blocksize' => $blocksize,
 				'blocks' => $blocks,
@@ -45,6 +48,8 @@
 				'numdirs' => $numdirs,
 				'udfrev' => $udfrev,
 			);
+
+			$this->udf_info = $udf_info;
 
 			return true;
 
