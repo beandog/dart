@@ -68,9 +68,14 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		$tracks_model = new Tracks_Model($episodes_model->track_id);
 		$series_model = new Series_Model($episodes_model->get_series_id());
+		$nsix = $series_model->nsix;
 		$vcodec = $series_model->get_vcodec();
 		$video_deint = $dvds_model->get_deint();
 		$video_format = strtolower($tracks_model->format);
+
+		$uhd = false;
+		if($disc_type == 'bluray' && substr($nsix, 0, 2) == '4K')
+			$uhd = true;
 
 		// A note about setting fps with ffmpeg: use 'vf=fps' to set it, instead of '-r fps'. See
 		// https://trac.ffmpeg.org/wiki/ChangingFrameRate for reasoning.
@@ -369,7 +374,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			$dvd_encode_ssa = true;
 
 			$str_episode_id = str_pad($episode_id, 5, 0, STR_PAD_LEFT);
-			$ssa_filename = "subs-".$str_episode_id."-".$series_model->nsix.".ssa";
+			$ssa_filename = "subs-".$str_episode_id."-$nsix.ssa";
 
 			$ssa_filename = "subs-".basename($filename, '.mkv').".ssa";
 
@@ -759,12 +764,14 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			$ffmpeg->input_track($tracks_model->ix);
 
 			$audio_streamid = $tracks_model->get_first_english_streamid('bluray');
-			$ffmpeg->add_audio_stream($audio_streamid);
+			if($uhd)
+				$ffmpeg->add_audio_stream('a:0');
+			else
+				$ffmpeg->add_audio_stream($audio_streamid);
 
 			// HD Blu-rays, first PGS is 0x1200
 			// UHD Blu-rays, first PGS is 0x12a0
-			$nsix = $series_model->nsix;
-			if(substr($nsix, 0, 2) == '4K')
+			if($uhd)
 				$ffmpeg->add_subtitle_stream('0x12a0?');
 			else
 				$ffmpeg->add_subtitle_stream('0x1200?');

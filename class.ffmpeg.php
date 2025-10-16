@@ -362,7 +362,10 @@
 
 				if(count($this->audio_streams)) {
 					foreach($this->audio_streams as $streamid) {
-						$cmd[] = "-map 'i:$streamid'";
+						if(is_numeric($streamid[0]))
+							$cmd[] = "-map 'i:$streamid'";
+						else
+							$cmd[] = "-map '$streamid'";
 					}
 				}
 
