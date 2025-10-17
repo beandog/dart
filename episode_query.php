@@ -42,6 +42,18 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_vcodec', array(
+		'long_name' => '--vcodec',
+		'description' => 'Display video codec',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
+	$parser->addOption('opt_acodec', array(
+		'long_name' => '--acodec',
+		'description' => 'Display audio codec',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 
 	try { $result = $parser->parse(); }
 	catch(PEAR_Exception $e) {
@@ -65,14 +77,33 @@
 	start:
 
 	$source = array_shift($filenames);
+	$arg_source = escapeshellarg($source);
+
 	$filename = $source;
 
-	if($opt_verbose)
+	if($opt_verbose || $opt_vcodec || $opt_acodec)
 		echo "$source ";
 
 	if(!file_exists($filename)) {
 		echo "File doesn't exist '$filename'\n";
 		exit;
+	}
+
+	$d_vcodec = '';
+	$d_acodec = '';
+	if($opt_vcodec) {
+		$d_vcodec = exec("mediainfo $arg_source --Output=JSON 2> /dev/null | jq -M -r '.media.track[1].CodecID'");
+		$d_vcodec .= " ";
+		echo "$d_vcodec";
+	}
+	if($opt_acodec) {
+		$d_acodec = exec("mediainfo $arg_source --Output=JSON 2> /dev/null | jq -M -r '.media.track[2].CodecID'");
+		echo "$d_acodec";
+	}
+
+	if($opt_vcodec || $opt_acodec) {
+		echo "\n";
+		goto next_episode;
 	}
 
 	$realpath = realpath($filename);
