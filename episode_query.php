@@ -64,7 +64,11 @@
 
 	start:
 
-	$filename = array_shift($filenames);
+	$source = array_shift($filenames);
+	$filename = $source;
+
+	if($opt_verbose)
+		echo "$source ";
 
 	if(!file_exists($filename)) {
 		echo "File doesn't exist '$filename'\n";
