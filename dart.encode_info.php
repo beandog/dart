@@ -165,7 +165,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			$ffprobe_command = $ffmpeg->ffprobe();
 
-			echo "$ffprobe_command\n";
+			passthru($ffprobe_command);
 
 		}
 
