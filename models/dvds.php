@@ -95,10 +95,12 @@
 			if(is_null($var))
 				return true;
 
+			/*
 			$sql = "SELECT udf_uuid FROM blurays WHERE dvd_id = $dvd_id;";
 			$var = $this->get_one($sql);
 			if(!strlen($var))
 				return true;
+			*/
 
 			return false;
 

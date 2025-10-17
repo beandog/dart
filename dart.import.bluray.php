@@ -92,6 +92,8 @@
 		}
 
 		// Adding all UDF data at once since it's all pulled in by the class
+		/*
+		// Not enabling right now, because I don't want to re-archive all my Blu-rays
 		if($access_device && ($device_is_hardware || $device_is_image) && $blurays_model->udf_uuid == '' && count($udf_info)) {
 
 			echo "* UDF UUID: ".$udf_info['uuid']."\n";
@@ -109,6 +111,7 @@
 			$blurays_model->udf_numfiles = $udf_info['numfiles'];
 
 		}
+		*/
 
 	}
 
