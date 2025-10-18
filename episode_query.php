@@ -42,15 +42,9 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_vcodec', array(
-		'long_name' => '--vcodec',
-		'description' => 'Display video codec',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
-	$parser->addOption('opt_acodec', array(
-		'long_name' => '--acodec',
-		'description' => 'Display audio codec',
+	$parser->addOption('opt_codec_info', array(
+		'long_name' => '--codec-info',
+		'description' => 'Display audio and video codecs',
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
@@ -93,29 +87,9 @@
 
 	$filename = $source;
 
-	if($opt_verbose || $opt_vcodec || $opt_acodec)
-		echo "$source ";
-
 	if(!file_exists($filename)) {
 		echo "File doesn't exist '$filename'\n";
 		exit;
-	}
-
-	$d_vcodec = '';
-	$d_acodec = '';
-	if($opt_vcodec) {
-		$d_vcodec = exec("mediainfo $arg_source --Output=JSON 2> /dev/null | jq -M -r '.media.track[1].CodecID'");
-		$d_vcodec .= " ";
-		echo "$d_vcodec";
-	}
-	if($opt_acodec) {
-		$d_acodec = exec("mediainfo $arg_source --Output=JSON 2> /dev/null | jq -M -r '.media.track[2].CodecID'");
-		echo "$d_acodec";
-	}
-
-	if($opt_vcodec || $opt_acodec) {
-		echo "\n";
-		goto next_episode;
 	}
 
 	$realpath = realpath($filename);
@@ -124,6 +98,10 @@
 	if(substr($pathinfo['basename'], 0, 1) == '3' || substr($pathinfo['basename'], 0, 1) == '4' || substr($pathinfo['basename'], 0, 1) == '5' || substr($pathinfo['basename'], 0, 1) == '8' || substr($pathinfo['basename'], 0, 1) == '9')
 		$movie = true;
 	$str_elements = explode('.', $pathinfo['basename']);
+
+	if(count($str_elements) < 3 || !file_exists($realpath) || !(in_array($pathinfo['extension'], array('mkv', 'mp4')))) {
+		goto next_episode;
+	}
 
 	// If giving an ISO, just want the series title name
 	if($pathinfo['extension'] == 'iso') {
@@ -145,7 +123,14 @@
 		exit;
 	}
 
-	if(count($str_elements) < 3 || !file_exists($realpath) || !(in_array($pathinfo['extension'], array('mkv', 'mp4')))) {
+	if($opt_verbose || $opt_codec_info)
+		echo "$source ";
+
+	if($opt_codec_info) {
+		$d_vcodec = exec("mediainfo $arg_source --Output=JSON 2> /dev/null | jq -M -r '.media.track[1].CodecID'");
+		$d_acodec = exec("mediainfo $arg_source --Output=JSON 2> /dev/null | jq -M -r '.media.track[2].CodecID'");
+		$d_codecs = "$d_vcodec $d_acodec";
+		echo "$d_codecs\n";
 		goto next_episode;
 	}
 
