@@ -16,7 +16,7 @@
 
 	$parser = new Console_CommandLine();
 	$parser->description = "Episode Query Tool";
-	$parser->addArgument('filenames', array('required' => true, 'multiple' => true));
+	$parser->addArgument('episodes', array('required' => true, 'multiple' => true));
 	$parser->addOption('opt_dirname', array(
 		'long_name' => '--dirname',
 		'description' => '\'Series Name (Year)/Season XX/\'',
@@ -82,24 +82,20 @@
 
 	start:
 
-	$source = array_shift($filenames);
-	$arg_source = escapeshellarg($source);
+	$episode = array_shift($episodes);
+	$arg_episode = escapeshellarg($episode);
+	$pathinfo = pathinfo(realpath($episode));
 
-	$filename = $source;
-
-	if(!file_exists($filename)) {
-		echo "File doesn't exist '$filename'\n";
-		exit;
+	if(!(in_array($pathinfo['extension'], array('iso', 'mkv', 'mp4')))) {
+		goto next_episode;
 	}
 
-	$realpath = realpath($filename);
-	$pathinfo = pathinfo($realpath);
 	$movie = false;
 	if(substr($pathinfo['basename'], 0, 1) == '3' || substr($pathinfo['basename'], 0, 1) == '4' || substr($pathinfo['basename'], 0, 1) == '5' || substr($pathinfo['basename'], 0, 1) == '8' || substr($pathinfo['basename'], 0, 1) == '9')
 		$movie = true;
 	$str_elements = explode('.', $pathinfo['basename']);
 
-	if(count($str_elements) < 3 || !file_exists($realpath) || !(in_array($pathinfo['extension'], array('mkv', 'mp4')))) {
+	if(count($str_elements) < 3 || !(in_array($pathinfo['extension'], array('mkv', 'mp4')))) {
 		goto next_episode;
 	}
 
@@ -124,7 +120,7 @@
 	}
 
 	if($opt_verbose || $opt_codec_info)
-		echo "$source ";
+		echo basename($episode)." ";
 
 	if($opt_codec_info) {
 		$d_vcodec = exec("mediainfo $arg_source --Output=JSON 2> /dev/null | jq -M -r '.media.track[1].CodecID'");
@@ -246,5 +242,5 @@
 
 	// The ghosts of monolithic code haunt me. :)
 	next_episode:
-	if(count($filenames))
+	if(count($episodes))
 		goto start;
