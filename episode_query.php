@@ -54,6 +54,18 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_reencode_info', array(
+		'long_name' => '--reencode-info',
+		'description' => 'Display reencode to MP4 info',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
+	$parser->addOption('opt_time', array(
+		'long_name' => '--time',
+		'description' => 'Log time of encode',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 
 	try { $result = $parser->parse(); }
 	catch(PEAR_Exception $e) {
@@ -133,8 +145,27 @@
 		exit;
 	}
 
-	if(count($str_elements) < 3 || !file_exists($realpath) || !(in_array($pathinfo['extension'], array('mkv')))) {
+	if(count($str_elements) < 3 || !file_exists($realpath) || !(in_array($pathinfo['extension'], array('mkv', 'mp4')))) {
 		goto next_episode;
+	}
+
+	if($opt_reencode_info && $pathinfo['extension'] == 'mkv') {
+
+		$mp4 = str_replace(".mkv", ".mp4", $source);
+		$arg_mp4 = escapeshellarg($mp4);
+
+		if(file_exists($mp4))
+			goto next_episode;
+
+		$cmd = "ffmpeg -i $arg_source -vcodec 'copy' -acodec 'libfdk_aac' -vbr '5' -scodec 'copy' -map_metadata '0' -movflags '+faststart' -y $arg_mp4";
+
+		if($opt_time)
+			$cmd = "tout $cmd";
+
+		echo "$cmd\n";
+
+		goto next_episode;
+
 	}
 
 	$episode_query = array();
