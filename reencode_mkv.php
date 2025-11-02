@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-	error_reporting(E_ALL & ~E_STRICT & ~E_DEPRECATED);
+	require 'config.local.php';
 
 	require_once 'Console/CommandLine.php';
 	$parser = new Console_CommandLine();
