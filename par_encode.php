@@ -12,7 +12,7 @@
 		'description' => 'Run # of jobs at once',
 		'action' => 'StoreInt',
 		'optional' => true,
-		'default' => 8,
+		'default' => 1,
 	));
 	$parser->addOption('arg_max_encodes', array(
 		'short_name' => '-f',
