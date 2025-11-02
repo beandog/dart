@@ -94,7 +94,7 @@
 	foreach($arr_filenames as $filename) {
 		$filename = realpath($filename);
 		$arg_filename = escapeshellarg($filename);
-		$reencode_mkv_cmd = "/home/steve/bin/reencode_mkv --batch $arg_filename";
+		$reencode_mkv_cmd = "reencode_mkv --batch $arg_filename";
 		$arr_output = array();
 		exec($reencode_mkv_cmd, $arr_output);
 		$encode_cmd = current($arr_output);
