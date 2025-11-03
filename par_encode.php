@@ -153,7 +153,8 @@
 			// Avoid *possible* race conditions, don't wait for ffmpeg to start outputting
 			touch($target);
 
-			$progress_file = tempnam("/tmp", "ffmpeg-enc-").".log";
+			$basename = basename($filename);
+			$progress_file = "/tmp/enc-v2-$basename.log";
 
 			$encode_cmd = $arr_encode['encode_cmd'];
 
@@ -166,6 +167,8 @@
 				echo "# $encode_cmd\n";
 				echo "# [$ix/$num_encodes] Log file: $progress_file\n";
 			}
+
+			$encode_cmd .= " -progress $progress_file";
 
 			if($verbose) {
 				passthru($encode_cmd);
