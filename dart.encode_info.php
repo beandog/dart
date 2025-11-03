@@ -45,7 +45,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 	$input_filename = realpath($device);
 
-	$container = 'mkv';
+	$container = 'mp4';
 
 	if($opt_mp4 || (substr($arg_vcodec, 0, 3) == 'nvenc'))
 		$container = 'mp4';
