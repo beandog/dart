@@ -109,6 +109,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_one', array(
+		'long_name' => '--one',
+		'description' => 'Only handle one episode',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('opt_time', array(
 		'long_name' => '--time',
 		'description' => 'Log time of encode',

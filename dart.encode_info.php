@@ -33,7 +33,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 	$dvd_episodes = $dvds_model->get_episodes();
 
 	// On QA run, only encode the first one
-	if($opt_qa) {
+	if($opt_qa || $opt_one) {
 		foreach($dvd_episodes as $episode_id) {
 			$episodes_model = new Episodes_Model($episode_id);
 			if($episodes_model->skip)
