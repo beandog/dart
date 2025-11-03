@@ -45,12 +45,17 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 	$input_filename = realpath($device);
 
-	$container = 'mp4';
+	$container = 'mkv';
 
 	if($opt_mp4)
 		$container = 'mp4';
 	elseif($opt_mkv)
 		$container = 'mkv';
+
+	if($disc_type == 'bluray' || $disc_type == 'uhd')
+		$encode_subtitles = true;
+	else
+		$encode_subtitles = $opt_subtitles;
 
 	// Display the episode names
 	foreach($dvd_episodes as $episode_id) {
@@ -274,7 +279,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			// Check for a subtitle track
 
-			if($opt_subtitles) {
+			if($encode_subtitles) {
 
 				$subp_ix = $tracks_model->get_first_english_subp();
 				$has_closed_captioning = $tracks_model->has_closed_captioning();
@@ -373,7 +378,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		// Extract SSA subtitles from DVDs
 		$dvd_bugs = $dvds_model->get_bugs();
 
-		if($opt_subtitles) {
+		if($encode_subtitles) {
 
 			$dvd_encode_ssa = false;
 			if($opt_ssa && in_array('cc-only', $dvd_bugs) && $tracks_model->has_closed_captioning() && ($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'ffpipe')) {
@@ -479,7 +484,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			}
 
 			/** Subtitles **/
-			if($opt_subtitles) {
+			if($encode_subtitles) {
 
 				$ffmpeg->enable_subtitles();
 
@@ -605,7 +610,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			$ffmpeg->set_acodec($acodec);
 
-			if($opt_subtitles) {
+			if($encode_subtitles) {
 
 				$ffmpeg->enable_subtitles();
 
@@ -662,7 +667,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 				$dvd_copy_command = $dvd_copy->get_executable_string();
 
 				$dvd_remux_command = "$dvd_copy_command 2> /dev/null | ffmpeg -fflags +genpts -i - -vcodec copy -acodec copy -sn -y $filename";
-				if($opt_subtitles)
+				if($encode_subtitles)
 					$dvd_remux_command = "$dvd_copy_command 2> /dev/null | ffmpeg -fflags +genpts -i - -codec copy -y $filename";
 
 				echo "$dvd_remux_command\n";
@@ -794,7 +799,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			// HD Blu-rays, first PGS is 0x1200
 			// UHD Blu-rays, first PGS is 0x12a0
-			if($opt_subtitles) {
+			if($encode_subtitles) {
 				$ffmpeg->enable_subtitles();
 				if($uhd)
 					$ffmpeg->add_subtitle_stream('0x12a0?');
