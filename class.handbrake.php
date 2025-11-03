@@ -279,7 +279,7 @@
 
 			// MP4
 			if($this->container == 'mp4')
-				$options[] = 'optimize';
+				$options[] = '--optimize';
 
 			return $options;
 
