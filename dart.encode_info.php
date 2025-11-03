@@ -281,6 +281,8 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			if($encode_subtitles) {
 
+				$handbrake->enable_subtitles();
+
 				$subp_ix = $tracks_model->get_first_english_subp();
 				$has_closed_captioning = $tracks_model->has_closed_captioning();
 

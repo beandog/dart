@@ -50,6 +50,7 @@
 		public $ending_chapter;
 
 		// Subtitles
+		public $subtitles = false;
 		public $subtitle_tracks = array();
 		public $closed_captioning = false;
 		public $closed_captioning_ix = null;
@@ -116,6 +117,10 @@
 			$int = abs(intval($int));
 			if($int)
 				$this->audio_tracks[] = $int;
+		}
+
+		public function enable_subtitles() {
+			$this->subtitles = true;
 		}
 
 		/**
@@ -390,9 +395,13 @@
 			/** Subtitles **/
 
 			// Add subtitle tracks
-			if(count($this->subtitle_tracks)) {
+			if(count($this->subtitle_tracks) && $this->subtitles) {
 				$str = implode(",", $this->subtitle_tracks);
 				$args['--subtitle'] = $str;
+			}
+
+			if(!$this->subtitles) {
+				$args['--subtitle'] = 'none';
 			}
 
 			/**
