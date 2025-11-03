@@ -14,6 +14,18 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_mkv', array(
+		'long_name' => '--mkv',
+		'description' => 'Use Matroska container',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
+	$parser->addOption('opt_mp4', array(
+		'long_name' => '--mp4',
+		'description' => 'Use MPEG4 container',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 
 	try { $result = $parser->parse(); }
 	catch(PEAR_Exception $e) {
@@ -24,6 +36,9 @@
 	extract($result->args);
 	extract($result->options);
 
+	if(!$opt_mkv && !$opt_mp4)
+		$opt_mp4 = true;
+
 	foreach($filenames as $filename) {
 
 		$filename = realpath($filename);
@@ -32,8 +47,11 @@
 		if(!array_key_exists('extension', $pathinfo) || $pathinfo['extension'] != 'mkv')
 			continue;
 
-		$basename = basename($filename);
-		$video = "v2-$basename";
+		$basename = basename($filename, '.mkv');
+		if($opt_mp4)
+			$video = "v2-$basename.mp4";
+		else
+			$video = "v2-$basename.mkv";
 
 		if(file_exists($video))
 			continue;
@@ -46,7 +64,12 @@
 		// - remove subtitles
 		// - remove chapters (drop metadata) because ffprobe is complaining about them
 		// - set languages to English (which is lost when dropping metadata)
-		$ffmpeg_opts = "-i $arg_input_filename -vcodec 'copy' -acodec 'libfdk_aac' -vbr '5' -sn -map_metadata '0' -y $arg_output_filename";
+
+		if($opt_mp4)
+			$ffmpeg_opts = "-i $arg_input_filename -map_chapters '-1' -vcodec 'copy' -acodec 'libfdk_aac' -vbr '5' -sn -map_metadata '0' -movflags '+faststart' -y $arg_output_filename";
+
+		if($opt_mkv)
+			$ffmpeg_opts = "-i $arg_input_filename -vcodec 'copy' -acodec 'libfdk_aac' -vbr '5' -sn -map_metadata '0' -y $arg_output_filename";
 
 		if($opt_batch)
 			$ffmpeg_opts = "-v quiet -stats $ffmpeg_opts";
