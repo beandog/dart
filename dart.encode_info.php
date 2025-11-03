@@ -47,7 +47,10 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 	$container = 'mkv';
 
-	if($opt_mp4)
+	if(isset($config_nvenc) && $config_nvenc)
+		$opt_nvenc = true;
+
+	if($opt_mp4 || $opt_nvenc)
 		$container = 'mp4';
 	elseif($opt_mkv)
 		$container = 'mkv';
@@ -250,6 +253,14 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			$x264_tune = $series_model->get_x264_tune();
 			if($vcodec == 'x264' && $x264_tune)
 				$handbrake->set_x264_tune($x264_tune);
+
+			// Encoding to x265 using Nvidia card
+			if($opt_nvenc) {
+				$handbrake->set_vcodec('nvenc_h265');
+				$handbrake->set_x264_preset('');
+				$handbrake->set_x264_tune('');
+				$handbrake->set_video_quality($video_quality + 2);
+			}
 
 			/** Frame and fields **/
 

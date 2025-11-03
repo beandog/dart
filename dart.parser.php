@@ -201,6 +201,12 @@
 		'action' => 'StoreString',
 		'default' => '',
 	));
+	$parser->addOption('opt_nvenc', array(
+		'long_name' => '--nvenc',
+		'description' => 'Speed up encoding by using nvidia graphics card',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('opt_fast', array(
 		'long_name' => '--fast',
 		'description' => 'Speed up encoding by using ultrafast preset',
