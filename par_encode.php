@@ -25,6 +25,7 @@
 		'short_name' => '-v',
 		'description' => 'Display verbose output',
 		'action' => 'StoreTrue',
+		'default' => false,
 	));
 
 	try { $result = $parser->parse(); }
@@ -35,6 +36,12 @@
 
 	extract($result->args);
 	extract($result->options);
+
+	// Override using local config
+	if(isset($config_parallel_verbose))
+		$verbose = $config_parallel_verbose;
+	if(isset($config_parallel_jobs))
+		$arg_max_procs = $config_parallel_jobs;
 
 	if(!count($filenames))
 		exit;
