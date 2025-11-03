@@ -88,11 +88,15 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		// "The -r value also acts as an indication to the encoder of how long each frame is, and can affect the ratecontrol decisions made by the encoder."
 		// "fps, as a filter, needs to be inserted in a filtergraph, and will always generate a CFR stream. It offers five rounding modes that affect which source frames are dropped or duplicated in order to achieve the target framerate. See the documentation of the fps filter for details."
 		// https://ffmpeg.org/ffmpeg-filters.html#fps
-		$fps = $series_model->get_fps();
-		if($video_format == 'pal' && $fps == '29.97')
-			$fps = 25;
-		if($video_format == 'pal' && $fps == '59.94')
-			$fps = 50;
+		if($arg_fps)
+			$fps = $arg_fps;
+		else {
+			$fps = $series_model->get_fps();
+			if($video_format == 'pal' && $fps == '29.97')
+				$fps = 25;
+			if($video_format == 'pal' && $fps == '59.94')
+				$fps = 50;
+		}
 
 		if($arg_vcodec)
 			$vcodec = $arg_vcodec;

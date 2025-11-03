@@ -109,8 +109,8 @@
 			$this->video_quality = $int;
 		}
 
-		public function set_video_framerate($int) {
-			$this->video_framerate = $int;
+		public function set_video_framerate($float) {
+			$this->video_framerate = $float;
 		}
 
 		public function add_audio_track($int) {
@@ -341,6 +341,9 @@
 			} else {
 				$args['--rate'] = 59.94;
 			}
+
+			if($this->video_framerate)
+				$args['--rate'] = $this->video_framerate;
 
 			// Set x264 preset
 			if($this->x264_preset) {

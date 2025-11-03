@@ -201,6 +201,12 @@
 		'action' => 'StoreString',
 		'default' => '',
 	));
+	$parser->addOption('arg_fps', array(
+		'long_name' => '--fps',
+		'description' => 'Set encoding FPS',
+		'action' => 'StoreString',
+		'default' => '',
+	));
 	$parser->addOption('arg_prefix', array(
 		'long_name' => '--prefix',
 		'description' => 'Add prefix string to episode filenames',
