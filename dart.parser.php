@@ -49,6 +49,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_subtitles', array(
+		'long_name' => '--subtitles',
+		'description' => 'Copy subtitle streams',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('opt_backup', array(
 		'long_name' => '--backup',
 		'description' => 'Backup device to filesystem',

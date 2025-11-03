@@ -274,17 +274,21 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			// Check for a subtitle track
 
-			$subp_ix = $tracks_model->get_first_english_subp();
-			$has_closed_captioning = $tracks_model->has_closed_captioning();
+			if($opt_subtitles) {
 
-			// If we have a VobSub one, add it
-			// Otherwise, check for a CC stream, and add that
-			if($subp_ix) {
-				$handbrake->add_subtitle_track($subp_ix);
-			} elseif($has_closed_captioning) {
-				$num_subp_tracks = $tracks_model->get_num_active_subp_tracks();
-				$closed_captioning_ix = $num_subp_tracks + 1;
-				$handbrake->add_subtitle_track($closed_captioning_ix);
+				$subp_ix = $tracks_model->get_first_english_subp();
+				$has_closed_captioning = $tracks_model->has_closed_captioning();
+
+				// If we have a VobSub one, add it
+				// Otherwise, check for a CC stream, and add that
+				if($subp_ix) {
+					$handbrake->add_subtitle_track($subp_ix);
+				} elseif($has_closed_captioning) {
+					$num_subp_tracks = $tracks_model->get_num_active_subp_tracks();
+					$closed_captioning_ix = $num_subp_tracks + 1;
+					$handbrake->add_subtitle_track($closed_captioning_ix);
+				}
+
 			}
 
 			/** Chapters **/
@@ -368,28 +372,33 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		// Extract SSA subtitles from DVDs
 		$dvd_bugs = $dvds_model->get_bugs();
-		$dvd_encode_ssa = false;
-		if($opt_ssa && in_array('cc-only', $dvd_bugs) && $tracks_model->has_closed_captioning() && ($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'ffpipe')) {
 
-			$dvd_encode_ssa = true;
+		if($opt_subtitles) {
 
-			$str_episode_id = str_pad($episode_id, 5, 0, STR_PAD_LEFT);
-			$ssa_filename = "subs-".$str_episode_id."-$nsix.ssa";
+			$dvd_encode_ssa = false;
+			if($opt_ssa && in_array('cc-only', $dvd_bugs) && $tracks_model->has_closed_captioning() && ($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'ffpipe')) {
 
-			$ssa_filename = "subs-".basename($filename, '.mkv').".ssa";
+				$dvd_encode_ssa = true;
 
-			if(!($opt_skip_existing && file_exists($ssa_filename))) {
+				$str_episode_id = str_pad($episode_id, 5, 0, STR_PAD_LEFT);
+				$ssa_filename = "subs-".$str_episode_id."-$nsix.ssa";
 
-				require 'dart.dvd_copy.php';
-				$dvd_copy->input_filename($input_filename);
-				$dvd_copy->output_filename('-');
-				$dvd_copy_command = $dvd_copy->get_executable_string();
+				$ssa_filename = "subs-".basename($filename, '.mkv').".ssa";
 
-				$arg_filename = escapeshellarg($ssa_filename);
+				if(!($opt_skip_existing && file_exists($ssa_filename))) {
 
-				$dvd_ssa_command = "$dvd_copy_command 2> /dev/null | ffmpeg -f lavfi -i 'movie=pipe\\\\:0[out+subcc]' -y $arg_filename";
+					require 'dart.dvd_copy.php';
+					$dvd_copy->input_filename($input_filename);
+					$dvd_copy->output_filename('-');
+					$dvd_copy_command = $dvd_copy->get_executable_string();
 
-				echo "$dvd_ssa_command\n";
+					$arg_filename = escapeshellarg($ssa_filename);
+
+					$dvd_ssa_command = "$dvd_copy_command 2> /dev/null | ffmpeg -f lavfi -i 'movie=pipe\\\\:0[out+subcc]' -y $arg_filename";
+
+					echo "$dvd_ssa_command\n";
+
+				}
 
 			}
 
@@ -470,24 +479,30 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			}
 
 			/** Subtitles **/
-			$subp_ix = $tracks_model->get_first_english_subp();
-			if(!$subp_ix && ($tracks_model->get_num_active_subp_tracks() == 1))
-				$subp_ix = '0x20';
+			if($opt_subtitles) {
 
-			if($subp_ix) {
-				// Not sure if I need this now that I'm pulling straight from dvdvideo format
-				// $ffmpeg->input_opts("-probesize '67108864' -analyzeduration '60000000'");
-				$ffmpeg->add_subtitle_stream($subp_ix);
+				$ffmpeg->enable_subtitles();
+
+				$subp_ix = $tracks_model->get_first_english_subp();
+				if(!$subp_ix && ($tracks_model->get_num_active_subp_tracks() == 1))
+					$subp_ix = '0x20';
+
+				if($subp_ix) {
+					// Not sure if I need this now that I'm pulling straight from dvdvideo format
+					// $ffmpeg->input_opts("-probesize '67108864' -analyzeduration '60000000'");
+					$ffmpeg->add_subtitle_stream($subp_ix);
+				}
+
+				// When copying closed captioning with ffmpeg, the time indexes are always off, so
+				// drop it completely.
+				if($tracks_model->has_closed_captioning())
+					$ffmpeg->remove_closed_captioning();
+
+				// Use an external SSA file instead of existing closed captioning
+				if($dvd_encode_ssa)
+					$ffmpeg->add_ssa_filename($ssa_filename);
+
 			}
-
-			// When copying closed captioning with ffmpeg, the time indexes are always off, so
-			// drop it completely.
-			if($tracks_model->has_closed_captioning())
-				$ffmpeg->remove_closed_captioning();
-
-			// Use an external SSA file instead of existing closed captioning
-			if($dvd_encode_ssa)
-				$ffmpeg->add_ssa_filename($ssa_filename);
 
 			$ffmpeg->output_filename($filename);
 
@@ -590,14 +605,20 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			$ffmpeg->set_acodec($acodec);
 
-			$subp_ix = $tracks_model->get_first_english_subp();
-			if(!$subp_ix && ($tracks_model->get_num_active_subp_tracks() == 1))
-				$subp_ix = '0x20';
+			if($opt_subtitles) {
 
-			if($subp_ix) {
-				// Not sure if I need this now that I'm pulling straight from dvdvideo format
-				// $ffmpeg->input_opts("-probesize '67108864' -analyzeduration '60000000'");
-				$ffmpeg->add_subtitle_stream($subp_ix);
+				$ffmpeg->enable_subtitles();
+
+				$subp_ix = $tracks_model->get_first_english_subp();
+				if(!$subp_ix && ($tracks_model->get_num_active_subp_tracks() == 1))
+					$subp_ix = '0x20';
+
+				if($subp_ix) {
+					// Not sure if I need this now that I'm pulling straight from dvdvideo format
+					// $ffmpeg->input_opts("-probesize '67108864' -analyzeduration '60000000'");
+					$ffmpeg->add_subtitle_stream($subp_ix);
+				}
+
 			}
 
 			// Remove closed captioning. There are only 367 cartoon episodes that have CC and *not* vobsub
@@ -640,7 +661,9 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 				$dvd_copy->output_filename('-');
 				$dvd_copy_command = $dvd_copy->get_executable_string();
 
-				$dvd_remux_command = "$dvd_copy_command 2> /dev/null | ffmpeg -fflags +genpts -i - -codec copy -y $filename";
+				$dvd_remux_command = "$dvd_copy_command 2> /dev/null | ffmpeg -fflags +genpts -i - -vcodec copy -acodec copy -sn -y $filename";
+				if($opt_subtitles)
+					$dvd_remux_command = "$dvd_copy_command 2> /dev/null | ffmpeg -fflags +genpts -i - -codec copy -y $filename";
 
 				echo "$dvd_remux_command\n";
 
@@ -771,10 +794,13 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			// HD Blu-rays, first PGS is 0x1200
 			// UHD Blu-rays, first PGS is 0x12a0
-			if($uhd)
-				$ffmpeg->add_subtitle_stream('0x12a0?');
-			else
-				$ffmpeg->add_subtitle_stream('0x1200?');
+			if($opt_subtitles) {
+				$ffmpeg->enable_subtitles();
+				if($uhd)
+					$ffmpeg->add_subtitle_stream('0x12a0?');
+				else
+					$ffmpeg->add_subtitle_stream('0x1200?');
+			}
 
 			$starting_chapter = $episodes_model->starting_chapter;
 			if($starting_chapter)

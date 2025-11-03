@@ -42,6 +42,7 @@
 		public $audio_streams = array();
 
 		// Subtitles
+		public $subtitles = false;
 		public $scodec = 'copy';
 		public $subtitle_streams = array();
 		public $remove_cc = false;
@@ -111,6 +112,10 @@
 		public function input_track($str) {
 			$track = abs(intval($str));
 			$this->dvd_track = $track;
+		}
+
+		public function enable_subtitles() {
+			$this->subtitles = true;
 		}
 
 		// Closed captioning streams in ffmpeg are always garbled, so allow removing them
@@ -380,10 +385,11 @@
 			if(!$this->ffplay) {
 				$cmd[] = "-vcodec '".$this->vcodec."'";
 				$cmd[] = "-acodec '".$this->acodec."'";
-				$cmd[] = "-scodec '".$this->scodec."'";
+				if($this->subtitles)
+					$cmd[] = "-scodec '".$this->scodec."'";
 			}
 
-			if($this->ssa_filename && $this->ffmpeg)
+			if($this->subtitles && $this->ssa_filename && $this->ffmpeg)
 				$cmd[] = "-map '1'";
 
 			// Always set all audio *and* subtitle streams as English
