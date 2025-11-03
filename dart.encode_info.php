@@ -47,18 +47,15 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 	$container = 'mkv';
 
-	if(isset($config_nvenc) && $config_nvenc)
-		$opt_nvenc = true;
-
-	if($opt_mp4 || $opt_nvenc)
+	if($opt_mp4 || (substr($arg_vcodec, 0, 3) == 'nvenc'))
 		$container = 'mp4';
 	elseif($opt_mkv)
 		$container = 'mkv';
 
-	if($disc_type == 'bluray' || $disc_type == 'uhd')
-		$encode_subtitles = true;
+	if($opt_no_subtitles)
+		$encode_subtitles = false;
 	else
-		$encode_subtitles = $opt_subtitles;
+		$encode_subtitles = true;
 
 	// Display the episode names
 	foreach($dvd_episodes as $episode_id) {
@@ -256,14 +253,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			$x264_tune = $series_model->get_x264_tune();
 			if($vcodec == 'x264' && $x264_tune)
 				$handbrake->set_x264_tune($x264_tune);
-
-			// Encoding to x265 using Nvidia card
-			if($opt_nvenc) {
-				$handbrake->set_vcodec('nvenc_h265');
-				$handbrake->set_x264_preset('');
-				$handbrake->set_x264_tune('');
-				$handbrake->set_video_quality($video_quality + 2);
-			}
 
 			/** Frame and fields **/
 

@@ -49,8 +49,8 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_subtitles', array(
-		'long_name' => '--subtitles',
+	$parser->addOption('opt_no_subtitles', array(
+		'long_name' => '--no-subtitles',
 		'description' => 'Copy subtitle streams',
 		'action' => 'StoreTrue',
 		'default' => false,
@@ -206,12 +206,6 @@
 		'description' => 'Add prefix string to episode filenames',
 		'action' => 'StoreString',
 		'default' => '',
-	));
-	$parser->addOption('opt_nvenc', array(
-		'long_name' => '--nvenc',
-		'description' => 'Speed up encoding by using nvidia graphics card',
-		'action' => 'StoreTrue',
-		'default' => false,
 	));
 	$parser->addOption('opt_fast', array(
 		'long_name' => '--fast',
