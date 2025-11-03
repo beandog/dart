@@ -201,6 +201,12 @@
 		'action' => 'StoreString',
 		'default' => '',
 	));
+	$parser->addOption('arg_prefix', array(
+		'long_name' => '--prefix',
+		'description' => 'Add prefix string to episode filenames',
+		'action' => 'StoreString',
+		'default' => '',
+	));
 	$parser->addOption('opt_nvenc', array(
 		'long_name' => '--nvenc',
 		'description' => 'Speed up encoding by using nvidia graphics card',

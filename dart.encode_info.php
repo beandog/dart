@@ -221,6 +221,9 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		$filename = $prefix.$filename;
 
+		if($arg_prefix)
+			$filename = "$arg_prefix-$filename";
+
 		/** Encode DVDs **/
 		/*
 		 * Classic ripping using HandBrake
