@@ -32,8 +32,8 @@
 		if(!array_key_exists('extension', $pathinfo) || $pathinfo['extension'] != 'mkv')
 			continue;
 
-		$basename = basename($filename, '.mkv');
-		$video = "v2-$basename.mp4";
+		$basename = basename($filename);
+		$video = "v2-$basename";
 
 		if(file_exists($video))
 			continue;
@@ -41,7 +41,12 @@
 		$arg_input_filename = escapeshellarg($filename);
 		$arg_output_filename = escapeshellarg($video);
 
-		$ffmpeg_opts = "-i $arg_input_filename -vcodec 'copy' -sn -acodec 'libfdk_aac' -vbr '5' -map_metadata '0' -movflags '+faststart' -dn -y $arg_output_filename";
+		// ffmpeg arguments:
+		// - re-encode audio to AAC with same channels as source and highest VBR settings
+		// - remove subtitles
+		// - remove chapters (drop metadata) because ffprobe is complaining about them
+		// - set languages to English (which is lost when dropping metadata)
+		$ffmpeg_opts = "-i $arg_input_filename -vcodec 'copy' -acodec 'libfdk_aac' -vbr '5' -sn -map_metadata '0' -y $arg_output_filename";
 
 		if($opt_batch)
 			$ffmpeg_opts = "-v quiet -stats $ffmpeg_opts";
