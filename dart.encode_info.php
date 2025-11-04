@@ -58,10 +58,10 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 	elseif($opt_mkv)
 		$container = 'mkv';
 
-	if($opt_no_subtitles)
-		$encode_subtitles = false;
-	else
+	if($opt_subtitles)
 		$encode_subtitles = true;
+	else
+		$encode_subtitles = false;
 
 	// Display the episode names
 	foreach($dvd_episodes as $episode_id) {
