@@ -3,9 +3,11 @@
 // Display encode instructions about a disc
 if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux)) {
 
-	// Override in conifg.local.php
-	if(!isset($qa_max))
-		$qa_max = 60;
+	// Override in config.local.php
+	if(isset($config_qa_max))
+		$qa_max = $config_qa_max;
+	else
+		$qa_max = 90;
 
 	// Override DVD encoder if disc is flagged with bugs
 	$dvd_encoder = $dvds_model->get_encoder();
@@ -324,6 +326,9 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			if($opt_time)
 				$handbrake_command = "tout $handbrake_command";
 
+			if($opt_test_existing)
+				$handbrake_command = "test ! -e $filename && $handbrake_command";
+
 			echo "$handbrake_command\n";
 
 		}
@@ -527,6 +532,9 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			if($opt_log_progress)
 				$ffmpeg_command .= " -progress /tmp/$episode_id.txt";
+
+			if($opt_test_existing)
+				$ffmpeg_command = "test ! -e $filename && $ffmpeg_command";
 
 			echo "$ffmpeg_command\n";
 

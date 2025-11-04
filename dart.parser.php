@@ -79,6 +79,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_test_existing', array(
+		'long_name' => '--test-existing',
+		'description' => 'Prefix encode to check if file exists',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('opt_iso_filename', array(
 		'long_name' => '--iso-filename',
 		'description' => 'Display ISO filename',

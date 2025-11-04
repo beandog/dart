@@ -164,10 +164,6 @@
 	if(!count($devices) && ($opt_info || $opt_encode_info || $opt_copy_info || $opt_backup || $opt_import || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe || $opt_ssa))
 		$devices = $all_devices;
 
-	// Default max length for QA operations
-	if(!isset($qa_max))
-		$qa_max = 60;
-
 	foreach($devices as $device) {
 
 		start:
