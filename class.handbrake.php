@@ -27,6 +27,7 @@
 		public $video_quality;
 		public $video_framerate;
 		public $video_format = 'ntsc';
+		public $video_filter;
 		public $max_height;
 		public $max_width;
 		public $height;
@@ -205,6 +206,25 @@
 			$this->crop = $str;
 		}
 
+		public function set_preset($preset) {
+			$this->preset = $preset;
+		}
+
+		public function set_video_format($str) {
+			$this->video_format = strtolower($str);
+		}
+
+		public function set_video_filter($str) {
+			$this->video_filter = $str;
+		}
+
+		public function set_x264($key, $value) {
+			if(is_null($value) && array_key_exists($key, $this->x264))
+				unset($this->x264[$key]);
+			elseif(!is_null($value))
+				$this->x264[$key] = $value;
+		}
+
 		public function add_subtitle_track($int) {
 			$int = abs(intval($int));
 			$this->subtitle_tracks[] = $int;
@@ -334,14 +354,6 @@
 				$args['--height'] = $this->height;
 			}
 
-			// Set video framerate
-			// bwdif bob will cause stuttaring on playback on Sony 4K TV
-			if($this->video_format == 'pal') {
-				$args['--rate'] = 50;
-			} else {
-				$args['--rate'] = 59.94;
-			}
-
 			if($this->video_framerate)
 				$args['--rate'] = $this->video_framerate;
 
@@ -434,8 +446,25 @@
 				$cmd[] = "$key $arg_value";
 			}
 
-			// Always deinterlace :)
-			$cmd[] = "'--bwdif=bob'";
+			// Deinterlace video
+			if($this->video_filter) {
+
+				if($this->video_filter == 'bwdif') {
+					$cmd[] = "'--bwdif=bob'";
+				} else {
+
+					$cmd[] = "'--comb-detect=permissive'";
+
+					if($this->video_filter == 'bob')
+						$cmd[] = "'--decomb=bob'";
+					elseif($this->video_filter == 'eedi2')
+						$cmd[] = "'--decomb=eedi2'";
+					elseif($this->video_filter == 'eedi2bob')
+						$cmd[] = "'--decomb=eedi2bob'";
+
+				}
+
+			}
 
 			$options = $this->get_options();
 
@@ -451,26 +480,6 @@
 
 			return $str;
 
-		}
-
-		public function set_x264($key, $value) {
-
-			if(is_null($value) && array_key_exists($key, $this->x264))
-				unset($this->x264[$key]);
-			elseif(!is_null($value))
-				$this->x264[$key] = $value;
-
-
-		}
-
-		public function set_preset($preset) {
-
-			$this->preset = $preset;
-
-		}
-
-		public function set_video_format($str) {
-			$this->video_format = strtolower($str);
 		}
 
 		/**
