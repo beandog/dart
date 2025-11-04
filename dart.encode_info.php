@@ -90,15 +90,17 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		// "The -r value also acts as an indication to the encoder of how long each frame is, and can affect the ratecontrol decisions made by the encoder."
 		// "fps, as a filter, needs to be inserted in a filtergraph, and will always generate a CFR stream. It offers five rounding modes that affect which source frames are dropped or duplicated in order to achieve the target framerate. See the documentation of the fps filter for details."
 		// https://ffmpeg.org/ffmpeg-filters.html#fps
+		if($video_format == 'pal')
+			$fps = 25;
+		else
+			$fps = 29.97;
+
 		if($arg_fps)
 			$fps = $arg_fps;
-		else {
-			$fps = $series_model->get_fps();
-			if($video_format == 'pal' && $fps == '29.97')
-				$fps = 25;
-			if($video_format == 'pal' && $fps == '59.94')
-				$fps = 50;
-		}
+
+		// bwdif bob will cause stuttering on playback on Sony 4K TV with original FPS
+		if($arg_video_filter == 'bwdif' ||$arg_video_filter == 'bob' || $arg_video_filter == 'eedi2bob' )
+			$fps *= 2;
 
 		if($arg_vcodec)
 			$vcodec = $arg_vcodec;
@@ -122,8 +124,10 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 				$ffmpeg->verbose();
 
 			/** Video **/
-			$deint_filter = "bwdif=deint=$video_deint";
-			$ffmpeg->add_video_filter($deint_filter);
+			if($arg_video_filter == 'bwdif') {
+				$deint_filter = "bwdif=deint=$video_deint";
+				$ffmpeg->add_video_filter($deint_filter);
+			}
 
 			// Not sure if I really need this or not, at the very least, you can be sure it matches
 			// what the encode would look like.
@@ -248,8 +252,9 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			$video_quality = $series_model->get_crf();
 			if($arg_crf)
-				$video_quality = abs(intval($arg_crf));
-			$handbrake->set_video_quality($video_quality);
+				$video_quality = $arg_crf;
+			if(is_numeric($video_quality))
+				$handbrake->set_video_quality($video_quality);
 
 			if($opt_fast)
 				$handbrake->set_x264_preset('ultrafast');
@@ -259,6 +264,9 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			$x264_tune = $series_model->get_x264_tune();
 			if($vcodec == 'x264' && $x264_tune)
 				$handbrake->set_x264_tune($x264_tune);
+
+			if($arg_video_filter)
+				$handbrake->set_video_filter($arg_video_filter);
 
 			/** Frame and fields **/
 
@@ -445,9 +453,10 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			$video_quality = $series_model->get_crf();
 
 			if($arg_crf)
-				$video_quality = abs(intval($arg_crf));
+				$video_quality = $arg_crf;
 
-			$ffmpeg->set_crf($video_quality);
+			if(is_numeric($video_quality))
+				$ffmpeg->set_crf($video_quality);
 
 			if($vcodec == 'x264') {
 				$ffmpeg->set_vcodec('libx264');
@@ -579,9 +588,10 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			$video_quality = $series_model->get_crf();
 
 			if($arg_crf)
-				$video_quality = abs(intval($arg_crf));
+				$video_quality = $arg_crf;
 
-			$ffmpeg->set_crf($video_quality);
+			if(is_numeric($video_quality))
+				$ffmpeg->set_crf($video_quality);
 
 			if($vcodec == 'x264') {
 				$ffmpeg->set_vcodec('libx264');

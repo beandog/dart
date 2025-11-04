@@ -219,6 +219,12 @@
 		'action' => 'StoreString',
 		'default' => '',
 	));
+	$parser->addOption('arg_video_filter', array(
+		'long_name' => '--video-filter',
+		'description' => 'Deinterlace video using filters',
+		'action' => 'StoreString',
+		'default' => 'bwdif',
+	));
 	$parser->addOption('opt_fast', array(
 		'long_name' => '--fast',
 		'description' => 'Speed up encoding by using ultrafast preset',
