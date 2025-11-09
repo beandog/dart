@@ -205,7 +205,7 @@
 		'long_name' => '--crf',
 		'description' => 'Set encoding CRF',
 		'action' => 'StoreString',
-		'default' => '',
+		'default' => null,
 	));
 	$parser->addOption('arg_fps', array(
 		'long_name' => '--fps',
