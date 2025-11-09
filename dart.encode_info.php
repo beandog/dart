@@ -255,9 +255,9 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			$handbrake->set_vcodec($vcodec);
 
 			$video_quality = $series_model->get_crf();
-			if($arg_crf)
+			if(isset($arg_crf))
 				$video_quality = $arg_crf;
-			if(is_numeric($video_quality))
+			if($video_quality > 0)
 				$handbrake->set_video_quality($video_quality);
 
 			if($opt_fast)
