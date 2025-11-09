@@ -102,6 +102,9 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		if($arg_fps)
 			$fps = $arg_fps;
 
+		if($arg_no_filters)
+			$arg_video_filter = null;
+
 		// bwdif bob will cause stuttering on playback on Sony 4K TV with original FPS
 		if($arg_video_filter == 'bwdif' ||$arg_video_filter == 'bob' || $arg_video_filter == 'eedi2bob' )
 			$fps *= 2;
@@ -269,7 +272,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			if($vcodec == 'x264' && $x264_tune)
 				$handbrake->set_x264_tune($x264_tune);
 
-			if($arg_video_filter)
+			if($arg_video_filter && !$arg_no_filters)
 				$handbrake->set_video_filter($arg_video_filter);
 
 			/** Frame and fields **/
