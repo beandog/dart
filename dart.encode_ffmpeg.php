@@ -41,7 +41,7 @@ if($disc_type == 'dvd' && $opt_encode_info && $dvd_encoder == 'ffmpeg') {
 	}
 
 	// Override default CRF for now while testing, which is slightly less than the default
-	if($vcodec == 'h264_nvenc' || $vcodec == 'hevc_nvenc')
+	if($vcodec == 'h264_nvenc')
 		$video_quality = 20;
 	elseif($vcodec == 'hevc_nvenc')
 		$video_quality = 26;
