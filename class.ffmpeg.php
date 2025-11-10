@@ -33,8 +33,10 @@
 		public $vcodec_opts = '';
 		public $video_filters = array();
 		public $crf = 0;
+		public $cq = 0;
 		public $tune = '';
 		public $preset = '';
+		public $rc_lookahead = 0;
 
 		// Audio
 		public $acodec = 'copy';
@@ -147,6 +149,10 @@
 				$this->crf = $crf;
 		}
 
+		public function set_cq($str) {
+			$this->cq = intval($str);
+		}
+
 		public function set_tune($str) {
 			$this->tune = $str;
 		}
@@ -157,6 +163,10 @@
 
 		public function add_video_filter($str) {
 			$this->video_filters[] = $str;
+		}
+
+		public function set_rc_lookahead($str) {
+			$this->rc_lookahead = intval($str);
 		}
 
 		public function set_acodec($str) {
@@ -263,7 +273,7 @@
 			if($this->vcodec_opts)
 				$args['vcodec_opts'] = $this->vcodec_opts;
 
-			if($this->crf)
+			if($this->crf && !$this->cq)
 				$args['crf'] = $this->crf;
 
 			if($this->tune)
@@ -282,6 +292,17 @@
 				$vf = implode(",", $this->video_filters);
 				$args['vf'] = $vf;
 			}
+
+			if($this->cq) {
+				$args['rc'] = 'vbr';
+				$args['cq'] = $this->cq;
+				$args['qmin'] = $this->cq;
+				$args['qmax'] = $this->cq;
+				$args['b:v'] = 0;
+			}
+
+			if($this->rc_lookahead)
+				$args['rc-lookahead'] = 32;
 
 			if($this->container == 'mp4')
 				$args['movflags'] = '+faststart';

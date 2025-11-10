@@ -102,11 +102,8 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		if($arg_fps)
 			$fps = $arg_fps;
 
-		if($arg_no_filters)
-			$arg_video_filter = null;
-
 		// bwdif bob will cause stuttering on playback on Sony 4K TV with original FPS
-		if($arg_video_filter == 'bwdif' ||$arg_video_filter == 'bob' || $arg_video_filter == 'eedi2bob' )
+		if($opt_bwdif || $arg_decomb == 'bob' || $arg_decomb == 'eedi2bob' )
 			$fps *= 2;
 
 		if($arg_vcodec)
@@ -114,6 +111,57 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		if($disc_type == 'dvd' && $opt_copy_info)
 			$container = 'mpg';
+
+		if($disc_type == 'dvd' && $opt_scan) {
+
+			$handbrake_command = "HandBrakeCLI --input '".escapeshellcmd($input_filename)."'";
+
+			$tracks_model = new Tracks_Model($episodes_model->track_id);
+
+			$handbrake_command .= " --title '".$tracks_model->ix."'";
+
+			$starting_chapter = $episodes_model->starting_chapter;
+			$ending_chapter = $episodes_model->ending_chapter;
+
+			if($starting_chapter)
+				$handbrake_command .= "--chapters '".$starting_chapter."-";
+			if($ending_chapter)
+				$handbrake_command .= "$ending_chapter";
+			if($starting_chapter || $ending_chapter)
+				$handbrake_command .= "'";
+
+			$handbrake_command .= " --scan 2>&1";
+			echo "$handbrake_command\n";
+
+		}
+
+		// Filename overrides
+		$prefix = '';
+		if($arg_prefix)
+			$prefix = "$arg_prefix-";
+		if($opt_qa && $dvd_encoder == 'handbrake')
+			$prefix .= "hb-qa-";
+		elseif($opt_qa && $dvd_encoder == 'ffmpeg')
+			$prefix .= "ffmpeg-qa-";
+		elseif($opt_qa && $dvd_encoder == 'ffpipe')
+			$prefix .= "ffpipe-qa-";
+		if($arg_vcodec)
+			$prefix .= "$arg_vcodec-";
+		if($arg_acodec)
+			$prefix .= "$arg_acodec-";
+		if($arg_crf)
+			$prefix .= "q-$arg_crf-";
+		elseif($opt_no_crf)
+			$prefix .= "no-crf-";
+		if($opt_no_fps)
+			$prefix .= 'no-fps-';
+		if($opt_fast)
+			$prefix .= "fast-";
+		elseif($opt_slow)
+			$prefix .= "slow-";
+
+		require 'dart.encode_handbrake.php';
+		require 'dart.encode_ffmpeg.php';
 
 		if($disc_type == 'dvd' && $opt_ffplay) {
 
@@ -131,7 +179,9 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 				$ffmpeg->verbose();
 
 			/** Video **/
-			if($arg_video_filter == 'bwdif') {
+			if(($video_deint || $opt_bwdif) && !$opt_no_filters) {
+				if($opt_bwdif)
+					$video_deint = 'bwdif';
 				$deint_filter = "bwdif=deint=$video_deint";
 				$ffmpeg->add_video_filter($deint_filter);
 			}
@@ -142,7 +192,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 				$ffmpeg->add_video_filter("fps=$fps");
 
 			$crop = $episodes_model->crop;
-			if($crop != null && !$opt_nocrop && $crop != '720:480:0:0')
+			if($crop != null && $opt_crop && $crop != '720:480:0:0')
 				$ffmpeg->add_video_filter("crop=$crop");
 
 			/** Chapters **/
@@ -191,219 +241,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		}
 
-		if($disc_type == 'dvd' && $opt_scan) {
-
-			$handbrake_command = "HandBrakeCLI --input '".escapeshellcmd($input_filename)."'";
-
-			$tracks_model = new Tracks_Model($episodes_model->track_id);
-
-			$handbrake_command .= " --title '".$tracks_model->ix."'";
-
-			$starting_chapter = $episodes_model->starting_chapter;
-			$ending_chapter = $episodes_model->ending_chapter;
-
-			if($starting_chapter)
-				$handbrake_command .= "--chapters '".$starting_chapter."-";
-			if($ending_chapter)
-				$handbrake_command .= "$ending_chapter";
-			if($starting_chapter || $ending_chapter)
-				$handbrake_command .= "'";
-
-			$handbrake_command .= " --scan 2>&1";
-			echo "$handbrake_command\n";
-
-		}
-
-		// Filename overrides
-		$prefix = '';
-		if($opt_qa && $dvd_encoder == 'handbrake')
-			$prefix = "hb-qa-";
-		elseif($opt_qa && $dvd_encoder == 'ffmpeg')
-			$prefix = "ffmpeg-qa-";
-		elseif($opt_qa && $dvd_encoder == 'ffpipe')
-			$prefix = "ffpipe-qa-";
-		if($arg_vcodec)
-			$prefix .= "$arg_vcodec-";
-		if($arg_acodec)
-			$prefix .= "$arg_acodec-";
-		if($arg_crf)
-			$prefix .= "q-$arg_crf-";
-		if($opt_fast)
-			$prefix .= "fast-";
-		elseif($opt_slow)
-			$prefix .= "slow-";
-
-		$filename = $prefix.$filename;
-
-		if($arg_prefix)
-			$filename = "$arg_prefix-$filename";
-
-		/** Encode DVDs **/
-		/*
-		 * Classic ripping using HandBrake
-		 */
-		if($disc_type == 'dvd' && $opt_encode_info && $dvd_encoder == 'handbrake') {
-
-			$handbrake = new HandBrake;
-			$handbrake->verbose($verbose);
-			$handbrake->debug($debug);
-
-			/** Files **/
-
-			$handbrake->input_filename($input_filename);
-			$handbrake->input_track($tracks_model->ix);
-
-			/** Video **/
-
-			$handbrake->set_vcodec($vcodec);
-
-			$video_quality = intval($series_model->get_crf());
-			if(isset($arg_crf))
-				$video_quality = intval($arg_crf);
-			if($video_quality > 0)
-				$handbrake->set_video_quality($video_quality);
-
-			if($opt_fast)
-				$handbrake->set_x264_preset('ultrafast');
-			elseif($opt_slow)
-				$handbrake->set_x264_preset('slow');
-
-			$x264_tune = $series_model->get_x264_tune();
-			if($vcodec == 'x264' && $x264_tune)
-				$handbrake->set_x264_tune($x264_tune);
-
-			if($arg_video_filter && !$arg_no_filters)
-				$handbrake->set_video_filter($arg_video_filter);
-
-			/** Frame and fields **/
-
-			// Set framerate
-			if($fps)
-				$handbrake->set_video_framerate($fps);
-
-			/** Audio **/
-
-			$handbrake->add_audio_track($tracks_model->audio_ix);
-
-			$acodec = $series_model->get_acodec();
-
-			if($arg_acodec && ($arg_acodec == 'aac' || $arg_acodec == 'flac'))
-				$acodec = $arg_acodec;
-
-			if($acodec == 'aac') {
-				$acodec = 'fdk_aac';
-				$handbrake->set_audio_vbr(5);
-			} elseif($acodec == 'flac') {
-				$acodec = 'flac16';
-			}
-
-			$handbrake->add_acodec($acodec);
-
-			/** Subtitles **/
-
-			// Check for a subtitle track
-
-			if($encode_subtitles) {
-
-				$handbrake->enable_subtitles();
-
-				$subp_ix = $tracks_model->get_first_english_subp();
-				$has_closed_captioning = $tracks_model->has_closed_captioning();
-
-				// If we have a VobSub one, add it
-				// Otherwise, check for a CC stream, and add that
-				if($subp_ix) {
-					$handbrake->add_subtitle_track($subp_ix);
-				} elseif($has_closed_captioning) {
-					$num_subp_tracks = $tracks_model->get_num_active_subp_tracks();
-					$closed_captioning_ix = $num_subp_tracks + 1;
-					$handbrake->add_subtitle_track($closed_captioning_ix);
-				}
-
-			}
-
-			/** Chapters **/
-
-			$handbrake->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
-			$handbrake->add_chapters();
-
-			$handbrake->set_video_format($tracks_model->format);
-
-			$handbrake->output_filename($filename);
-
-			if($opt_qa)
-				$handbrake->set_duration($qa_max);
-
-			$handbrake->output_filename($filename);
-
-			$handbrake_command = $handbrake->get_executable_string();
-
-			if($opt_time)
-				$handbrake_command = "tout $handbrake_command";
-
-			if($opt_test_existing)
-				$handbrake_command = "test ! -e $filename && $handbrake_command";
-
-			echo "$handbrake_command\n";
-
-		}
-
-		// Use dvd_rip
-		/*
-		// Skipping for now as it will probably be removed or replaced
-		if($disc_type == 'dvd' && $opt_encode_info && $opt_dvdrip) {
-
-			$dvdrip = new DVDRip;
-			$dvdrip->verbose($verbose);
-			$dvdrip->debug($debug);
-
-			$dvdrip->input_filename($input_filename);
-			$dvdrip->input_track($tracks_model->ix);
-
-			$dvdrip->set_vcodec($vcodec);
-			$video_quality = $series_model->get_crf();
-
-			if($arg_crf)
-				$video_quality = abs(intval($arg_crf));
-
-			$dvdrip->set_video_quality($video_quality);
-
-			$dvdrip->set_acodec('en');
-
-			$acodec = $series_model->get_acodec();
-
-			$acodec = 'aac';
-
-			$dvdrip->set_acodec($acodec);
-
-			$dvdrip->set_audio_lang('en');
-
-			$dvdrip->set_subtitle_lang('en');
-
-			$starting_chapter = $episodes_model->starting_chapter;
-			$ending_chapter = $episodes_model->ending_chapter;
-			if($starting_chapter || $ending_chapter) {
-				$dvdrip->set_chapters($starting_chapter, $ending_chapter);
-			}
-
-			$dvdrip->output_filename($filename);
-
-			$dvdrip_command = $dvdrip->get_executable_string();
-
-			if($opt_time)
-				$dvdrip_command = "tout $dvdrip_command";
-
-			echo "$dvdrip_command\n";
-
-		}
-		*/
-
-		/**
-		 * Next-generation DVD Ripping
-		 *
-		 * Rip DVDs directly from source using ffmpeg
-		 */
-
 		// Extract SSA subtitles from DVDs
 		$dvd_bugs = $dvds_model->get_bugs();
 
@@ -438,123 +275,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		}
 
-		// DVD encoding with ffmpeg and libdvdread
-		if($disc_type == 'dvd' && $opt_encode_info && $dvd_encoder == 'ffmpeg') {
-
-			$ffmpeg = new FFMpeg();
-			$ffmpeg->set_encoder('ffmpeg');
-
-			if($debug)
-				$ffmpeg->debug();
-
-			if($verbose)
-				$ffmpeg->verbose();
-
-			$ffmpeg->input_filename($input_filename);
-			$ffmpeg->input_track($tracks_model->ix);
-
-			if($opt_qa)
-				$ffmpeg->set_duration($qa_max);
-
-			/** Video **/
-			$video_quality = $series_model->get_crf();
-
-			if($arg_crf)
-				$video_quality = $arg_crf;
-
-			if(is_numeric($video_quality))
-				$ffmpeg->set_crf($video_quality);
-
-			if($vcodec == 'x264') {
-				$ffmpeg->set_vcodec('libx264');
-				$ffmpeg->set_tune($series_model->get_x264_tune());
-			}
-
-			if($opt_fast)
-				$ffmpeg->set_preset('ultrafast');
-			elseif($opt_slow)
-				$ffmpeg->set_preset('slow');
-
-			if($vcodec == 'x265') {
-				$ffmpeg->set_vcodec('libx265');
-			}
-
-			// Set video filters based on frame info
-			$crop = $episodes_model->crop;
-			if($crop != null && !$opt_nocrop && $crop != '720:480:0:0')
-				$ffmpeg->add_video_filter("crop=$crop");
-
-			$deint_filter = "bwdif=deint=$video_deint";
-			$ffmpeg->add_video_filter($deint_filter);
-
-			if($fps)
-				$ffmpeg->add_video_filter("fps=$fps");
-
-			/** Audio **/
-			$audio_streamid = $tracks_model->get_first_english_streamid();
-			if(!$audio_streamid)
-				$audio_streamid = '0x80';
-			$ffmpeg->add_audio_stream($audio_streamid);
-
-			$acodec = $series_model->get_acodec();
-
-			if($arg_acodec && ($arg_acodec == 'aac' || $arg_acodec == 'flac'))
-				$acodec = $arg_acodec;
-
-			if($acodec == 'aac')
-				$acodec = 'libfdk_aac';
-
-			$ffmpeg->set_acodec($acodec);
-
-			/** Chapters **/
-			$starting_chapter = $episodes_model->starting_chapter;
-			$ending_chapter = $episodes_model->ending_chapter;
-			if($starting_chapter || $ending_chapter) {
-				$ffmpeg->set_chapters($starting_chapter, $ending_chapter);
-			}
-
-			/** Subtitles **/
-			if($encode_subtitles) {
-
-				$ffmpeg->enable_subtitles();
-
-				$subp_ix = $tracks_model->get_first_english_subp();
-				if(!$subp_ix && ($tracks_model->get_num_active_subp_tracks() == 1))
-					$subp_ix = '0x20';
-
-				if($subp_ix) {
-					// Not sure if I need this now that I'm pulling straight from dvdvideo format
-					// $ffmpeg->input_opts("-probesize '67108864' -analyzeduration '60000000'");
-					$ffmpeg->add_subtitle_stream($subp_ix);
-				}
-
-				// When copying closed captioning with ffmpeg, the time indexes are always off, so
-				// drop it completely.
-				if($tracks_model->has_closed_captioning())
-					$ffmpeg->remove_closed_captioning();
-
-				// Use an external SSA file instead of existing closed captioning
-				if($dvd_encode_ssa)
-					$ffmpeg->add_ssa_filename($ssa_filename);
-
-			}
-
-			$ffmpeg->output_filename($filename);
-
-			$ffmpeg_command = $ffmpeg->get_executable_string();
-
-			if($opt_time)
-				$ffmpeg_command = "tout $ffmpeg_command";
-
-			if($opt_log_progress)
-				$ffmpeg_command .= " -progress /tmp/$episode_id.txt";
-
-			if($opt_test_existing)
-				$ffmpeg_command = "test ! -e $filename && $ffmpeg_command";
-
-			echo "$ffmpeg_command\n";
-
-		}
 
 		/** Copy DVD tracks **/
 
@@ -619,7 +339,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 			// Set video filters based on frame info
 			$crop = $episodes_model->crop;
-			if($crop != null && !$opt_nocrop && $crop != '720:480:0:0')
+			if($crop != null && $opt_crop && $crop != '720:480:0:0')
 				$ffmpeg->add_video_filter("crop=$crop");
 
 			$deint_filter = "bwdif=deint=$video_deint";
@@ -862,6 +582,56 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			echo "$ffmpeg_command\n";
 
 		}
+
+		// Use dvd_rip
+		/*
+		// Skipping for now as it will probably be removed or replaced
+		if($disc_type == 'dvd' && $opt_encode_info && $opt_dvdrip) {
+
+			$dvdrip = new DVDRip;
+			$dvdrip->verbose($verbose);
+			$dvdrip->debug($debug);
+
+			$dvdrip->input_filename($input_filename);
+			$dvdrip->input_track($tracks_model->ix);
+
+			$dvdrip->set_vcodec($vcodec);
+			$video_quality = $series_model->get_crf();
+
+			if($arg_crf)
+				$video_quality = abs(intval($arg_crf));
+
+			$dvdrip->set_video_quality($video_quality);
+
+			$dvdrip->set_acodec('en');
+
+			$acodec = $series_model->get_acodec();
+
+			$acodec = 'aac';
+
+			$dvdrip->set_acodec($acodec);
+
+			$dvdrip->set_audio_lang('en');
+
+			$dvdrip->set_subtitle_lang('en');
+
+			$starting_chapter = $episodes_model->starting_chapter;
+			$ending_chapter = $episodes_model->ending_chapter;
+			if($starting_chapter || $ending_chapter) {
+				$dvdrip->set_chapters($starting_chapter, $ending_chapter);
+			}
+
+			$dvdrip->output_filename($filename);
+
+			$dvdrip_command = $dvdrip->get_executable_string();
+
+			if($opt_time)
+				$dvdrip_command = "tout $dvdrip_command";
+
+			echo "$dvdrip_command\n";
+
+		}
+		*/
 
 	}
 

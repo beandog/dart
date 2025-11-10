@@ -27,7 +27,10 @@
 		public $video_quality;
 		public $video_framerate;
 		public $video_format = 'ntsc';
-		public $video_filter;
+		public $comb_detect = false;
+		public $cfr = false;
+		public $bwdif = false;
+		public $decomb = '';
 		public $max_height;
 		public $max_width;
 		public $height;
@@ -35,7 +38,6 @@
 		public $x264_preset;
 		public $x264_tune;
 		public $x264 = array();
-		public $crop;
 
 		// Audio
 		public $audio = true;
@@ -202,10 +204,6 @@
 			$this->x264_tune = $str;
 		}
 
-		public function set_crop($str) {
-			$this->crop = $str;
-		}
-
 		public function set_preset($preset) {
 			$this->preset = $preset;
 		}
@@ -214,8 +212,20 @@
 			$this->video_format = strtolower($str);
 		}
 
-		public function set_video_filter($str) {
-			$this->video_filter = $str;
+		public function enable_cfr() {
+			$this->cfr = true;
+		}
+
+		public function set_comb_detect($str) {
+			$this->comb_detect = $str;
+		}
+
+		public function enable_bwdif() {
+			$this->bwdif = true;
+		}
+
+		public function set_decomb($str) {
+			$this->decomb = $str;
 		}
 
 		public function set_x264($key, $value) {
@@ -300,7 +310,8 @@
 				$options[] = "--all-audio";
 
 			// Set constant framerate
-			$options[] = '--cfr';
+			if($this->cfr)
+				$options[] = '--cfr';
 
 			// MP4
 			if($this->container == 'mp4')
@@ -365,11 +376,6 @@
 			// Set x264 tune option
 			if($this->x264_tune) {
 				$args['--encoder-tune'] = $this->x264_tune;
-			}
-
-			// Set cropping
-			if($this->crop) {
-				$args['--crop'] = $this->crop;
 			}
 
 			// Set duration for QA
@@ -447,24 +453,18 @@
 			}
 
 			// Deinterlace video
-			if($this->video_filter) {
+			if($this->comb_detect)
+				$cmd[] = "'--comb-detect=".$this->comb_detect."'";
 
-				if($this->video_filter == 'bwdif') {
-					$cmd[] = "'--bwdif=bob'";
-				} else {
+			if($this->bwdif)
+				$cmd[] = "'--bwdif=bob'";
 
-					$cmd[] = "'--comb-detect=permissive'";
-
-					if($this->video_filter == 'bob')
-						$cmd[] = "'--decomb=bob'";
-					elseif($this->video_filter == 'eedi2')
-						$cmd[] = "'--decomb=eedi2'";
-					elseif($this->video_filter == 'eedi2bob')
-						$cmd[] = "'--decomb=eedi2bob'";
-
-				}
-
-			}
+			if($this->decomb == 'bob')
+				$cmd[] = "'--decomb=bob'";
+			elseif($this->decomb == 'eedi2')
+				$cmd[] = "'--decomb=eedi2'";
+			elseif($this->decomb == 'eedi2bob')
+				$cmd[] = "'--decomb=eedi2bob'";
 
 			$options = $this->get_options();
 

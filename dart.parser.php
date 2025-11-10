@@ -165,9 +165,9 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_nocrop', array(
-		'long_name' => '--nocrop',
-		'description' => 'Do not crop video with ffmpeg',
+	$parser->addOption('opt_crop', array(
+		'long_name' => '--crop',
+		'description' => 'Crop video with ffmpeg',
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
@@ -207,6 +207,12 @@
 		'action' => 'StoreString',
 		'default' => null,
 	));
+	$parser->addOption('opt_no_crf', array(
+		'long_name' => '--no-crf',
+		'description' => 'Disable setting encoding CRF',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('arg_fps', array(
 		'long_name' => '--fps',
 		'description' => 'Set encoding FPS',
@@ -219,17 +225,35 @@
 		'action' => 'StoreString',
 		'default' => '',
 	));
-	$parser->addOption('arg_video_filter', array(
-		'long_name' => '--video-filter',
-		'description' => 'Deinterlace video using filters',
-		'action' => 'StoreString',
-		'default' => 'bwdif',
+	$parser->addOption('opt_no_fps', array(
+		'long_name' => '--no-fps',
+		'description' => 'Disable setting framerate',
+		'action' => 'StoreTrue',
+		'default' => false,
 	));
-	$parser->addOption('arg_no_filters', array(
+	$parser->addOption('opt_no_filters', array(
 		'long_name' => '--no-filters',
 		'description' => 'Disable all video filters',
 		'action' => 'StoreTrue',
 		'default' => false,
+	));
+	$parser->addOption('opt_comb_detect', array(
+		'long_name' => '--comb-detect',
+		'description' => 'Detect interlacing',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
+	$parser->addOption('opt_bwdif', array(
+		'long_name' => '--bwdif',
+		'description' => 'Detect interlacing using ffmpeg bwdif filter',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
+	$parser->addOption('arg_decomb', array(
+		'long_name' => '--decomb',
+		'description' => 'Deinterlace video using filters',
+		'action' => 'StoreString',
+		'default' => null,
 	));
 	$parser->addOption('opt_fast', array(
 		'long_name' => '--fast',
