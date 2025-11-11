@@ -47,7 +47,9 @@
 		// FIXME pull this from dvds_model
 		$series_id = $dvds_model->get_series_id();
 		if(!$series_id) {
-			$filename = "$dvdread_id.iso";
+			$filename = "0.000";
+			$filename .= ".".str_pad($dvds_model->id, 4, '0', STR_PAD_LEFT);
+			$filename .= ".NSIX.iso";
 			return $filename;
 		}
 		$series_model = new Series_Model($series_id);
