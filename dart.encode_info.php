@@ -525,14 +525,15 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 				/** Video **/
 
-				$ffmpeg->set_vcodec('libx264');
+				$ffmpeg->set_vcodec('h264_nvenc');
+				$ffmpeg->set_rc_lookahead(32);
 
 				$video_quality = $series_model->get_crf();
 
 				if($arg_crf)
 					$video_quality = abs(intval($arg_crf));
 
-				$ffmpeg->set_crf($video_quality);
+				$ffmpeg->set_cq($video_quality);
 
 				if($opt_fast)
 					$ffmpeg->set_preset('ultrafast');
