@@ -81,7 +81,10 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		$series_model = new Series_Model($episodes_model->get_series_id());
 		$nsix = $series_model->nsix;
 		$vcodec = $series_model->get_vcodec();
-		$video_deint = $dvds_model->get_deint();
+		$video_deint = $series_model->get_deint();
+		$dvd_deint = $dvds_model->get_deint();
+		if($dvd_deint)
+			$video_deint = $dvd_deint;
 		$video_format = strtolower($tracks_model->format);
 
 		$uhd = false;

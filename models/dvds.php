@@ -460,7 +460,7 @@
 			if($var)
 				return 'all';
 
-			return 'interlaced';
+			return '';
 
 		}
 
