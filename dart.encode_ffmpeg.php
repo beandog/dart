@@ -7,7 +7,7 @@
  * - does not support closed captioning
  */
 
-if($disc_type == 'dvd' && $opt_encode_info && $dvd_encoder == 'ffmpeg') {
+if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'ffpipe')) {
 
 	$ffmpeg = new FFMpeg();
 	$ffmpeg->set_encoder('ffmpeg');
@@ -18,8 +18,24 @@ if($disc_type == 'dvd' && $opt_encode_info && $dvd_encoder == 'ffmpeg') {
 	if($verbose)
 		$ffmpeg->verbose();
 
-	$ffmpeg->input_filename($input_filename);
-	$ffmpeg->input_track($tracks_model->ix);
+	if($dvd_encoder == 'ffmpeg') {
+
+		$ffmpeg->input_filename($input_filename);
+		$ffmpeg->input_track($tracks_model->ix);
+
+	} elseif($dvd_encoder == 'ffpipe') {
+
+		require 'dart.dvd_copy.php';
+
+		$dvd_copy->input_filename($input_filename);
+		$dvd_copy->output_filename('-');
+		$dvd_copy_command = $dvd_copy->get_executable_string();
+
+		$ffmpeg->disc_type = 'dvdcopy';
+		$ffmpeg->generate_pts();
+		$ffmpeg->input_filename('-');
+
+	}
 
 	if($opt_qa)
 		$ffmpeg->set_duration($qa_max);
@@ -124,8 +140,12 @@ if($disc_type == 'dvd' && $opt_encode_info && $dvd_encoder == 'ffmpeg') {
 			$ffmpeg->add_subtitle_stream($subp_ix);
 		}
 
-		// When copying closed captioning with ffmpeg, the time indexes are always off, so
-		// drop it completely.
+		// Remove closed captioning. There are only 367 cartoon episodes that have CC and *not* vobsub
+		// TMNT '87 (208), TMNT 2012 (119), Droopy, and Scooby-Doo Show
+		// It adds an extra step to encoding because they have to be extracted first.
+		// Another reason they are being removed is that ffmpeg garbles them, they do not play
+		// at the correct index time.
+		// See 'view_episode_eng_subs' database view
 		if($tracks_model->has_closed_captioning())
 			$ffmpeg->remove_closed_captioning();
 
@@ -142,11 +162,15 @@ if($disc_type == 'dvd' && $opt_encode_info && $dvd_encoder == 'ffmpeg') {
 
 	$ffmpeg_command = $ffmpeg->get_executable_string();
 
-	if($opt_time)
-		$ffmpeg_command = "tout $ffmpeg_command";
-
 	if($opt_log_progress)
 		$ffmpeg_command .= " -progress /tmp/$episode_id.txt";
+
+	if($dvd_encoder == 'ffpipe') {
+		$ffmpeg_command = "$dvd_copy_command 2> /dev/null | $ffmpeg_command";
+	}
+
+	if($opt_time)
+		$ffmpeg_command = "tout $ffmpeg_command";
 
 	if($opt_test_existing)
 		$ffmpeg_command = "test ! -e $filename && $ffmpeg_command";
