@@ -53,6 +53,14 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 	if(isset($config_container))
 		$container = $config_container;
 
+	$hardware = 'nvidia';
+
+	if(isset($config_hardware))
+		$hardware = $config_hardware;
+
+	if(isset($arg_hardware))
+		$hardware = $arg_hardware;
+
 	if($opt_mp4)
 		$container = 'mp4';
 	elseif($opt_mkv)
@@ -411,7 +419,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 				/** Video **/
 
 				$ffmpeg->set_vcodec('h264_nvenc');
-				$ffmpeg->set_rc_lookahead(32);
 
 				$video_quality = $series_model->get_crf();
 

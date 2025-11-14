@@ -11,7 +11,8 @@
 		public $ffpipe = false;
 		public $ffprobe = false;
 		public $ffplay = false;
-		public $ffmpeg_opts = '';
+		public $ffmpeg_opts = array();
+		public $ffmpeg_args = array();
 		public $input_opts = '';
 		public $duration = 0;
 		public $fullscreen = false;
@@ -165,8 +166,8 @@
 			$this->video_filters[] = $str;
 		}
 
-		public function set_rc_lookahead($str) {
-			$this->rc_lookahead = intval($str);
+		public function set_rc_lookahead($int) {
+			$this->rc_lookahead = intval($int);
 		}
 
 		public function set_acodec($str) {
@@ -197,8 +198,12 @@
 
 		}
 
-		public function add_opts($str) {
-			$this->ffmpeg_opts = $str;
+		public function add_option($str) {
+			$this->ffmpeg_opts[] = $str;
+		}
+
+		public function add_argument($key, $value) {
+			$this->ffmpeg_args[$key] = $value;
 		}
 
 		public function cropdetect() {
@@ -302,7 +307,7 @@
 			}
 
 			if($this->rc_lookahead)
-				$args['rc-lookahead'] = 32;
+				$args['rc-lookahead'] = $this->rc_lookahead;
 
 			if($this->container == 'mp4')
 				$args['movflags'] = '+faststart';
@@ -420,8 +425,13 @@
 
 			$args = $this->get_ffmpeg_arguments();
 
-			if($this->ffmpeg_opts)
-				$cmd[] = $this->ffmpeg_opts;
+			foreach($this->ffmpeg_opts as $str)
+				$cmd[] = $str;
+
+			foreach($this->ffmpeg_args as $key => $value) {
+				$arg_value = escapeshellarg($value);
+				$cmd[] = "-$key $arg_value";
+			}
 
 			if($this->output_filename == "-")
 				$cmd[] = "-f 'null'";

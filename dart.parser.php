@@ -127,6 +127,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('arg_hardware', array(
+		'long_name' => '--hardware',
+		'description' => 'Choose hadware to use for encoding',
+		'action' => 'StoreString',
+		'default' => null,
+	));
 	$parser->addOption('opt_handbrake', array(
 		'long_name' => '--handbrake',
 		'description' => 'Use HandBrake to rip DVDs',
