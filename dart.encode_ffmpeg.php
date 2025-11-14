@@ -81,7 +81,6 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 		if($hardware == 'amd') {
 			$ffmpeg->add_argument('vaapi_device', '/dev/dri/renderD129');
 			$ffmpeg->add_argument('rc_mode', '1');
-			$ffmpeg->add_video_filter('format=nv12,hwupload');
 			$ffmpeg->set_rc_lookahead(0);
 		}
 
@@ -120,6 +119,9 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 
 	if($fps && !$opt_no_fps)
 		$ffmpeg->add_video_filter("fps=$fps");
+
+	if($hardware == 'amd' && ($vcodec == 'h264_hwenc' || $vcodec == 'hevc_hwenc'))
+		$ffmpeg->add_video_filter('format=nv12,hwupload');
 
 	/** Audio **/
 	$audio_streamid = $tracks_model->get_first_english_streamid();
