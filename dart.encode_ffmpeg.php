@@ -76,6 +76,8 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 
 		// https://trac.ffmpeg.org/wiki/Encode/H.264#NvEnc
 		// $ffmpeg->add_argument('qp', '15');
+		// if($hardware == 'nvidia')
+		//	$ffmpeg->add_argument('rc', 'constqp');
 
 		// I can't remember where setting cq came from, it's similar to setting CRF though (I think)
 		$ffmpeg->set_cq($video_quality);
@@ -83,7 +85,6 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 		if($hardware == 'nvidia') {
 			$ffmpeg->add_argument('tune', 'hq');
 			$ffmpeg->add_argument('preset', 'p7');
-			$ffmpeg->add_argument('rc', 'constqp');
 			$ffmpeg->add_argument('pix_fmt', 'yuv420p');
 		}
 
