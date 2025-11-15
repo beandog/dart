@@ -304,7 +304,6 @@
 			}
 
 			if($this->cq) {
-				$args['rc'] = 'vbr';
 				$args['cq'] = $this->cq;
 				$args['qmin'] = $this->cq;
 				$args['qmax'] = $this->cq;

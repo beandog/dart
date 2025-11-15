@@ -83,11 +83,13 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 		$ffmpeg->set_cq($video_quality);
 
 		if($hardware == 'nvidia') {
+			$ffmpeg->add_argument('rc', 'vbr');
 			$ffmpeg->add_argument('tune', 'hq');
 			$ffmpeg->add_argument('preset', 'p7');
 			$ffmpeg->add_argument('pix_fmt', 'yuv420p');
 		}
 
+		// AMD is not entirely supported, I'm focusing on nvidia, so I'm not testing all functions
 		if($hardware == 'amd') {
 			$ffmpeg->add_argument('vaapi_device', '/dev/dri/renderD129');
 			$ffmpeg->add_argument('rc_mode', '1');
@@ -99,7 +101,6 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 
 		if($vcodec == 'hevc_hwenc')
 			$ffmpeg->add_argument('profile', 'main');
-
 
 	}
 
