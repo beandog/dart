@@ -187,10 +187,7 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 	if($prefix)
 		$filename = $prefix.$filename;
 
-	$mkv_encoder_tag = "ffmpeg-$ffmpeg_version";
-	$ffmpeg->add_metadata('encoder', $mkv_encoder_tag);
-
-	$mkv_encoder_settings_tag = "${prefix}cq-$video_quality";
+	$mkv_encoder_settings_tag = "${prefix}cq-$video_quality-ffmpeg-$ffmpeg_version";
 	$ffmpeg->add_metadata('encoder_settings', $mkv_encoder_settings_tag);
 
 	$ffmpeg->output_filename($filename);
