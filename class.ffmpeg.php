@@ -13,6 +13,7 @@
 		public $ffplay = false;
 		public $ffmpeg_opts = array();
 		public $ffmpeg_args = array();
+		public $metadata = array();
 		public $input_opts = '';
 		public $duration = 0;
 		public $fullscreen = false;
@@ -72,6 +73,10 @@
 
 			$this->encoder = $str;
 
+		}
+
+		public function add_metadata($key, $value) {
+			$this->metadata[$key] = $value;
 		}
 
 		public function set_duration($int) {
@@ -446,6 +451,9 @@
 
 			if($this->remove_cc)
 				$cmd[] = "-bsf:v 'filter_units=remove_types=6'";
+
+			foreach($this->metadata as $key => $value)
+				$cmd[] = "-metadata '$key=$value'";
 
 			$str = implode(" ", $cmd);
 

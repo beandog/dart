@@ -67,9 +67,18 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 	if($arg_crf)
 		$video_quality = intval($arg_crf);
 
+	if($video_quality && !$opt_no_crf && !$vcodec == 'h264_hwenc' && !$vcodec == 'hevc_hwenc')
+		$ffmpeg->set_crf($video_quality);
+
 	$ffmpeg->set_rc_lookahead(32);
 
 	if($vcodec == 'h264_hwenc' || $vcodec == 'hevc_hwenc') {
+
+		// https://trac.ffmpeg.org/wiki/Encode/H.264#NvEnc
+		// $ffmpeg->add_argument('qp', '15');
+
+		// I can't remember where setting cq came from, it's similar to setting CRF though (I think)
+		$ffmpeg->set_cq($video_quality);
 
 		if($hardware == 'nvidia') {
 			$ffmpeg->add_argument('tune', 'hq');
@@ -90,7 +99,6 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 		if($vcodec == 'hevc_hwenc')
 			$ffmpeg->add_argument('profile', 'main');
 
-		$ffmpeg->add_argument('qp', '15');
 
 	}
 
@@ -178,6 +186,12 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 
 	if($prefix)
 		$filename = $prefix.$filename;
+
+	$mkv_encoder_tag = "ffmpeg-$ffmpeg_version";
+	$ffmpeg->add_metadata('encoder', $mkv_encoder_tag);
+
+	$mkv_encoder_settings_tag = "${prefix}cq-$video_quality";
+	$ffmpeg->add_metadata('encoder_settings', $mkv_encoder_settings_tag);
 
 	$ffmpeg->output_filename($filename);
 
