@@ -4,6 +4,7 @@
 
 		public $debug = false;
 		public $verbose = false;
+		public $quiet = false;
 
 		// ffmpeg
 		public $encoder = 'ffmpeg';
@@ -58,6 +59,13 @@
 
 		public function verbose($bool = true) {
 			$this->verbose = boolval($bool);
+		}
+
+		public function quiet($bool = true) {
+			$bool = boolval($bool);
+			if($bool == false)
+				$this->debug = $this->verbose = false;
+			$this->quiet = $bool;
 		}
 
 		public function set_encoder($str) {
@@ -338,6 +346,9 @@
 			} elseif($this->verbose) {
 				$cmd[] = "-report";
 				$cmd[] = "-loglevel 'verbose'";
+			} elseif($this->quiet) {
+				$cmd[] = "-v 'quiet'";
+				$cmd[] = '-stats';
 			}
 
 			if($this->genpts)

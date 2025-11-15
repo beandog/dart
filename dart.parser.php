@@ -19,6 +19,13 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('quiet', array(
+		'short_name' => '-q',
+		'long_name' => '--quiet',
+		'description' => 'Minimal display output when encoding',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('opt_force', array(
 		'long_name' => '--force',
 		'description' => 'Force import of new Blu-ray',

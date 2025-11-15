@@ -7,7 +7,7 @@
  * - does not support closed captioning
  */
 
-if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'ffpipe')) {
+if($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'ffpipe') {
 
 	$ffmpeg = new FFMpeg();
 	$ffmpeg->set_encoder('ffmpeg');
@@ -17,6 +17,13 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 
 	if($verbose)
 		$ffmpeg->verbose();
+
+	if($quiet)
+		$ffmpeg->quiet();
+
+}
+
+if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'ffpipe')) {
 
 	if($dvd_encoder == 'ffmpeg') {
 
