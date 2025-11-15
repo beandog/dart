@@ -44,6 +44,11 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 
 	}
 
+	if($opt_test_existing)
+		$ffmpeg->overwrite(false);
+	else
+		$ffmpeg->overwrite(true);
+
 	if($opt_qa)
 		$ffmpeg->set_duration($qa_max);
 
@@ -213,8 +218,6 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 	if($opt_time)
 		$ffmpeg_command = "tout $ffmpeg_command";
 
-	if($opt_test_existing)
-		$ffmpeg_command = "test ! -e $filename && $ffmpeg_command";
 
 	echo "$ffmpeg_command\n";
 

@@ -20,6 +20,7 @@
 		public $fullscreen = false;
 		public $disc_type = 'dvd';
 		public $genpts = false;
+		public $overwrite = null;
 
 		// DVD source
 		public $input_filename = '';
@@ -66,6 +67,10 @@
 			if($bool == false)
 				$this->debug = $this->verbose = false;
 			$this->quiet = $bool;
+		}
+
+		public function overwrite($bool) {
+			$this->overwrite = boolval($bool);
 		}
 
 		public function set_encoder($str) {
@@ -469,7 +474,12 @@
 
 			if($this->output_filename) {
 				$arg_output = escapeshellarg($this->output_filename);
-				$str .= " -y $arg_output";
+				if($this->overwrite === true)
+					$str .= " -y $arg_output";
+				elseif($this->overwrite === false)
+					$str .= " -n $arg_output";
+				else
+					$str .= " $arg_output";
 			}
 
 			return $str;
