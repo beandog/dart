@@ -98,7 +98,7 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 			$ffmpeg->set_qmax($arg_qmax);
 
 		if($hardware == 'nvidia') {
-			$ffmpeg->add_argument('rc', 'vbr');
+			$ffmpeg->add_argument('rc', 'vbr_hq');
 			$ffmpeg->add_argument('tune', 'hq');
 			$ffmpeg->add_argument('preset', 'p7');
 			$ffmpeg->add_argument('pix_fmt', 'yuv420p');
