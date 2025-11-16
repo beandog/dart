@@ -121,9 +121,9 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 			$ffmpeg->add_argument('pix_fmt', 'yuv420p');
 
 			if($vcodec == 'h264_hwenc')
-				$ffmpeg->add_argument('profile', 'high');
+				$ffmpeg->add_argument('profile:v', 'high');
 			elseif($vcodec == 'hevc_hwenc')
-				$ffmpeg->add_argument('profile', 'main');
+				$ffmpeg->add_argument('profile:v', 'main');
 
 		}
 
