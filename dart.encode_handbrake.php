@@ -33,28 +33,16 @@ if($disc_type == 'dvd' && $opt_encode_info && $dvd_encoder == 'handbrake') {
 	if($vcodec == 'x264' && $x264_tune)
 		$handbrake->set_x264_tune($x264_tune);
 
-	if($opt_comb_detect) {
-		$handbrake->set_comb_detect('permissive');
-		$prefix .= 'comb-detect-';
-	}
-
-	if($arg_decomb) {
-		$handbrake->set_decomb($arg_decomb);
-		$prefix .= "decomb-$arg_decomb-";
-	}
-
-	if($opt_bwdif || ($video_deint == 'bwdif' && !$opt_no_filters)) {
+	if($video_deint == 'bwdif' && !$opt_no_filters) {
 		$handbrake->set_video_framerate($fps);
 		$handbrake->enable_bwdif();
 		$handbrake->enable_cfr();
 	}
-	if($opt_bwdif)
-		$prefix .= 'bwdif-';
 	if($opt_no_filters)
 		$prefix .= 'no-filters-';
 
 	// If no arguments or options are passed, then use bwdif by default
-	if(!$opt_no_fps && !$opt_no_filters && !$opt_comb_detect && !$arg_decomb) {
+	if(!$opt_no_fps && !$opt_no_filters) {
 		$handbrake->set_video_framerate($fps);
 		$handbrake->enable_bwdif();
 		$handbrake->enable_cfr();

@@ -27,10 +27,8 @@
 		public $video_quality;
 		public $video_framerate;
 		public $video_format = 'ntsc';
-		public $comb_detect = false;
 		public $cfr = false;
 		public $bwdif = false;
-		public $decomb = '';
 		public $max_height;
 		public $max_width;
 		public $height;
@@ -216,16 +214,8 @@
 			$this->cfr = true;
 		}
 
-		public function set_comb_detect($str) {
-			$this->comb_detect = $str;
-		}
-
 		public function enable_bwdif() {
 			$this->bwdif = true;
-		}
-
-		public function set_decomb($str) {
-			$this->decomb = $str;
 		}
 
 		public function set_x264($key, $value) {
@@ -453,18 +443,7 @@
 			}
 
 			// Deinterlace video
-			if($this->comb_detect)
-				$cmd[] = "'--comb-detect=".$this->comb_detect."'";
-
-			if($this->bwdif)
-				$cmd[] = "'--bwdif=bob'";
-
-			if($this->decomb == 'bob')
-				$cmd[] = "'--decomb=bob'";
-			elseif($this->decomb == 'eedi2')
-				$cmd[] = "'--decomb=eedi2'";
-			elseif($this->decomb == 'eedi2bob')
-				$cmd[] = "'--decomb=eedi2bob'";
+			$cmd[] = "'--bwdif=bob'";
 
 			$options = $this->get_options();
 

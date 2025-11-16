@@ -268,24 +268,6 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_comb_detect', array(
-		'long_name' => '--comb-detect',
-		'description' => 'Detect interlacing',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
-	$parser->addOption('opt_bwdif', array(
-		'long_name' => '--bwdif',
-		'description' => 'Detect interlacing using ffmpeg bwdif filter',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
-	$parser->addOption('arg_decomb', array(
-		'long_name' => '--decomb',
-		'description' => 'Deinterlace video using filters',
-		'action' => 'StoreString',
-		'default' => null,
-	));
 	$parser->addOption('opt_fast', array(
 		'long_name' => '--fast',
 		'description' => 'Speed up encoding by using ultrafast preset',

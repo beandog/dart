@@ -107,6 +107,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		// "The -r value also acts as an indication to the encoder of how long each frame is, and can affect the ratecontrol decisions made by the encoder."
 		// "fps, as a filter, needs to be inserted in a filtergraph, and will always generate a CFR stream. It offers five rounding modes that affect which source frames are dropped or duplicated in order to achieve the target framerate. See the documentation of the fps filter for details."
 		// https://ffmpeg.org/ffmpeg-filters.html#fps
+		// bwdif bob will cause stuttering on playback on Sony 4K TV with original FPS
 		if($video_format == 'pal')
 			$fps = 25;
 		else
@@ -114,10 +115,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		if($arg_fps)
 			$fps = $arg_fps;
-
-		// bwdif bob will cause stuttering on playback on Sony 4K TV with original FPS
-		if($opt_bwdif || $arg_decomb == 'bob' || $arg_decomb == 'eedi2bob' )
-			$fps *= 2;
 
 		if($arg_vcodec)
 			$vcodec = $arg_vcodec;
@@ -200,12 +197,8 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 				$ffmpeg->verbose();
 
 			/** Video **/
-			if(($video_deint || $opt_bwdif) && !$opt_no_filters) {
-				if($opt_bwdif)
-					$video_deint = 'bwdif';
-				$deint_filter = "bwdif=deint=$video_deint";
-				$ffmpeg->add_video_filter($deint_filter);
-			}
+			$deint_filter = "bwdif=deint=$video_deint";
+			$ffmpeg->add_video_filter($deint_filter);
 
 			// Not sure if I really need this or not, at the very least, you can be sure it matches
 			// what the encode would look like.
