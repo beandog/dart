@@ -2,8 +2,10 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 16.8 (Ubuntu 16.8-0ubuntu0.24.04.1)
--- Dumped by pg_dump version 16.8 (Ubuntu 16.8-0ubuntu0.24.04.1)
+\restrict esRoKMhuZTypksmCzVVTRPj76I080H8nfivQlJFg4cu8TkfgjDy71tJddaJM4Lx
+
+-- Dumped from database version 16.10 (Ubuntu 16.10-0ubuntu0.24.04.1)
+-- Dumped by pg_dump version 16.10 (Ubuntu 16.10-0ubuntu0.24.04.1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -100,7 +102,13 @@ CREATE TABLE public.blurays (
     disc_title character varying(255),
     bdinfo_titles smallint,
     hdmv_titles smallint,
-    bdj_titles smallint
+    bdj_titles smallint,
+    udf_uuid character varying(16) DEFAULT ''::character varying NOT NULL,
+    udf_blocksize smallint,
+    udf_blocks integer,
+    udf_numfiles smallint,
+    udf_numdirs smallint,
+    udf_udfrev character varying(255) DEFAULT ''::character varying
 );
 
 
@@ -393,7 +401,8 @@ CREATE TABLE public.series (
     start_date date,
     ripping_id integer DEFAULT 1 NOT NULL,
     x264_preset character varying(255),
-    jfin character varying(255) DEFAULT ''::character varying NOT NULL
+    jfin character varying(255) DEFAULT ''::character varying NOT NULL,
+    video_filter_id integer DEFAULT 1 NOT NULL
 );
 
 
@@ -644,7 +653,10 @@ CREATE TABLE public.presets (
     acodec character varying DEFAULT 'copy'::character varying NOT NULL,
     x264_tune character varying(255) DEFAULT ''::character varying NOT NULL,
     fps character varying DEFAULT '30'::character varying,
-    vcodec character varying(4) DEFAULT 'x264'::character varying NOT NULL
+    vcodec character varying(16) DEFAULT 'x264'::character varying NOT NULL,
+    cq smallint,
+    qmin smallint,
+    qmax smallint
 );
 
 
@@ -897,6 +909,40 @@ ALTER SEQUENCE public.tracks_id_seq OWNED BY public.tracks.id;
 
 
 --
+-- Name: video_filters; Type: TABLE; Schema: public; Owner: steve
+--
+
+CREATE TABLE public.video_filters (
+    id integer NOT NULL,
+    video_filter character varying(255) DEFAULT ''::character varying NOT NULL
+);
+
+
+ALTER TABLE public.video_filters OWNER TO steve;
+
+--
+-- Name: video_filters_id_seq; Type: SEQUENCE; Schema: public; Owner: steve
+--
+
+CREATE SEQUENCE public.video_filters_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.video_filters_id_seq OWNER TO steve;
+
+--
+-- Name: video_filters_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: steve
+--
+
+ALTER SEQUENCE public.video_filters_id_seq OWNED BY public.video_filters.id;
+
+
+--
 -- Name: view_episode_eng_subs; Type: VIEW; Schema: public; Owner: steve
 --
 
@@ -1107,6 +1153,13 @@ ALTER TABLE ONLY public.tracks ALTER COLUMN id SET DEFAULT nextval('public.track
 
 
 --
+-- Name: video_filters id; Type: DEFAULT; Schema: public; Owner: steve
+--
+
+ALTER TABLE ONLY public.video_filters ALTER COLUMN id SET DEFAULT nextval('public.video_filters_id_seq'::regclass);
+
+
+--
 -- Name: audio audio_pkey; Type: CONSTRAINT; Schema: public; Owner: steve
 --
 
@@ -1277,6 +1330,14 @@ ALTER TABLE public.tracks CLUSTER ON tracks_pkey;
 
 
 --
+-- Name: video_filters video_filters_pkey; Type: CONSTRAINT; Schema: public; Owner: steve
+--
+
+ALTER TABLE ONLY public.video_filters
+    ADD CONSTRAINT video_filters_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: audio audio_track_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: steve
 --
 
@@ -1361,7 +1422,7 @@ ALTER TABLE ONLY public.series_presets
 --
 
 ALTER TABLE ONLY public.series
-    ADD CONSTRAINT series_ripping_id_fkey FOREIGN KEY (ripping_id) REFERENCES public.ripping(id) ON DELETE CASCADE;
+    ADD CONSTRAINT series_ripping_id_fkey FOREIGN KEY (ripping_id) REFERENCES public.ripping(id) ON DELETE SET NULL;
 
 
 --
@@ -1370,6 +1431,14 @@ ALTER TABLE ONLY public.series
 
 ALTER TABLE ONLY public.series
     ADD CONSTRAINT series_upgrade_id_fkey FOREIGN KEY (upgrade_id) REFERENCES public.series(id) ON DELETE SET NULL;
+
+
+--
+-- Name: series series_video_filter_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: steve
+--
+
+ALTER TABLE ONLY public.series
+    ADD CONSTRAINT series_video_filter_id_fkey FOREIGN KEY (video_filter_id) REFERENCES public.video_filters(id) ON DELETE SET NULL;
 
 
 --
@@ -1391,4 +1460,6 @@ ALTER TABLE ONLY public.tracks
 --
 -- PostgreSQL database dump complete
 --
+
+\unrestrict esRoKMhuZTypksmCzVVTRPj76I080H8nfivQlJFg4cu8TkfgjDy71tJddaJM4Lx
 
