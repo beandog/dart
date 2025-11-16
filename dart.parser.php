@@ -244,6 +244,12 @@
 		'action' => 'StoreString',
 		'default' => '',
 	));
+	$parser->addOption('arg_vf', array(
+		'long_name' => '--vf',
+		'description' => 'Add custom vf settings to ffmpeg / ffplay',
+		'action' => 'StoreString',
+		'default' => '',
+	));
 	$parser->addOption('arg_prefix', array(
 		'long_name' => '--prefix',
 		'description' => 'Add prefix string to episode filenames',

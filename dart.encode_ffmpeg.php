@@ -145,6 +145,9 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 	if($fps && !$opt_no_fps)
 		$ffmpeg->add_video_filter("fps=$fps");
 
+	if($arg_vf)
+		$ffmpeg->add_video_filter($arg_vf);
+
 	if($hardware == 'amd' && ($vcodec == 'h264_hwenc' || $vcodec == 'hevc_hwenc'))
 		$ffmpeg->add_video_filter('format=nv12,hwupload');
 

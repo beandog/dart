@@ -170,6 +170,10 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			$prefix .= "qmin-$arg_qmin-";
 		if($arg_qmin)
 			$prefix .= "qmax-$arg_qmax-";
+		if($arg_vf) {
+			$vf_name = current(explode('=', $arg_vf));
+			$prefix .= "vf-$vf_name-";
+		}
 		if($opt_no_fps)
 			$prefix .= 'no-fps-';
 		if($opt_fast)
