@@ -67,6 +67,8 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 		$ffmpeg->set_vcodec('h264_vaapi');
 	elseif($hardware == 'amd' && $vcodec == 'hevc_hwenc')
 		$ffmpeg->set_vcodec('hevc_vaapi');
+	else
+		$ffmpeg->set_vcodec('libx264');
 
 	// Override default CRF for now while testing, which is slightly less than the default
 	if($vcodec == 'h264_hwenc')
@@ -81,20 +83,14 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 	if($arg_cq)
 		$video_quality = intval($arg_cq);
 
-	if($video_quality && !$opt_no_crf && !$vcodec == 'h264_hwenc' && !$vcodec == 'hevc_hwenc')
-		$ffmpeg->set_crf($video_quality);
+	$ffmpeg->set_crf($video_quality);
 
 	$ffmpeg->set_rc_lookahead(32);
 
 	if($vcodec == 'h264_hwenc' || $vcodec == 'hevc_hwenc') {
 
-		// https://trac.ffmpeg.org/wiki/Encode/H.264#NvEnc
-		// $ffmpeg->add_argument('qp', '15');
-		// if($hardware == 'nvidia')
-		//	$ffmpeg->add_argument('rc', 'constqp');
-
-		// I can't remember where setting cq came from, it's similar to setting CRF though (I think)
 		$ffmpeg->set_cq($video_quality);
+		$ffmpeg->set_crf(null);
 
 		if($arg_qmin)
 			$ffmpeg->set_qmin($arg_qmin);

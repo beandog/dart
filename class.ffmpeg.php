@@ -164,10 +164,8 @@
 			$this->vcodec_opts = $str;
 		}
 
-		public function set_crf($str) {
-			$crf = abs(intval($str));
-			if($crf)
-				$this->crf = $crf;
+		public function set_crf($int) {
+			$this->crf = $int;
 		}
 
 		public function set_cq($int) {
@@ -306,7 +304,7 @@
 			if($this->vcodec_opts)
 				$args['vcodec_opts'] = $this->vcodec_opts;
 
-			if($this->crf && !$this->cq)
+			if($this->crf)
 				$args['crf'] = $this->crf;
 
 			if($this->tune)
