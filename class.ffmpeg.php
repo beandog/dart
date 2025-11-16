@@ -413,7 +413,7 @@
 				}
 
 				// This should probably be okay ........ just assume first is English
-				if(count($this->subtitle_streams) && $this->ffmpeg) {
+				if($this->subtitles && count($this->subtitle_streams) && $this->ffmpeg) {
 					$cmd[] = "-map 'i:0x20?'";
 				}
 
@@ -432,7 +432,7 @@
 					}
 				}
 
-				if(count($this->subtitle_streams)) {
+				if($this->subtitles && count($this->subtitle_streams)) {
 					foreach($this->subtitle_streams as $streamid) {
 						$cmd[] = "-map 'i:$streamid'";
 					}
