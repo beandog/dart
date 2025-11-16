@@ -89,13 +89,24 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 
 	if($vcodec == 'h264_hwenc' || $vcodec == 'hevc_hwenc') {
 
+		$cq = $series_model->get_cq();
+		$qmin = $series_model->get_qmin();
+		$qmax = $series_model->get_qmax();
+
+		if($arg_cq)
+			$cq = arg_cq;
+
+		if($arg_qmin)
+			$qmin = $arg_qmin;
+
+		if($arg_qmax)
+			$qmax = $arg_qmax;
+
 		$ffmpeg->set_cq($video_quality);
 		$ffmpeg->set_crf(null);
 
-		if($arg_qmin)
-			$ffmpeg->set_qmin($arg_qmin);
-		if($arg_qmax)
-			$ffmpeg->set_qmax($arg_qmax);
+		$ffmpeg->set_qmin($qmin);
+		$ffmpeg->set_qmax($qmax);
 
 		if($hardware == 'nvidia') {
 			$ffmpeg->add_argument('rc', 'vbr');
