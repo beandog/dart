@@ -212,6 +212,9 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			if($fps)
 				$ffmpeg->add_video_filter("fps=$fps");
 
+			if($arg_vf)
+				$ffmpeg->add_video_filter($arg_vf);
+
 			$crop = $episodes_model->crop;
 			if($crop != null && $opt_crop && $crop != '720:480:0:0')
 				$ffmpeg->add_video_filter("crop=$crop");
