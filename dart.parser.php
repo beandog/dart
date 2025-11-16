@@ -238,12 +238,6 @@
 		'action' => 'StoreString',
 		'default' => null,
 	));
-	$parser->addOption('opt_no_crf', array(
-		'long_name' => '--no-crf',
-		'description' => 'Disable setting encoding CRF',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
 	$parser->addOption('arg_fps', array(
 		'long_name' => '--fps',
 		'description' => 'Set encoding FPS',
