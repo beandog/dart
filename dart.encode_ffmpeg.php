@@ -75,70 +75,74 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 	else
 		$ffmpeg->set_vcodec('libx264');
 
-	// Override default CRF for now while testing, which is slightly less than the default
-	if($vcodec == 'h264_hwenc')
-		$video_quality = 20;
-	elseif($vcodec == 'hevc_hwenc')
-		$video_quality = 26;
-	else
-		$video_quality = intval($series_model->get_crf());
+	$video_quality = intval($series_model->get_crf());
 
 	if($arg_crf)
 		$video_quality = intval($arg_crf);
-	if($arg_cq)
-		$video_quality = intval($arg_cq);
 
-	$ffmpeg->set_crf($video_quality);
-
-	$ffmpeg->set_rc_lookahead(32);
-
-	if($vcodec == 'h264_hwenc' || $vcodec == 'hevc_hwenc') {
+	if($hardware) {
 
 		$cq = $series_model->get_cq();
 		$qmin = $series_model->get_qmin();
 		$qmax = $series_model->get_qmax();
 
 		if($arg_cq)
-			$cq = arg_cq;
-
+			$cq = $arg_cq;
 		if($arg_qmin)
 			$qmin = $arg_qmin;
-
 		if($arg_qmax)
 			$qmax = $arg_qmax;
 
-		$ffmpeg->set_cq($video_quality);
-		$ffmpeg->set_crf(null);
-
+		$ffmpeg->set_cq($cq);
 		$ffmpeg->set_qmin($qmin);
 		$ffmpeg->set_qmax($qmax);
 
+		$ffmpeg->set_crf(null);
+
+	} else {
+
+		$ffmpeg->set_crf($video_quality);
+
+		$ffmpeg->set_cq(null);
+		$ffmpeg->set_qmin(null);
+		$ffmpeg->set_qmax(null);
+
+	}
+
+	$ffmpeg->set_rc_lookahead(32);
+
+	if($hardware) {
+
 		if($hardware == 'nvidia') {
+
 			$ffmpeg->add_argument('rc', 'vbr');
 			$ffmpeg->add_argument('tune', 'hq');
 			$ffmpeg->add_argument('preset', 'p7');
 			$ffmpeg->add_argument('pix_fmt', 'yuv420p');
+
+			if($vcodec == 'h264_hwenc')
+				$ffmpeg->add_argument('profile', 'high');
+			elseif($vcodec == 'hevc_hwenc')
+				$ffmpeg->add_argument('profile', 'main');
+
 		}
 
 		// AMD is not entirely supported, I'm focusing on nvidia, so I'm not testing all functions
 		if($hardware == 'amd') {
+
 			$ffmpeg->add_argument('vaapi_device', '/dev/dri/renderD129');
 			$ffmpeg->add_argument('rc_mode', '1');
 			$ffmpeg->set_rc_lookahead(0);
+			$ffmpeg->add_video_filter('format=nv12,hwupload');
+
 		}
-
-		if($vcodec == 'h264_hwenc')
-			$ffmpeg->add_argument('profile', 'high');
-
-		if($vcodec == 'hevc_hwenc')
-			$ffmpeg->add_argument('profile', 'main');
 
 	}
 
 	if($opt_fast)
 		$ffmpeg->set_preset('ultrafast');
 	elseif($opt_slow)
-		$ffmpeg->set_preset('slow');
+		$ffmpeg->set_preset('slowest');
 
 	// Set video filters based on frame info
 	$crop = $episodes_model->crop;
@@ -163,9 +167,6 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 
 	if($arg_vf)
 		$ffmpeg->add_video_filter($arg_vf);
-
-	if($hardware == 'amd' && ($vcodec == 'h264_hwenc' || $vcodec == 'hevc_hwenc'))
-		$ffmpeg->add_video_filter('format=nv12,hwupload');
 
 	/** Audio **/
 	$audio_streamid = $tracks_model->get_first_english_streamid();
@@ -226,7 +227,7 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 	if($arg_cq)
 		$mkv_encoder_settings_tag = "${prefix}ffmpeg-$ffmpeg_version";
 	else
-		$mkv_encoder_settings_tag = "cq-$video_quality-${prefix}ffmpeg-$ffmpeg_version";
+		$mkv_encoder_settings_tag = "cq-$cq-${prefix}ffmpeg-$ffmpeg_version";
 	$ffmpeg->add_metadata('encoder_settings', $mkv_encoder_settings_tag);
 
 	$ffmpeg->output_filename($filename);
@@ -242,7 +243,6 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 
 	if($opt_time)
 		$ffmpeg_command = "tout $ffmpeg_command";
-
 
 	echo "$ffmpeg_command\n";
 

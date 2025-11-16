@@ -433,22 +433,27 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 				$ffmpeg->set_vcodec('h264_nvenc');
 
-				$video_quality = $series_model->get_crf();
+				$cq = $series_model->get_cq();
+				$qmin = $series_model->get_qmin();
+				$qmax = $series_model->get_qmax();
 
 				if($arg_cq)
-					$video_quality = intval($arg_cq);
-
-				$ffmpeg->set_cq($video_quality);
-
+					$cq = $arg_cq;
 				if($arg_qmin)
-					$ffmpeg->set_qmin($arg_qmin);
+					$qmin = $arg_qmin;
 				if($arg_qmax)
-					$ffmpeg->set_qmax($arg_qmax);
+					$qmax = $arg_qmax;
+
+				$ffmpeg->set_cq($cq);
+				$ffmpeg->set_qmin($qmin);
+				$ffmpeg->set_qmax($qmax);
+
+				$ffmpeg->set_crf(null);
 
 				if($opt_fast)
 					$ffmpeg->set_preset('ultrafast');
 				elseif($opt_slow)
-					$ffmpeg->set_preset('slow');
+					$ffmpeg->set_preset('slowest');
 
 			}
 
