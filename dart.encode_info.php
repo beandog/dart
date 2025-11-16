@@ -171,8 +171,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			$vf_name = current(explode('=', $arg_vf));
 			$prefix .= "vf-$vf_name-";
 		}
-		if($opt_no_fps)
-			$prefix .= 'no-fps-';
 		if($opt_fast)
 			$prefix .= "fast-";
 		elseif($opt_slow)

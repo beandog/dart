@@ -33,33 +33,17 @@ if($disc_type == 'dvd' && $opt_encode_info && $dvd_encoder == 'handbrake') {
 	if($vcodec == 'x264' && $x264_tune)
 		$handbrake->set_x264_tune($x264_tune);
 
-	if($video_deint == 'bwdif' && !$opt_no_filters) {
-		$handbrake->set_video_framerate($fps);
-		$handbrake->enable_bwdif();
-		$handbrake->enable_cfr();
-	}
-	if($opt_no_filters)
-		$prefix .= 'no-filters-';
-
-	// If no arguments or options are passed, then use bwdif by default
-	if(!$opt_no_fps && !$opt_no_filters) {
-		$handbrake->set_video_framerate($fps);
-		$handbrake->enable_bwdif();
-		$handbrake->enable_cfr();
-		// FIXME overriding setting it earlier
-		if($video_format == 'pal')
-			$fps = 50;
-		else
-			$fps = 59.94;
-	}
+	$handbrake->enable_bwdif();
 
 	/** Frame and fields **/
 
 	// Set framerate
-	if($fps && !$opt_no_fps) {
-		$handbrake->set_video_framerate($fps);
-		$handbrake->enable_cfr();
-	}
+	if($video_format == 'pal')
+		$fps = 50;
+	else
+		$fps = 59.94;
+	$handbrake->set_video_framerate($fps);
+	$handbrake->enable_cfr();
 
 	/** Audio **/
 

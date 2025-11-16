@@ -256,18 +256,6 @@
 		'action' => 'StoreString',
 		'default' => '',
 	));
-	$parser->addOption('opt_no_fps', array(
-		'long_name' => '--no-fps',
-		'description' => 'Disable setting framerate',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
-	$parser->addOption('opt_no_filters', array(
-		'long_name' => '--no-filters',
-		'description' => 'Disable all video filters',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
 	$parser->addOption('opt_fast', array(
 		'long_name' => '--fast',
 		'description' => 'Speed up encoding by using ultrafast preset',

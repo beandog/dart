@@ -150,20 +150,14 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 		$ffmpeg->add_video_filter("crop=$crop");
 
 	$deint_filter = "bwdif=deint=$video_deint";
-	if(!$opt_no_filters)
-		$ffmpeg->add_video_filter($deint_filter);
+	$ffmpeg->add_video_filter($deint_filter);
 
-	// If no arguments or options are passed, then use bwdif by default
-	if(!$opt_no_fps && !$opt_no_filters) {
-		// FIXME overriding setting it earlier
-		if($video_format == 'pal')
-			$fps = 50;
-		else
-			$fps = 59.94;
-	}
+	if($video_format == 'pal')
+		$fps = 50;
+	else
+		$fps = 59.94;
 
-	if($fps && !$opt_no_fps)
-		$ffmpeg->add_video_filter("fps=$fps");
+	$ffmpeg->add_video_filter("fps=$fps");
 
 	if($arg_vf)
 		$ffmpeg->add_video_filter($arg_vf);
