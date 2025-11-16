@@ -38,6 +38,8 @@
 		public $video_filters = array();
 		public $crf = 0;
 		public $cq = 0;
+		public $qmin = null;
+		public $qmax = null;
 		public $tune = '';
 		public $preset = '';
 		public $rc_lookahead = 0;
@@ -168,8 +170,16 @@
 				$this->crf = $crf;
 		}
 
-		public function set_cq($str) {
-			$this->cq = intval($str);
+		public function set_cq($int) {
+			$this->cq = $int;
+		}
+
+		public function set_qmin($int) {
+			$this->qmin = $int;
+		}
+
+		public function set_qmax($int) {
+			$this->qmax = $int;
 		}
 
 		public function set_tune($str) {
@@ -317,11 +327,15 @@
 			}
 
 			if($this->cq) {
-				$args['cq'] = $this->cq;
-				$args['qmin'] = $this->cq;
-				$args['qmax'] = $this->cq;
 				$args['b:v'] = 0;
+				$args['cq'] = $this->cq;
 			}
+
+			if($this->qmin)
+				$args['qmin'] = $this->qmin;
+
+			if($this->qmax)
+				$args['qmax'] = $this->qmax;
 
 			if($this->rc_lookahead)
 				$args['rc-lookahead'] = $this->rc_lookahead;

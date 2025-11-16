@@ -166,6 +166,12 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			$prefix .= "q-$arg_crf-";
 		elseif($opt_no_crf)
 			$prefix .= "no-crf-";
+		if($arg_cq)
+			$prefix .= "cq-$arg_cq-";
+		if($arg_qmin)
+			$prefix .= "qmin-$arg_qmin-";
+		if($arg_qmin)
+			$prefix .= "qmax-$arg_qmax-";
 		if($opt_no_fps)
 			$prefix .= 'no-fps-';
 		if($opt_fast)
@@ -424,10 +430,15 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 				$video_quality = $series_model->get_crf();
 
-				if($arg_crf)
-					$video_quality = abs(intval($arg_crf));
+				if($arg_cq)
+					$video_quality = intval($arg_cq);
 
 				$ffmpeg->set_cq($video_quality);
+
+				if($arg_qmin)
+					$ffmpeg->set_qmin($arg_qmin);
+				if($arg_qmax)
+					$ffmpeg->set_qmax($arg_qmax);
 
 				if($opt_fast)
 					$ffmpeg->set_preset('ultrafast');

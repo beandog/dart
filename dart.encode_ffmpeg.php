@@ -78,6 +78,8 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 
 	if($arg_crf)
 		$video_quality = intval($arg_crf);
+	if($arg_cq)
+		$video_quality = intval($arg_cq);
 
 	if($video_quality && !$opt_no_crf && !$vcodec == 'h264_hwenc' && !$vcodec == 'hevc_hwenc')
 		$ffmpeg->set_crf($video_quality);
@@ -93,6 +95,11 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 
 		// I can't remember where setting cq came from, it's similar to setting CRF though (I think)
 		$ffmpeg->set_cq($video_quality);
+
+		if($arg_qmin)
+			$ffmpeg->set_qmin($arg_qmin);
+		if($arg_qmax)
+			$ffmpeg->set_qmax($arg_qmax);
 
 		if($hardware == 'nvidia') {
 			$ffmpeg->add_argument('rc', 'vbr');
