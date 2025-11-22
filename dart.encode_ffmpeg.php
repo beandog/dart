@@ -223,11 +223,23 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 	if($prefix)
 		$filename = $prefix.$filename;
 
-	if($arg_cq)
-		$mkv_encoder_settings_tag = "${prefix}ffmpeg-$ffmpeg_version";
+	$arr_metadata = array();
+	if($cq)
+		$arr_metadata[] = "cq=$cq";
+	if($qmin)
+		$arr_metadata[] = "qmin=$qmin";
+	if($qmax)
+		$arr_metadata[] = "qmax=$qmax";
+	if($denoise)
+		$arr_metadata[] = "hqdn3d";
+	if($dvd_encoder == 'ffpipe')
+		$arr_metadata[] = "ffipe=$ffmpeg_version";
 	else
-		$mkv_encoder_settings_tag = "cq-$cq-${prefix}ffmpeg-$ffmpeg_version";
-	$ffmpeg->add_metadata('encoder_settings', $mkv_encoder_settings_tag);
+		$arr_metadata[] = "ffmpeg=$ffmpeg_version";
+
+	$str_metadata = implode(',', $arr_metadata);
+
+	$ffmpeg->add_metadata('encoder_settings', $str_metadata);
 
 	$ffmpeg->output_filename($filename);
 
