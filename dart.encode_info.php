@@ -14,7 +14,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 	// Default encoder
 	if($disc_type == 'dvd' && $dvd_encoder == '')
-		$dvd_encoder = 'ffmpeg';
+		$dvd_encoder = 'handbrake';
 
 	if($disc_type == 'bluray' && $dvd_encoder == '')
 		$dvd_encoder = 'ffmpeg';
