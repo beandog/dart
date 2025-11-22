@@ -13,8 +13,12 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 	$dvd_encoder = $dvds_model->get_encoder();
 
 	// Default encoder
-	if($disc_type == 'dvd' && $dvd_encoder == '')
-		$dvd_encoder = 'handbrake';
+	if($disc_type == 'dvd' && $dvd_encoder == '') {
+		if(isset($config_encoder))
+			$dvd_encoder = $config_encoder;
+		else
+			$dvd_encoder = 'ffmpeg';
+	}
 
 	if($disc_type == 'bluray' && $dvd_encoder == '')
 		$dvd_encoder = 'ffmpeg';
