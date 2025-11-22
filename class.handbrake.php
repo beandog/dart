@@ -36,6 +36,7 @@
 		public $x264_preset;
 		public $x264_tune;
 		public $x264 = array();
+		public $encopts = '';
 
 		// Audio
 		public $audio = true;
@@ -279,6 +280,10 @@
 
 		}
 
+		public function set_encopts($str) {
+			$this->encopts = $str;
+		}
+
 		public function get_options() {
 
 			$options = array();
@@ -371,6 +376,11 @@
 			// Set duration for QA
 			if($this->duration) {
 				$args['--stop-at'] = "duration:".$this->duration;
+			}
+
+			// Pass in custom encoding options
+			if($this->encopts) {
+				$args['--encopts'] = $this->encopts;
 			}
 
 			/**

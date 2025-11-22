@@ -39,6 +39,17 @@ if($disc_type == 'dvd' && $opt_encode_info && $dvd_encoder == 'handbrake') {
 
 	$handbrake->enable_bwdif();
 
+	if($hardware == 'nvidia') {
+		$cq = $series_model->get_cq();
+		if($arg_cq)
+			$cq = $arg_cq;
+		$handbrake->set_video_quality($cq);
+		$qmax = $series_model->get_qmax();
+		if($arg_qmax)
+			$qmax = $arg_qmax;
+		$handbrake->set_encopts("rc-lookahead=32:preset=p7:tune=hq:qmax=$qmax");
+	}
+
 	/** Frame and fields **/
 
 	// Set framerate
