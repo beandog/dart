@@ -119,9 +119,6 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 			$ffmpeg->add_argument('tune', 'hq');
 			$ffmpeg->add_argument('preset', 'p7');
 
-			// There's a reason I need this, but I don't remember why.
-			$ffmpeg->add_argument('pix_fmt', 'yuv420p');
-
 			if($vcodec == 'h264_hwenc')
 				$ffmpeg->add_argument('profile:v', 'high');
 			elseif($vcodec == 'hevc_hwenc')
