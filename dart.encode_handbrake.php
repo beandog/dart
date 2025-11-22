@@ -17,6 +17,10 @@ if($disc_type == 'dvd' && $opt_encode_info && $dvd_encoder == 'handbrake') {
 
 	/** Video **/
 
+
+	if($hardware == 'nvidia')
+		$vcodec = 'nvenc_h264';
+
 	$handbrake->set_vcodec($vcodec);
 
 	$video_quality = intval($series_model->get_crf());
