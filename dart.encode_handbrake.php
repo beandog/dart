@@ -39,6 +39,9 @@ if($disc_type == 'dvd' && $opt_encode_info && $dvd_encoder == 'handbrake') {
 
 	$handbrake->enable_bwdif();
 
+	if($denoise)
+		$handbrake->denoise();
+
 	if($hardware == 'nvidia') {
 		$cq = $series_model->get_cq();
 		if($arg_cq)

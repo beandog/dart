@@ -164,6 +164,9 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 	if($arg_vf)
 		$ffmpeg->add_video_filter($arg_vf);
 
+	if($denoise)
+		$ffmpeg->add_video_filter('hqdn3d');
+
 	/** Audio **/
 	$audio_streamid = $tracks_model->get_first_english_streamid();
 	if(!$audio_streamid)

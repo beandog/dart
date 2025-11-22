@@ -37,6 +37,7 @@
 		public $x264_tune;
 		public $x264 = array();
 		public $encopts = '';
+		public $denoise = false;
 
 		// Audio
 		public $audio = true;
@@ -123,6 +124,10 @@
 
 		public function enable_subtitles() {
 			$this->subtitles = true;
+		}
+
+		public function denoise($bool = true) {
+			$this->denoise = boolval($bool);
 		}
 
 		/**
@@ -311,6 +316,10 @@
 			// MP4
 			if($this->container == 'mp4')
 				$options[] = '--optimize';
+
+			// Filtering
+			if($this->denoise)
+				$options[] = '--hqdn3d';
 
 			return $options;
 
