@@ -153,7 +153,9 @@ if($disc_type == 'dvd' && $opt_encode_info && $dvd_encoder == 'handbrake') {
 		$arr_prefix[] = "cq-$cq";
 		if($qmin)
 			$arr_prefix[] = "qmin-$qmin";
-		$arr_prefix[] = "qmax-$qmax";
+		// I'm okay with hardcoding qmax to 30 for now, I don't see myself changing it since it's so high
+		if($qmax && $qmax != 30)
+			$arr_prefix[] = "qmax-$qmax";
 		if($denoise) {
 			if($denoise == 'medium')
 				$arr_prefix[] = "denoise";
