@@ -58,7 +58,24 @@ if($disc_type == 'dvd' && $opt_encode_info && $dvd_encoder == 'handbrake') {
 			$qmax = $arg_qmax;
 
 		$handbrake->set_video_quality($cq);
-		$handbrake->set_encopts("rc-lookahead=32:preset=p7:tune=hq:qmin=$qmin:qmax=$qmax");
+
+		// Specific encoding options
+		$arr_encopts = array();
+		// Maximum that nvidia encoder allows
+		$arr_encopts[] = "rc-lookahead=32";
+		// Set to --slowest
+		$arr_encopts[] = "preset=p7";
+		// Tune for high quality
+		$arr_encopts[] = "tune=hq";
+		// qmax, qmin
+		if($qmin)
+			$arr_encopts[] = "qmin=$qmin";
+		if($qmax)
+			$arr_encopts[] = "qmax=$qmax";
+
+		$encopts = implode(":", $arr_encopts);
+
+		$handbrake->set_encopts($encopts);
 
 	}
 

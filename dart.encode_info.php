@@ -106,6 +106,8 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			$uhd = true;
 
 		$denoise = $series_model->get_denoise();
+		if($opt_denoise)
+			$denoise = true;
 
 		// A note about setting fps with ffmpeg: use 'vf=fps' to set it, instead of '-r fps'. See
 		// https://trac.ffmpeg.org/wiki/ChangingFrameRate for reasoning.
