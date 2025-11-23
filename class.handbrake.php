@@ -38,6 +38,8 @@
 		public $x264 = array();
 		public $encopts = '';
 		public $denoise = false;
+		public $sharpen = '';
+		public $sharpen_tune = '';
 
 		// Audio
 		public $audio = true;
@@ -128,6 +130,14 @@
 
 		public function denoise($bool = true) {
 			$this->denoise = boolval($bool);
+		}
+
+		public function sharpen($str) {
+			$this->sharpen = $str;
+		}
+
+		public function sharpen_tune($str) {
+			$this->sharpen_tune = $str;
 		}
 
 		/**
@@ -381,6 +391,13 @@
 			if($this->x264_tune) {
 				$args['--encoder-tune'] = $this->x264_tune;
 			}
+
+			// Video filters
+			if($this->sharpen) {
+				$args['--lapsharp'] = $this->sharpen;
+			}
+			if($this->sharpen && $this->sharpen_tune)
+				$args['--lapsharp-tune'] = $this->sharpen_tune;
 
 			// Set duration for QA
 			if($this->duration) {

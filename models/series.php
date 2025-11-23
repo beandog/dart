@@ -121,6 +121,30 @@
 
 		}
 
+		function get_sharpen() {
+
+			$series_id = abs(intval($this->id));
+
+			$sql = "SELECT sharpen FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = $series_id;";
+
+			$var = $this->get_one($sql);
+
+			return $var;
+
+		}
+
+		function get_sharpen_tune() {
+
+			$series_id = abs(intval($this->id));
+
+			$sql = "SELECT sharpen_tune FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = $series_id;";
+
+			$var = $this->get_one($sql);
+
+			return $var;
+
+		}
+
 		function get_fps() {
 
 			$series_id = abs(intval($this->id));

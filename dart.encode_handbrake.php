@@ -44,6 +44,11 @@ if($disc_type == 'dvd' && $opt_encode_info && $dvd_encoder == 'handbrake') {
 	if($denoise)
 		$handbrake->denoise();
 
+	if($sharpen)
+		$handbrake->sharpen($sharpen);
+	if($sharpen_tune)
+		$handbrake->sharpen_tune($sharpen_tune);
+
 	if($hardware == 'nvidia') {
 
 		$cq = $series_model->get_cq();
@@ -149,10 +154,21 @@ if($disc_type == 'dvd' && $opt_encode_info && $dvd_encoder == 'handbrake') {
 		if($qmin)
 			$arr_prefix[] = "qmin-$qmin";
 		$arr_prefix[] = "qmax-$qmax";
-		if($denoise)
-			$arr_prefix[] = "denoise";
-		$arr_prefix[] = $dvd_encoder;
-		$arr_prefix[] = "batch";
+		if($denoise) {
+			if($denoise == 'medium')
+				$arr_prefix[] = "denoise";
+			else
+				$arr_prefix[] = "denoise-$denoise";
+		}
+		if($sharpen) {
+			if($sharpen == 'medium')
+				$arr_prefix[] = "sharpen";
+			else
+				$arr_prefix[] = "sharpen-$sharpen";
+		}
+		if($sharpen_tune)
+			$arr_prefix[] = $sharpen_tune;
+		$arr_prefix[] = "hb";
 		$prefix = implode("-", $arr_prefix);
 		$filename = basename($filename, ".$container")."-$prefix.$container";
 	}

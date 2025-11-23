@@ -9,6 +9,8 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 	else
 		$qa_max = 90;
 
+	$collection_id = $dvds_model->get_collection_id();
+
 	// Override DVD encoder if disc is flagged with bugs
 	$dvd_encoder = $dvds_model->get_encoder();
 
@@ -108,6 +110,14 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		$denoise = $series_model->get_denoise();
 		if($opt_denoise)
 			$denoise = true;
+
+		// For now, only testing on cartoons and TV shows
+		$sharpen = $series_model->get_sharpen();
+		if($opt_sharpen && $collection_id == 1)
+			$sharpen = 'animation';
+		if($opt_sharpen && $collection_id == 2)
+			$sharpen = 'film';
+		$sharpen_tune = $series_model->get_sharpen_tune();
 
 		// A note about setting fps with ffmpeg: use 'vf=fps' to set it, instead of '-r fps'. See
 		// https://trac.ffmpeg.org/wiki/ChangingFrameRate for reasoning.
