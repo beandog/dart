@@ -10,13 +10,15 @@ if($disc_type == 'dvd' && $opt_encode_info && $dvd_encoder == 'handbrake') {
 	$handbrake->verbose($verbose);
 	$handbrake->debug($debug);
 
+	if($opt_qa)
+		$handbrake->set_duration($qa_max);
+
 	/** Files **/
 
 	$handbrake->input_filename($input_filename);
 	$handbrake->input_track($tracks_model->ix);
 
 	/** Video **/
-
 
 	if($hardware == 'nvidia')
 		$vcodec = 'nvenc_h264';
@@ -43,14 +45,21 @@ if($disc_type == 'dvd' && $opt_encode_info && $dvd_encoder == 'handbrake') {
 		$handbrake->denoise();
 
 	if($hardware == 'nvidia') {
+
 		$cq = $series_model->get_cq();
+		$qmin = $series_model->get_qmin();
+		$qmax = $series_model->get_qmax();
+
 		if($arg_cq)
 			$cq = $arg_cq;
-		$handbrake->set_video_quality($cq);
-		$qmax = $series_model->get_qmax();
+		if($arg_qmin)
+			$qmin = $arg_qmin;
 		if($arg_qmax)
 			$qmax = $arg_qmax;
-		$handbrake->set_encopts("rc-lookahead=32:preset=p7:tune=hq:qmax=$qmax");
+
+		$handbrake->set_video_quality($cq);
+		$handbrake->set_encopts("rc-lookahead=32:preset=p7:tune=hq:qmin=$qmin:qmax=$qmax");
+
 	}
 
 	/** Frame and fields **/
@@ -111,13 +120,25 @@ if($disc_type == 'dvd' && $opt_encode_info && $dvd_encoder == 'handbrake') {
 
 	$handbrake->set_video_format($tracks_model->format);
 
-	$handbrake->output_filename($filename);
+	/** Final filename */
 
-	if($opt_qa)
-		$handbrake->set_duration($qa_max);
-
-	if($prefix)
+	if($prefix && !$opt_batch)
 		$filename = $prefix.$filename;
+
+	// Rewrite prefix if doing a batch encode to make it simpler to compare filesizes
+	if($opt_batch) {
+		$arr_prefix = array();
+		$arr_prefix[] = "cq-$cq";
+		if($qmin)
+			$arr_prefix[] = "qmin-$qmin";
+		$arr_prefix[] = "qmax-$qmax";
+		if($denoise)
+			$arr_prefix[] = "denoise";
+		$arr_prefix[] = $dvd_encoder;
+		$arr_prefix[] = "batch";
+		$prefix = implode("-", $arr_prefix);
+		$filename = basename($filename, ".$container")."-$prefix.$container";
+	}
 
 	$handbrake->output_filename($filename);
 
