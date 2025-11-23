@@ -38,6 +38,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_batch', array(
+		'long_name' => '--batch',
+		'description' => 'Combine common encoding options when testing',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('opt_encode_info', array(
 		'long_name' => '--encode-info',
 		'description' => 'Display encoding instructions for a DVD',

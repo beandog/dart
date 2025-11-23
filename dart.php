@@ -60,6 +60,14 @@
 		$access_device = true;
 	}
 
+	// Make my life simpler
+	if($opt_batch) {
+		$opt_one = true;
+		$opt_time = true;
+		$opt_encode_info = true;
+		$opt_test_existing = true;
+	}
+
 	// Just kept for reference and fun
 	function beep_error() {
 		// system("beep -f 1000 -n -f 2000 -n -f 1500 -n -f 1750 -n -f 1750 -n -f 1750")
