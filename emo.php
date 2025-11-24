@@ -24,8 +24,8 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_rename_file', array(
-		'long_name' => '--rename-file',
+	$parser->addOption('opt_fix_filename', array(
+		'long_name' => '--fix-filename',
 		'description' => 'Fix episode filename',
 		'action' => 'StoreTrue',
 		'default' => false,
@@ -54,7 +54,7 @@
 	extract($result->args);
 	extract($result->options);
 
-	if($opt_info || $opt_rename_file) {
+	if($opt_info || $opt_fix_filename) {
 		require_once 'config.local.php';
 		require_once 'models/dbtable.php';
 		require_once 'models/series.php';
@@ -135,7 +135,7 @@ foreach($episodes as $episode_filename) {
 	}
 
 	// Get metadata and standardized filename
-	if($opt_info || $opt_import || $opt_rename_file)  {
+	if($opt_info || $opt_import || $opt_fix_filename)  {
 
 		$episodes_model = new Episodes_Model;
 		$episodes_model->load($episode_id);
@@ -189,7 +189,7 @@ foreach($episodes as $episode_filename) {
 
 	}
 
-	if($opt_rename_file) {
+	if($opt_fix_filename) {
 
 		if(file_exists($emo_filename))
 			goto next_episode;
