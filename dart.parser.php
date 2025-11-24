@@ -62,8 +62,8 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_subtitles', array(
-		'long_name' => '--subtitles',
+	$parser->addOption('opt_no_subtitles', array(
+		'long_name' => '--no-subtitles',
 		'description' => 'Copy subtitle streams',
 		'action' => 'StoreTrue',
 		'default' => false,

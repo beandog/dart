@@ -72,9 +72,8 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 	elseif($opt_mkv)
 		$container = 'mkv';
 
-	if($opt_subtitles)
-		$encode_subtitles = true;
-	else
+	$encode_subtitles = true;
+	if($opt_no_subtitles)
 		$encode_subtitles = false;
 
 	$ffmpeg_version = trim(shell_exec("ffmpeg -version | head -n 1 | cut -d ' ' -f 3"));
