@@ -24,8 +24,8 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_fix_filename', array(
-		'long_name' => '--fix-filename',
+	$parser->addOption('opt_rename_file', array(
+		'long_name' => '--rename-file',
 		'description' => 'Fix episode filename',
 		'action' => 'StoreTrue',
 		'default' => false,
@@ -54,7 +54,7 @@
 	extract($result->args);
 	extract($result->options);
 
-	if($opt_info || $opt_fix_filename) {
+	if($opt_info || $opt_rename_file) {
 		require_once 'config.local.php';
 		require_once 'models/dbtable.php';
 		require_once 'models/series.php';
@@ -73,6 +73,7 @@ foreach($episodes as $episode_filename) {
 	$valid_episode = false;
 
 	$realpath = realpath($episode_filename);
+	$dirname = dirname($realpath);
 	$pathinfo = pathinfo($realpath);
 	$filename = basename($realpath);
 	$arg_episode_filename = escapeshellarg($realpath);
@@ -135,7 +136,7 @@ foreach($episodes as $episode_filename) {
 	}
 
 	// Get metadata and standardized filename
-	if($opt_info || $opt_import || $opt_fix_filename)  {
+	if($opt_info || $opt_import || $opt_rename_file)  {
 
 		$episodes_model = new Episodes_Model;
 		$episodes_model->load($episode_id);
@@ -189,15 +190,16 @@ foreach($episodes as $episode_filename) {
 
 	}
 
-	if($opt_fix_filename) {
+	if($opt_rename_file) {
 
 		if(file_exists($emo_filename))
 			goto next_episode;
 
-		$arg_emo_filename = escapeshellarg($emo_filename);
-		echo "$arg_episode_filename -> $arg_emo_filename\n";
+		$new_filename = "$dirname/$emo_filename";
+		$arg_new_filename = escapeshellarg($new_filename);
+		echo "$arg_episode_filename -> $arg_new_filename\n";
 		if(!$dry_run)
-			rename($filename, $emo_filename);
+			rename($filename, $new_filename);
 
 	}
 
