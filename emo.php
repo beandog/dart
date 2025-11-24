@@ -24,9 +24,22 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_rename_file', array(
+		'long_name' => '--rename-file',
+		'description' => 'Fix episode filename',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('opt_json', array(
 		'long_name' => '--json',
 		'description' => 'Display episode info in JSON format',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
+	$parser->addOption('dry_run', array(
+		'short_name' => '-n',
+		'long_name' => '--dry-run',
+		'description' => 'Do a dry run and don\'t overwrite files',
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
@@ -41,7 +54,7 @@
 	extract($result->args);
 	extract($result->options);
 
-	if($opt_info) {
+	if($opt_info || $opt_rename_file) {
 		require_once 'config.local.php';
 		require_once 'models/dbtable.php';
 		require_once 'models/series.php';
@@ -52,18 +65,17 @@
 
 	$i = 0;
 
-foreach($episodes as $episode) {
+foreach($episodes as $episode_filename) {
 
-	if(!file_exists($episode))
+	if(!file_exists($episode_filename))
 		goto next_episode;
 
 	$valid_episode = false;
 
-	$filename = realpath($episode);
-	$pathinfo = pathinfo($filename);
-	$basename = basename($filename);
-	$episode = $basename;
-	$arg_episode = escapeshellarg($filename);
+	$realpath = realpath($episode_filename);
+	$pathinfo = pathinfo($realpath);
+	$filename = basename($realpath);
+	$arg_episode_filename = escapeshellarg($realpath);
 
 	if(!array_key_exists('extension', $pathinfo))
 		goto next_episode;
@@ -73,40 +85,46 @@ foreach($episodes as $episode) {
 	if(!in_array($extension, array('mkv', 'mpg', 'mp4')))
 		goto next_episode;
 
-	$arr = explode('.', $episode);
+	$arr = explode('.', $filename);
 
 	$str_episode = '';
 
 	// Check for 1.234.5678.9012.E-M-O.mkv
-	if(is_numeric($episode[0]))
-		$str_episode = current(explode('-', $episode));
+	if(is_numeric($filename[0])) {
+		$str_episode = current(explode('-', $filename));
+		$episode_id = substr($str_episode, 11, 5);
+	}
 
 	// Get episode from string prefix-foo-1.234.5678.9012.E-M-O.mkv
-	if(!is_numeric($episode[0])) {
+	if(!is_numeric($filename[0])) {
 
-		$expression = "/\d\.\d{3}\.\d{4}\.\d{5}.*/";
-		preg_match($expression, $episode, $arr_matches);
+		$expression = "/\d\.\d{3}\.\d{4}\.\d{5}.*\.mkv$/";
+		preg_match($expression, $filename, $arr_matches);
 
 		if(!count($arr_matches))
 			goto next_episode;
 
+		// Find it the hard way
+		$arr = explode('.', $filename);
+		foreach($arr as $value) {
+			if(is_numeric($value) && strlen($value) == 5) {
+				$episode_id = $value;
+				$str_episode = current($arr_matches);
+				break;
+			}
+		}
+
 	}
 
-	if(!strlen($str_episode))
+	if(!$episode_id)
 		goto next_episode;
-
-	$collection_id = $str_episode[0];
-	$series_id = substr($str_episode, 2, 3);
-	$dvd_id = substr($str_episode, 6, 4);
-	$episode_id = substr($str_episode, 11, 5);
-	$nsix = substr($str_episode, 17, 5);
 
 	$valid_episode = true;
 	$i++;
 
 	// Get JSON
 	if($opt_import || $opt_json) {
-		$cmd_json = "mediainfo --Output=JSON $arg_episode | jq";
+		$cmd_json = "mediainfo --Output=JSON $arg_episode_filename | jq";
 		$str_json = trim(shell_exec($cmd_json));
 	}
 
@@ -116,24 +134,22 @@ foreach($episodes as $episode) {
 		goto next_episode;
 	}
 
-	// Build standardized filename
-	$emo_filename = "$collection_id.$series_id.$dvd_id.$episode_id.$nsix.mkv";
-
-	if($opt_info || $opt_import)  {
+	// Get metadata and standardized filename
+	if($opt_info || $opt_import || $opt_rename_file)  {
 
 		$episodes_model = new Episodes_Model;
 		$episodes_model->load($episode_id);
 		$episode_title = $episodes_model->get_display_name();
 		$episode_metadata = $episodes_model->get_metadata();
+		$emo_filename = $episodes_model->get_filename();
 
 		extract($episode_metadata);
 
 	}
 
-	if($opt_info) { 
+	if($opt_info) {
 
 		$arr_d_info = array();
-		// $arr_d_info[] = $basename;
 		$arr_d_info[] = "$series_title";
 		$d_season = '';
 		if($season)
@@ -146,10 +162,10 @@ foreach($episodes as $episode) {
 
 		$d_title = implode(" : ", $arr_d_info);
 
-		$filesize = filesize($filename);
+		$filesize = filesize($episode_filename);
 		$mbs = number_format(ceil($filesize / 1048576));
 
-		echo "# $basename - $d_title : ${mbs} MBs\n";
+		echo "# $filename - $d_title : ${mbs} MBs\n";
 
 	}
 
@@ -170,6 +186,18 @@ foreach($episodes as $episode) {
 		echo "# Fetching $emo_filename ...\n";
 		$cmd = "scp dlna:/opt/plex/*/$emo_filename .";
 		passthru($cmd);
+
+	}
+
+	if($opt_rename_file) {
+
+		if(file_exists($emo_filename))
+			goto next_episode;
+
+		$arg_emo_filename = escapeshellarg($emo_filename);
+		echo "$arg_episode_filename -> $arg_emo_filename\n";
+		if(!$dry_run)
+			rename($filename, $emo_filename);
 
 	}
 
