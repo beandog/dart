@@ -140,8 +140,14 @@ foreach($episodes as $episode_filename) {
 
 		$episodes_model = new Episodes_Model;
 		$episodes_model->load($episode_id);
-		$episode_title = $episodes_model->get_display_name();
+
 		$episode_metadata = $episodes_model->get_metadata();
+		if(!count($episode_metadata)) {
+			echo "* $filename - cannot find episode '$episode_id' in database\n";
+			goto next_episode;
+		}
+
+		$episode_title = $episodes_model->get_display_name();
 		$emo_filename = $episodes_model->get_filename();
 
 		extract($episode_metadata);
