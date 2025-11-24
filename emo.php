@@ -209,7 +209,7 @@ foreach($episodes as $episode_filename) {
 		$arg_new_filename = escapeshellarg($new_filename);
 		echo "$arg_episode_filename -> $arg_new_filename\n";
 		if(!$dry_run)
-			rename($filename, $new_filename);
+			rename($realpath, $new_filename);
 
 	}
 
