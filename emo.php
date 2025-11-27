@@ -60,7 +60,7 @@
 	extract($result->args);
 	extract($result->options);
 
-	if($opt_info || $opt_import || $opt_rename_file || $opt_upload)  {
+	if($opt_info || $opt_import || $opt_rename_file || $opt_upload || $opt_fetch)  {
 		require_once 'config.local.php';
 		require_once 'models/dbtable.php';
 		require_once 'models/series.php';
@@ -140,7 +140,7 @@ foreach($episodes as $episode_filename) {
 	}
 
 	// Get metadata and standardized filename
-	if($opt_info || $opt_import || $opt_rename_file || $opt_upload)  {
+	if($opt_info || $opt_import || $opt_rename_file || $opt_upload || $opt_fetch)  {
 
 		$episodes_model = new Episodes_Model($episode_id);
 
@@ -227,7 +227,7 @@ foreach($episodes as $episode_filename) {
 		if($hostname == "dlna" || $hostname == "dlna.beandog.org")
 			goto next_episode;
 
-		if($basename == $emo_filename)
+		if($filename == $emo_filename)
 			goto next_episode;
 
 		if(file_exists($emo_filename)) {
