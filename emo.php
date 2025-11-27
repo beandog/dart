@@ -54,14 +54,12 @@
 	extract($result->args);
 	extract($result->options);
 
-	if($opt_info || $opt_rename_file) {
+	if($opt_info || $opt_import || $opt_rename_file)  {
 		require_once 'config.local.php';
 		require_once 'models/dbtable.php';
 		require_once 'models/series.php';
 		require_once 'models/episodes.php';
 	}
-
-	$opt_import = false;
 
 	$i = 0;
 
@@ -138,8 +136,7 @@ foreach($episodes as $episode_filename) {
 	// Get metadata and standardized filename
 	if($opt_info || $opt_import || $opt_rename_file)  {
 
-		$episodes_model = new Episodes_Model;
-		$episodes_model->load($episode_id);
+		$episodes_model = new Episodes_Model($episode_id);
 
 		$episode_metadata = $episodes_model->get_metadata();
 		if(!count($episode_metadata)) {
@@ -151,6 +148,16 @@ foreach($episodes as $episode_filename) {
 		$emo_filename = $episodes_model->get_filename();
 
 		extract($episode_metadata);
+
+	}
+
+	if($opt_import) {
+
+		require_once 'models/encodes.php';
+
+		$encodes_model = new Encodes_Model();
+
+		$encodes_model->load_filename($filename);
 
 	}
 
