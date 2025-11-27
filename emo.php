@@ -18,6 +18,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_upload', array(
+		'long_name' => '--upload',
+		'description' => 'Upload episode to media server',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('opt_import', array(
 		'long_name' => '--import',
 		'description' => 'Import filesize and metadata into database',
@@ -54,7 +60,7 @@
 	extract($result->args);
 	extract($result->options);
 
-	if($opt_info || $opt_import || $opt_rename_file)  {
+	if($opt_info || $opt_import || $opt_rename_file || $opt_upload)  {
 		require_once 'config.local.php';
 		require_once 'models/dbtable.php';
 		require_once 'models/series.php';
@@ -134,7 +140,7 @@ foreach($episodes as $episode_filename) {
 	}
 
 	// Get metadata and standardized filename
-	if($opt_info || $opt_import || $opt_rename_file)  {
+	if($opt_info || $opt_import || $opt_rename_file || $opt_upload)  {
 
 		$episodes_model = new Episodes_Model($episode_id);
 
@@ -161,7 +167,7 @@ foreach($episodes as $episode_filename) {
 
 	}
 
-	if($opt_info) {
+	if($opt_info || $opt_upload) {
 
 		$arr_d_info = array();
 		$arr_d_info[] = "$series_title";
@@ -179,7 +185,39 @@ foreach($episodes as $episode_filename) {
 		$filesize = filesize($episode_filename);
 		$mbs = number_format(ceil($filesize / 1048576));
 
-		echo "# $filename - $d_title : ${mbs} MBs\n";
+		$d_info = "# $filename - $d_title : ${mbs} MBs";
+
+		echo "$d_info\n";
+
+		if($opt_upload) {
+
+			$xfs = "";
+
+			$collection_id = $filename[0];
+
+			if($collection_id == 1)
+				$xfs = "sd";
+			elseif($collection_id == "2")
+				$xfs = "tv";
+			elseif($collection_id == "4")
+				$xfs = "tv";
+			if(strstr($filename, ".HD"))
+				$xfs = "hd";
+			elseif(strstr($filename, ".BD"))
+				$xfs = "bd";
+			elseif(strstr($filename, ".4K"))
+				$xfs = "bd";
+
+			if(!$xfs)
+				goto next_episode;
+
+			$cmd = "rsync -au --quiet $arg_episode_filename dlna:/opt/plex/$xfs";
+			echo "# $cmd\n";
+
+			passthru($cmd);
+
+		}
+
 
 	}
 
