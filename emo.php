@@ -198,6 +198,8 @@ foreach($episodes as $episode_filename) {
 				$arr_info['scodec'] = 'text';
 			if($arr['@type'] == 'Text' && $arr['Format'] == 'VobSub')
 				$arr_info['scodec'] = 'vobsub';
+			if($arr['@type'] == 'Text' && $arr['Format'] == 'PGS')
+				$arr_info['scodec'] = 'pgs';
 		}
 
 		// Get more data if encoded with libx264
