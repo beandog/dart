@@ -128,30 +128,40 @@ foreach($episodes as $episode_filename) {
 	$i++;
 
 	// Get JSON
-	if($opt_import || $opt_json) {
+	if($opt_info || $opt_json || $opt_import) {
+
+		$vcodec = '';
+		$crf = '';
+		$preset = '';
 
 		$cmd_json = "mediainfo --Output=JSON $arg_episode_filename";
 		$str_json = trim(shell_exec($cmd_json));
 
 		$json = json_decode($str_json, true);
 
-		$arr_info = array(
-			'uuid' => $json['media']['track'][0]['UniqueID'],
-			'filesize' => $json['media']['track'][0]['FileSize'],
-			'duration' => $json['media']['track'][0]['Duration'],
-			'bitrate' => $json['media']['track'][0]['OverallBitRate'],
-			'frame_count' => $json['media']['track'][0]['FrameCount'],
-			'application' => $json['media']['track'][0]['Encoded_Application'],
-			'library' => $json['media']['track'][0]['Encoded_Library'],
-		);
+		$arr_info = array();
+
+		if(array_key_exists('Duration', $json['media']['track'][0]))
+			$arr_info['duration'] = $json['media']['track'][0]['Duration'];
+		if(array_key_exists('OverallBitRate', $json['media']['track'][0]))
+			 $arr_info['bitrate'] = $json['media']['track'][0]['OverallBitRate'];
+		$arr_info['uuid'] = $json['media']['track'][0]['UniqueID'];
+		$arr_info['filesize'] = $json['media']['track'][0]['FileSize'];
+		$arr_info['frame_count'] = $json['media']['track'][0]['FrameCount'];
+		$arr_info['application'] = $json['media']['track'][0]['Encoded_Application'];
+		$arr_info['library'] = $json['media']['track'][0]['Encoded_Library'];
 
 		// Get more data if encoded with libx264
 		if(strstr($str_json, 'rc=crf')) {
 
+			$vcodec = 'x264';
+
+			$preset = '';
+
 			$arr_x264_info = array();
 
 			// I only care about a few variables, so I can determine if its preset is medium or better
-			$arr_preset_options = array('b_adapt', 'bframes', 'direct', 'me', 'me_range', 'rc_lookahead', 'ref', 'subme', 'trellis');
+			$arr_preset_options = array('b_adapt', 'bframes', 'crf', 'direct', 'me', 'me_range', 'rc_lookahead', 'ref', 'subme', 'trellis');
 
 			$arr_info['x264_version'] = $json['media']['track'][1]['Encoded_Library_Version'];
 			$arr_info['x264_settings'] = $json['media']['track'][1]['Encoded_Library_Settings'];
@@ -177,6 +187,15 @@ foreach($episodes as $episode_filename) {
 			$json['media']['track'][1]['x264_settings'] = $arr_x264_info;
 
 			$str_json = json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+
+			extract($arr_x264_info);
+
+			if($rc_lookahead >= '50' && $ref >= 5 && $subme >= 8 && $trellis >= 2)
+				$preset = 'slow';
+			if($preset == 'slow' && $b_adapt >= 2 && $me == 'umh' && $rc_lookahead >= 60 && $ref >= 8 && $subme >= 8)
+				$preset = 'slower';
+			if($preset == 'slower' && $bframes >= 8 && $me_range >= 24 && $ref >= 16 && $subme >= 10)
+				$preset = 'veryslow';
 
 		}
 
@@ -228,12 +247,16 @@ foreach($episodes as $episode_filename) {
 			$arr_d_info[] = "$d_season";
 		$arr_d_info[] = "$title";
 
-		$d_title = implode(" : ", $arr_d_info);
+		if($vcodec == 'x264' && $preset)
+			$arr_d_info[] = "$vcodec $preset";
 
 		$filesize = filesize($episode_filename);
 		$mbs = number_format(ceil($filesize / 1048576));
+		$arr_d_info[] = "$mbs MBs";
 
-		$d_info = "# $filename - $d_title : ${mbs} MBs";
+		$d_title = implode(" : ", $arr_d_info);
+
+		$d_info = "# $filename - $d_title";
 
 		echo "$d_info\n";
 
