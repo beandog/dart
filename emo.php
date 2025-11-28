@@ -141,22 +141,69 @@ foreach($episodes as $episode_filename) {
 
 		$arr_info = array();
 
+		$arr_info['duration'] = null;
+		$arr_info['bitrate'] = null;
+		$arr_info['frame_count'] = null;
+		$arr_info['application'] = null;
+		$arr_info['library'] = null;
+		$arr_info['encode_settings'] = null;
+		$arr_info['encoded_date'] = null;
+		$arr_info['x264_version'] = null;
+		$arr_info['x264_preset'] = null;
+		$arr_info['framerate'] = null;
+		$arr_info['episode_mbs'] = null;
+		$arr_info['video_mbs'] = null;
+		$arr_info['audio_mbs'] = null;
+		$arr_info['vcodec'] = null;
+		$arr_info['acodec'] = null;
+		$arr_info['channels'] = null;
+		$arr_info['scodec'] = null;
+
+		$arr_info['uuid'] = $json['media']['track'][1]['UniqueID'];
+		$arr_info['episode_mbs'] = (filesize($filename) / 1048576);
 		if(array_key_exists('Duration', $json['media']['track'][0]))
 			$arr_info['duration'] = $json['media']['track'][0]['Duration'];
 		if(array_key_exists('OverallBitRate', $json['media']['track'][0]))
 			 $arr_info['bitrate'] = $json['media']['track'][0]['OverallBitRate'];
-		$arr_info['uuid'] = $json['media']['track'][0]['UniqueID'];
-		$arr_info['filesize'] = $json['media']['track'][0]['FileSize'];
-		$arr_info['frame_count'] = $json['media']['track'][0]['FrameCount'];
-		$arr_info['application'] = $json['media']['track'][0]['Encoded_Application'];
-		$arr_info['library'] = $json['media']['track'][0]['Encoded_Library'];
+		if(array_key_exists('FrameRate', $json['media']['track'][0]))
+			$arr_info['framerate'] = $json['media']['track'][0]['FrameRate'];
+		if(array_key_exists('Encoded_Date', $json['media']['track'][0]))
+			$arr_info['encoded_date'] = $json['media']['track'][0]['Encoded_Date'];
+		if(array_key_exists('FrameCount', $json['media']['track'][0]))
+			$arr_info['frame_count'] = $json['media']['track'][0]['FrameCount'];
+		if(array_key_exists('Encoded_Application', $json['media']['track'][0]))
+			$arr_info['application'] = $json['media']['track'][0]['Encoded_Application'];
+		if(array_key_exists('Encoded_Library', $json['media']['track'][0]))
+			$arr_info['library'] = $json['media']['track'][0]['Encoded_Library'];
+		if(array_key_exists('Encoded_Library_Settings', $json['media']['track'][0]))
+			$arr_info['encode_settings'] = $json['media']['track'][0]['Encoded_Library_Settings'];
+		if(array_key_exists('Encoded_Library_Settings', $json['media']['track'][1]))
+			$arr_info['encode_settings'] = $json['media']['track'][1]['Encoded_Library_Settings'];
+		if(array_key_exists('StreamSize', $json['media']['track'][1]))
+			$arr_info['video_mbs'] = ($json['media']['track'][1]['StreamSize'] / 1048576);
+		if(array_key_exists('StreamSize', $json['media']['track'][2]))
+			$arr_info['audio_mbs'] = ($json['media']['track'][2]['StreamSize'] / 1048576);
+		if(array_key_exists('Format', $json['media']['track'][1]))
+			$arr_info['vcodec'] = strtolower($json['media']['track'][1]['Format']);
+		if($json['media']['track'][2]['CodecID'] == 'A_AC3')
+			$arr_info['acodec'] = 'ac3';
+		elseif($json['media']['track'][2]['CodecID'] == 'A_AAC-2')
+			$arr_info['acodec'] = 'aac';
+		if(array_key_exists('Channels', $json['media']['track'][2]))
+			$arr_info['channels'] = $json['media']['track'][2]['Channels'];
+		foreach($json['media']['track'] as $arr) {
+			if($arr['@type'] == 'Text')
+				$arr_info['scodec'] = 'text';
+			if($arr['@type'] == 'Text' && $arr['Format'] == 'VobSub')
+				$arr_info['scodec'] = 'vobsub';
+		}
 
 		// Get more data if encoded with libx264
 		if(strstr($str_json, 'rc=crf')) {
 
 			$vcodec = 'x264';
 
-			$preset = 'medium';
+			$x264_preset = 'medium';
 
 			$arr_x264_info = array();
 
@@ -164,9 +211,8 @@ foreach($episodes as $episode_filename) {
 			$arr_preset_options = array('b_adapt', 'bframes', 'crf', 'direct', 'me', 'me_range', 'rc_lookahead', 'ref', 'subme', 'trellis');
 
 			$arr_info['x264_version'] = $json['media']['track'][1]['Encoded_Library_Version'];
-			$arr_info['x264_settings'] = $json['media']['track'][1]['Encoded_Library_Settings'];
 
-			$arr_x264_settings = explode('/', $arr_info['x264_settings']);
+			$arr_x264_settings = explode('/', $arr_info['encode_settings']);
 
 			sort($arr_x264_settings);
 
@@ -190,11 +236,13 @@ foreach($episodes as $episode_filename) {
 			extract($arr_x264_info);
 
 			if($rc_lookahead >= '50' && $ref >= 5 && $subme >= 8 && $trellis >= 2)
-				$preset = 'slow';
-			if($preset == 'slow' && $b_adapt >= 2 && $me == 'umh' && $rc_lookahead >= 60 && $ref >= 8 && $subme >= 8)
-				$preset = 'slower';
-			if($preset == 'slower' && $bframes >= 8 && $me_range >= 24 && $ref >= 16 && $subme >= 10)
-				$preset = 'veryslow';
+				$x264_preset = 'slow';
+			if($x264_preset == 'slow' && $b_adapt >= 2 && $me == 'umh' && $rc_lookahead >= 60 && $ref >= 8 && $subme >= 8)
+				$x264_preset = 'slower';
+			if($x264_preset == 'slower' && $bframes >= 8 && $me_range >= 24 && $ref >= 16 && $subme >= 10)
+				$x264_preset = 'veryslow';
+
+			$arr_info['x264_preset'] = $x264_preset;
 
 		}
 
@@ -224,17 +272,7 @@ foreach($episodes as $episode_filename) {
 
 	}
 
-	if($opt_import) {
-
-		require_once 'models/encodes.php';
-
-		$encodes_model = new Encodes_Model();
-
-		$encodes_model->load_filename($filename);
-
-	}
-
-	if($opt_info || $opt_upload) {
+	if($opt_info || $opt_upload || $opt_import) {
 
 		$arr_d_info = array();
 		$arr_d_info[] = "$series_title";
@@ -246,9 +284,6 @@ foreach($episodes as $episode_filename) {
 		if($d_season)
 			$arr_d_info[] = "$d_season";
 		$arr_d_info[] = "$title";
-
-		if($vcodec == 'x264')
-			$arr_d_info[] = trim("$vcodec $crf $preset");
 
 		$filesize = filesize($episode_filename);
 		$mbs = number_format(ceil($filesize / 1048576));
@@ -328,7 +363,76 @@ foreach($episodes as $episode_filename) {
 
 	}
 
+	if($opt_import) {
+
+		require_once 'models/encodes.php';
+
+		$encodes_model = new Encodes_Model();
+
+		extract($arr_info);
+		$encode_id = $encodes_model->load_uuid($uuid);
+
+		if($encode_id) {
+			$encodes_model->delete();
+			$encode_id = $encodes_model->create_new();
+			// goto next_episode;
+		} else {
+			$encode_id = $encodes_model->create_new();
+		}
+
+		$bitrate = intval($bitrate);
+		$crf = intval($crf);
+		$duration = intval($duration);
+		$framerate = floatval($framerate);
+		$episode_mbs = ceil($episode_mbs);
+		$video_mbs = ceil($video_mbs);
+		$audio_mbs = ceil($audio_mbs);
+
+		$encodes_model->episode_id = $episode_id;
+		$encodes_model->filename = $filename;
+		$encodes_model->uuid = $uuid;
+		$encodes_model->filesize = $filesize;
+		if($encoded_date)
+			$encodes_model->encoded_date = $encoded_date;
+		if($duration)
+			$encodes_model->duration = $duration;
+		if($bitrate)
+			$encodes_model->bitrate = $bitrate;
+		if($frame_count)
+			$encodes_model->frame_count = $frame_count;
+		if($application)
+			$encodes_model->application = $application;
+		if($library)
+			$encodes_model->library = $library;
+		if($encode_settings)
+			$encodes_model->encode_settings = $encode_settings;
+		if($encoded_date)
+			$encodes_model->encoded_date = $encoded_date;
+		if($x264_version)
+			$encodes_model->x264_version = $x264_version;
+		if($x264_preset)
+			$encodes_model->x264_preset = $x264_preset;
+		if($crf)
+			$encodes_model->x264_crf = $crf;
+		if($framerate)
+			$encodes_model->framerate = $framerate;
+		if($episode_mbs)
+			$encodes_model->episode_mbs = $episode_mbs;
+		if($video_mbs)
+			$encodes_model->video_mbs = $video_mbs;
+		if($audio_mbs)
+			$encodes_model->audio_mbs = $audio_mbs;
+		if($vcodec)
+			$encodes_model->vcodec = $vcodec;
+		if($acodec)
+			$encodes_model->acodec = $acodec;
+		if($channels)
+			$encodes_model->channels = $channels;
+		if($scodec)
+			$encodes_model->scodec = $scodec;
+
+	}
+
 	next_episode:
 
 }
-
