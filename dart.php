@@ -62,7 +62,6 @@
 
 	// Make my life simpler
 	if($opt_batch) {
-		$opt_one = true;
 		$opt_time = true;
 		$opt_encode_info = true;
 		$opt_test_existing = true;
