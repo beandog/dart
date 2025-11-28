@@ -283,6 +283,8 @@ foreach($episodes as $episode_filename) {
 			$d_season .= "e$episode_number";
 		if($d_season)
 			$arr_d_info[] = "$d_season";
+		if($part)
+			$title .= " ($part)";
 		$arr_d_info[] = "$title";
 
 		$filesize = filesize($episode_filename);
