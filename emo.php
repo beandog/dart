@@ -137,7 +137,6 @@ foreach($episodes as $episode_filename) {
 
 		$arr_info = array(
 			'uuid' => $json['media']['track'][0]['UniqueID'],
-			'date' => $json['media']['track'][0]['File_Modified_Date_Local'],
 			'filesize' => $json['media']['track'][0]['FileSize'],
 			'duration' => $json['media']['track'][0]['Duration'],
 			'bitrate' => $json['media']['track'][0]['OverallBitRate'],
