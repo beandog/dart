@@ -129,14 +129,63 @@ foreach($episodes as $episode_filename) {
 
 	// Get JSON
 	if($opt_import || $opt_json) {
+
 		$cmd_json = "mediainfo --Output=JSON $arg_episode_filename | jq";
 		$str_json = trim(shell_exec($cmd_json));
-	}
 
-	// Display JSON and quit
-	if($opt_json) {
-		echo "$str_json\n";
-		goto next_episode;
+		$json = json_decode($str_json, true);
+
+		$arr_info = array(
+			'uuid' => $json['media']['track'][0]['UniqueID'],
+			'date' => $json['media']['track'][0]['File_Modified_Date_Local'],
+			'filesize' => $json['media']['track'][0]['FileSize'],
+			'duration' => $json['media']['track'][0]['Duration'],
+			'bitrate' => $json['media']['track'][0]['OverallBitRate'],
+			'frame_count' => $json['media']['track'][0]['FrameCount'],
+			'application' => $json['media']['track'][0]['Encoded_Application'],
+			'library' => $json['media']['track'][0]['Encoded_Library'],
+		);
+
+		// Get more data if encoded with libx264
+		if(strstr($str_json, 'rc=crf')) {
+
+			$arr_x264_info = array();
+
+			// I only care about a few variables, so I can determine if its preset is medium or better
+			$arr_preset_options = array('b_adapt', 'bframes', 'direct', 'me', 'me_range', 'rc_lookahead', 'ref', 'subme', 'trellis');
+
+			$arr_info['x264_version'] = $json['media']['track'][1]['Encoded_Library_Version'];
+			$arr_info['x264_settings'] = $json['media']['track'][1]['Encoded_Library_Settings'];
+
+			$arr_x264_settings = explode('/', $arr_info['x264_settings']);
+
+			sort($arr_x264_settings);
+
+			foreach($arr_x264_settings as $value) {
+
+				$arr = explode('=', $value);
+
+				$option = trim($arr[0]);
+
+				if(in_array($option, $arr_preset_options)) {
+					$setting = trim($arr[1]);
+					$arr_x264_info[$option] = $setting;
+				}
+
+			}
+
+			$str_x264_json = json_encode($arr_x264_info);
+			$json['media']['track'][1]['x264_settings'] = $arr_x264_info;
+
+			$str_json = json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+
+		}
+
+		if($opt_json) {
+			echo "$str_json\n";
+			goto next_episode;
+		}
+
 	}
 
 	// Get metadata and standardized filename
