@@ -130,7 +130,7 @@ foreach($episodes as $episode_filename) {
 	// Get JSON
 	if($opt_import || $opt_json) {
 
-		$cmd_json = "mediainfo --Output=JSON $arg_episode_filename | jq";
+		$cmd_json = "mediainfo --Output=JSON $arg_episode_filename";
 		$str_json = trim(shell_exec($cmd_json));
 
 		$json = json_decode($str_json, true);
@@ -266,7 +266,6 @@ foreach($episodes as $episode_filename) {
 			passthru($cmd);
 
 		}
-
 
 	}
 
