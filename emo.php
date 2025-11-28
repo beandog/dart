@@ -185,6 +185,8 @@ foreach($episodes as $episode_filename) {
 			$arr_info['audio_mbs'] = ($json['media']['track'][2]['StreamSize'] / 1048576);
 		if(array_key_exists('Format', $json['media']['track'][1]))
 			$arr_info['vcodec'] = strtolower($json['media']['track'][1]['Format']);
+		if($arr_info['vcodec'] == 'mpeg video')
+			$arr_info['vcodec'] = 'mpeg2';
 		if($json['media']['track'][2]['CodecID'] == 'A_AC3')
 			$arr_info['acodec'] = 'ac3';
 		elseif($json['media']['track'][2]['CodecID'] == 'A_AAC-2')
