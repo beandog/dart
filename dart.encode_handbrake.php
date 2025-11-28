@@ -169,6 +169,8 @@ if($disc_type == 'dvd' && $opt_encode_info && $dvd_encoder == 'handbrake') {
 		}
 		if($sharpen_tune)
 			$arr_prefix[] = $sharpen_tune;
+		if($opt_slow)
+			$arr_prefix[] = 'vslow';
 		$arr_prefix[] = "hb";
 		$prefix = implode("-", $arr_prefix);
 		$filename = basename($filename, ".$container")."-$prefix.$container";
