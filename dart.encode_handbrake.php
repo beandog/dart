@@ -20,9 +20,6 @@ if($disc_type == 'dvd' && $opt_encode_info && $dvd_encoder == 'handbrake') {
 
 	/** Video **/
 
-	if($hardware == 'nvidia')
-		$vcodec = 'nvenc_h264';
-
 	$handbrake->set_vcodec($vcodec);
 
 	$video_quality = intval($series_model->get_crf());
@@ -49,7 +46,7 @@ if($disc_type == 'dvd' && $opt_encode_info && $dvd_encoder == 'handbrake') {
 	if($sharpen_tune)
 		$handbrake->sharpen_tune($sharpen_tune);
 
-	if($hardware == 'nvidia') {
+	if($vcodec == 'nvenc_h264') {
 
 		$cq = $series_model->get_cq();
 		$qmin = $series_model->get_qmin();
