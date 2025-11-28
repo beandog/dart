@@ -189,6 +189,8 @@ foreach($episodes as $episode_filename) {
 			$arr_info['acodec'] = 'ac3';
 		elseif($json['media']['track'][2]['CodecID'] == 'A_AAC-2')
 			$arr_info['acodec'] = 'aac';
+		elseif($json['media']['track'][2]['CodecID'] == 'A_DTS' && $json['media']['track'][2]['Format_Commercial_IfAny'] == 'DTS-HD Master Audio')
+			$arr_info['acodec'] = 'dts-hd';
 		if(array_key_exists('Channels', $json['media']['track'][2]))
 			$arr_info['channels'] = $json['media']['track'][2]['Channels'];
 		foreach($json['media']['track'] as $arr) {
