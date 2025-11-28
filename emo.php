@@ -247,8 +247,8 @@ foreach($episodes as $episode_filename) {
 			$arr_d_info[] = "$d_season";
 		$arr_d_info[] = "$title";
 
-		if($vcodec == 'x264' && $preset)
-			$arr_d_info[] = "$vcodec $preset";
+		if($vcodec == 'x264')
+			$arr_d_info[] = trim("$vcodec $preset");
 
 		$filesize = filesize($episode_filename);
 		$mbs = number_format(ceil($filesize / 1048576));
