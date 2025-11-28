@@ -156,7 +156,7 @@ foreach($episodes as $episode_filename) {
 
 			$vcodec = 'x264';
 
-			$preset = '';
+			$preset = 'medium';
 
 			$arr_x264_info = array();
 
@@ -183,10 +183,9 @@ foreach($episodes as $episode_filename) {
 
 			}
 
-			$str_x264_json = json_encode($arr_x264_info);
-			$json['media']['track'][1]['x264_settings'] = $arr_x264_info;
+			$arr_x264_info['crf'] = abs($arr_x264_info['crf']);
 
-			$str_json = json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+			$json['media']['track'][1]['x264_settings'] = $arr_x264_info;
 
 			extract($arr_x264_info);
 
@@ -200,6 +199,7 @@ foreach($episodes as $episode_filename) {
 		}
 
 		if($opt_json) {
+			$str_json = json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 			echo "$str_json\n";
 			goto next_episode;
 		}
@@ -248,7 +248,7 @@ foreach($episodes as $episode_filename) {
 		$arr_d_info[] = "$title";
 
 		if($vcodec == 'x264')
-			$arr_d_info[] = trim("$vcodec $preset");
+			$arr_d_info[] = trim("$vcodec $crf $preset");
 
 		$filesize = filesize($episode_filename);
 		$mbs = number_format(ceil($filesize / 1048576));
