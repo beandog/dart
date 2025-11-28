@@ -1,0 +1,105 @@
+#!/usr/bin/env php
+<?php
+
+	require_once 'Console/CommandLine.php';
+
+	$parser = new Console_CommandLine();
+	$parser->description = "Video Info";
+	$parser->addArgument('videos', array('optional' => false, 'multiple' => true));
+	$parser->addOption('opt_vcodec', array(
+		'short_name' => '-v',
+		'long_name' => '--vcodec',
+		'description' => 'Display video codec',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
+	$parser->addOption('opt_acodec', array(
+		'short_name' => '-a',
+		'long_name' => '--acodec',
+		'description' => 'Display audio codec',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
+	$parser->addOption('opt_scodec', array(
+		'short_name' => '-s',
+		'long_name' => '--scodec',
+		'description' => 'Display subtitles codecs',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
+	$parser->addOption('opt_duration', array(
+		'short_name' => '-l',
+		'long_name' => '--length',
+		'description' => 'Display duration',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
+	$parser->addOption('opt_quiet', array(
+		'short_name' => '-q',
+		'long_name' => '--quiet',
+		'description' => 'Don\'t display filename as a prefix',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
+
+	try { $result = $parser->parse(); }
+	catch(PEAR_Exception $e) {
+		echo "Invalid options passed, try --help instead\n";
+		exit(1);
+	}
+
+	extract($result->args);
+	extract($result->options);
+
+	foreach($videos as $video) {
+
+		if(!is_file($video))
+			continue;
+
+		$arg_video = escapeshellarg($video);
+		$cmd_json = "ffprobe -print_format json -show_format -show_streams $arg_video 2> /dev/null";
+
+		$arr = array();
+		exec($cmd_json, $arr, $retval);
+
+		$str = implode("\n", $arr);
+
+		$json = json_decode($str, true);
+
+		if(!count($json))
+			continue;
+
+		if($json['streams'][0]['codec_type'] != 'video')
+			continue;
+
+		$vcodec = $json['streams'][0]['codec_name'];
+		$acodec = $json['streams'][1]['codec_name'];
+
+		$filename = basename($json['format']['filename']);
+		$duration = $json['format']['duration'];
+
+		$hours = floor($duration / 3600);
+		$minutes = floor($duration / 60);
+		$seconds = floor($duration % 60);
+
+		$d_hours = str_pad($hours, 2, 0, STR_PAD_LEFT);
+		$d_minutes = str_pad($minutes, 2, 0, STR_PAD_LEFT);
+		$d_seconds = str_pad($seconds, 2, 0, STR_PAD_LEFT);
+
+		$d_time = "$d_hours:$d_minutes:$d_seconds";
+
+		if($opt_vcodec)
+			$str = $vcodec;
+		elseif($opt_acodec)
+			$str = $acodec;
+		elseif($opt_duration)
+			$str = $duration;
+		else
+			$str = "$vcodec $acodec $d_time";
+
+		if(!$opt_quiet)
+			$str = "$filename $str";
+
+		echo "$str\n";
+
+	}

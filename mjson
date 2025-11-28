@@ -1,0 +1,1 @@
+mediainfo --Output=JSON "$1"| jq

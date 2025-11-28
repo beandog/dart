@@ -1,8 +1,0 @@
-#!/bin/bash
-drive=$1
-
-if [[ -z "$drive" ]]; then
-	drive="/dev/sr0"
-fi
-
-udevadm info $drive | grep 'ID_FS_LABEL=' | cut -d = -f 2-
