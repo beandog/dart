@@ -30,7 +30,7 @@ if($disc_type == 'dvd' && $opt_encode_info && $dvd_encoder == 'handbrake') {
 	if($opt_fast)
 		$handbrake->set_x264_preset('ultrafast');
 	elseif($opt_slow)
-		$handbrake->set_x264_preset('slow');
+		$handbrake->set_x264_preset('veryslow');
 
 	$x264_tune = $series_model->get_x264_tune();
 	if($vcodec == 'x264' && $x264_tune)

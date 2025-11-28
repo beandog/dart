@@ -141,7 +141,7 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 	if($opt_fast)
 		$ffmpeg->set_preset('ultrafast');
 	elseif($opt_slow)
-		$ffmpeg->set_preset('slowest');
+		$ffmpeg->set_preset('veryslow');
 
 	// Set video filters based on frame info
 	$crop = $episodes_model->crop;

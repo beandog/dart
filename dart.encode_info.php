@@ -197,7 +197,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		if($opt_fast)
 			$prefix .= "fast-";
 		elseif($opt_slow)
-			$prefix .= "slow-";
+			$prefix .= "vslow-";
 
 		require 'dart.encode_handbrake.php';
 		require 'dart.encode_ffmpeg.php';
@@ -472,7 +472,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 				if($opt_fast)
 					$ffmpeg->set_preset('ultrafast');
 				elseif($opt_slow)
-					$ffmpeg->set_preset('slowest');
+					$ffmpeg->set_preset('veryslow');
 
 			}
 
