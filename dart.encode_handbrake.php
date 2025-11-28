@@ -147,12 +147,14 @@ if($disc_type == 'dvd' && $opt_encode_info && $dvd_encoder == 'handbrake') {
 	// Rewrite prefix if doing a batch encode to make it simpler to compare filesizes
 	if($opt_batch) {
 		$arr_prefix = array();
-		$arr_prefix[] = "cq-$cq";
-		if($qmin)
-			$arr_prefix[] = "qmin-$qmin";
-		// I'm okay with hardcoding qmax to 30 for now, I don't see myself changing it since it's so high
-		if($qmax && $qmax != 30)
-			$arr_prefix[] = "qmax-$qmax";
+		if($vcodec == 'h264_nvenc') {
+			$arr_prefix[] = "cq-$cq";
+			if($qmin)
+				$arr_prefix[] = "qmin-$qmin";
+			// I'm okay with hardcoding qmax to 30 for now, I don't see myself changing it since it's so high
+			if($qmax && $qmax != 30)
+				$arr_prefix[] = "qmax-$qmax";
+		}
 		if($denoise) {
 			if($denoise == 'medium')
 				$arr_prefix[] = "denoise";
