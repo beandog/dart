@@ -325,7 +325,7 @@ foreach($episodes as $episode_filename) {
 			if(!$xfs)
 				goto next_episode;
 
-			$str = trim(shell_exec("pgrep -l rsync -a | grep $arg_episode_filename"));
+			$str = trim(shell_exec("pgrep -l ^rsync -a | grep $arg_episode_filename"));
 			if(strlen($str)) {
 
 				$uploading = true;
