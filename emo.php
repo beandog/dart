@@ -325,7 +325,7 @@ foreach($episodes as $episode_filename) {
 			if(!$xfs)
 				goto next_episode;
 
-			$cmd = "rsync -au --quiet $arg_episode_filename dlna:/opt/plex/$xfs";
+			$cmd = "rsync -tu --quiet $arg_episode_filename dlna:/opt/plex/$xfs/$emo_filename";
 			echo "# $cmd\n";
 
 			passthru($cmd);
