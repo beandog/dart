@@ -160,7 +160,7 @@ foreach($episodes as $episode_filename) {
 		$arr_info['scodec'] = null;
 
 		$arr_info['uuid'] = $json['media']['track'][1]['UniqueID'];
-		$arr_info['episode_mbs'] = (filesize($episode_filename) / 1048576);
+		$arr_info['episode_mbs'] = (filesize($realpath) / 1048576);
 		if(array_key_exists('Duration', $json['media']['track'][0]))
 			$arr_info['duration'] = $json['media']['track'][0]['Duration'];
 		if(array_key_exists('OverallBitRate', $json['media']['track'][0]))
@@ -293,7 +293,7 @@ foreach($episodes as $episode_filename) {
 			$title .= " ($part)";
 		$arr_d_info[] = "$title";
 
-		$filesize = filesize($episode_filename);
+		$filesize = filesize($realpath);
 		$mbs = number_format(ceil($filesize / 1048576));
 		$arr_d_info[] = "$mbs MBs";
 
