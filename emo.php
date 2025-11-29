@@ -325,18 +325,26 @@ foreach($episodes as $episode_filename) {
 			if(!$xfs)
 				goto next_episode;
 
-			$str = trim(shell_exec("pgrep -l ^rsync -a | grep $arg_episode_filename"));
-			if(strlen($str)) {
+			$upload_video = true;
 
-				$uploading = true;
+			$cmd = "pgrep -l '^(HandBrakeCLI|ffmpeg)' -a";
+			$str = trim(shell_exec($cmd));
+			if(str_contains($str, $filename)) {
+				$upload_video = false;
+				echo "# $filename - video already encoding\n";
+			}
+
+			$cmd = "pgrep -l '^rsync' -a";
+			$str = trim(shell_exec($cmd));
+			if(str_contains($str, $filename)) {
+				$upload_video = false;
 				echo "# $filename - upload already running\n";
+			}
 
-			} else {
-
+			if($upload_video) {
 				$cmd = "rsync -tu --quiet $arg_episode_filename dlna:/opt/plex/$xfs/$emo_filename";
 				echo "# $filename -> dlna:/opt/plex/$xfs/$emo_filename\n";
 				passthru($cmd);
-
 			}
 
 		}
