@@ -205,7 +205,7 @@ foreach($episodes as $episode_filename) {
 		}
 
 		// Get more data if encoded with libx264
-		if(strstr($str_json, 'rc=crf')) {
+		if(str_contains($str_json, 'rc=crf')) {
 
 			$vcodec = 'x264';
 
@@ -315,11 +315,11 @@ foreach($episodes as $episode_filename) {
 				$xfs = "tv";
 			elseif($collection_id == "4")
 				$xfs = "tv";
-			if(strstr($filename, ".HD"))
+			if(str_contains($filename, ".HD"))
 				$xfs = "hd";
-			elseif(strstr($filename, ".BD"))
+			elseif(str_contains($filename, ".BD"))
 				$xfs = "bd";
-			elseif(strstr($filename, ".4K"))
+			elseif(str_contains($filename, ".4K"))
 				$xfs = "bd";
 
 			if(!$xfs)
