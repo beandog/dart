@@ -199,7 +199,7 @@ foreach($episodes as $episode_filename) {
 			$arr_info['channels'] = $json['media']['track'][2]['Channels'];
 		foreach($json['media']['track'] as $arr) {
 			if($arr['@type'] == 'Text')
-				$arr_info['scodec'] = 'text';
+				$arr_info['scodec'] = 'cc';
 			if($arr['@type'] == 'Text' && $arr['Format'] == 'VobSub')
 				$arr_info['scodec'] = 'vobsub';
 			if($arr['@type'] == 'Text' && $arr['Format'] == 'PGS')
