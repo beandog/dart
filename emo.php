@@ -122,6 +122,11 @@ foreach($episodes as $episode_filename) {
 	if(!$episode_id)
 		goto next_episode;
 
+	if(!filesize($realpath)) {
+		echo "# $filename - empty file :(\n";
+		goto next_episode;
+	}
+
 	$i++;
 
 	// Get JSON
