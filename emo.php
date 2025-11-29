@@ -74,8 +74,6 @@ foreach($episodes as $episode_filename) {
 	if(!file_exists($episode_filename))
 		goto next_episode;
 
-	$valid_episode = false;
-
 	$realpath = realpath($episode_filename);
 	$dirname = dirname($realpath);
 	$pathinfo = pathinfo($realpath);
@@ -124,7 +122,6 @@ foreach($episodes as $episode_filename) {
 	if(!$episode_id)
 		goto next_episode;
 
-	$valid_episode = true;
 	$i++;
 
 	// Get JSON
