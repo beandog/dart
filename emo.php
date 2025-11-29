@@ -325,10 +325,19 @@ foreach($episodes as $episode_filename) {
 			if(!$xfs)
 				goto next_episode;
 
-			$cmd = "rsync -tu --quiet $arg_episode_filename dlna:/opt/plex/$xfs/$emo_filename";
-			echo "# $cmd\n";
+			$str = trim(shell_exec("pgrep -l rsync -a | grep $arg_episode_filename"));
+			if(strlen($str)) {
 
-			passthru($cmd);
+				$uploading = true;
+				echo "# $filename - upload already running\n";
+
+			} else {
+
+				$cmd = "rsync -tu --quiet $arg_episode_filename dlna:/opt/plex/$xfs/$emo_filename";
+				echo "# $filename -> dlna:/opt/plex/$xfs/$emo_filename\n";
+				passthru($cmd);
+
+			}
 
 		}
 
