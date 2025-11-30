@@ -74,12 +74,13 @@ foreach($filenames as $filename) {
 	$dirname = pathinfo($filename, PATHINFO_DIRNAME);
 	$basename = pathinfo($filename, PATHINFO_BASENAME);
 
-	$expression = "/\d\.\d{3}\.\d{4}\.\d{5}\.[A-Z0-9.]{5}.*m??$/";
+	$expression = "/\d\.\d{3}\.\d{4}\.\d{5}\.[A-Z0-9.]{5}/";
 	preg_match($expression, $basename, $arr_matches);
 	if(count($arr_matches) != 1)
 		goto next_episode;
 
 	$emo_filename = $arr_matches[0];
+	$emo_filename .= ".$extension";
 	$episode_id = substr($emo_filename, 11, 5);
 
 	if(!is_numeric($episode_id))
