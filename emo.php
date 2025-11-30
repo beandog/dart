@@ -5,7 +5,7 @@
 
 	$parser = new Console_CommandLine();
 	$parser->description = "Episode More Options";
-	$parser->addArgument('episodes', array('optional' => false, 'multiple' => true));
+	$parser->addArgument('filenames', array('optional' => false, 'multiple' => true));
 	$parser->addOption('opt_info', array(
 		'long_name' => '--info',
 		'description' => 'Display episode info',
@@ -60,77 +60,77 @@
 	extract($result->args);
 	extract($result->options);
 
-	if($opt_info || $opt_import || $opt_rename_file || $opt_upload || $opt_fetch)  {
-		require_once 'config.local.php';
-		require_once 'models/dbtable.php';
-		require_once 'models/series.php';
-		require_once 'models/episodes.php';
-	}
+	require_once 'config.local.php';
+	require_once 'models/dbtable.php';
+	require_once 'models/series.php';
+	require_once 'models/episodes.php';
 
-	$i = 0;
+foreach($filenames as $filename) {
 
-foreach($episodes as $episode_filename) {
-
-	if(!file_exists($episode_filename))
-		goto next_episode;
-
-	$realpath = realpath($episode_filename);
-	$dirname = dirname($realpath);
-	$pathinfo = pathinfo($realpath);
-	$filename = basename($realpath);
-	$arg_episode_filename = escapeshellarg($realpath);
-
-	if(!array_key_exists('extension', $pathinfo))
-		goto next_episode;
-
-	$extension = $pathinfo['extension'];
-
+	$extension = pathinfo("/this/does/not/exist/$filename", PATHINFO_EXTENSION);
 	if(!in_array($extension, array('mkv', 'mpg', 'mp4')))
 		goto next_episode;
 
-	$arr = explode('.', $filename);
+	$dirname = pathinfo($filename, PATHINFO_DIRNAME);
+	$basename = pathinfo($filename, PATHINFO_BASENAME);
 
-	$str_episode = '';
+	$expression = "/\d\.\d{3}\.\d{4}\.\d{5}\.[A-Z0-9.]{5}.*m??$/";
+	preg_match($expression, $basename, $arr_matches);
+	if(count($arr_matches) != 1)
+		goto next_episode;
 
-	// Check for 1.234.5678.9012.E-M-O.mkv
-	if(is_numeric($filename[0])) {
-		$str_episode = current(explode('-', $filename));
-		$episode_id = substr($str_episode, 11, 5);
+	$emo_filename = $arr_matches[0];
+	$episode_id = substr($emo_filename, 11, 5);
+
+	if(!is_numeric($episode_id))
+		goto next_episode;
+
+	$episodes_model = new Episodes_Model($episode_id);
+
+	$episode_metadata = $episodes_model->get_metadata();
+	if(!count($episode_metadata)) {
+		echo "* $basename - cannot find episode '$episode_id' in database\n";
+		goto next_episode;
 	}
 
-	// Get episode from string prefix-foo-1.234.5678.9012.E-M-O.mkv
-	if(!is_numeric($filename[0])) {
+	extract($episode_metadata);
 
-		$expression = "/\d\.\d{3}\.\d{4}\.\d{5}.*\.mkv$/";
-		preg_match($expression, $filename, $arr_matches);
+	$d_episode_title = $episodes_model->get_display_name();
 
-		if(!count($arr_matches))
-			goto next_episode;
+		$arr_d_info = array();
+		$arr_d_info[] = "# $basename";
+		$arr_d_info[] = $series_title;
+		$d_season = '';
+		if($season)
+			$d_season = "s$season";
+		if($episode_number)
+			$d_season .= "e$episode_number";
+		if($d_season)
+			$arr_d_info[] = "$d_season";
+		if($part)
+			$title .= " ($part)";
+		$arr_d_info[] = "$title";
 
-		// Find it the hard way
-		$arr = explode('.', $filename);
-		foreach($arr as $value) {
-			if(is_numeric($value) && strlen($value) == 5) {
-				$episode_id = $value;
-				$str_episode = current($arr_matches);
-				break;
-			}
+		if(file_exists($filename)) {
+			$filesize = filesize($filename);
+			$mbs = number_format(ceil($filesize / 1048576));
+			if($filesize)
+				$arr_d_info[] = "$mbs MBs";
 		}
 
-	}
+		$d_info = implode(" : ", $arr_d_info);
 
-	if(!$episode_id)
+		echo "$d_info\n";
+
+	if(!file_exists($filename))
 		goto next_episode;
 
-	if(!filesize($realpath)) {
-		echo "# $filename - empty file :(\n";
-		goto next_episode;
-	}
+	$realpath = realpath($filename);
 
-	$i++;
+	$arg_episode_filename = escapeshellarg($realpath);
 
 	// Get JSON
-	if($opt_info || $opt_json || $opt_import) {
+	if($opt_json || $opt_info || $opt_import) {
 
 		$vcodec = '';
 		$crf = '';
@@ -207,7 +207,7 @@ foreach($episodes as $episode_filename) {
 		}
 
 		// Get more data if encoded with libx264
-		if(str_contains($str_json, 'rc=crf')) {
+		if(strstr($str_json, 'rc=crf')) {
 
 			$vcodec = 'x264';
 
@@ -262,54 +262,11 @@ foreach($episodes as $episode_filename) {
 
 	}
 
-	// Get metadata and standardized filename
-	if($opt_info || $opt_import || $opt_rename_file || $opt_upload || $opt_fetch)  {
-
-		$episodes_model = new Episodes_Model($episode_id);
-
-		$episode_metadata = $episodes_model->get_metadata();
-		if(!count($episode_metadata)) {
-			echo "* $filename - cannot find episode '$episode_id' in database\n";
-			goto next_episode;
-		}
-
-		$episode_title = $episodes_model->get_display_name();
-		$emo_filename = $episodes_model->get_filename();
-
-		extract($episode_metadata);
-
-	}
-
 	if($opt_info || $opt_upload || $opt_import) {
-
-		$arr_d_info = array();
-		$arr_d_info[] = "$series_title";
-		$d_season = '';
-		if($season)
-			$d_season = "s$season";
-		if($episode_number)
-			$d_season .= "e$episode_number";
-		if($d_season)
-			$arr_d_info[] = "$d_season";
-		if($part)
-			$title .= " ($part)";
-		$arr_d_info[] = "$title";
-
-		$filesize = filesize($realpath);
-		$mbs = number_format(ceil($filesize / 1048576));
-		$arr_d_info[] = "$mbs MBs";
-
-		$d_title = implode(" : ", $arr_d_info);
-
-		$d_info = "# $filename - $d_title";
-
-		echo "$d_info\n";
 
 		if($opt_upload) {
 
 			$xfs = "";
-
-			$collection_id = $filename[0];
 
 			if($collection_id == 1)
 				$xfs = "sd";
@@ -317,11 +274,11 @@ foreach($episodes as $episode_filename) {
 				$xfs = "tv";
 			elseif($collection_id == "4")
 				$xfs = "tv";
-			if(str_contains($filename, ".HD"))
+			if(str_contains($emo_filename, ".HD"))
 				$xfs = "hd";
-			elseif(str_contains($filename, ".BD"))
+			elseif(str_contains($emo_filename, ".BD"))
 				$xfs = "bd";
-			elseif(str_contains($filename, ".4K"))
+			elseif(str_contains($emo_filename, ".4K"))
 				$xfs = "bd";
 
 			if(!$xfs)
@@ -331,21 +288,21 @@ foreach($episodes as $episode_filename) {
 
 			$cmd = "pgrep -l '^(HandBrakeCLI|ffmpeg)' -a";
 			$str = trim(shell_exec($cmd));
-			if(str_contains($str, $filename)) {
+			if(str_contains($str, $emo_filename)) {
 				$upload_video = false;
-				echo "# $filename - video already encoding\n";
+				echo "# $emo_filename - video already encoding\n";
 			}
 
 			$cmd = "pgrep -l '^rsync' -a";
 			$str = trim(shell_exec($cmd));
-			if(str_contains($str, $filename)) {
+			if(str_contains($str, $emo_filename)) {
 				$upload_video = false;
-				echo "# $filename - upload already running\n";
+				echo "# $emo_filename - upload already running\n";
 			}
 
 			if($upload_video) {
 				$cmd = "rsync -q -t -u --zc none $arg_episode_filename dlna:/opt/plex/$xfs/$emo_filename";
-				echo "# $filename -> dlna:/opt/plex/$xfs/$emo_filename\n";
+				echo "# $basename -> dlna:/opt/plex/$xfs/$emo_filename\n";
 				passthru($cmd);
 			}
 
@@ -359,7 +316,7 @@ foreach($episodes as $episode_filename) {
 		if($hostname == "dlna" || $hostname == "dlna.beandog.org")
 			goto next_episode;
 
-		if($filename == $emo_filename)
+		if($basename == $emo_filename)
 			goto next_episode;
 
 		if(file_exists($emo_filename)) {
