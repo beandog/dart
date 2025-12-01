@@ -289,16 +289,16 @@ foreach($filenames as $filename) {
 
 			$cmd = "pgrep -l '^(HandBrakeCLI|ffmpeg)' -a";
 			$str = trim(shell_exec($cmd));
-			if(str_contains($str, $emo_filename)) {
+			if(str_contains($str, $basename)) {
 				$upload_video = false;
-				echo "# $emo_filename - video already encoding\n";
+				echo "# $basename - video already encoding\n";
 			}
 
 			$cmd = "pgrep -l '^rsync' -a";
 			$str = trim(shell_exec($cmd));
-			if(str_contains($str, $emo_filename)) {
+			if(str_contains($str, $basename)) {
 				$upload_video = false;
-				echo "# $emo_filename - upload already running\n";
+				echo "# $basename -> dlna:/opt/plex/$xfs/$emo_filename - already running\n";
 			}
 
 			if($upload_video) {
