@@ -302,7 +302,7 @@ foreach($filenames as $filename) {
 			}
 
 			if($upload_video) {
-				$cmd = "rsync -q -t -u --zc none $arg_episode_filename dlna:/opt/plex/$xfs/$emo_filename";
+				$cmd = "rsync -q -u --zc none $arg_episode_filename dlna:/opt/plex/$xfs/$emo_filename";
 				echo "# $basename -> dlna:/opt/plex/$xfs/$emo_filename\n";
 				passthru($cmd);
 			}
