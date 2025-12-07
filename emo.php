@@ -355,7 +355,7 @@ foreach($filenames as $filename) {
 		$encodes_model = new Encodes_Model();
 
 		extract($arr_info);
-		$encode_id = $encodes_model->load_uuid($uuid);
+		$encode_id = $encodes_model->load_filename($basename);
 
 		if($encode_id) {
 			$encodes_model->delete();

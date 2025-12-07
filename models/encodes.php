@@ -17,7 +17,7 @@
 			if(!$filename)
 				return false;
 
-			$sql = "SELECT id FROM encodes WHERE filename = '".pg_escape_string($filename)."';";
+			$sql = "SELECT id FROM encodes WHERE filename = '".pg_escape_string($filename)."' LIMIT 1;";
 			$this->id = intval($this->get_one($sql));
 
 			return $this->id;
