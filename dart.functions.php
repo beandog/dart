@@ -1,5 +1,13 @@
 <?php
 
+	declare(ticks = 1);
+
+	function signal_handler($signal) {
+		return;
+	}
+
+	pcntl_signal(SIGINT, "signal_handler");
+
 	function get_dvd_iso_filename($source) {
 
 		$disc_type = get_disc_type($source);

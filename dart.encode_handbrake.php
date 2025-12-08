@@ -4,7 +4,7 @@
 /*
  * Classic ripping using HandBrake
  */
-if($disc_type == 'dvd' && $opt_encode_info && $dvd_encoder == 'handbrake') {
+if($disc_type == 'dvd' && $dvd_encoder == 'handbrake' && ($opt_encode_info || $opt_encode)) {
 
 	$handbrake = new HandBrake;
 	$handbrake->verbose($verbose);
@@ -176,6 +176,11 @@ if($disc_type == 'dvd' && $opt_encode_info && $dvd_encoder == 'handbrake') {
 		$filename = basename($filename, ".$container")."-$prefix.$container";
 	}
 
+	if($arg_export_dir) {
+		$export_dir = realpath($arg_export_dir);
+		$filename = "$export_dir/$filename";
+	}
+
 	$handbrake->output_filename($filename);
 
 	$handbrake_command = $handbrake->get_executable_string();
@@ -186,6 +191,9 @@ if($disc_type == 'dvd' && $opt_encode_info && $dvd_encoder == 'handbrake') {
 	if($opt_test_existing)
 		$handbrake_command = "test ! -e $filename && $handbrake_command";
 
-	echo "$handbrake_command\n";
+	if($opt_encode)
+		require 'dart.encode_episode.php';
+	else
+		echo "$handbrake_command\n";
 
 }

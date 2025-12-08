@@ -1,7 +1,7 @@
 <?php
 
 // Display encode instructions about a disc
-if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux)) {
+if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_encode)) {
 
 	// Override in config.local.php
 	if(isset($config_qa_max))

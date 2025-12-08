@@ -67,6 +67,21 @@
 		$opt_test_existing = true;
 	}
 
+	// Prefix to bend!
+	if($opt_encode) {
+
+		$opt_skip_existing = true;
+		$opt_time = true;
+
+		$opt_copy_info = false;
+		$opt_encode_info = false;
+		$opt_ffplay = false;
+		$opt_ffprobe = false;
+		$opt_reumx = false;
+		$opt_scan = false;
+
+	}
+
 	// Just kept for reference and fun
 	function beep_error() {
 		// system("beep -f 1000 -n -f 2000 -n -f 1500 -n -f 1750 -n -f 1750 -n -f 1750")
@@ -165,10 +180,18 @@
 
 	}
 
-	if($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe || $opt_ssa)
+	if($opt_encode && $arg_export_dir) {
+		if(!is_dir($arg_export_dir)) {
+			$d_arg_export_dir = escapeshellarg($arg_export_dir);
+			echo "* Export directory $d_arg_export_dir is invalid\n";
+			exit;
+		}
+	}
+
+	if($opt_encode_info || $opt_encode || $opt_copy_info || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe || $opt_ssa)
 		$batch_mode = true;
 
-	if(!count($devices) && ($opt_info || $opt_encode_info || $opt_copy_info || $opt_backup || $opt_import || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe || $opt_ssa))
+	if(!count($devices) && ($opt_info || $opt_encode_info || $opt_encode || $opt_copy_info || $opt_backup || $opt_import || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe || $opt_ssa))
 		$devices = $all_devices;
 
 	foreach($devices as $device) {
@@ -248,7 +271,7 @@
 			$display_device = basename($device);
 
 		// Determine whether we are reading the device
-		if($opt_info || $opt_encode_info || $opt_copy_info || $opt_import || $opt_backup || $opt_geniso || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe || $opt_ssa) {
+		if($opt_info || $opt_encode_info || $opt_encode || $opt_copy_info || $opt_import || $opt_backup || $opt_geniso || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe || $opt_ssa) {
 			if($debug)
 				echo "* Info / Import / Archive / ISO: Enabling device access\n";
 			$access_device = true;
@@ -433,7 +456,7 @@
 
 			// Only need to display if it's imported if requesting import or
 			// getting DVD info.
-			if($opt_import || $opt_info || $opt_encode_info || $opt_copy_info) {
+			if($opt_import || $opt_info || $opt_encode_info || $opt_encode || $opt_copy_info) {
 				if(!$batch_mode) {
 					if($disc_indexed) {
 						echo "* Imported:\tYes\n";

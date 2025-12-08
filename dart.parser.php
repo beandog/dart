@@ -50,6 +50,18 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_encode', array(
+		'long_name' => '--encode',
+		'description' => 'Rip episodes from a DVD',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
+	$parser->addOption('arg_export_dir', array(
+		'long_name' => '--export-dir',
+		'description' => 'Rip episodes into directory',
+		'action' => 'StoreString',
+		'default' => '.',
+	));
 	$parser->addOption('opt_log_progress', array(
 		'long_name' => '--log-progress',
 		'description' => 'Log progress of ffmpeg encode',
