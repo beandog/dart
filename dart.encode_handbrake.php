@@ -27,14 +27,23 @@ if($disc_type == 'dvd' && $dvd_encoder == 'handbrake' && ($opt_encode_info || $o
 		$video_quality = intval($arg_crf);
 	$handbrake->set_video_quality($video_quality);
 
-	if($opt_fast)
-		$handbrake->set_x264_preset('ultrafast');
-	elseif($opt_slow)
-		$handbrake->set_x264_preset('veryslow');
+	if($vcodec == 'x264') {
 
-	$x264_tune = $series_model->get_x264_tune();
-	if($vcodec == 'x264' && $x264_tune)
-		$handbrake->set_x264_tune($x264_tune);
+		if($series_model->x264_preset == 'fast')
+			$handbrake->set_x264_preset('fast');
+		elseif($series_model->x264_preset == 'slow' || $series_model->x264_preset == 'veryslow')
+			$handbrake->set_x264_preset('veryslow');
+
+		if($opt_fast)
+			$handbrake->set_x264_preset('fast');
+		elseif($opt_slow)
+			$handbrake->set_x264_preset('veryslow');
+
+		$x264_tune = $series_model->get_x264_tune();
+		if($x264_tune)
+			$handbrake->set_x264_tune($x264_tune);
+
+	}
 
 	$handbrake->enable_bwdif();
 
