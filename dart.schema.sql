@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict esRoKMhuZTypksmCzVVTRPj76I080H8nfivQlJFg4cu8TkfgjDy71tJddaJM4Lx
+\restrict NKIyYDzgkygAkqsyF8phTIKSADWftPhTDdB68bg97k4PW3SUMHVI9ViVmuB66bc
 
 -- Dumped from database version 16.10 (Ubuntu 16.10-0ubuntu0.24.04.1)
 -- Dumped by pg_dump version 16.10 (Ubuntu 16.10-0ubuntu0.24.04.1)
@@ -400,7 +400,7 @@ CREATE TABLE public.series (
     screenshots character varying(255) DEFAULT ''::character varying NOT NULL,
     start_date date,
     ripping_id integer DEFAULT 1 NOT NULL,
-    x264_preset character varying(255),
+    x264_preset character varying(9) DEFAULT ''::character varying NOT NULL,
     jfin character varying(255) DEFAULT ''::character varying NOT NULL,
     video_filter_id integer DEFAULT 1 NOT NULL
 );
@@ -642,6 +642,61 @@ ALTER SEQUENCE public.dvds_id_seq OWNED BY public.dvds.id;
 
 
 --
+-- Name: encodes; Type: TABLE; Schema: public; Owner: steve
+--
+
+CREATE TABLE public.encodes (
+    id integer NOT NULL,
+    episode_id integer,
+    filename character varying(255) DEFAULT ''::character varying NOT NULL,
+    uuid character varying(255) DEFAULT ''::character varying NOT NULL,
+    bitrate integer,
+    application character varying(255),
+    library character varying(255),
+    x264_version character varying(255),
+    x264_preset character varying(10),
+    x264_crf smallint,
+    filesize bigint,
+    duration bigint,
+    encoded_date character varying(255),
+    encode_settings text,
+    framerate real,
+    episode_mbs integer,
+    video_mbs integer,
+    audio_mbs integer,
+    frame_count integer,
+    acodec character varying(255),
+    channels smallint,
+    scodec character varying(255),
+    vcodec character varying(5)
+);
+
+
+ALTER TABLE public.encodes OWNER TO steve;
+
+--
+-- Name: encodes_id_seq; Type: SEQUENCE; Schema: public; Owner: steve
+--
+
+CREATE SEQUENCE public.encodes_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.encodes_id_seq OWNER TO steve;
+
+--
+-- Name: encodes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: steve
+--
+
+ALTER SEQUENCE public.encodes_id_seq OWNED BY public.encodes.id;
+
+
+--
 -- Name: presets; Type: TABLE; Schema: public; Owner: steve
 --
 
@@ -656,7 +711,10 @@ CREATE TABLE public.presets (
     vcodec character varying(16) DEFAULT 'x264'::character varying NOT NULL,
     cq smallint,
     qmin smallint,
-    qmax smallint
+    qmax smallint,
+    denoise character varying(255) DEFAULT ''::character varying NOT NULL,
+    sharpen character varying(255) DEFAULT ''::character varying NOT NULL,
+    sharpen_tune character varying(255) DEFAULT ''::character varying NOT NULL
 );
 
 
@@ -1097,6 +1155,13 @@ ALTER TABLE ONLY public.dvds ALTER COLUMN id SET DEFAULT nextval('public.dvds_id
 
 
 --
+-- Name: encodes id; Type: DEFAULT; Schema: public; Owner: steve
+--
+
+ALTER TABLE ONLY public.encodes ALTER COLUMN id SET DEFAULT nextval('public.encodes_id_seq'::regclass);
+
+
+--
 -- Name: presets id; Type: DEFAULT; Schema: public; Owner: steve
 --
 
@@ -1246,6 +1311,22 @@ ALTER TABLE public.dvds CLUSTER ON dvds_pkey;
 
 
 --
+-- Name: encodes encodes_filename_key; Type: CONSTRAINT; Schema: public; Owner: steve
+--
+
+ALTER TABLE ONLY public.encodes
+    ADD CONSTRAINT encodes_filename_key UNIQUE (filename);
+
+
+--
+-- Name: encodes encodes_pkey; Type: CONSTRAINT; Schema: public; Owner: steve
+--
+
+ALTER TABLE ONLY public.encodes
+    ADD CONSTRAINT encodes_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: episodes episodes_pkey; Type: CONSTRAINT; Schema: public; Owner: steve
 --
 
@@ -1386,6 +1467,14 @@ ALTER TABLE ONLY public.dvd_bugs
 
 
 --
+-- Name: encodes encodes_episode_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: steve
+--
+
+ALTER TABLE ONLY public.encodes
+    ADD CONSTRAINT encodes_episode_id_fkey FOREIGN KEY (episode_id) REFERENCES public.episodes(id) ON DELETE CASCADE;
+
+
+--
 -- Name: episodes episodes_track_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: steve
 --
 
@@ -1461,5 +1550,5 @@ ALTER TABLE ONLY public.tracks
 -- PostgreSQL database dump complete
 --
 
-\unrestrict esRoKMhuZTypksmCzVVTRPj76I080H8nfivQlJFg4cu8TkfgjDy71tJddaJM4Lx
+\unrestrict NKIyYDzgkygAkqsyF8phTIKSADWftPhTDdB68bg97k4PW3SUMHVI9ViVmuB66bc
 
