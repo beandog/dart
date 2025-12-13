@@ -21,6 +21,8 @@ if($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'ffpipe') {
 	if($quiet)
 		$ffmpeg->quiet();
 
+	$arr_metadata = array();
+
 }
 
 if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'ffpipe')) {
@@ -83,7 +85,7 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 	if($arg_crf)
 		$video_quality = intval($arg_crf);
 
-	if($hardware) {
+	if($hardware && ($vcodec == 'h264_nvenc' || $vcodec == 'hevc_nvenc')) {
 
 		$cq = $series_model->get_cq();
 		$qmin = $series_model->get_qmin();
@@ -112,12 +114,11 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 
 	}
 
-	$ffmpeg->set_rc_lookahead(32);
-
 	if($hardware) {
 
-		if($hardware == 'nvidia') {
+		if($hardware == 'nvidia' && ($vcodec == 'h264_hwenc' || $vcodec == 'hevc_hwenc')) {
 
+			$ffmpeg->set_rc_lookahead(32);
 			$ffmpeg->add_argument('rc', 'vbr');
 			$ffmpeg->add_argument('tune', 'hq');
 			$ffmpeg->add_argument('preset', 'p7');
@@ -126,6 +127,13 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 				$ffmpeg->add_argument('profile:v', 'high');
 			elseif($vcodec == 'hevc_hwenc')
 				$ffmpeg->add_argument('profile:v', 'main');
+
+			if($cq)
+				$arr_metadata[] = "cq=$cq";
+			if($qmin)
+				$arr_metadata[] = "qmin=$qmin";
+			if($qmax)
+				$arr_metadata[] = "qmax=$qmax";
 
 		}
 
@@ -136,6 +144,13 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 			$ffmpeg->add_argument('rc_mode', '1');
 			$ffmpeg->set_rc_lookahead(0);
 			$ffmpeg->add_video_filter('format=nv12,hwupload');
+
+			if($cq)
+				$arr_metadata[] = "cq=$cq";
+			if($qmin)
+				$arr_metadata[] = "qmin=$qmin";
+			if($qmax)
+				$arr_metadata[] = "qmax=$qmax";
 
 		}
 
@@ -219,13 +234,6 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 	if($prefix)
 		$filename = $prefix.$filename;
 
-	$arr_metadata = array();
-	if($cq)
-		$arr_metadata[] = "cq=$cq";
-	if($qmin)
-		$arr_metadata[] = "qmin=$qmin";
-	if($qmax)
-		$arr_metadata[] = "qmax=$qmax";
 	if($denoise)
 		$arr_metadata[] = "hqdn3d";
 	if($dvd_encoder == 'ffpipe')
@@ -233,9 +241,10 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 	else
 		$arr_metadata[] = "ffmpeg=$ffmpeg_version";
 
-	$str_metadata = implode(',', $arr_metadata);
-
-	$ffmpeg->add_metadata('encoder_settings', $str_metadata);
+	if(count($arr_metadata)) {
+		$str_metadata = implode(',', $arr_metadata);
+		$ffmpeg->add_metadata('encoder_settings', $str_metadata);
+	}
 
 	$ffmpeg->output_filename($filename);
 
