@@ -178,14 +178,6 @@
 
 		}
 
-		public function get_deint() {
-
-			$sql = "SELECT vf.video_filter FROM video_filters vf JOIN series s ON s.video_filter_id = vf.id WHERE s.id = ".$this->id.";";
-			$var = $this->get_one($sql);
-
-			return $var;
-
-		}
-
 	}
+
 ?>
