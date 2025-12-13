@@ -374,7 +374,7 @@ foreach($filenames as $filename) {
 		$audio_mbs = ceil($audio_mbs);
 
 		$encodes_model->episode_id = $episode_id;
-		$encodes_model->filename = $filename;
+		$encodes_model->filename = $basename;
 		$encodes_model->uuid = $uuid;
 		$encodes_model->filesize = $filesize;
 		if($encoded_date)
