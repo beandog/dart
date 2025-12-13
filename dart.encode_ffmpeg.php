@@ -62,6 +62,9 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 	if($vcodec == 'x264') {
 		$ffmpeg->set_vcodec('libx264');
 		$ffmpeg->set_tune($series_model->get_x264_tune());
+		$x264_preset = $series_model->x264_preset;
+		if($x264_preset)
+			$ffmpeg->set_preset($x264_preset);
 	} elseif($vcodec == 'x265')
 		$ffmpeg->set_vcodec('libx265');
 	elseif($hardware == 'nvidia' && $vcodec == 'h264_hwenc')
