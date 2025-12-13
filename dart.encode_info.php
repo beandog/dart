@@ -281,41 +281,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 		}
 
-		// Extract SSA subtitles from DVDs
-		$dvd_bugs = $dvds_model->get_bugs();
-
-		if($encode_subtitles) {
-
-			$dvd_encode_ssa = false;
-			if($opt_ssa && in_array('cc-only', $dvd_bugs) && $tracks_model->has_closed_captioning() && ($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'ffpipe')) {
-
-				$dvd_encode_ssa = true;
-
-				$str_episode_id = str_pad($episode_id, 5, 0, STR_PAD_LEFT);
-				$ssa_filename = "subs-".$str_episode_id."-$nsix.ssa";
-
-				$ssa_filename = "subs-".basename($filename, '.mkv').".ssa";
-
-				if(!($opt_skip_existing && file_exists($ssa_filename))) {
-
-					require 'dart.dvd_copy.php';
-					$dvd_copy->input_filename($input_filename);
-					$dvd_copy->output_filename('-');
-					$dvd_copy_command = $dvd_copy->get_executable_string();
-
-					$arg_filename = escapeshellarg($ssa_filename);
-
-					$dvd_ssa_command = "$dvd_copy_command 2> /dev/null | ffmpeg -f lavfi -i 'movie=pipe\\\\:0[out+subcc]' -y $arg_filename";
-
-					echo "$dvd_ssa_command\n";
-
-				}
-
-			}
-
-		}
-
-
 		/** Copy DVD tracks **/
 
 		if($disc_type == 'dvd' && $dvd_encoder == 'dvd_copy') {
@@ -357,7 +322,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		if($disc_type == 'bluray' && ($opt_ffprobe || $opt_ffplay)) {
 
 			$dvd_bugs = $dvds_model->get_bugs();
-			$dvd_encode_ssa = false;
 
 			$ffmpeg = new FFMpeg();
 			$ffmpeg->set_disc_type('bluray');

@@ -214,10 +214,6 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 		if($tracks_model->has_closed_captioning())
 			$ffmpeg->remove_closed_captioning();
 
-		// Use an external SSA file instead of existing closed captioning
-		if($dvd_encode_ssa)
-			$ffmpeg->add_ssa_filename($ssa_filename);
-
 	}
 
 	if($prefix)

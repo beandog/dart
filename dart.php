@@ -188,10 +188,10 @@
 		}
 	}
 
-	if($opt_encode_info || $opt_encode || $opt_copy_info || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe || $opt_ssa)
+	if($opt_encode_info || $opt_encode || $opt_copy_info || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe)
 		$batch_mode = true;
 
-	if(!count($devices) && ($opt_info || $opt_encode_info || $opt_encode || $opt_copy_info || $opt_backup || $opt_import || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe || $opt_ssa))
+	if(!count($devices) && ($opt_info || $opt_encode_info || $opt_encode || $opt_copy_info || $opt_backup || $opt_import || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe))
 		$devices = $all_devices;
 
 	foreach($devices as $device) {
@@ -271,7 +271,7 @@
 			$display_device = basename($device);
 
 		// Determine whether we are reading the device
-		if($opt_info || $opt_encode_info || $opt_encode || $opt_copy_info || $opt_import || $opt_backup || $opt_geniso || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe || $opt_ssa) {
+		if($opt_info || $opt_encode_info || $opt_encode || $opt_copy_info || $opt_import || $opt_backup || $opt_geniso || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe) {
 			if($debug)
 				echo "* Info / Import / Archive / ISO: Enabling device access\n";
 			$access_device = true;

@@ -54,7 +54,6 @@
 		public $scodec = 'copy';
 		public $subtitle_streams = array();
 		public $remove_cc = false;
-		public $ssa_filename = '';
 
 		public function debug($bool = true) {
 			$this->debug = $this->verbose = boolval($bool);
@@ -112,11 +111,6 @@
 				$this->input_filename = '-';
 			else
 				$this->input_filename = realpath($src);
-		}
-
-		// Don't use realpath here, because the file may be created right before this transcode
-		public function add_ssa_filename($src) {
-			$this->ssa_filename = $src;
 		}
 
 		public function output_filename($str) {
@@ -397,11 +391,6 @@
 				$arg_input = "bluray:$arg_input";
 			$cmd[] = "-i $arg_input";
 
-			if($this->ssa_filename && $this->ffmpeg) {
-				$arg_ssa_filename = escapeshellarg($this->ssa_filename);
-				$cmd[] = "-i $arg_ssa_filename";
-			}
-
 			if(($this->disc_type == 'dvd'|| $this->disc_type == 'dvdcopy') && $this->ffmpeg) {
 
 				$cmd[] = "-map 'v'";
@@ -446,9 +435,6 @@
 				if($this->subtitles)
 					$cmd[] = "-scodec '".$this->scodec."'";
 			}
-
-			if($this->subtitles && $this->ssa_filename && $this->ffmpeg)
-				$cmd[] = "-map '1'";
 
 			// Always set all audio *and* subtitle streams as English
 			// Blu-ray audio streams probed with ffmpeg do not see language code, so this will fix that as well
