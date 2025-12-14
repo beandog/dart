@@ -24,6 +24,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_tails', array(
+		'long_name' => '--tails',
+		'description' => 'Upload episode to QA library',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('opt_import', array(
 		'long_name' => '--import',
 		'description' => 'Import filesize and metadata into database',
@@ -263,6 +269,9 @@ foreach($filenames as $filename) {
 
 	}
 
+	if($opt_tails)
+		$opt_upload = true;
+
 	if($opt_info || $opt_upload || $opt_import) {
 
 		if($opt_upload) {
@@ -298,12 +307,20 @@ foreach($filenames as $filename) {
 			$str = trim(shell_exec($cmd));
 			if(str_contains($str, $basename)) {
 				$upload_video = false;
-				echo "# $basename -> dlna:/opt/plex/$xfs/$emo_filename - already running\n";
+				if($opt_tails)
+					echo "# $basename -> dlna:/opt/jfin/libraries/tails/$basename - already running\n";
+				else
+					echo "# $basename -> dlna:/opt/plex/$xfs/$emo_filename - already running\n";
 			}
 
 			if($upload_video) {
-				$cmd = "rsync -q -u --zc none $arg_episode_filename dlna:/opt/plex/$xfs/$emo_filename";
-				echo "# $basename -> dlna:/opt/plex/$xfs/$emo_filename\n";
+				if($opt_tails) {
+					$cmd = "rsync -q -u --zc none $arg_episode_filename dlna:/opt/jfin/libraries/tails/$basename";
+					echo "# $basename -> dlna:/opt/jfin/libraries/tails/$basename\n";
+				} else {
+					$cmd = "rsync -q -u --zc none $arg_episode_filename dlna:/opt/plex/$xfs/$emo_filename";
+					echo "# $basename -> dlna:/opt/plex/$xfs/$emo_filename\n";
+				}
 				passthru($cmd);
 			}
 
