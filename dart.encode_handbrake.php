@@ -20,14 +20,14 @@ if($disc_type == 'dvd' && $dvd_encoder == 'handbrake' && ($opt_encode_info || $o
 
 	/** Video **/
 
-	$handbrake->set_vcodec($vcodec);
-
-	$video_quality = intval($series_model->get_crf());
-	if(isset($arg_crf))
-		$video_quality = intval($arg_crf);
-	$handbrake->set_video_quality($video_quality);
-
 	if($vcodec == 'x264') {
+
+		$handbrake->set_vcodec($vcodec);
+
+		$video_quality = intval($series_model->get_crf());
+		if(isset($arg_crf))
+			$video_quality = intval($arg_crf);
+		$handbrake->set_video_quality($video_quality);
 
 		$x264_preset = $series_model->x264_preset;
 
@@ -47,6 +47,25 @@ if($disc_type == 'dvd' && $dvd_encoder == 'handbrake' && ($opt_encode_info || $o
 
 	}
 
+	if($vcodec == 'gpu') {
+
+		$handbrake->set_vcodec('nvenc_h264');
+
+		$cq = $series_model->get_cq();
+		if($arg_cq)
+			$cq = $arg_cq;
+
+		$handbrake->set_preset('slowest');
+
+		if($opt_fast)
+			$handbrake->set_preset('fast');
+		elseif($opt_slow)
+			$handbrake->set_preset('slowest');
+
+		$handbrake->set_video_quality($cq);
+
+	}
+
 	$handbrake->enable_bwdif();
 
 	if($denoise)
@@ -56,41 +75,6 @@ if($disc_type == 'dvd' && $dvd_encoder == 'handbrake' && ($opt_encode_info || $o
 		$handbrake->sharpen($sharpen);
 	if($sharpen_tune)
 		$handbrake->sharpen_tune($sharpen_tune);
-
-	if($vcodec == 'nvenc_h264') {
-
-		$cq = $series_model->get_cq();
-		$qmin = $series_model->get_qmin();
-		$qmax = $series_model->get_qmax();
-
-		if($arg_cq)
-			$cq = $arg_cq;
-		if($arg_qmin)
-			$qmin = $arg_qmin;
-		if($arg_qmax)
-			$qmax = $arg_qmax;
-
-		$handbrake->set_video_quality($cq);
-
-		// Specific encoding options
-		$arr_encopts = array();
-		// Maximum that nvidia encoder allows
-		$arr_encopts[] = "rc-lookahead=32";
-		// Set to --slowest
-		$arr_encopts[] = "preset=p7";
-		// Tune for high quality
-		$arr_encopts[] = "tune=hq";
-		// qmax, qmin
-		if($qmin)
-			$arr_encopts[] = "qmin=$qmin";
-		if($qmax)
-			$arr_encopts[] = "qmax=$qmax";
-
-		$encopts = implode(":", $arr_encopts);
-
-		$handbrake->set_encopts($encopts);
-
-	}
 
 	/** Frame and fields **/
 
@@ -158,13 +142,8 @@ if($disc_type == 'dvd' && $dvd_encoder == 'handbrake' && ($opt_encode_info || $o
 	// Rewrite prefix if doing a batch encode to make it simpler to compare filesizes
 	if($opt_batch) {
 		$arr_prefix = array();
-		if($vcodec == 'h264_nvenc') {
+		if($vcodec == 'gpu') {
 			$arr_prefix[] = "cq-$cq";
-			if($qmin)
-				$arr_prefix[] = "qmin-$qmin";
-			// I'm okay with hardcoding qmax to 30 for now, I don't see myself changing it since it's so high
-			if($qmax && $qmax != 30)
-				$arr_prefix[] = "qmax-$qmax";
 		}
 		if($denoise) {
 			if($denoise == 'medium')
