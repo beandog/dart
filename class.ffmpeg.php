@@ -290,10 +290,8 @@
 
 			$args = array();
 
-			if($this->vcodec == 'x265')
+			if($this->vcodec == 'x264')
 				$this->vcodec = 'libx264';
-			elseif($this->vcodec == 'x265')
-				$this->vcodec = 'libx265';
 
 			if($this->vcodec_opts)
 				$args['vcodec_opts'] = $this->vcodec_opts;
