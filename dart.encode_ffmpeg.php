@@ -56,28 +56,7 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 
 	/** Video **/
 
-	if($hardware == 'nvidia' && $vcodec == 'h264_nvenc')
-		$vcodec = 'h264_hwenc';
-
-	if($vcodec == 'x264') {
-		$ffmpeg->set_vcodec('libx264');
-		$ffmpeg->set_tune($series_model->get_x264_tune());
-		$x264_preset = $series_model->x264_preset;
-		if($x264_preset)
-			$ffmpeg->set_preset($x264_preset);
-	elseif($hardware == 'nvidia' && $vcodec == 'h264_hwenc')
-		$ffmpeg->set_vcodec('h264_nvenc');
-	elseif($hardware == 'amd' && $vcodec == 'h264_hwenc')
-		$ffmpeg->set_vcodec('h264_vaapi');
-	else
-		$ffmpeg->set_vcodec('libx264');
-
-	$video_quality = intval($series_model->get_crf());
-
-	if($arg_crf)
-		$video_quality = intval($arg_crf);
-
-	if($hardware && $vcodec == 'h264_nvenc') {
+	if($vcodec == 'gpu') {
 
 		$cq = $series_model->get_cq();
 		$qmin = $series_model->get_qmin();
@@ -90,33 +69,16 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 		if($arg_qmax)
 			$qmax = $arg_qmax;
 
-		$ffmpeg->set_cq($cq);
-		$ffmpeg->set_qmin($qmin);
-		$ffmpeg->set_qmax($qmax);
+		if($hardware == 'nvidia') {
 
-		$ffmpeg->set_crf(null);
-
-	} else {
-
-		$ffmpeg->set_crf($video_quality);
-
-		$ffmpeg->set_cq(null);
-		$ffmpeg->set_qmin(null);
-		$ffmpeg->set_qmax(null);
-
-	}
-
-	if($hardware) {
-
-		if($hardware == 'nvidia' && $vcodec == 'h264_hwenc') {
+			$ffmpeg->set_vcodec('h264_nvenc');
 
 			$ffmpeg->set_rc_lookahead(32);
 			$ffmpeg->add_argument('rc', 'vbr');
 			$ffmpeg->add_argument('tune', 'hq');
 			$ffmpeg->add_argument('preset', 'p7');
 
-			if($vcodec == 'h264_hwenc')
-				$ffmpeg->add_argument('profile:v', 'high');
+			$arr_metadata[] = "hw=nvidia";
 
 			if($cq)
 				$arr_metadata[] = "cq=$cq";
@@ -127,14 +89,17 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 
 		}
 
-		// AMD is not entirely supported, I'm focusing on nvidia, so I'm not testing all functions
 		if($hardware == 'amd') {
+
+			$ffmpeg->set_vcodec('h264_vaapi');
 
 			$ffmpeg->add_argument('vaapi_device', '/dev/dri/renderD129');
 			$ffmpeg->add_argument('rc_mode', '1');
 			$ffmpeg->set_rc_lookahead(0);
 			$ffmpeg->add_video_filter('format=nv12,hwupload');
 
+			$arr_metadata[] = "hw=amd";
+
 			if($cq)
 				$arr_metadata[] = "cq=$cq";
 			if($qmin)
@@ -144,12 +109,40 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 
 		}
 
+		$ffmpeg->set_crf(null);
+
+		$ffmpeg->set_cq($cq);
+		$ffmpeg->set_qmin($qmin);
+		$ffmpeg->set_qmax($qmax);
+
+	}
+
+	if($vcodec == 'x264') {
+
+		$ffmpeg->set_vcodec('libx264');
+		$ffmpeg->set_tune($series_model->get_x264_tune());
+		$x264_preset = $series_model->x264_preset;
+		if($x264_preset)
+			$ffmpeg->set_preset($x264_preset);
+
+		if($opt_slow)
+			$ffmpeg->set_preset('veryslow');
+
+		$ffmpeg->set_cq(null);
+		$ffmpeg->set_qmin(null);
+		$ffmpeg->set_qmax(null);
+
+		$video_quality = intval($series_model->get_crf());
+
+		if($arg_crf)
+			$video_quality = intval($arg_crf);
+
+		$ffmpeg->set_crf($video_quality);
+
 	}
 
 	if($opt_fast)
 		$ffmpeg->set_preset('ultrafast');
-	elseif($opt_slow)
-		$ffmpeg->set_preset('veryslow');
 
 	// Set video filters based on frame info
 	$crop = $episodes_model->crop;
