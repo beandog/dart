@@ -58,8 +58,6 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 
 	if($hardware == 'nvidia' && $vcodec == 'h264_nvenc')
 		$vcodec = 'h264_hwenc';
-	else if($hardware == 'nvidia' && $vcodec == 'hevc_nvenc')
-		$vcodec = 'hevc_hwenc';
 
 	if($vcodec == 'x264') {
 		$ffmpeg->set_vcodec('libx264');
@@ -71,12 +69,8 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 		$ffmpeg->set_vcodec('libx265');
 	elseif($hardware == 'nvidia' && $vcodec == 'h264_hwenc')
 		$ffmpeg->set_vcodec('h264_nvenc');
-	elseif($hardware == 'nvidia' && $vcodec == 'hevc_hwenc')
-		$ffmpeg->set_vcodec('hevc_nvenc');
 	elseif($hardware == 'amd' && $vcodec == 'h264_hwenc')
 		$ffmpeg->set_vcodec('h264_vaapi');
-	elseif($hardware == 'amd' && $vcodec == 'hevc_hwenc')
-		$ffmpeg->set_vcodec('hevc_vaapi');
 	else
 		$ffmpeg->set_vcodec('libx264');
 
@@ -85,7 +79,7 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 	if($arg_crf)
 		$video_quality = intval($arg_crf);
 
-	if($hardware && ($vcodec == 'h264_nvenc' || $vcodec == 'hevc_nvenc')) {
+	if($hardware && $vcodec == 'h264_nvenc') {
 
 		$cq = $series_model->get_cq();
 		$qmin = $series_model->get_qmin();
@@ -116,7 +110,7 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 
 	if($hardware) {
 
-		if($hardware == 'nvidia' && ($vcodec == 'h264_hwenc' || $vcodec == 'hevc_hwenc')) {
+		if($hardware == 'nvidia' && $vcodec == 'h264_hwenc') {
 
 			$ffmpeg->set_rc_lookahead(32);
 			$ffmpeg->add_argument('rc', 'vbr');
@@ -125,8 +119,6 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 
 			if($vcodec == 'h264_hwenc')
 				$ffmpeg->add_argument('profile:v', 'high');
-			elseif($vcodec == 'hevc_hwenc')
-				$ffmpeg->add_argument('profile:v', 'main');
 
 			if($cq)
 				$arr_metadata[] = "cq=$cq";
