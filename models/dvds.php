@@ -349,6 +349,9 @@
 
 		public function dvd_missing_episode_metadata() {
 
+			return false;
+
+			/*
 			$dvd_id = abs(intval($this->id));
 
 			$sql = "SELECT COUNT(1) FROM view_episodes WHERE crop = '' AND dvd_id = $dvd_id;";
@@ -361,6 +364,7 @@
 			}
 
 			return false;
+			*/
 
 		}
 

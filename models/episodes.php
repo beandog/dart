@@ -223,6 +223,9 @@
 
 		public function missing_episode_metadata() {
 
+			return false;
+
+			/*
 			$episode_id = intval($this->id);
 
 			// Check for missing crop detection on episodes
@@ -234,6 +237,7 @@
 				return true;
 
 			return false;
+			*/
 
 		}
 
