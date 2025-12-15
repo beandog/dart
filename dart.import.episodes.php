@@ -2,6 +2,8 @@
 
 	// Update episodes with missing metadata
 
+	// Unused right now, don't need crop values
+	/*
 	if($disc_indexed && $access_device && $disc_type == 'dvd' && $missing_episode_metadata) {
 
 		echo "[Episodes Metadata]\n";
@@ -46,3 +48,4 @@
 		}
 
 	}
+	*/

@@ -145,9 +145,11 @@ if($disc_type == 'dvd' && ($opt_encode_info || $opt_encode) && ($dvd_encoder == 
 		$ffmpeg->set_preset('ultrafast');
 
 	// Set video filters based on frame info
+	/*
 	$crop = $episodes_model->crop;
 	if($crop != null && $opt_crop && $crop != '720:480:0:0')
 		$ffmpeg->add_video_filter("crop=$crop");
+	*/
 
 	$deint_filter = "bwdif=deint=$video_deint";
 	$ffmpeg->add_video_filter($deint_filter);

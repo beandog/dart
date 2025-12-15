@@ -196,12 +196,14 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	/*
 	$parser->addOption('opt_crop', array(
 		'long_name' => '--crop',
 		'description' => 'Crop video with ffmpeg',
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	*/
 	$parser->addOption('opt_scan', array(
 		'long_name' => '--scan',
 		'description' => 'Use HandBrake to get DVD information',
