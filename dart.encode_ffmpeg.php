@@ -18,14 +18,14 @@ if($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'ffpipe') {
 	if($verbose)
 		$ffmpeg->verbose();
 
-	if($quiet)
+	if($quiet || $opt_encode)
 		$ffmpeg->quiet();
 
 	$arr_metadata = array();
 
 }
 
-if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'ffpipe')) {
+if($disc_type == 'dvd' && ($opt_encode_info || $opt_encode) && ($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'ffpipe')) {
 
 	if($dvd_encoder == 'ffmpeg') {
 
@@ -243,6 +243,11 @@ if($disc_type == 'dvd' && $opt_encode_info && ($dvd_encoder == 'ffmpeg' || $dvd_
 	if($opt_time)
 		$ffmpeg_command = "tout $ffmpeg_command";
 
-	echo "$ffmpeg_command\n";
+	if($opt_encode) {
+		$encode_command = $ffmpeg_command;
+		require 'dart.encode_episode.php';
+	} else {
+		echo "$ffmpeg_command\n";
+	}
 
 }

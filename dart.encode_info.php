@@ -351,7 +351,12 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 				$ffmpeg_command = $ffmpeg->get_executable_string();
 			}
 
-			echo "$ffmpeg_command\n";
+			if($opt_encode) {
+				$encode_command = $ffmpeg_command;
+				require 'dart.encode_episode.php';
+			} else {
+				echo "$ffmpeg_command\n";
+			}
 
 		}
 
@@ -483,7 +488,12 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			if($dvd_encoder == 'ffpipe')
 				$ffmpeg_command = "$bluray_copy_command 2> /dev/null | $ffmpeg_command";
 
-			echo "$ffmpeg_command\n";
+			if($opt_encode) {
+				$encode_command = $ffmpeg_command;
+				require 'dart.encode_episode.php';
+			} else {
+				echo "$ffmpeg_command\n";
+			}
 
 		}
 

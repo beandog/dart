@@ -1,6 +1,6 @@
 <?php
 
-if($disc_type == 'dvd' && $dvd_encoder == 'handbrake' && $opt_encode) {
+if($disc_type == 'dvd' && $opt_encode) {
 
 	if($opt_skip_existing && file_exists($filename))
 		goto next_episode;
@@ -50,13 +50,13 @@ if($disc_type == 'dvd' && $dvd_encoder == 'handbrake' && $opt_encode) {
 	echo "* Source: $arg_device\n";
 	echo "* Target: $arg_filename\n";
 
-	if(!$verbose)
-		$handbrake_command .= " 2> /dev/null";
+	if($dvd_encoder == 'handbrake' && !$verbose)
+		$encode_command .= " 2> /dev/null";
 
 	if($verbose)
-		echo "* $handbrake_command\n";
+		echo "* $encode_command\n";
 
-	passthru($handbrake_command, $retval);
+	passthru($encode_command, $retval);
 
 	if($retval) {
 

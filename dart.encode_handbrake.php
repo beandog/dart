@@ -181,9 +181,11 @@ if($disc_type == 'dvd' && $dvd_encoder == 'handbrake' && ($opt_encode_info || $o
 	if($opt_test_existing)
 		$handbrake_command = "test ! -e $filename && $handbrake_command";
 
-	if($opt_encode)
+	if($opt_encode) {
+		$encode_command = $handbrake_command;
 		require 'dart.encode_episode.php';
-	else
+	} else {
 		echo "$handbrake_command\n";
+	}
 
 }
