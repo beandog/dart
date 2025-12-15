@@ -36,8 +36,8 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_rename_file', array(
-		'long_name' => '--rename-file',
+	$parser->addOption('opt_rename_episode', array(
+		'long_name' => '--rename-episode',
 		'description' => 'Fix episode filename',
 		'action' => 'StoreTrue',
 		'default' => false,
@@ -85,14 +85,14 @@ foreach($filenames as $filename) {
 	if(count($arr_matches) != 1)
 		goto next_episode;
 
-	$emo_filename = $arr_matches[0];
-	$emo_filename .= ".$extension";
-	$episode_id = substr($emo_filename, 11, 5);
+	$episode_id = substr($arr_matches[0], 11, 5);
 
 	if(!is_numeric($episode_id))
 		goto next_episode;
 
 	$episodes_model = new Episodes_Model($episode_id);
+
+	$emo_filename = $episodes_model->get_filename();
 
 	$episode_metadata = $episodes_model->get_metadata();
 	if(!count($episode_metadata)) {
@@ -348,7 +348,7 @@ foreach($filenames as $filename) {
 
 	}
 
-	if($opt_rename_file) {
+	if($opt_rename_episode) {
 
 		if(file_exists($emo_filename))
 			goto next_episode;
