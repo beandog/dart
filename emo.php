@@ -280,10 +280,12 @@ foreach($filenames as $filename) {
 
 			if($collection_id == 1)
 				$xfs = "sd";
-			elseif($collection_id == "2")
+			elseif($collection_id == 2)
 				$xfs = "tv";
-			elseif($collection_id == "4")
+			elseif($collection_id == 4)
 				$xfs = "tv";
+			elseif($collection_id == 7)
+				$xfs = "sd";
 			if(str_contains($emo_filename, ".HD"))
 				$xfs = "hd";
 			elseif(str_contains($emo_filename, ".BD"))
