@@ -73,7 +73,7 @@
 
 foreach($filenames as $filename) {
 
-	$extension = pathinfo("/this/does/not/exist/$filename", PATHINFO_EXTENSION);
+	$extension = pathinfo($filename, PATHINFO_EXTENSION);
 	if(!in_array($extension, array('mkv', 'mpg', 'mp4')))
 		goto next_episode;
 
@@ -373,16 +373,10 @@ foreach($filenames as $filename) {
 
 		$encodes_model = new Encodes_Model();
 
-		extract($arr_info);
-		$encode_id = $encodes_model->load_filename($basename);
+		$encodes_model->delete_encodes($basename);
+		$encode_id = $encodes_model->create_new();
 
-		if($encode_id) {
-			$encodes_model->delete();
-			$encode_id = $encodes_model->create_new();
-			// goto next_episode;
-		} else {
-			$encode_id = $encodes_model->create_new();
-		}
+		extract($arr_info);
 
 		$bitrate = intval($bitrate);
 		$crf = intval($crf);

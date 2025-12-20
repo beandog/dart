@@ -12,6 +12,18 @@
 
 		}
 
+		function delete_encodes($filename) {
+
+			if(!$filename)
+				return false;
+
+			$sql = "DELETE FROM encodes WHERE filename = '".pg_escape_string($filename)."';";
+			pg_query($sql);
+
+			return true;
+
+		}
+
 		function load_filename($filename) {
 
 			if(!$filename)
