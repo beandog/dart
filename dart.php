@@ -51,6 +51,14 @@
 	// I don't use 'dart --import' anymore, but it is still used
 	$opt_import = false;
 
+	// Yay, Rip-o-Matic!
+	$rip_rip_hooray = false;
+	if($opt_rip_o_matic && $rippy_rip_rip) {
+		$opt_backup = true;
+		$arg_backup_dir = $rippy_rip_dir;
+		$rip_rip_hooray = true;
+	}
+
 	// --backup is basically a shortcut for ripping an ISO and importing it plus
 	// setting it in batch mode so it will eject the disc after finished.
 	// Designed for use with a udev trigger so that discs will auto-rip
@@ -270,8 +278,9 @@
 		if($device_is_iso)
 			$display_device = basename($device);
 
+
 		// Determine whether we are reading the device
-		if($opt_info || $opt_encode_info || $opt_encode || $opt_copy_info || $opt_import || $opt_backup || $opt_geniso || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe) {
+		if($opt_info || $opt_encode_info || $opt_encode || $opt_copy_info || $opt_import || $opt_backup || $opt_geniso || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe || $opt_rip_o_matic) {
 			if($debug)
 				echo "* Info / Import / Archive / ISO: Enabling device access\n";
 			$access_device = true;
@@ -380,6 +389,27 @@
 
 		}
 
+		// Rip-or-skip-o-matic :D
+		if($opt_rip_o_matic && $rippy_rip_rip) {
+
+			echo "[Rip-o-Matic!]\n";
+			echo "* Welcome, ".gethostname()."!\n";
+			echo "* Rippy rip directory: $rippy_rip_dir\n";
+
+			$opt_backup = true;
+			$arg_backup_dir = $rippy_rip_dir;
+			if($device == '/dev/sr0' && !$rippy_rip_sr0)
+				$rip_rip_hooray = false;
+			if($device == '/dev/sr1' && !$rippy_rip_sr1)
+				$rip_rip_hooray = false;
+			if(!$rip_rip_hooray) {
+				echo "* $device disabled in local config, skipping\n";
+				goto next_device;
+			}
+			$cmd_ogg = "/usr/bin/ogg123 /usr/share/sounds/freedesktop/stereo/service-login.oga &> /dev/null &";
+			shell_exec($cmd_ogg);
+		}
+
 		if($access_device) {
 
 			$disc_type = get_disc_type($device);
@@ -484,6 +514,19 @@
 			if(!$batch_mode)
 				echo "* Ready to archive next disc, opening tray!\n";
 			$drive->eject();
+		}
+
+		if($opt_rip_o_matic && $rippy_rip_rip && $rip_rip_hooray) {
+			$cmd_ogg = "/usr/bin/ogg123 /usr/share/sounds/freedesktop/stereo/service-logout.oga &> /dev/null &";
+			shell_exec($cmd_ogg);
+
+			if($backup_passed === true) {
+				$drive->eject();
+			} elseif($backup_passed === false) {
+				$cmd_ogg = "/usr/bin/ogg123 /usr/share/sounds/freedesktop/stereo/trash-empty.oga &> /dev/null &";
+				shell_exec($cmd_ogg);
+			}
+
 		}
 
 	}

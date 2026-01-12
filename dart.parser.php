@@ -210,6 +210,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_rip_o_matic', array(
+		'long_name' => '--rip-o-matic',
+		'description' => 'Use Rip-o-Matic',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('opt_remux', array(
 		'long_name' => '--remux',
 		'description' => 'Remux a DVD episode using ffmpeg for debugging',

@@ -9,6 +9,8 @@
 	// and it has a database record.
 	if($access_device && $dvds_model_id && $opt_backup && !$broken_dvd && !$opt_makemkv) {
 
+		$backup_passed = null;
+
 		if($arg_backup_dir) {
 			$cwdir = getcwd();
 			chdir($arg_backup_dir);
@@ -70,20 +72,12 @@
 
 			// Check if the drive is already ripping
 			$is_ripping = false;
-			$output = array();
-			if($disc_type == 'dvd')
-				exec("pgrep -af dvdbackup", $output, $retval);
-			elseif($disc_type == 'bluray')
-				exec("pgrep -af bluray_backup", $output, $retval);
-			if($retval === 0) {
-				$pattern = "/".basename($target_rip)."$/";
-				$num_procs = count(preg_grep($pattern, $output));
-				if($num_procs)
-					$is_ripping = true;
-			}
-
-			if($is_ripping)
+			$cmd = "pgrep -l '^(dvd_backup|bluray_backup)' -a";
+			$str = trim(shell_exec($cmd));
+			if(str_contains($str, $device)) {
 				echo "* Backup in progress for $device to ".basename($target_rip)."\n";
+				goto next_disc;
+			}
 
 			// If we have access to the device, and we
 			// are trying to dump it, and the output filename
@@ -145,11 +139,15 @@
 					if(file_exists($target_rip) && !file_exists($target_iso))
 						rename($target_rip, $target_iso);
 
+					$backup_passed = true;
+
 				} else {
 
 					echo "* Backup failed! :(\n";
 
 					rename($target_rip, "$target_rip.FAIL");
+
+					$backup_passed = true;
 
 				}
 
