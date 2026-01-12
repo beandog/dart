@@ -87,7 +87,7 @@
 		'default' => false,
 	));
 	$parser->addOption('arg_backup_dir', array(
-		'long_name' => '--dirname',
+		'long_name' => '--backup-dir',
 		'description' => 'Set target backup directory',
 		'action' => 'StoreString',
 		'default' => '',

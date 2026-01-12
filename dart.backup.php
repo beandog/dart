@@ -9,6 +9,11 @@
 	// and it has a database record.
 	if($access_device && $dvds_model_id && $opt_backup && !$broken_dvd && !$opt_makemkv) {
 
+		if($arg_backup_dir) {
+			$cwdir = getcwd();
+			chdir($arg_backup_dir);
+		}
+
 		/** ISO Information **/
 		echo "[ISO]\n";
 
@@ -233,6 +238,9 @@
 		goto next_disc;
 
 	}
+
+	if($arg_backup_dir)
+		chdir($cwdir);
 
 	next_disc:
 
