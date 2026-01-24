@@ -191,8 +191,8 @@
 		}
 
 		public function set_acodec($str) {
-			if($str == 'aac')
-				$str = 'libfdk_aac';
+			if($str == 'mp3')
+				$str = 'libmp3lame';
 			$this->acodec = $str;
 		}
 
@@ -310,6 +310,9 @@
 
 			if($this->acodec == 'libfdk_aac')
 				$args['vbr'] = 5;
+
+			if($this->acodec == 'libmp3lame')
+				$args['q:a'] = 0;
 
 			if(count($this->video_filters)) {
 				$vf = implode(",", $this->video_filters);

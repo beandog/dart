@@ -98,6 +98,8 @@ if($disc_type == 'dvd' && $dvd_encoder == 'handbrake' && ($opt_encode_info || $o
 	if($acodec == 'aac') {
 		$acodec = 'fdk_aac';
 		$handbrake->set_audio_vbr(5);
+	} elseif($acodec == 'mp3') {
+		$handbrake->set_audio_vbr(0);
 	} elseif($acodec == 'flac') {
 		$acodec = 'flac16';
 	}

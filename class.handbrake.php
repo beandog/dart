@@ -433,7 +433,7 @@
 					$args['--ab'] = $this->audio_bitrate;
 				}
 
-				if($this->audio_vbr) {
+				if(is_integer($this->audio_vbr)) {
 					$args['--aq'] = $this->audio_vbr;
 				}
 
