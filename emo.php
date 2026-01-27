@@ -42,6 +42,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_link', array(
+		'long_name' => '--link',
+		'description' => 'Create symlinks',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('opt_json', array(
 		'long_name' => '--json',
 		'description' => 'Display episode info in JSON format',
@@ -430,6 +436,37 @@ foreach($filenames as $filename) {
 			$encodes_model->channels = $channels;
 		if($scodec)
 			$encodes_model->scodec = $scodec;
+
+	}
+
+	if($opt_link) {
+
+		$library = '';
+
+		$prefix = substr($nsix, 0, 2);
+
+		if($collection_id == 1)
+			$library = 'cartoons';
+		elseif($collection_id == 2)
+			$library = 'tv';
+		elseif($collection_id == 3)
+			$library = 'jared';
+		elseif($collection_id == 4)
+			$library = 'movies';
+		elseif($collection_id == 5)
+			$library = 'jared';
+		elseif($collection_id == 6)
+			$library = 'archives';
+		elseif($collection_id == 7)
+			$library = 'archives';
+		elseif($collection_id == 8 && $prefix == '4K')
+			$library = 'ultrahd';
+		elseif($collection_id == 8)
+			$library = 'bluray';
+		elseif($collection_id == 9)
+			$library = 'holiday';
+
+
 
 	}
 
