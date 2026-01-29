@@ -1,12 +1,37 @@
 <?php
 
-	declare(ticks = 1);
+	// Allow cleanly killing running encodes
+	pcntl_async_signals(true);
 
-	function signal_handler($signal) {
-		return;
+	function sig_handler($signo) {
+
+		if($signo == SIGTERM)
+			exit;
+
+		if($signo != SIGINT)
+			return;
+
+		global $dart_status;
+
+		if($dart_status == 'encode_episode') {
+
+			global $filename;
+
+			$arg_filename = escapeshellarg($filename);
+			echo "* Removing $arg_filename\n";
+			if(file_exists($filename))
+				unlink($filename);
+
+		}
+
+		echo "Goodbye!\n";
+		posix_kill(posix_getpid(), SIGUSR1);
+
+		exit;
+
 	}
 
-	pcntl_signal(SIGINT, "signal_handler");
+	pcntl_signal(SIGINT, "sig_handler");
 
 	function get_dvd_iso_filename($source) {
 

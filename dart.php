@@ -8,6 +8,7 @@
 	$export_dir = getenv('HOME').'/dvds/';
 	$hostname = php_uname('n');
 	$batch_mode = false;
+	$dart_status = '';
 
 	// Overrides to defaults
 	require_once 'config.local.php';

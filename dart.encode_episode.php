@@ -2,6 +2,8 @@
 
 if($disc_type == 'dvd' && $opt_encode) {
 
+	$dart_status = 'encode_episode';
+
 	if($opt_skip_existing && file_exists($filename))
 		goto next_episode;
 
@@ -75,3 +77,5 @@ if($disc_type == 'dvd' && $opt_encode) {
 	next_episode:
 
 }
+
+	$dart_status = '';
