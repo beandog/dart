@@ -52,21 +52,23 @@ if($disc_type == 'dvd' && $opt_encode) {
 	echo "* Source: $arg_device\n";
 	echo "* Target: $arg_filename\n";
 
-	if($dvd_encoder == 'handbrake' && !$verbose) {
-		$logfile = "/tmp/".basename($filename).".log";
-		$arg_logfile = escapeshellarg($logfile);
+	$logfile = "/tmp/".basename($filename).".log";
+	$arg_logfile = escapeshellarg($logfile);
+
+	if($verbose) {
+		echo "* $encode_command\n";
+	} else {
 		$encode_command .= " 2> $arg_logfile";
 	}
-
-	if($verbose)
-		echo "* $encode_command\n";
 
 	passthru($encode_command, $retval);
 
 	if($retval) {
 
 		$arg_filename = escapeshellarg($filename);
-		echo "* Removing $arg_filename\n";
+		echo "* Encode failed, removing $arg_filename\n";
+		if(!$verbose)
+			echo "* See encode log at $arg_logfile\n";
 		if(file_exists($filename))
 			unlink($filename);
 
