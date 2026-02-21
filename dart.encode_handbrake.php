@@ -20,6 +20,13 @@ if($disc_type == 'dvd' && $dvd_encoder == 'handbrake' && ($opt_encode_info || $o
 
 	/** Video **/
 
+	if($arg_vcodec == 'x264' || $arg_vcodec == 'libx264')
+		$vcodec = 'x264';
+	elseif($arg_vcodec == 'avc' || $arg_vcodec == 'h264')
+		$vcodec = 'avc';
+	elseif($arg_vcodec == 'hevc' || $arg_vcodec == 'h265')
+		$vcodec = 'hevc';
+
 	if($vcodec == 'x264') {
 
 		$handbrake->set_vcodec($vcodec);
@@ -47,9 +54,12 @@ if($disc_type == 'dvd' && $dvd_encoder == 'handbrake' && ($opt_encode_info || $o
 
 	}
 
-	if($vcodec == 'gpu') {
+	if($vcodec == 'h264' || $vcodec == 'avc' || $vcodec == 'h265' || $vcodec == 'hevc') {
 
-		$handbrake->set_vcodec('nvenc_h264');
+		if($vcodec == 'h265' || $vcodec == 'hevc')
+			$handbrake->set_vcodec('nvenc_h265');
+		else
+			$handbrake->set_vcodec('nvenc_h264');
 
 		$cq = $series_model->get_crf();
 		if($arg_crf)
@@ -144,9 +154,7 @@ if($disc_type == 'dvd' && $dvd_encoder == 'handbrake' && ($opt_encode_info || $o
 	// Rewrite prefix if doing a batch encode to make it simpler to compare filesizes
 	if($opt_batch) {
 		$arr_prefix = array();
-		if($vcodec == 'gpu') {
-			$arr_prefix[] = "cq-$cq";
-		}
+		$arr_prefix[] = "cq-$cq";
 		if($denoise) {
 			if($denoise == 'medium')
 				$arr_prefix[] = "denoise";

@@ -137,11 +137,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		if($arg_fps)
 			$fps = $arg_fps;
 
-		if($arg_vcodec == 'libx264')
-			$arg_vcodec = 'x264';
-		if($arg_vcodec)
-			$vcodec = $arg_vcodec;
-
 		if($disc_type == 'dvd' && $opt_copy_info)
 			$container = 'mpg';
 
