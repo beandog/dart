@@ -184,12 +184,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 			$prefix .= "$arg_acodec-";
 		if($arg_crf)
 			$prefix .= "q-$arg_crf-";
-		if($arg_cq)
-			$prefix .= "cq-$arg_cq-";
-		if($arg_qmin)
-			$prefix .= "qmin-$arg_qmin-";
-		if($arg_qmax)
-			$prefix .= "qmax-$arg_qmax-";
 		if($arg_vf) {
 			$vf_name = current(explode('=', $arg_vf));
 			$prefix .= "vf-$vf_name-";
@@ -424,19 +418,10 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 				$ffmpeg->set_vcodec('h264_nvenc');
 
 				$cq = $series_model->get_crf();
-				$qmin = $series_model->get_qmin();
-				$qmax = $series_model->get_qmax();
-
-				if($arg_cq)
-					$cq = $arg_cq;
-				if($arg_qmin)
-					$qmin = $arg_qmin;
-				if($arg_qmax)
-					$qmax = $arg_qmax;
 
 				$ffmpeg->set_cq($cq);
-				$ffmpeg->set_qmin($qmin);
-				$ffmpeg->set_qmax($qmax);
+				$ffmpeg->set_qmin($cq);
+				$ffmpeg->set_qmax($cq);
 
 				$ffmpeg->set_crf(null);
 
