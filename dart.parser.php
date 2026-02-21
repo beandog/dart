@@ -240,12 +240,6 @@
 		'action' => 'StoreString',
 		'default' => null,
 	));
-	$parser->addOption('arg_cq', array(
-		'long_name' => '--cq',
-		'description' => 'Set encoding CQ',
-		'action' => 'StoreString',
-		'default' => null,
-	));
 	$parser->addOption('arg_qmin', array(
 		'long_name' => '--qmin',
 		'description' => 'Set encoding qmin',

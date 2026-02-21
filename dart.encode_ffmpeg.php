@@ -58,12 +58,12 @@ if($disc_type == 'dvd' && ($opt_encode_info || $opt_encode) && ($dvd_encoder == 
 
 	if($vcodec == 'gpu') {
 
-		$cq = $series_model->get_cq();
+		$cq = $series_model->get_crf();
 		$qmin = $series_model->get_qmin();
 		$qmax = $series_model->get_qmax();
 
-		if($arg_cq)
-			$cq = $arg_cq;
+		if($arg_crf)
+			$cq = $arg_crf;
 		if($arg_qmin)
 			$qmin = $arg_qmin;
 		if($arg_qmax)

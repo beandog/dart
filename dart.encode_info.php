@@ -423,7 +423,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 				$ffmpeg->set_vcodec('h264_nvenc');
 
-				$cq = $series_model->get_cq();
+				$cq = $series_model->get_crf();
 				$qmin = $series_model->get_qmin();
 				$qmax = $series_model->get_qmax();
 
