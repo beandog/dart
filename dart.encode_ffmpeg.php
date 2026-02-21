@@ -23,6 +23,13 @@ if($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'ffpipe') {
 
 	$arr_metadata = array();
 
+	if($arg_vcodec == 'x264' || $arg_vcodec == 'libx264')
+		$vcodec = 'x264';
+	elseif($arg_vcodec == 'avc' || $arg_vcodec == 'h264')
+		$vcodec = 'avc';
+	elseif($arg_vcodec == 'hevc' || $arg_vcodec == 'h265')
+		$vcodec = 'hevc';
+
 }
 
 if($disc_type == 'dvd' && ($opt_encode_info || $opt_encode) && ($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'ffpipe')) {
@@ -56,7 +63,7 @@ if($disc_type == 'dvd' && ($opt_encode_info || $opt_encode) && ($dvd_encoder == 
 
 	/** Video **/
 
-	if($vcodec == 'gpu') {
+	if($vcodec == 'h264' || $vcodec == 'avc' || $vcodec == 'h265' || $vcodec == 'hevc') {
 
 		$cq = $series_model->get_crf();
 		$qmin = $series_model->get_qmin();
@@ -71,7 +78,10 @@ if($disc_type == 'dvd' && ($opt_encode_info || $opt_encode) && ($dvd_encoder == 
 
 		if($hardware == 'nvidia') {
 
-			$ffmpeg->set_vcodec('h264_nvenc');
+			if($vcodec == 'h265' || $vcodec == 'hevc')
+				$handbrake->set_vcodec('hevc_nvenc');
+			else
+				$handbrake->set_vcodec('h264_nvenc');
 
 			$ffmpeg->set_rc_lookahead(32);
 			$ffmpeg->add_argument('rc', 'vbr');
