@@ -43,6 +43,15 @@
 			if($count)
 				return true;
 
+			$sql = "SELECT COUNT(1) FROM dvds WHERE id = $dvd_id AND region IS NULL;";
+			$count = abs(intval($this->get_one($sql)));
+
+			if($debug && $count)
+				echo "* DVD region is unset\n";
+
+			if($count)
+				return true;
+
 			return false;
 
 		}

@@ -16,6 +16,7 @@
 		public $longest_track;
 		public $size;
 		public $side;
+		public $region;
 
 		// DVD Track
 		public $title_track;
@@ -100,6 +101,7 @@
 			$this->longest_track = $this->longest_track();
 			$this->size = $this->size();
 			$this->side = $this->side();
+			$this->region = $this->region();
 
 			return true;
 
@@ -365,6 +367,17 @@
 				return 2;
 			else
 				return 1;
+
+		}
+
+		/**
+		 * Get the region id of the DVD
+		 */
+		public function region() {
+
+			$region = $this->dvd_info['dvd']['region'];
+
+			return $region;
 
 		}
 

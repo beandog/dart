@@ -48,6 +48,11 @@
 			$dvds_model->side = $dvd->side;
 		}
 
+		if(!$dvds_model->region && $disc_type == "dvd") {
+			echo "* DVD region:\t".$dvd->region."\n";
+			$dvds_model->region = $dvd->region;
+		}
+
 	}
 
 	// Flag it as indexed
