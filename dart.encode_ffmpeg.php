@@ -79,9 +79,9 @@ if($disc_type == 'dvd' && ($opt_encode_info || $opt_encode) && ($dvd_encoder == 
 		if($hardware == 'nvidia') {
 
 			if($vcodec == 'h265' || $vcodec == 'hevc')
-				$handbrake->set_vcodec('hevc_nvenc');
+				$ffmpeg->set_vcodec('hevc_nvenc');
 			else
-				$handbrake->set_vcodec('h264_nvenc');
+				$ffmpeg->set_vcodec('h264_nvenc');
 
 			$ffmpeg->set_rc_lookahead(32);
 			$ffmpeg->add_argument('rc', 'vbr');
