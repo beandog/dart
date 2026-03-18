@@ -1,6 +1,8 @@
 #!/usr/bin/env php
 <?php
 
+	$hostname = php_uname('n');
+
 	require_once 'Console/CommandLine.php';
 
 	$parser = new Console_CommandLine();
@@ -42,18 +44,20 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_symlink', array(
-		'long_name' => '--symlink',
-		'description' => 'Create symlinks',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
 	$parser->addOption('opt_json', array(
 		'long_name' => '--json',
 		'description' => 'Display episode info in JSON format',
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	if($hostname == 'dlna.beandog.org' || $hostname == 'dlna') {
+		$parser->addOption('opt_symlink', array(
+			'long_name' => '--symlink',
+			'description' => 'Create symlinks',
+			'action' => 'StoreTrue',
+			'default' => false,
+		));
+	}
 	$parser->addOption('dry_run', array(
 		'short_name' => '-n',
 		'long_name' => '--dry-run',
@@ -61,7 +65,6 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-
 
 	try { $result = $parser->parse(); }
 	catch(PEAR_Exception $e) {
