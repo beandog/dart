@@ -42,8 +42,8 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_link', array(
-		'long_name' => '--link',
+	$parser->addOption('opt_symlink', array(
+		'long_name' => '--symlink',
 		'description' => 'Create symlinks',
 		'action' => 'StoreTrue',
 		'default' => false,
@@ -439,34 +439,87 @@ foreach($filenames as $filename) {
 
 	}
 
-	if($opt_link) {
+	if($opt_symlink) {
+
+		if(!str_contains($realpath, '/opt/plex') && !str_contains($realpath, '/home/beandog/Videos')) {
+			echo "# $realpath not an XFS filename\n";
+			goto next_episode;
+		}
 
 		$library = '';
 
 		$prefix = substr($nsix, 0, 2);
+		$provider_id = '';
 
-		if($collection_id == 1)
-			$library = 'cartoons';
-		elseif($collection_id == 2)
-			$library = 'tv';
-		elseif($collection_id == 3)
-			$library = 'jared';
+		if($collection_id == 1) {
+			$library = 'Cartoons';
+			$provider_id = 'tvdbid';
+		} elseif($collection_id == 2) {
+			$library = 'TV-Shows';
+			$provider_id = 'tvdbid';
+		} elseif($collection_id == 3)
+			goto next_episode;
 		elseif($collection_id == 4)
-			$library = 'movies';
+			$library = 'Movies';
 		elseif($collection_id == 5)
-			$library = 'jared';
+			goto next_episode;
 		elseif($collection_id == 6)
-			$library = 'archives';
-		elseif($collection_id == 7)
-			$library = 'archives';
-		elseif($collection_id == 8 && $prefix == '4K')
-			$library = 'ultrahd';
+			goto next_episode;
+		elseif($collection_id == 7) {
+			$library = 'Two-Player';
+			$provider_id = 'tvdbid';
+		} elseif($collection_id == 8 && $prefix == '4K')
+			$library = '4K-UHD';
 		elseif($collection_id == 8)
-			$library = 'bluray';
+			$library = 'Blu-rays';
 		elseif($collection_id == 9)
-			$library = 'holiday';
+			$library = 'Holidays';
 
+		$xfs_filename = $realpath;
 
+		$symlink_dirname = "/home/beandog/Libraries/$library/";
+		$symlink_series_title = preg_replace("/[^0-9A-Za-z \-_.]/", '', $series_title);
+		$symlink_dirname .= $symlink_series_title;
+		if($production_year) {
+			$symlink_dirname .= " ($production_year)";
+		}
+
+		if($provider_id && $jfin)
+			$symlink_dirname .= " [$provider_id-$jfin]";
+
+		$symlink_dirname .= "/Season ".str_pad($episode_metadata['season'], 2, 0, STR_PAD_LEFT);
+
+		if(!is_dir($symlink_dirname)) {
+
+			$arg_symlink_dirname = escapeshellarg($symlink_dirname);
+			$cmd = "doas -u jellyfin mkdir -p $arg_symlink_dirname";
+
+			exec("$cmd 2>&1", $output, $retval);
+
+			if($retval != 0) {
+				$str = implode(' ', $output);
+				echo "# FAILED $cmd - $str\n";
+				goto next_episode;
+			}
+
+		}
+
+		$symlink_filename = "$symlink_dirname/$symlink_series_title - ";
+		$symlink_filename .= "s".str_pad($season, 2, 0, STR_PAD_LEFT)."e".str_pad($episode_number, 2, 0, STR_PAD_LEFT).".$extension";
+
+		echo "# $filename : '$symlink_filename'\n";
+		$arg_xfs_filename = escapeshellarg($xfs_filename);
+		$arg_symlink_filename = escapeshellarg($symlink_filename);
+
+		$cmd = "doas -u jellyfin ln -s -f -v $arg_xfs_filename $arg_symlink_filename";
+
+		exec("$cmd 2>&1", $output, $retval);
+
+		if($retval != 0) {
+			$str = implode(' ', $output);
+			echo "# FAILED $cmd - $str\n";
+			goto next_episode;
+		}
 
 	}
 
