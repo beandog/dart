@@ -240,18 +240,6 @@
 		'action' => 'StoreString',
 		'default' => null,
 	));
-	$parser->addOption('arg_qmin', array(
-		'long_name' => '--qmin',
-		'description' => 'Set encoding qmin',
-		'action' => 'StoreString',
-		'default' => null,
-	));
-	$parser->addOption('arg_qmax', array(
-		'long_name' => '--qmax',
-		'description' => 'Set encoding qmax',
-		'action' => 'StoreString',
-		'default' => null,
-	));
 	$parser->addOption('arg_fps', array(
 		'long_name' => '--fps',
 		'description' => 'Set encoding FPS',

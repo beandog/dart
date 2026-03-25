@@ -415,8 +415,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 				$cq = $series_model->get_crf();
 
 				$ffmpeg->set_cq($cq);
-				$ffmpeg->set_qmin($cq);
-				$ffmpeg->set_qmax($cq);
 
 				$ffmpeg->set_crf(null);
 

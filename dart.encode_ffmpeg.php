@@ -66,15 +66,9 @@ if($disc_type == 'dvd' && ($opt_encode_info || $opt_encode) && ($dvd_encoder == 
 	if($vcodec == 'h264' || $vcodec == 'avc' || $vcodec == 'h265' || $vcodec == 'hevc') {
 
 		$cq = $series_model->get_crf();
-		$qmin = $series_model->get_qmin();
-		$qmax = $series_model->get_qmax();
 
 		if($arg_crf)
 			$cq = $arg_crf;
-		if($arg_qmin)
-			$qmin = $arg_qmin;
-		if($arg_qmax)
-			$qmax = $arg_qmax;
 
 		if($hardware == 'nvidia') {
 
@@ -92,10 +86,6 @@ if($disc_type == 'dvd' && ($opt_encode_info || $opt_encode) && ($dvd_encoder == 
 
 			if($cq)
 				$arr_metadata[] = "cq=$cq";
-			if($qmin)
-				$arr_metadata[] = "qmin=$qmin";
-			if($qmax)
-				$arr_metadata[] = "qmax=$qmax";
 
 		}
 
@@ -112,18 +102,12 @@ if($disc_type == 'dvd' && ($opt_encode_info || $opt_encode) && ($dvd_encoder == 
 
 			if($cq)
 				$arr_metadata[] = "cq=$cq";
-			if($qmin)
-				$arr_metadata[] = "qmin=$qmin";
-			if($qmax)
-				$arr_metadata[] = "qmax=$qmax";
 
 		}
 
 		$ffmpeg->set_crf(null);
 
 		$ffmpeg->set_cq($cq);
-		$ffmpeg->set_qmin($qmin);
-		$ffmpeg->set_qmax($qmax);
 
 	}
 
@@ -139,8 +123,6 @@ if($disc_type == 'dvd' && ($opt_encode_info || $opt_encode) && ($dvd_encoder == 
 			$ffmpeg->set_preset('veryslow');
 
 		$ffmpeg->set_cq(null);
-		$ffmpeg->set_qmin(null);
-		$ffmpeg->set_qmax(null);
 
 		$video_quality = intval($series_model->get_crf());
 
