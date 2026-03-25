@@ -309,10 +309,8 @@
 				$args['vf'] = $vf;
 			}
 
-			if($this->cq) {
-				$args['b:v'] = 0;
+			if($this->cq)
 				$args['cq'] = $this->cq;
-			}
 
 			if($this->rc_lookahead)
 				$args['rc-lookahead'] = $this->rc_lookahead;
