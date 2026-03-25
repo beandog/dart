@@ -298,7 +298,7 @@
 			if($this->acodec_opts)
 				$args['acodec_opts'] = $this->acodec_opts;
 
-			if($this->acodec == 'libfdk_aac')
+			if($this->acodec == 'aac')
 				$args['vbr'] = 5;
 
 			if($this->acodec == 'libmp3lame')

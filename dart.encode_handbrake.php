@@ -102,16 +102,14 @@ if($disc_type == 'dvd' && $dvd_encoder == 'handbrake' && ($opt_encode_info || $o
 
 	$acodec = $series_model->get_acodec();
 
-	if($arg_acodec && ($arg_acodec == 'aac' || $arg_acodec == 'flac'))
+	if($arg_acodec && ($arg_acodec == 'aac' || $arg_acodec == 'mp3'))
 		$acodec = $arg_acodec;
 
 	if($acodec == 'aac') {
-		$acodec = 'fdk_aac';
+		$acodec = 'av_aac';
 		$handbrake->set_audio_vbr(5);
 	} elseif($acodec == 'mp3') {
 		$handbrake->set_audio_vbr(0);
-	} elseif($acodec == 'flac') {
-		$acodec = 'flac16';
 	}
 
 	$handbrake->add_acodec($acodec);

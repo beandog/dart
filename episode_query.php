@@ -138,7 +138,7 @@
 		if(file_exists($mp4))
 			goto next_episode;
 
-		$cmd = "ffmpeg -i $arg_source -vcodec 'copy' -acodec 'libfdk_aac' -vbr '5' -scodec 'copy' -map_metadata '0' -movflags '+faststart' -y $arg_mp4";
+		$cmd = "ffmpeg -i $arg_source -vcodec 'copy' -acodec 'aac' -vbr '5' -scodec 'copy' -map_metadata '0' -movflags '+faststart' -y $arg_mp4";
 
 		if($opt_time)
 			$cmd = "tout $cmd";

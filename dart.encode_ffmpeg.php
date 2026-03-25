@@ -150,11 +150,11 @@ if($disc_type == 'dvd' && ($opt_encode_info || $opt_encode) && ($dvd_encoder == 
 
 	$acodec = $series_model->get_acodec();
 
-	if($arg_acodec && ($arg_acodec == 'aac' || $arg_acodec == 'flac' || $arg_acodec == 'mp3'))
+	if($arg_acodec && ($arg_acodec == 'aac' || $arg_acodec == 'mp3'))
 		$acodec = $arg_acodec;
 
 	if($acodec == 'aac')
-		$acodec = 'libfdk_aac';
+		$acodec = 'aac';
 
 	if($acodec == 'mp3')
 		$acodec = 'libmp3lame';

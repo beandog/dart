@@ -170,11 +170,8 @@
 
 		}
 
-		// FIXME limit to set audio encoders
 		public function add_acodec($str) {
-			if($str == 'flac')
-				$str = 'flac24';
-			if(!is_null($str))
+			if($str == 'ac3' || $str == 'dts' || $str == 'mp3' || $str == 'copy' || $str == 'aac')
 				$this->acodecs[] = $str;
 		}
 
