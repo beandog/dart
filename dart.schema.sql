@@ -2,10 +2,10 @@
 -- PostgreSQL database dump
 --
 
-\restrict NKIyYDzgkygAkqsyF8phTIKSADWftPhTDdB68bg97k4PW3SUMHVI9ViVmuB66bc
+\restrict WFHM0xA6jS6fBDTuNmmyAUob5AAgfyevV9JXEo5JHzyFLJ7bFYt0PsgYTlgwHtK
 
--- Dumped from database version 16.10 (Ubuntu 16.10-0ubuntu0.24.04.1)
--- Dumped by pg_dump version 16.10 (Ubuntu 16.10-0ubuntu0.24.04.1)
+-- Dumped from database version 16.13 (Ubuntu 16.13-0ubuntu0.24.04.1)
+-- Dumped by pg_dump version 16.13 (Ubuntu 16.13-0ubuntu0.24.04.1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -317,7 +317,8 @@ CREATE TABLE public.dvds (
     side smallint,
     notes character varying DEFAULT ''::character varying NOT NULL,
     bluray smallint DEFAULT 0 NOT NULL,
-    package_title character varying(255) DEFAULT ''::character varying NOT NULL
+    package_title character varying(255) DEFAULT ''::character varying NOT NULL,
+    region smallint
 );
 
 
@@ -402,7 +403,9 @@ CREATE TABLE public.series (
     ripping_id integer DEFAULT 1 NOT NULL,
     x264_preset character varying(9) DEFAULT ''::character varying NOT NULL,
     jfin character varying(255) DEFAULT ''::character varying NOT NULL,
-    video_filter_id integer DEFAULT 1 NOT NULL
+    bwdif character varying(10) DEFAULT ''::character varying NOT NULL,
+    denoise character varying(255) DEFAULT ''::character varying NOT NULL,
+    legacy_crf smallint
 );
 
 
@@ -703,18 +706,16 @@ ALTER SEQUENCE public.encodes_id_seq OWNED BY public.encodes.id;
 CREATE TABLE public.presets (
     id integer NOT NULL,
     name character varying(255) DEFAULT ''::character varying NOT NULL,
-    crf integer DEFAULT 20,
+    crf smallint DEFAULT 22,
     format character varying DEFAULT 'mkv'::character varying NOT NULL,
     acodec character varying DEFAULT 'copy'::character varying NOT NULL,
     x264_tune character varying(255) DEFAULT ''::character varying NOT NULL,
     fps character varying DEFAULT '30'::character varying,
     vcodec character varying(16) DEFAULT 'x264'::character varying NOT NULL,
-    cq smallint,
-    qmin smallint,
-    qmax smallint,
     denoise character varying(255) DEFAULT ''::character varying NOT NULL,
     sharpen character varying(255) DEFAULT ''::character varying NOT NULL,
-    sharpen_tune character varying(255) DEFAULT ''::character varying NOT NULL
+    sharpen_tune character varying(255) DEFAULT ''::character varying NOT NULL,
+    legacy_crf smallint
 );
 
 
@@ -967,40 +968,6 @@ ALTER SEQUENCE public.tracks_id_seq OWNED BY public.tracks.id;
 
 
 --
--- Name: video_filters; Type: TABLE; Schema: public; Owner: steve
---
-
-CREATE TABLE public.video_filters (
-    id integer NOT NULL,
-    video_filter character varying(255) DEFAULT ''::character varying NOT NULL
-);
-
-
-ALTER TABLE public.video_filters OWNER TO steve;
-
---
--- Name: video_filters_id_seq; Type: SEQUENCE; Schema: public; Owner: steve
---
-
-CREATE SEQUENCE public.video_filters_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.video_filters_id_seq OWNER TO steve;
-
---
--- Name: video_filters_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: steve
---
-
-ALTER SEQUENCE public.video_filters_id_seq OWNED BY public.video_filters.id;
-
-
---
 -- Name: view_episode_eng_subs; Type: VIEW; Schema: public; Owner: steve
 --
 
@@ -1218,13 +1185,6 @@ ALTER TABLE ONLY public.tracks ALTER COLUMN id SET DEFAULT nextval('public.track
 
 
 --
--- Name: video_filters id; Type: DEFAULT; Schema: public; Owner: steve
---
-
-ALTER TABLE ONLY public.video_filters ALTER COLUMN id SET DEFAULT nextval('public.video_filters_id_seq'::regclass);
-
-
---
 -- Name: audio audio_pkey; Type: CONSTRAINT; Schema: public; Owner: steve
 --
 
@@ -1308,14 +1268,6 @@ ALTER TABLE ONLY public.dvds
     ADD CONSTRAINT dvds_pkey PRIMARY KEY (id);
 
 ALTER TABLE public.dvds CLUSTER ON dvds_pkey;
-
-
---
--- Name: encodes encodes_filename_key; Type: CONSTRAINT; Schema: public; Owner: steve
---
-
-ALTER TABLE ONLY public.encodes
-    ADD CONSTRAINT encodes_filename_key UNIQUE (filename);
 
 
 --
@@ -1408,14 +1360,6 @@ ALTER TABLE ONLY public.tracks
     ADD CONSTRAINT tracks_pkey PRIMARY KEY (id);
 
 ALTER TABLE public.tracks CLUSTER ON tracks_pkey;
-
-
---
--- Name: video_filters video_filters_pkey; Type: CONSTRAINT; Schema: public; Owner: steve
---
-
-ALTER TABLE ONLY public.video_filters
-    ADD CONSTRAINT video_filters_pkey PRIMARY KEY (id);
 
 
 --
@@ -1523,14 +1467,6 @@ ALTER TABLE ONLY public.series
 
 
 --
--- Name: series series_video_filter_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: steve
---
-
-ALTER TABLE ONLY public.series
-    ADD CONSTRAINT series_video_filter_id_fkey FOREIGN KEY (video_filter_id) REFERENCES public.video_filters(id) ON DELETE SET NULL;
-
-
---
 -- Name: subp subp_track_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: steve
 --
 
@@ -1550,5 +1486,5 @@ ALTER TABLE ONLY public.tracks
 -- PostgreSQL database dump complete
 --
 
-\unrestrict NKIyYDzgkygAkqsyF8phTIKSADWftPhTDdB68bg97k4PW3SUMHVI9ViVmuB66bc
+\unrestrict WFHM0xA6jS6fBDTuNmmyAUob5AAgfyevV9JXEo5JHzyFLJ7bFYt0PsgYTlgwHtK
 
