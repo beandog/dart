@@ -63,31 +63,26 @@ if($disc_type == 'dvd' && ($opt_encode_info || $opt_encode) && ($dvd_encoder == 
 
 	/** Video **/
 
-	if($vcodec == 'h264' || $vcodec == 'avc' || $vcodec == 'h265' || $vcodec == 'hevc') {
+	if($vcodec == 'avc' || $vcodec == 'hevc') {
 
 		$cq = $series_model->get_crf();
 
 		if($arg_crf)
 			$cq = $arg_crf;
 
-		if($hardware == 'nvidia') {
+		if($vcodec == 'avc')
+			$ffmpeg->set_vcodec('h264_nvenc');
+		elseif($vcodec == 'hevc')
+			$ffmpeg->set_vcodec('hevc_nvenc');
 
-			if($vcodec == 'h265' || $vcodec == 'hevc')
-				$ffmpeg->set_vcodec('hevc_nvenc');
-			else
-				$ffmpeg->set_vcodec('h264_nvenc');
+		$ffmpeg->set_rc_lookahead(32);
 
-			$ffmpeg->set_rc_lookahead(32);
-			$ffmpeg->add_argument('rc', 'vbr');
-			$ffmpeg->add_argument('tune', 'hq');
-			$ffmpeg->add_argument('preset', 'p7');
+		$rate_control = 'vbr';
+		$ffmpeg->add_argument('rc', $rate_control);
+		$ffmpeg->add_argument('preset', 'p7');
 
-			$arr_metadata[] = "hw=nvidia";
-
-			if($cq)
-				$arr_metadata[] = "cq=$cq";
-
-		}
+		$arr_metadata[] = "cq=$cq";
+		$arr_metadata[] = "rc=$rate_control";
 
 		$ffmpeg->set_crf(null);
 
