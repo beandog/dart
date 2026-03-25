@@ -292,8 +292,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy || $opt_ffplay || $opt_ffprob
 		 */
 		if($disc_type == 'dvd' && $dvd_encoder == 'remux') {
 
-			$filename = "remux-$filename";
-
 			if(!($opt_skip_existing && file_exists($filename))) {
 
 				require 'dart.dvd_copy.php';
