@@ -278,11 +278,6 @@ if($disc_indexed && ($opt_encode_info || $opt_copy || $opt_ffplay || $opt_ffprob
 		if($disc_type == 'dvd' && $dvd_encoder == 'dvd_copy') {
 
 			require 'dart.dvd_copy.php';
-			/*
-			$dvd_copy->input_filename($input_filename);
-			$dvd_copy->output_filename($filename);
-			$dvd_copy_command = $dvd_copy->get_executable_string();
-			*/
 			echo "$dvd_copy_command\n";
 
 		}
