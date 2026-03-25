@@ -82,11 +82,11 @@
 		$opt_skip_existing = true;
 		$opt_time = true;
 
-		$opt_copy_info = false;
 		$opt_encode_info = false;
 		$opt_ffplay = false;
 		$opt_ffprobe = false;
 		$opt_reumx = false;
+		$opt_copy = false;
 		$opt_scan = false;
 
 	}
@@ -197,10 +197,10 @@
 		}
 	}
 
-	if($opt_encode_info || $opt_encode || $opt_copy_info || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe)
+	if($opt_encode_info || $opt_encode || $opt_copy || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe)
 		$batch_mode = true;
 
-	if(!count($devices) && ($opt_info || $opt_encode_info || $opt_encode || $opt_copy_info || $opt_backup || $opt_import || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe))
+	if(!count($devices) && ($opt_info || $opt_encode_info || $opt_encode || $opt_copy || $opt_backup || $opt_import || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe))
 		$devices = $all_devices;
 
 	foreach($devices as $device) {
@@ -281,7 +281,7 @@
 
 
 		// Determine whether we are reading the device
-		if($opt_info || $opt_encode_info || $opt_encode || $opt_copy_info || $opt_import || $opt_backup || $opt_geniso || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe || $opt_rip_o_matic) {
+		if($opt_info || $opt_encode_info || $opt_encode || $opt_copy || $opt_import || $opt_backup || $opt_geniso || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe || $opt_rip_o_matic) {
 			if($debug)
 				echo "* Info / Import / Archive / ISO: Enabling device access\n";
 			$access_device = true;
@@ -422,7 +422,7 @@
 			else
 				goto next_device;
 
-			if($disc_type == 'bluray' && ($opt_copy_info || $opt_remux)) {
+			if($disc_type == 'bluray' && $opt_remux) {
 				echo "Use --encode-info with --ffmpeg or --ffpipe to copy or remux playlists\n";
 				goto next_device;
 			}
@@ -487,7 +487,7 @@
 
 			// Only need to display if it's imported if requesting import or
 			// getting DVD info.
-			if($opt_import || $opt_info || $opt_encode_info || $opt_encode || $opt_copy_info) {
+			if($opt_import || $opt_info || $opt_encode_info || $opt_encode || $opt_copy) {
 				if(!$batch_mode) {
 					if($disc_indexed) {
 						echo "* Imported:\tYes\n";

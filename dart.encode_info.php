@@ -1,7 +1,7 @@
 <?php
 
 // Display encode instructions about a disc
-if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_encode)) {
+if($disc_indexed && ($opt_encode_info || $opt_copy || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_encode)) {
 
 	// Override in config.local.php
 	if(isset($config_qa_max))
@@ -35,7 +35,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		$dvd_encoder = 'ffprobe';
 	elseif($opt_ffpipe)
 		$dvd_encoder = 'ffpipe';
-	elseif($opt_copy_info)
+	elseif($opt_copy)
 		$dvd_encoder = 'dvd_copy';
 	elseif($opt_remux)
 		$dvd_encoder = 'remux';
@@ -57,6 +57,9 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 
 	if(!$opt_mp4 && !$opt_mkv)
 		$container = 'mkv';
+
+	if($dvd_encoder == 'dvd_copy')
+		$container = 'mpg';
 
 	if(isset($config_container))
 		$container = $config_container;
@@ -137,7 +140,7 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		if($arg_fps)
 			$fps = $arg_fps;
 
-		if($disc_type == 'dvd' && $opt_copy_info)
+		if($disc_type == 'dvd' && $opt_copy && !$opt_remux)
 			$container = 'mpg';
 
 		if($disc_type == 'dvd' && $opt_scan) {
@@ -275,9 +278,11 @@ if($disc_indexed && ($opt_encode_info || $opt_copy_info || $opt_ffplay || $opt_f
 		if($disc_type == 'dvd' && $dvd_encoder == 'dvd_copy') {
 
 			require 'dart.dvd_copy.php';
+			/*
 			$dvd_copy->input_filename($input_filename);
 			$dvd_copy->output_filename($filename);
 			$dvd_copy_command = $dvd_copy->get_executable_string();
+			*/
 			echo "$dvd_copy_command\n";
 
 		}

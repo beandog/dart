@@ -68,12 +68,6 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_copy_info', array(
-		'long_name' => '--copy-info',
-		'description' => 'Display dvd_copy instructions for a DVD',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
 	$parser->addOption('opt_no_subtitles', array(
 		'long_name' => '--no-subtitles',
 		'description' => 'Copy subtitle streams',
@@ -219,6 +213,12 @@
 	$parser->addOption('opt_remux', array(
 		'long_name' => '--remux',
 		'description' => 'Remux a DVD episode using ffmpeg for debugging',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
+	$parser->addOption('opt_copy', array(
+		'long_name' => '--copy',
+		'description' => 'Copy DVD / Blu-ray tracks to filesystem',
 		'action' => 'StoreTrue',
 		'default' => false,
 	));

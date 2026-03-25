@@ -7,7 +7,7 @@ if($disc_type == 'dvd' && $opt_encode) {
 	if($opt_skip_existing && file_exists($filename))
 		goto next_episode;
 
-	$cmd = "pgrep -af '^(HandBrakeCLI|rsync|emo|ffmpeg)'";
+	$cmd = "pgrep -af '^(HandBrakeCLI|rsync|emo|ffmpeg|dvd_copy)'";
 	if($debug) {
 		echo "* Looking for encode of '$filename'\n";
 		echo "* Executing: $cmd\n";
