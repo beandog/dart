@@ -89,22 +89,6 @@ if($disc_type == 'dvd' && ($opt_encode_info || $opt_encode) && ($dvd_encoder == 
 
 		}
 
-		if($hardware == 'amd') {
-
-			$ffmpeg->set_vcodec('h264_vaapi');
-
-			$ffmpeg->add_argument('vaapi_device', '/dev/dri/renderD129');
-			$ffmpeg->add_argument('rc_mode', '1');
-			$ffmpeg->set_rc_lookahead(0);
-			$ffmpeg->add_video_filter('format=nv12,hwupload');
-
-			$arr_metadata[] = "hw=amd";
-
-			if($cq)
-				$arr_metadata[] = "cq=$cq";
-
-		}
-
 		$ffmpeg->set_crf(null);
 
 		$ffmpeg->set_cq($cq);
