@@ -487,7 +487,7 @@
 
 			// Only need to display if it's imported if requesting import or
 			// getting DVD info.
-			if($opt_import || $opt_info || $opt_encode_info || $opt_encode || $opt_copy) {
+			if($opt_import || $opt_info || $opt_encode_info || $opt_encode || $opt_copy || $opt_remux) {
 				if(!$batch_mode) {
 					if($disc_indexed) {
 						echo "* Imported:\tYes\n";

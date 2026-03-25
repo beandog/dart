@@ -287,20 +287,20 @@ if($disc_indexed && ($opt_encode_info || $opt_copy || $opt_ffplay || $opt_ffprob
 		 */
 		if($disc_type == 'dvd' && $dvd_encoder == 'remux') {
 
-			if(!($opt_skip_existing && file_exists($filename))) {
+			require 'dart.dvd_copy.php';
+			$dvd_copy->input_filename($input_filename);
+			$dvd_copy->output_filename('-');
+			$dvd_copy_command = $dvd_copy->get_executable_string();
 
-				require 'dart.dvd_copy.php';
-				$dvd_copy->input_filename($input_filename);
-				$dvd_copy->output_filename('-');
-				$dvd_copy_command = $dvd_copy->get_executable_string();
+			$dvd_remux_command = "$dvd_copy_command 2> /dev/null | ffmpeg -fflags +genpts -i - -vcodec copy -acodec copy -sn -y $filename";
+			if($encode_subtitles)
+				$dvd_remux_command = "$dvd_copy_command 2> /dev/null | ffmpeg -fflags +genpts -i - -codec copy -y $filename";
 
-				$dvd_remux_command = "$dvd_copy_command 2> /dev/null | ffmpeg -fflags +genpts -i - -vcodec copy -acodec copy -sn -y $filename";
-				if($encode_subtitles)
-					$dvd_remux_command = "$dvd_copy_command 2> /dev/null | ffmpeg -fflags +genpts -i - -codec copy -y $filename";
-
+			if($opt_encode_info)
 				echo "$dvd_remux_command\n";
 
-			}
+			$encoder_command = $dvd_remux_command;
+			require 'dart.encode_episode.php';
 
 		}
 
