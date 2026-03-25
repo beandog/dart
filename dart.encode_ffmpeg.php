@@ -63,6 +63,8 @@ if($disc_type == 'dvd' && ($opt_encode_info || $opt_encode) && ($dvd_encoder == 
 
 	/** Video **/
 
+	$rate_control = '';
+
 	if($vcodec == 'avc' || $vcodec == 'hevc') {
 
 		$cq = $series_model->get_crf();
@@ -76,13 +78,15 @@ if($disc_type == 'dvd' && ($opt_encode_info || $opt_encode) && ($dvd_encoder == 
 			$ffmpeg->set_vcodec('hevc_nvenc');
 
 		$ffmpeg->set_rc_lookahead(32);
-
-		$rate_control = 'vbr';
-		$ffmpeg->add_argument('rc', $rate_control);
 		$ffmpeg->add_argument('preset', 'p7');
 
+		// This was originally added, but all ffmpeg examples in docs simply pass cq
+		// $rate_control = 'vbr';
+		// $ffmpeg->add_argument('rc', $rate_control);
+		// if($rate_contorl)
+		//	$arr_metadata[] = "rc=$rate_control";
+
 		$arr_metadata[] = "cq=$cq";
-		$arr_metadata[] = "rc=$rate_control";
 
 		$ffmpeg->set_crf(null);
 
