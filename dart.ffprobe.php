@@ -93,10 +93,26 @@ if($disc_indexed && $opt_ffprobe) {
 
 		}
 
-		if($opt_encode_info)
+		if($opt_encode_info) {
 			echo "$ffmpeg_command\n";
-		else
+			continue;
+		}
+
+		// If you ever feel like showing it in JSON
+		$opt_json = false;
+		if($opt_json) {
+			$ffmpeg_command .= ' -show_format -of json -show_streams 2> /dev/null';
 			passthru($ffmpeg_command);
+			continue;
+		}
+
+		echo "[Probing]\n";
+		$arg_device = escapeshellarg($device);
+		echo "* Source: $arg_device\n";
+		echo "* Track: ".$tracks_model->ix."\n";
+
+		echo "[ffmpeg]\n";
+		passthru($ffmpeg_command);
 
 	}
 
