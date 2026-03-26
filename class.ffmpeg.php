@@ -253,17 +253,18 @@
 			elseif($this->verbose)
 				$cmd[] = "-loglevel 'verbose'";
 
-			if($this->disc_type == 'dvd')
-				$cmd[] = "-f 'dvdvideo'";
-
-			if($this->dvd_track && $this->disc_type == 'dvd')
-				$cmd[] = "-title '".$this->dvd_track."'";
-			if($this->disc_type == 'bluray')
-				$cmd[] = "-playlist '".$this->dvd_track."'";
-			if($this->start_chapter && $this->disc_type == 'dvd')
-				$cmd[] = "-chapter_start '".$this->start_chapter."'";
-			if($this->start_chapter && $this->disc_type == 'bluray')
-				$cmd[] = "-chapter '".$this->start_chapter."'";
+			if($this->encoder != 'ffpipe') {
+				if($this->disc_type == 'dvd')
+					$cmd[] = "-f 'dvdvideo'";
+				if($this->dvd_track && $this->disc_type == 'dvd')
+					$cmd[] = "-title '".$this->dvd_track."'";
+				if($this->disc_type == 'bluray')
+					$cmd[] = "-playlist '".$this->dvd_track."'";
+				if($this->start_chapter && $this->disc_type == 'dvd')
+					$cmd[] = "-chapter_start '".$this->start_chapter."'";
+				if($this->start_chapter && $this->disc_type == 'bluray')
+					$cmd[] = "-chapter '".$this->start_chapter."'";
+			}
 
 			$arg_input = escapeshellarg($this->input_filename);
 			if($this->disc_type == 'bluray')
