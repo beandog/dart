@@ -41,8 +41,19 @@ if($disc_type == 'dvd' && ($opt_encode_info || $opt_encode) && ($dvd_encoder == 
 
 	} elseif($dvd_encoder == 'ffpipe') {
 
+		$dvd_copy = new DVDCopy();
+
+		if($debug)
+			$dvd_copy->debug();
+
+		if($verbose)
+			$dvd_copy->verbose();
+
 		$dvd_copy->input_filename($input_filename);
 		$dvd_copy->output_filename('-');
+		$dvd_copy->input_track($tracks_model->ix);
+		$dvd_copy->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
+
 		$dvd_copy_command = $dvd_copy->get_executable_string();
 
 		$ffmpeg->disc_type = 'dvdcopy';
