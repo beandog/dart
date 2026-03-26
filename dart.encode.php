@@ -146,7 +146,9 @@ if($disc_indexed && ($opt_encode_info || $opt_ffplay || $opt_ffprobe || $opt_sca
 
 		if($disc_type == 'dvd' && $opt_scan) {
 
-			$handbrake_command = "HandBrakeCLI --input '".escapeshellcmd($input_filename)."'";
+			$arg_input_filename = escapeshellarg($input_filename);
+
+			$handbrake_command = "HandBrakeCLI --input $arg_input_filename";
 
 			$tracks_model = new Tracks_Model($episodes_model->track_id);
 
