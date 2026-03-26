@@ -331,6 +331,8 @@
 
 			if($this->encoder == 'ffpipe')
 				$encoder = 'ffmpeg';
+			if($this->input_filename == '-')
+				$encoder = 'ffplay';
 
 			$cmd[] = $encoder;
 
