@@ -1,7 +1,7 @@
 <?php
 
 // Display encode instructions about a disc
-if($disc_indexed && ($opt_encode_info || $opt_scan || $opt_encode || $opt_copy || $opt_remux) && !$opt_ffplay && !$opt_ffprobe) {
+if($disc_indexed && ($opt_encode_info || $opt_scan || $opt_encode || $opt_copy || $opt_remux || $opt_ffprobe) && !$opt_ffplay) {
 
 	// Override in config.local.php
 	if(isset($config_qa_max))
@@ -107,6 +107,106 @@ if($disc_indexed && ($opt_encode_info || $opt_scan || $opt_encode || $opt_copy |
 				$video_deint = $dvd_deint;
 		}
 		$video_format = strtolower($tracks_model->format);
+
+		/** Probe discs with ffmpeg **/
+		if($opt_ffprobe) {
+
+			$ffmpeg = new FFMpeg();
+
+			if($debug)
+				$ffmpeg->debug();
+
+			if($verbose)
+				$ffmpeg->verbose();
+
+			// Refetch since it's been modified above
+			$dvd_encoder = $dvds_model->get_encoder();
+
+			if($disc_type == 'dvd') {
+
+				if($dvd_encoder != 'ffpipe') {
+
+					$ffmpeg->set_encoder('ffprobe');
+
+					$ffmpeg->input_filename($input_filename);
+
+					$ffmpeg->input_track($tracks_model->ix);
+
+					// $ffmpeg_command = $ffmpeg->get_executable_string();
+					$ffmpeg_command = $ffmpeg->ffprobe();
+
+				}
+
+				if($dvd_encoder == 'ffpipe') {
+
+					$ffmpeg->set_encoder('ffpipe');
+
+					$ffmpeg->input_filename('-');
+
+					$dvd_copy = new DVDCopy();
+
+					$dvd_copy->input_filename($input_filename);
+					$dvd_copy->output_filename('-');
+					$dvd_copy->input_track($tracks_model->ix);
+
+					$dvd_copy_command = $dvd_copy->get_executable_string();
+
+					$dvd_copy_command .= ' 2> /dev/null';
+
+					// $ffmpeg_command = $ffmpeg->get_executable_string();
+					$ffmpeg_command = $ffmpeg->ffprobe();
+
+					$ffmpeg_command = "$dvd_copy_command | $ffmpeg_command";
+
+				}
+
+			}
+
+			if($disc_type == 'bluray') {
+
+				$dvd_bugs = $dvds_model->get_bugs();
+
+				$ffmpeg->set_disc_type('bluray');
+
+				$ffmpeg->input_filename($input_filename);
+
+				$ffmpeg->input_track($tracks_model->ix);
+
+				$starting_chapter = $episodes_model->starting_chapter;
+				if($starting_chapter)
+					$ffmpeg->set_chapters($starting_chapter, null);
+
+				$ffmpeg->set_encoder('ffprobe');
+				// $ffmpeg_command = $ffmpeg->get_executable_string();
+				$ffmpeg_command = $ffmpeg->ffprobe();
+
+			}
+
+			if($opt_encode_info) {
+				echo "$ffmpeg_command\n";
+				continue;
+			}
+
+			// If you ever feel like showing it in JSON
+			$opt_json = false;
+			if($opt_json) {
+				$ffmpeg_command .= ' -show_format -of json -show_streams 2> /dev/null';
+				passthru($ffmpeg_command);
+				continue;
+			}
+
+			echo "[Probing]\n";
+			$arg_device = escapeshellarg($device);
+			echo "* Source: $arg_device\n";
+			echo "* Track: ".$tracks_model->ix."\n";
+
+			echo "[ffmpeg]\n";
+
+			passthru($ffmpeg_command);
+
+			continue;
+
+		}
 
 		$uhd = false;
 		if($disc_type == 'bluray' && substr($nsix, 0, 2) == '4K')
