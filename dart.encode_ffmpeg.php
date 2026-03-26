@@ -89,12 +89,6 @@ if($disc_type == 'dvd' && ($opt_encode_info || $opt_encode) && ($dvd_encoder == 
 		$ffmpeg->set_rc_lookahead(32);
 		$ffmpeg->add_argument('preset', 'p7');
 
-		// This was originally added, but all ffmpeg examples in docs simply pass cq
-		// $rate_control = 'vbr';
-		// $ffmpeg->add_argument('rc', $rate_control);
-		// if($rate_contorl)
-		//	$arr_metadata[] = "rc=$rate_control";
-
 		$arr_metadata[] = "cq=$cq";
 
 		$ffmpeg->set_crf(null);
