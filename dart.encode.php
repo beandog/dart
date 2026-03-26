@@ -324,35 +324,51 @@ if($disc_indexed && ($opt_encode_info || $opt_ffplay || $opt_ffprobe || $opt_sca
 
 		}
 
-		/** Copy DVD tracks **/
+		/** Copy or remux DVD tracks **/
 
-		if($disc_type == 'dvd' && $dvd_encoder == 'dvd_copy' && !$opt_ffplay && !$opt_ffprobe) {
+		if($disc_type == 'dvd' && ($dvd_encoder == 'dvd_copy' || $dvd_encoder == 'dvd_remux') && !$opt_ffplay && !$opt_ffprobe) {
 
-			require 'dart.dvd_copy.php';
+			$dvd_copy = new DVDCopy();
 
-			$dvd_copy_command = $dvd_copy->get_executable_string();
+			if($debug)
+				$dvd_copy->debug();
 
-			if($opt_encode_info)
-				echo "$dvd_copy_command\n";
-			else
-				require 'dart.encode_episode.php';
+			if($verbose)
+				$dvd_copy->verbose();
 
-		}
+			$dvd_copy->input_filename($input_filename);
+			$dvd_copy->input_track($tracks_model->ix);
+			$dvd_copy->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
 
-		/** Remux DVD tracks **/
+			if($dvd_encoder == 'dvd_copy') {
 
-		if($disc_type == 'dvd' && $dvd_encoder == 'dvd_remux' && !$opt_ffplay && !$opt_ffprobe) {
+				require 'dart.dvd_copy.php';
 
-			require 'dart.dvd_copy.php';
+				$dvd_copy->output_filename($filename);
 
-			$dvd_copy->output_filename('-');
+				$dvd_copy_command = $dvd_copy->get_executable_string();
 
-			$dvd_copy_command = $dvd_copy->get_executable_string();
+				if($opt_encode_info)
+					echo "$dvd_copy_command\n";
+				else
+					require 'dart.encode_episode.php';
 
-			if($opt_encode_info)
-				echo "$dvd_copy_command | $ffmpeg_command\n";
-			else
-			require 'dart.encode_episode.php';
+			}
+
+			if($dvd_encoder == 'dvd_remux') {
+
+				require 'dart.dvd_copy.php';
+
+				$dvd_copy->output_filename('-');
+
+				$dvd_copy_command = $dvd_copy->get_executable_string();
+
+				if($opt_encode_info)
+					echo "$dvd_copy_command | $ffmpeg_command\n";
+				else
+					require 'dart.encode_episode.php';
+
+			}
 
 		}
 
