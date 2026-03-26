@@ -541,56 +541,6 @@ if($disc_indexed && ($opt_encode_info || $opt_ffplay || $opt_ffprobe || $opt_sca
 
 		}
 
-		// Use dvd_rip
-		/*
-		// Skipping for now as it will probably be removed or replaced
-		if($disc_type == 'dvd' && $opt_encode_info && $opt_dvdrip) {
-
-			$dvdrip = new DVDRip;
-			$dvdrip->verbose($verbose);
-			$dvdrip->debug($debug);
-
-			$dvdrip->input_filename($input_filename);
-			$dvdrip->input_track($tracks_model->ix);
-
-			$dvdrip->set_vcodec($vcodec);
-			$video_quality = $series_model->get_crf();
-
-			if($arg_crf)
-				$video_quality = abs(intval($arg_crf));
-
-			$dvdrip->set_video_quality($video_quality);
-
-			$dvdrip->set_acodec('en');
-
-			$acodec = $series_model->get_acodec();
-
-			$acodec = 'aac';
-
-			$dvdrip->set_acodec($acodec);
-
-			$dvdrip->set_audio_lang('en');
-
-			$dvdrip->set_subtitle_lang('en');
-
-			$starting_chapter = $episodes_model->starting_chapter;
-			$ending_chapter = $episodes_model->ending_chapter;
-			if($starting_chapter || $ending_chapter) {
-				$dvdrip->set_chapters($starting_chapter, $ending_chapter);
-			}
-
-			$dvdrip->output_filename($filename);
-
-			$dvdrip_command = $dvdrip->get_executable_string();
-
-			if($opt_time)
-				$dvdrip_command = "tout $dvdrip_command";
-
-			echo "$dvdrip_command\n";
-
-		}
-		*/
-
 	}
 
 }
