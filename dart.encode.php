@@ -265,7 +265,8 @@ if($disc_indexed && ($opt_encode_info || $opt_ffplay || $opt_ffprobe || $opt_sca
 
 			$ffprobe_command = $ffmpeg->ffprobe();
 
-			echo "$ffprobe_command\n";
+			if($opt_encode_info)
+				echo "$ffprobe_command\n";
 
 		}
 
