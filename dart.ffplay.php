@@ -1,6 +1,6 @@
 <?php
 
-if($disc_indexed && ($opt_ffplay || $opt_ffprobe)) {
+if($disc_indexed && $opt_ffplay) {
 
 	if(isset($config_qa_max))
 		$qa_max = $config_qa_max;
