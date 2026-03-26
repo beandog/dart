@@ -501,7 +501,7 @@
 
 		require 'dart.import.php';
 		require 'dart.info.php';
-		require 'dart.encode_info.php';
+		require 'dart.encode.php';
 		require 'dart.backup.php';
 		require 'dart.geniso.php';
 
