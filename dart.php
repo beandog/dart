@@ -502,6 +502,7 @@
 		require 'dart.import.php';
 		require 'dart.info.php';
 		require 'dart.encode.php';
+		require 'dart.ffprobe.php';
 		require 'dart.ffplay.php';
 		require 'dart.backup.php';
 		require 'dart.geniso.php';
