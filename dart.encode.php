@@ -195,8 +195,6 @@ if($disc_indexed && ($opt_encode_info || $opt_scan || $opt_encode || $opt_copy |
 		require 'dart.encode_handbrake.php';
 		require 'dart.encode_ffmpeg.php';
 
-
-
 		/** Copy or remux DVD tracks **/
 
 		if($disc_type == 'dvd' && ($dvd_encoder == 'dvd_copy' || $dvd_encoder == 'dvd_remux')) {
