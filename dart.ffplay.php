@@ -1,6 +1,6 @@
 <?php
 
-if($disc_indexed && $opt_ffplay) {
+if($disc_indexed && ($opt_ffplay || $opt_ffprobe)) {
 
 	if(isset($config_qa_max))
 		$qa_max = $config_qa_max;
@@ -35,30 +35,33 @@ if($disc_indexed && $opt_ffplay) {
 			$ffmpeg->verbose();
 
 		$episodes_model = new Episodes_Model($episode_id);
-
-		$series_model = new Series_Model($episodes_model->get_series_id());
-
-		$video_deint = $series_model->bwdif;
-		$dvd_deint = $dvds_model->get_deint();
-		if($dvd_deint)
-			$video_deint = $dvd_deint;
-
-		$deint_filter = "bwdif=deint=$video_deint";
-
-		$ffmpeg->add_video_filter($deint_filter);
-
-		if($arg_vf)
-			$ffmpeg->add_video_filter($arg_vf);
-
-		if($opt_qa)
-			$ffmpeg->set_duration($qa_max);
-
-		$ffmpeg->fullscreen();
-
 		if($episodes_model->skip)
 			continue;
 
+		$series_model = new Series_Model($episodes_model->get_series_id());
+
 		$tracks_model = new Tracks_Model($episodes_model->track_id);
+
+		if($opt_ffplay) {
+
+			$video_deint = $series_model->bwdif;
+			$dvd_deint = $dvds_model->get_deint();
+			if($dvd_deint)
+				$video_deint = $dvd_deint;
+
+			$deint_filter = "bwdif=deint=$video_deint";
+
+			$ffmpeg->add_video_filter($deint_filter);
+
+			if($arg_vf)
+				$ffmpeg->add_video_filter($arg_vf);
+
+			if($opt_qa)
+				$ffmpeg->set_duration($qa_max);
+
+			$ffmpeg->fullscreen();
+
+		}
 
 		if($disc_type == 'dvd' && $dvd_encoder == 'ffpipe') {
 
@@ -106,10 +109,14 @@ if($disc_indexed && $opt_ffplay) {
 
 		}
 
-		if($opt_encode_info)
-			echo "$ffplay_command\n";
-		else
-			passthru($ffplay_command);
+		if($opt_ffplay) {
+
+			if($opt_encode_info)
+				echo "$ffplay_command\n";
+			else
+				passthru($ffplay_command);
+
+		}
 
 	}
 
