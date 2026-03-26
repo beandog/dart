@@ -42,7 +42,10 @@ if($disc_indexed && ($opt_ffplay || $opt_ffprobe)) {
 
 		$tracks_model = new Tracks_Model($episodes_model->track_id);
 
-		if($opt_ffplay) {
+		if($opt_qa)
+			$ffmpeg->set_duration($qa_max);
+
+		if($disc_type == 'dvd' && $opt_ffplay) {
 
 			$video_deint = $series_model->bwdif;
 			$dvd_deint = $dvds_model->get_deint();
@@ -55,9 +58,6 @@ if($disc_indexed && ($opt_ffplay || $opt_ffprobe)) {
 
 			if($arg_vf)
 				$ffmpeg->add_video_filter($arg_vf);
-
-			if($opt_qa)
-				$ffmpeg->set_duration($qa_max);
 
 			$ffmpeg->fullscreen();
 
