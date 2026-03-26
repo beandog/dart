@@ -440,7 +440,7 @@
 				$cmd[] = "-f 'null'";
 
 			if($this->fullscreen)
-				$cmd[] ="-fs";
+				$cmd[] = "-fs";
 
 			foreach($args as $key => $value) {
 				$arg_value = escapeshellarg($value);
