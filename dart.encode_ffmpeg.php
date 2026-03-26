@@ -7,6 +7,9 @@
  * - does not support closed captioning
  */
 
+if($opt_ffplay || $opt_ffprobe)
+	goto next_episode;
+
 if($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'ffpipe') {
 
 	$ffmpeg = new FFMpeg();
@@ -261,3 +264,5 @@ if($disc_type == 'dvd' && $dvd_encoder == 'dvd_remux') {
 		require 'dart.encode_episode.php';
 
 }
+
+next_episode:
