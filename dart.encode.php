@@ -271,7 +271,7 @@ if($disc_indexed && ($opt_encode_info || $opt_ffplay || $opt_ffprobe || $opt_sca
 
 		/** Copy DVD tracks **/
 
-		if($disc_type == 'dvd' && $dvd_encoder == 'dvd_copy') {
+		if($disc_type == 'dvd' && $dvd_encoder == 'dvd_copy' && !$opt_ffplay && !$opt_ffprobe) {
 
 			require 'dart.dvd_copy.php';
 
@@ -286,7 +286,7 @@ if($disc_indexed && ($opt_encode_info || $opt_ffplay || $opt_ffprobe || $opt_sca
 
 		/** Remux DVD tracks **/
 
-		if($disc_type == 'dvd' && $dvd_encoder == 'dvd_remux') {
+		if($disc_type == 'dvd' && $dvd_encoder == 'dvd_remux' && !$opt_ffplay && !$opt_ffprobe) {
 
 			require 'dart.dvd_copy.php';
 
