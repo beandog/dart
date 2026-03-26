@@ -1,7 +1,7 @@
 <?php
 
 // Display encode instructions about a disc
-if($disc_indexed && ($opt_encode_info || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_encode || $opt_copy || $opt_remux)) {
+if($disc_indexed && ($opt_encode_info || $opt_ffprobe || $opt_scan || $opt_encode || $opt_copy || $opt_remux) && !$opt_ffplay) {
 
 	// Override in config.local.php
 	if(isset($config_qa_max))
@@ -197,103 +197,6 @@ if($disc_indexed && ($opt_encode_info || $opt_ffplay || $opt_ffprobe || $opt_sca
 		require 'dart.encode_handbrake.php';
 		require 'dart.encode_ffmpeg.php';
 
-		if($disc_type == 'dvd' && $opt_ffplay && $dvd_encoder == 'ffpipe') {
-
-			$ffmpeg = new FFMpeg();
-			$ffmpeg->set_encoder('ffpipe');
-
-			$ffmpeg->input_filename('-');
-
-			$dvd_copy = new DVDCopy();
-
-			$dvd_copy->input_filename($input_filename);
-			$dvd_copy->output_filename('-');
-			$dvd_copy->input_track($tracks_model->ix);
-			$dvd_copy->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
-
-			$dvd_copy_command = $dvd_copy->get_executable_string();
-
-			$dvd_copy_command .= ' 2> /dev/null';
-
-			if($debug)
-				$ffmpeg->debug();
-
-			if($verbose)
-				$ffmpeg->verbose();
-
-			/** Video **/
-			$deint_filter = "bwdif=deint=$video_deint";
-			$ffmpeg->add_video_filter($deint_filter);
-
-			if($fps)
-				$ffmpeg->add_video_filter("fps=$fps");
-
-			if($arg_vf)
-				$ffmpeg->add_video_filter($arg_vf);
-
-			if($opt_qa)
-				$ffmpeg->set_duration($qa_max);
-
-			$ffmpeg->fullscreen();
-
-			$ffmpeg_command = $ffmpeg->get_executable_string();
-
-			// Note that ffplay will display VOBSUB subtitles by default, which is nice to see if they have them
-			if($opt_no_subtitles)
-				$ffmpeg_command .= ' -sn';
-
-			$ffplay_command = "$dvd_copy_command | $ffmpeg_command";
-
-			if($opt_encode_info)
-				echo "$ffplay_command\n";
-
-		}
-
-		if($disc_type == 'dvd' && $opt_ffplay && $dvd_encoder != 'ffpipe') {
-
-			$ffmpeg = new FFMpeg();
-			$ffmpeg->set_encoder('ffplay');
-
-			$ffmpeg->input_filename($input_filename);
-
-			$ffmpeg->input_track($tracks_model->ix);
-
-			if($debug)
-				$ffmpeg->debug();
-
-			if($verbose)
-				$ffmpeg->verbose();
-
-			/** Video **/
-			$deint_filter = "bwdif=deint=$video_deint";
-			$ffmpeg->add_video_filter($deint_filter);
-
-			// Not sure if I really need this or not, at the very least, you can be sure it matches
-			// what the encode would look like.
-			if($fps)
-				$ffmpeg->add_video_filter("fps=$fps");
-
-			if($arg_vf)
-				$ffmpeg->add_video_filter($arg_vf);
-
-			/** Chapters **/
-			$starting_chapter = $episodes_model->starting_chapter;
-			$ending_chapter = $episodes_model->ending_chapter;
-			if($starting_chapter || $ending_chapter) {
-				$ffmpeg->set_chapters($starting_chapter, $ending_chapter);
-			}
-
-			if($opt_qa)
-				$ffmpeg->set_duration($qa_max);
-
-			$ffmpeg->fullscreen();
-
-			$ffplay_command = $ffmpeg->get_executable_string();
-
-			if($opt_encode_info)
-				echo "$ffplay_command\n";
-
-		}
 
 		if($disc_type == 'dvd' && $opt_ffprobe) {
 
@@ -326,7 +229,7 @@ if($disc_indexed && ($opt_encode_info || $opt_ffplay || $opt_ffprobe || $opt_sca
 
 		/** Copy or remux DVD tracks **/
 
-		if($disc_type == 'dvd' && ($dvd_encoder == 'dvd_copy' || $dvd_encoder == 'dvd_remux') && !$opt_ffplay && !$opt_ffprobe) {
+		if($disc_type == 'dvd' && ($dvd_encoder == 'dvd_copy' || $dvd_encoder == 'dvd_remux') && !$opt_ffprobe) {
 
 			$dvd_copy = new DVDCopy();
 
@@ -374,7 +277,7 @@ if($disc_indexed && ($opt_encode_info || $opt_ffplay || $opt_ffprobe || $opt_sca
 
 		/** Blu-rays **/
 
-		if($disc_type == 'bluray' && ($opt_ffprobe || $opt_ffplay)) {
+		if($disc_type == 'bluray' && $opt_ffprobe) {
 
 			$dvd_bugs = $dvds_model->get_bugs();
 
@@ -403,9 +306,6 @@ if($disc_indexed && ($opt_encode_info || $opt_ffplay || $opt_ffprobe || $opt_sca
 			if($opt_ffprobe) {
 				$ffmpeg->set_encoder('ffprobe');
 				$ffmpeg_command = $ffmpeg->ffprobe();
-			} elseif($opt_ffplay) {
-				$ffmpeg->set_encoder('ffplay');
-				$ffmpeg_command = $ffmpeg->get_executable_string();
 			}
 
 			if($opt_encode) {
