@@ -348,7 +348,7 @@
 			if($this->genpts)
 				$cmd[] = "-fflags +genpts";
 
-			if($this->disc_type == 'dvd')
+			if($this->disc_type == 'dvd' && !$this->ffpipe)
 				$cmd[] = "-f 'dvdvideo'";
 
 			if($this->input_opts)
@@ -360,12 +360,12 @@
 			if($this->disc_type == 'bluray' && !$this->ffpipe)
 				$cmd[] = "-playlist '".$this->dvd_track."'";
 
-			if($this->start_chapter && $this->disc_type == 'dvd')
+			if($this->start_chapter && $this->disc_type == 'dvd' && !$this->ffpipe)
 				$cmd[] = "-chapter_start '".$this->start_chapter."'";
-			if($this->stop_chapter && $this->disc_type == 'dvd')
+			if($this->stop_chapter && $this->disc_type == 'dvd' && !$this->ffpipe)
 				$cmd[] = "-chapter_end '".$this->stop_chapter."'";
 
-			if($this->start_chapter && $this->disc_type == 'bluray')
+			if($this->start_chapter && $this->disc_type == 'bluray' && !$this->ffpipe)
 				$cmd[] = "-chapter '".$this->start_chapter."'";
 
 			$arg_input = escapeshellarg($this->input_filename);
@@ -412,7 +412,7 @@
 
 			}
 
-			if(!$this->ffplay) {
+			if(!$this->ffplay && !$this->ffpipe) {
 				$cmd[] = "-vcodec '".$this->vcodec."'";
 				$cmd[] = "-acodec '".$this->acodec."'";
 				if($this->subtitles)
@@ -421,7 +421,7 @@
 
 			// Always set all audio *and* subtitle streams as English
 			// Blu-ray audio streams probed with ffmpeg do not see language code, so this will fix that as well
-			if(!$this->ffplay)
+			if(!$this->ffplay && !$this->ffpipe)
 				$cmd[] = "-metadata:s 'language=eng'";
 
 			$args = $this->get_ffmpeg_arguments();
