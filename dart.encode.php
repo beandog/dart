@@ -1,7 +1,7 @@
 <?php
 
 // Display encode instructions about a disc
-if($disc_indexed && ($opt_encode_info || $opt_ffprobe || $opt_scan || $opt_encode || $opt_copy || $opt_remux) && !$opt_ffplay) {
+if($disc_indexed && ($opt_encode_info || $opt_scan || $opt_encode || $opt_copy || $opt_remux) && !$opt_ffplay && !$opt_ffprobe) {
 
 	// Override in config.local.php
 	if(isset($config_qa_max))
@@ -36,8 +36,6 @@ if($disc_indexed && ($opt_encode_info || $opt_ffprobe || $opt_scan || $opt_encod
 		$dvd_encoder = 'handbrake';
 	elseif($opt_ffmpeg)
 		$dvd_encoder = 'ffmpeg';
-	elseif($opt_ffprobe)
-		$dvd_encoder = 'ffprobe';
 	elseif($opt_ffpipe)
 		$dvd_encoder = 'ffpipe';
 
@@ -198,38 +196,10 @@ if($disc_indexed && ($opt_encode_info || $opt_ffprobe || $opt_scan || $opt_encod
 		require 'dart.encode_ffmpeg.php';
 
 
-		if($disc_type == 'dvd' && $opt_ffprobe) {
-
-			$ffmpeg = new FFMpeg();
-			$ffmpeg->set_encoder('ffprobe');
-
-			$ffmpeg->input_filename($input_filename);
-
-			$ffmpeg->input_track($tracks_model->ix);
-
-			if($debug)
-				$ffmpeg->debug();
-
-			if($verbose)
-				$ffmpeg->verbose();
-
-			/** Chapters **/
-			$starting_chapter = $episodes_model->starting_chapter;
-			$ending_chapter = $episodes_model->ending_chapter;
-			if($starting_chapter || $ending_chapter) {
-				$ffmpeg->set_chapters($starting_chapter, $ending_chapter);
-			}
-
-			$ffprobe_command = $ffmpeg->ffprobe();
-
-			if($opt_encode_info)
-				echo "$ffprobe_command\n";
-
-		}
 
 		/** Copy or remux DVD tracks **/
 
-		if($disc_type == 'dvd' && ($dvd_encoder == 'dvd_copy' || $dvd_encoder == 'dvd_remux') && !$opt_ffprobe) {
+		if($disc_type == 'dvd' && ($dvd_encoder == 'dvd_copy' || $dvd_encoder == 'dvd_remux')) {
 
 			$dvd_copy = new DVDCopy();
 
@@ -276,46 +246,6 @@ if($disc_indexed && ($opt_encode_info || $opt_ffprobe || $opt_scan || $opt_encod
 		}
 
 		/** Blu-rays **/
-
-		if($disc_type == 'bluray' && $opt_ffprobe) {
-
-			$dvd_bugs = $dvds_model->get_bugs();
-
-			$ffmpeg = new FFMpeg();
-			$ffmpeg->set_disc_type('bluray');
-
-			$ffmpeg->input_filename($input_filename);
-
-			$ffmpeg->input_track($tracks_model->ix);
-
-			if($debug)
-				$ffmpeg->debug();
-
-			if($verbose)
-				$ffmpeg->verbose();
-
-			$starting_chapter = $episodes_model->starting_chapter;
-			if($starting_chapter)
-				$ffmpeg->set_chapters($starting_chapter, null);
-
-			if($opt_test_existing)
-				$ffmpeg->overwrite(false);
-			else
-				$ffmpeg->overwrite(true);
-
-			if($opt_ffprobe) {
-				$ffmpeg->set_encoder('ffprobe');
-				$ffmpeg_command = $ffmpeg->ffprobe();
-			}
-
-			if($opt_encode) {
-				$encode_command = $ffmpeg_command;
-				require 'dart.encode_episode.php';
-			} else {
-				echo "$ffmpeg_command\n";
-			}
-
-		}
 
 		// Note that ffmpeg-7.1.1 doesn't copy chapters by default (unlike dvdvideo). If you want
 		// them in there, you'll have to do it another way. Right now, I haven't used chapters in

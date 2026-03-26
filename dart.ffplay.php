@@ -86,7 +86,7 @@ if($disc_indexed && ($opt_ffplay || $opt_ffprobe)) {
 			if($opt_no_subtitles)
 				$ffmpeg_command .= ' -sn';
 
-			$ffplay_command = "$dvd_copy_command | $ffmpeg_command";
+			$ffmpeg_command = "$dvd_copy_command | $ffmpeg_command";
 
 		}
 
@@ -105,18 +105,33 @@ if($disc_indexed && ($opt_ffplay || $opt_ffprobe)) {
 				$ffmpeg->set_chapters($starting_chapter, $ending_chapter);
 			}
 
-			$ffplay_command = $ffmpeg->get_executable_string();
+			$ffmpeg_command = $ffmpeg->get_executable_string();
 
 		}
 
-		if($opt_ffplay) {
+		if($disc_type == 'bluray' && $opt_ffprobe) {
 
-			if($opt_encode_info)
-				echo "$ffplay_command\n";
-			else
-				passthru($ffplay_command);
+			$dvd_bugs = $dvds_model->get_bugs();
+
+			$ffmpeg->set_disc_type('bluray');
+
+			$ffmpeg->input_filename($input_filename);
+
+			$ffmpeg->input_track($tracks_model->ix);
+
+			$starting_chapter = $episodes_model->starting_chapter;
+			if($starting_chapter)
+				$ffmpeg->set_chapters($starting_chapter, null);
+
+			$ffmpeg->set_encoder('ffprobe');
+			$ffmpeg_command = $ffmpeg->ffprobe();
 
 		}
+
+		if($opt_encode_info)
+			echo "$ffmpeg_command\n";
+		else
+			passthru($ffmpeg_command);
 
 	}
 
