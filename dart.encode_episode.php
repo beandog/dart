@@ -1,6 +1,6 @@
 <?php
 
-if($disc_type == 'dvd' && $opt_encode) {
+if($disc_type == 'dvd' && ($opt_encode || $opt_copy || $opt_remux)) {
 
 	$dart_status = 'encode_episode';
 
@@ -54,6 +54,18 @@ if($disc_type == 'dvd' && $opt_encode) {
 
 	$logfile = "/tmp/".basename($filename).".log";
 	$arg_logfile = escapeshellarg($logfile);
+
+	if($disc_type == 'dvd' && $dvd_encoder == 'dvd_copy') {
+
+		$encode_command = $dvd_copy_command;
+
+	}
+
+	if($disc_type == 'dvd' && $dvd_encoder == 'dvd_remux') {
+
+		$encode_command = "$dvd_copy_command | $ffmpeg_command";
+
+	}
 
 	if($verbose) {
 		echo "* $encode_command\n";

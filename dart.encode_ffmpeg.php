@@ -41,8 +41,6 @@ if($disc_type == 'dvd' && ($opt_encode_info || $opt_encode) && ($dvd_encoder == 
 
 	} elseif($dvd_encoder == 'ffpipe') {
 
-		require 'dart.dvd_copy.php';
-
 		$dvd_copy->input_filename($input_filename);
 		$dvd_copy->output_filename('-');
 		$dvd_copy_command = $dvd_copy->get_executable_string();
@@ -229,5 +227,32 @@ if($disc_type == 'dvd' && ($opt_encode_info || $opt_encode) && ($dvd_encoder == 
 	} else {
 		echo "$ffmpeg_command\n";
 	}
+
+}
+
+/**
+ * Remux titles using dvd_copy + ffmpeg
+ */
+if($disc_type == 'dvd' && $dvd_encoder == 'dvd_remux') {
+
+	$dvd_remux_command = "$dvd_copy_command 2> /dev/null";
+
+	if($encode_subtitles)
+		$codec_copy = '-codec copy';
+	else
+		$codec_copy = '-vcodec copy -acodec copy';
+
+	$ffmpeg_command = "ffmpeg -fflags +genpts -i - $codec_copy -y $filename";
+
+	if($opt_encode_info)
+		echo "$dvd_remux_command | $ffmpeg_command\n";
+
+	if($opt_time)
+		$dvd_remux_command = "tout $dvd_remux_command";
+
+	$encode_command = "$dvd_remux_command | $ffmpeg_command";
+
+	if(!$opt_encode_info)
+		require 'dart.encode_episode.php';
 
 }
