@@ -1,11 +1,6 @@
 <?php
 
-/** Encode DVDs **/
-/*
- * Experimental encoding with ffmpeg
- * - no chapter support
- * - does not support closed captioning
- */
+/** Encode DVDs with ffmpeg **/
 
 if($opt_ffplay || $opt_ffprobe)
 	goto next_episode;
