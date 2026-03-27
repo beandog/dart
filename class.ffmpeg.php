@@ -485,6 +485,9 @@
 			elseif($program == 'ffplay')
 				$cmd[] = 'ffplay';
 
+			if($remux)
+				$this->quiet = true;
+
 			if($this->debug) {
 				$cmd[] = "-report";
 				$cmd[] = "-loglevel 'debug'";

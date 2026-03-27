@@ -55,22 +55,14 @@ if($disc_type == 'dvd' && ($opt_encode || $opt_copy || $opt_remux)) {
 	$logfile = "/tmp/".basename($filename).".log";
 	$arg_logfile = escapeshellarg($logfile);
 
-	if($disc_type == 'dvd' && $dvd_encoder == 'dvd_copy') {
+	if($dvd_encoder == 'ffmpeg')
+		$encode_command = $ffmpeg_command;
 
+	if($disc_type == 'dvd' && $dvd_encoder == 'dvd_copy')
 		$encode_command = $dvd_copy_command;
-
-	}
-
-	if($disc_type == 'dvd' && $opt_remux) {
-
-		$encode_command = "$dvd_copy_command | $ffmpeg_command";
-
-	}
 
 	if($verbose) {
 		echo "* $encode_command\n";
-	} else {
-		$encode_command .= " 2> $arg_logfile";
 	}
 
 	passthru($encode_command, $retval);

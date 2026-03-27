@@ -224,9 +224,6 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 	if($opt_encode_info)
 		echo "$ffmpeg_command\n";
 
-	if($opt_encode) {
-		$encode_command = $ffmpeg_command;
-		require 'dart.encode_episode.php';
-	}
+	require 'dart.encode_episode.php';
 
 }
