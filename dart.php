@@ -76,6 +76,12 @@
 		$opt_test_existing = true;
 	}
 
+	// Check for both and limit to one (don't guess!)
+	if($opt_remux && $opt_copy) {
+		echo "Passed --copy and --remux, use only one\n";
+		exit;
+	}
+
 	// Prefix to bend!
 	if($opt_encode) {
 
