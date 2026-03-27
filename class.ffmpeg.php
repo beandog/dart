@@ -548,21 +548,17 @@
 			}
 
 			if($disc_type == 'dvd' && $remux) {
-				$cmd[] = "-map 'v'";
-				$cmd[] = "-vcodec 'copy'";
+				$this->vcodec = 'copy';
 			}
 
 			if($disc_type == 'bluray') {
 				$cmd[] = "-map 'v:0'";
-				$cmd[] = "-vcodec 'copy'";
+				$this->vcodec = 'copy';
 			}
 
-			if(count($this->audio_streams) && $remux) {
+			if($disc_type == 'bluray' && count($this->audio_streams) && $remux) {
 				$cmd[] = "-map 'a'";
 			}
-
-			if(count($this->audio_streams))
-				$cmd[] = "-acodec 'copy'";
 
 			if($disc_type == 'bluray' && !$remux) {
 
@@ -584,7 +580,10 @@
 			}
 
 			$cmd[] = "-vcodec '".$this->vcodec."'";
-			$cmd[] = "-acodec '".$this->acodec."'";
+
+			if(count($this->audio_streams))
+				$cmd[] = "-acodec 'copy'";
+
 			if($this->subtitles)
 				$cmd[] = "-scodec '".$this->scodec."'";
 
@@ -592,30 +591,29 @@
 			// Blu-ray audio streams probed with ffmpeg do not see language code, so this will fix that as well
 			$cmd[] = "-metadata:s 'language=eng'";
 
-			$args = $this->get_ffmpeg_arguments();
-
 			foreach($this->ffmpeg_opts as $str)
 				$cmd[] = $str;
 
-			foreach($this->ffmpeg_args as $key => $value) {
-				$arg_value = escapeshellarg($value);
-				$cmd[] = "-$key $arg_value";
+			if(!$remux) {
+
+				$args = $this->get_ffmpeg_arguments();
+
+				foreach($this->ffmpeg_args as $key => $value) {
+					$arg_value = escapeshellarg($value);
+					$cmd[] = "-$key $arg_value";
+				}
+
+				// ??? what is this used for?
+				if($this->output_filename == '-')
+					$cmd[] = "-f 'null'";
+
+				if($this->remove_cc)
+					$cmd[] = "-bsf:v 'filter_units=remove_types=6'";
+
+				foreach($this->metadata as $key => $value)
+					$cmd[] = "-metadata '$key=$value'";
+
 			}
-
-			// ??? what is this used for?
-			if($this->output_filename == '-')
-				$cmd[] = "-f 'null'";
-
-			foreach($args as $key => $value) {
-				$arg_value = escapeshellarg($value);
-				$cmd[] = "-$key $arg_value";
-			}
-
-			if($this->remove_cc)
-				$cmd[] = "-bsf:v 'filter_units=remove_types=6'";
-
-			foreach($this->metadata as $key => $value)
-				$cmd[] = "-metadata '$key=$value'";
 
 			$str = implode(' ', $cmd);
 
@@ -628,22 +626,6 @@
 				else
 					$str .= " $arg_output";
 			}
-
-			return $str;
-
-		}
-
-		public function get_ffprobe_command() {
-
-			$str = get_ffmpeg_command(false, false, 'ffprobe');
-
-			return $str;
-
-		}
-
-		public function get_ffplay_command() {
-
-			$str = get_ffmpeg_command(false, false, 'ffplay');
 
 			return $str;
 

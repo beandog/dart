@@ -61,7 +61,7 @@ if($disc_type == 'dvd' && ($opt_encode || $opt_copy || $opt_remux)) {
 
 	}
 
-	if($disc_type == 'dvd' && $dvd_encoder == 'dvd_remux') {
+	if($disc_type == 'dvd' && $opt_remux) {
 
 		$encode_command = "$dvd_copy_command | $ffmpeg_command";
 

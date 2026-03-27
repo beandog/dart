@@ -182,9 +182,13 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 
 	$ffmpeg->output_filename($filename);
 
-	$ffmpeg_command = $ffmpeg->get_ffmpeg_command();
+	$ffmpeg_pipe = false;
+	$ffmpeg_remux = false;
+	$ffmpeg_program = 'ffmpeg';
 
 	if($opt_ffpipe) {
+
+		$ffmpeg_pipe = true;
 
 		$ffmpeg->input_filename('-');
 
@@ -198,33 +202,18 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 
 		$dvd_copy_command .= ' 2> /dev/null';
 
-		$ffmpeg_command = $ffmpeg->get_ffmpeg_command(true, false);
+	}
 
+	if($opt_remux)
+		$ffmpeg_remux = true;
+
+	if($opt_ffprobe)
+		$ffmpeg_program = 'ffprobe';
+
+	$ffmpeg_command = $ffmpeg->get_ffmpeg_command($ffmpeg_pipe, $ffmpeg_remux, $ffmpeg_program);
+
+	if($opt_ffpipe)
 		$ffmpeg_command = "$dvd_copy_command | $ffmpeg_command";
-
-	}
-
-	if($opt_remux) {
-
-		if($opt_ffpipe) {
-			$ffmpeg_command = $ffmpeg->get_ffmpeg_command(true, true);
-			$ffmpeg_command = "$dvd_copy_command | $ffmpeg_command";
-		} else {
-			$ffmpeg_command = $ffmpeg->get_ffmpeg_command(false, true);
-		}
-
-	}
-
-	if($opt_ffprobe) {
-
-		if($opt_ffpipe) {
-			$ffmpeg_command = $ffmpeg->get_ffmpeg_command(true, false, 'ffprobe');
-			$ffmpeg_command = "$dvd_copy_command | $ffmpeg_command";
-		} else {
-			$ffmpeg_command = $ffmpeg->get_ffmpeg_command(false, false, 'ffprobe');
-		}
-
-	}
 
 	if($opt_log_progress)
 		$ffmpeg_command .= " -progress /tmp/$episode_id.txt";
@@ -232,12 +221,12 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 	if($opt_time)
 		$ffmpeg_command = "tout $ffmpeg_command";
 
+	if($opt_encode_info)
+		echo "$ffmpeg_command\n";
+
 	if($opt_encode) {
 		$encode_command = $ffmpeg_command;
 		require 'dart.encode_episode.php';
 	}
-
-	if($opt_encode_info)
-		echo "$ffmpeg_command\n";
 
 }
