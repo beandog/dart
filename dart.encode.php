@@ -79,6 +79,31 @@ if($disc_indexed && ($opt_encode_info || $opt_scan || $opt_encode || $opt_copy |
 
 		$filename = $episodes_model->get_filename($container);
 
+		// Filename overrides
+		$prefix = '';
+		if($arg_prefix)
+			$prefix = "$arg_prefix-";
+		if($opt_qa && $dvd_encoder == 'handbrake')
+			$prefix .= "hb-qa-";
+		elseif($opt_qa && $dvd_encoder == 'ffmpeg' && !$opt_pipe)
+			$prefix .= "ffmpeg-qa-";
+		elseif($opt_qa && $dvd_encoder == 'ffmpeg' && $opt_pipe)
+			$prefix .= "ffpipe-qa-";
+		if($arg_vcodec)
+			$prefix .= "$arg_vcodec-";
+		if($arg_acodec)
+			$prefix .= "$arg_acodec-";
+		if($arg_crf)
+			$prefix .= "q-$arg_crf-";
+		if($arg_vf) {
+			$vf_name = current(explode('=', $arg_vf));
+			$prefix .= "vf-$vf_name-";
+		}
+		if($opt_fast)
+			$prefix .= "fast-";
+		elseif($opt_slow)
+			$prefix .= "vslow-";
+
 		// Skip existing output files
 		if(file_exists($filename) && $opt_skip_existing)
 			continue;
@@ -253,31 +278,6 @@ if($disc_indexed && ($opt_encode_info || $opt_scan || $opt_encode || $opt_copy |
 
 		}
 
-		// Filename overrides
-		$prefix = '';
-		if($arg_prefix)
-			$prefix = "$arg_prefix-";
-		if($opt_qa && $dvd_encoder == 'handbrake')
-			$prefix .= "hb-qa-";
-		elseif($opt_qa && $dvd_encoder == 'ffmpeg')
-			$prefix .= "ffmpeg-qa-";
-		elseif($opt_qa && $dvd_encoder == 'ffpipe')
-			$prefix .= "ffpipe-qa-";
-		if($arg_vcodec)
-			$prefix .= "$arg_vcodec-";
-		if($arg_acodec)
-			$prefix .= "$arg_acodec-";
-		if($arg_crf)
-			$prefix .= "q-$arg_crf-";
-		if($arg_vf) {
-			$vf_name = current(explode('=', $arg_vf));
-			$prefix .= "vf-$vf_name-";
-		}
-		if($opt_fast)
-			$prefix .= "fast-";
-		elseif($opt_slow)
-			$prefix .= "vslow-";
-
 		if($dvd_encoder == 'handbrake')
 			require 'dart.encode_handbrake.php';
 
@@ -312,13 +312,13 @@ if($disc_indexed && ($opt_encode_info || $opt_scan || $opt_encode || $opt_copy |
 			if($opt_ffpipe)
 				$dvd_encoder = 'ffpipe';
 
-			if($dvd_encoder == 'ffmpeg') {
+			if(!$opt_ffpipe) {
 
 				$ffmpeg->set_encoder('ffmpeg');
 
 				$ffmpeg->input_filename($input_filename);
 
-			} elseif($dvd_encoder == 'ffpipe') {
+			} elseif($opt_ffpipe) {
 
 				$ffmpeg->set_encoder('ffpipe');
 
@@ -401,7 +401,7 @@ if($disc_indexed && ($opt_encode_info || $opt_scan || $opt_encode || $opt_copy |
 			if($opt_log_progress)
 				$ffmpeg_command .= " -progress /tmp/$episode_id.txt";
 
-			if($dvd_encoder == 'ffpipe')
+			if($opt_ffpipe)
 				$ffmpeg_command = "$bluray_copy_command 2> /dev/null | $ffmpeg_command";
 
 			if($opt_encode) {
