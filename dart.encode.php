@@ -14,30 +14,24 @@ if($disc_indexed && ($opt_encode_info || $opt_scan || $opt_encode || $opt_copy |
 	// Override DVD encoder if disc is flagged with bugs
 	$dvd_encoder = $dvds_model->get_encoder();
 
-	// Default encoder
-	if($disc_type == 'dvd' && $dvd_encoder == '') {
-		if(isset($config_encoder))
-			$dvd_encoder = $config_encoder;
-		else {
-			echo "Must select an encoder or configure it locally\n";
-			exit(1);
-		}
+	if($dvd_encoder == 'ffpipe') {
+		$dvd_encoder = 'ffmpeg';
+		$opt_ffpipe = true;
 	}
 
-	if($disc_type == 'bluray' && $dvd_encoder == '')
+	elseif($disc_type == 'dvd' && $dvd_encoder == '')
+		$dvd_encoder = 'handbrake';
+	elseif($disc_type == 'bluray' && $dvd_encoder == '')
 		$dvd_encoder = 'ffmpeg';
-
-	if($disc_type == 'dvd' && $opt_copy && !$opt_remux)
-		$dvd_encoder = 'dvd_copy';
-	elseif($disc_type == 'dvd' && $opt_remux && !$opt_copy)
-		$dvd_encoder = 'dvd_remux';
 
 	if($opt_handbrake)
 		$dvd_encoder = 'handbrake';
 	elseif($opt_ffmpeg)
 		$dvd_encoder = 'ffmpeg';
-	elseif($opt_ffpipe)
-		$dvd_encoder = 'ffpipe';
+	elseif($opt_copy)
+		$dvd_encoder = 'dvd_copy';
+	elseif($opt_remux)
+		$dvd_encoder = 'ffmpeg';
 
 	$dvd_episodes = $dvds_model->get_episodes();
 
@@ -54,14 +48,12 @@ if($disc_indexed && ($opt_encode_info || $opt_scan || $opt_encode || $opt_copy |
 
 	$input_filename = realpath($device);
 
-	if(!$opt_mp4 && !$opt_mkv)
-		$container = 'mkv';
-
-	if($dvd_encoder == 'dvd_copy')
+	if($disc_type == 'dvd' && $opt_copy)
 		$container = 'mpg';
-
-	if(isset($config_container))
-		$container = $config_container;
+	elseif($disc_type == 'bluray' && $opt_copy)
+		$container = 'm2ts';
+	else
+		$container = 'mkv';
 
 	$hardware = 'nvidia';
 
@@ -70,11 +62,6 @@ if($disc_indexed && ($opt_encode_info || $opt_scan || $opt_encode || $opt_copy |
 
 	if(isset($arg_hardware))
 		$hardware = $arg_hardware;
-
-	if($opt_mp4)
-		$container = 'mp4';
-	elseif($opt_mkv)
-		$container = 'mkv';
 
 	$encode_subtitles = true;
 	if($opt_no_subtitles)
@@ -93,74 +80,75 @@ if($disc_indexed && ($opt_encode_info || $opt_scan || $opt_encode || $opt_copy |
 		$filename = $episodes_model->get_filename($container);
 
 		// Skip existing output files
-		if(in_array($dvd_encoder, array('handbrake', 'ffmpeg', 'ffpipe', 'remux')) && file_exists($filename) && $opt_skip_existing)
+		if(file_exists($filename) && $opt_skip_existing)
 			continue;
 
 		$tracks_model = new Tracks_Model($episodes_model->track_id);
 		$series_model = new Series_Model($episodes_model->get_series_id());
 		$nsix = $series_model->nsix;
 		$vcodec = $series_model->get_vcodec();
-		if($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'ffpipe') {
-			$video_deint = $series_model->bwdif;
-			$dvd_deint = $dvds_model->get_deint();
-			if($dvd_deint)
-				$video_deint = $dvd_deint;
-		}
 		$video_format = strtolower($tracks_model->format);
 
-		/** Probe discs with ffmpeg **/
-		if($opt_ffprobe) {
+		if($disc_type == 'dvd' && $dvd_encoder == 'dvd_copy') {
 
-			$ffmpeg = new FFMpeg();
+			// Skip existing output files
+			if(file_exists($filename) && $opt_skip_existing)
+				continue;
+
+			$dvd_copy = new DVDCopy();
 
 			if($debug)
-				$ffmpeg->debug();
+				$dvd_copy->debug();
 
 			if($verbose)
-				$ffmpeg->verbose();
+				$dvd_copy->verbose();
 
-			// Refetch since it's been modified above
-			$dvd_encoder = $dvds_model->get_encoder();
+			$dvd_copy->input_filename($input_filename);
+			$dvd_copy->output_filename($filename);
+			$dvd_copy->input_track($tracks_model->ix);
+			$dvd_copy->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
 
-			if($disc_type == 'dvd') {
+			$dvd_copy_command = $dvd_copy->get_executable_string();
 
-				if($dvd_encoder != 'ffpipe') {
-
-					$ffmpeg->set_encoder('ffprobe');
-
-					$ffmpeg->input_filename($input_filename);
-
-					$ffmpeg->input_track($tracks_model->ix);
-
-					// $ffmpeg_command = $ffmpeg->get_executable_string();
-					$ffmpeg_command = $ffmpeg->ffprobe();
-
-				}
-
-				if($dvd_encoder == 'ffpipe') {
-
-					$ffmpeg->set_encoder('ffpipe');
-
-					$ffmpeg->input_filename('-');
-
-					$dvd_copy = new DVDCopy();
-
-					$dvd_copy->input_filename($input_filename);
-					$dvd_copy->output_filename('-');
-					$dvd_copy->input_track($tracks_model->ix);
-
-					$dvd_copy_command = $dvd_copy->get_executable_string();
-
-					$dvd_copy_command .= ' 2> /dev/null';
-
-					// $ffmpeg_command = $ffmpeg->get_executable_string();
-					$ffmpeg_command = $ffmpeg->ffprobe();
-
-					$ffmpeg_command = "$dvd_copy_command | $ffmpeg_command";
-
-				}
-
+			if($opt_encode_info) {
+				echo "$dvd_copy_command\n";
+				continue;
 			}
+
+			$arg_device = escapeshellarg(realpath($device));
+
+			$arg_filename = escapeshellarg($filename);
+
+			// Stolen from emo :D
+			$episode_metadata = $episodes_model->get_metadata();
+			$title = $episode_metadata['title'];
+			$d_episode_title = $episodes_model->get_display_name();
+			$arr_d_info = array();
+			$arr_d_info[] = $episode_metadata['series_title'];
+			$d_season = '';
+			if($episode_metadata['season'])
+				$d_season = "s${episode_metadata['season']}";
+			if($episode_metadata['episode_number'])
+				$d_season .= "e${episode_metadata['episode_number']}";
+			if($d_season)
+				$arr_d_info[] = "$d_season";
+			if($episode_metadata['part'])
+				$title .= " (".$episode_metadata['part'].")";
+			$arr_d_info[] = $title;
+			$d_info = implode(" : ", $arr_d_info);
+
+			echo "[Copying]\n";
+			echo "* $d_info\n";
+			echo "* Source: $arg_device\n";
+			echo "* Target: $arg_filename\n";
+
+			passthru($dvd_copy_command);
+
+			continue;
+
+		}
+
+		if($disc_type == 'bluray' && $opt_ffprobe) {
 
 			if($disc_type == 'bluray') {
 
@@ -176,10 +164,6 @@ if($disc_indexed && ($opt_encode_info || $opt_scan || $opt_encode || $opt_copy |
 				if($starting_chapter)
 					$ffmpeg->set_chapters($starting_chapter, null);
 
-				$ffmpeg->set_encoder('ffprobe');
-				// $ffmpeg_command = $ffmpeg->get_executable_string();
-				$ffmpeg_command = $ffmpeg->ffprobe();
-
 			}
 
 			if($opt_encode_info) {
@@ -188,6 +172,7 @@ if($disc_indexed && ($opt_encode_info || $opt_scan || $opt_encode || $opt_copy |
 			}
 
 			// If you ever feel like showing it in JSON
+			/*
 			$opt_json = false;
 			if($opt_json) {
 				$ffmpeg_command .= ' -show_format -of json -show_streams 2> /dev/null';
@@ -205,6 +190,7 @@ if($disc_indexed && ($opt_encode_info || $opt_scan || $opt_encode || $opt_copy |
 			passthru($ffmpeg_command);
 
 			continue;
+			*/
 
 		}
 
@@ -239,7 +225,7 @@ if($disc_indexed && ($opt_encode_info || $opt_scan || $opt_encode || $opt_copy |
 		if($arg_fps)
 			$fps = $arg_fps;
 
-		if($disc_type == 'dvd' && $opt_copy && !$opt_remux)
+		if($disc_type == 'dvd' && $opt_copy)
 			$container = 'mpg';
 
 		if($disc_type == 'dvd' && $opt_scan) {
@@ -292,63 +278,18 @@ if($disc_indexed && ($opt_encode_info || $opt_scan || $opt_encode || $opt_copy |
 		elseif($opt_slow)
 			$prefix .= "vslow-";
 
-		require 'dart.encode_handbrake.php';
-		require 'dart.encode_ffmpeg.php';
+		if($dvd_encoder == 'handbrake')
+			require 'dart.encode_handbrake.php';
 
-		/** Copy or remux DVD tracks **/
-
-		if($disc_type == 'dvd' && ($dvd_encoder == 'dvd_copy' || $dvd_encoder == 'dvd_remux')) {
-
-			$dvd_copy = new DVDCopy();
-
-			if($debug)
-				$dvd_copy->debug();
-
-			if($verbose)
-				$dvd_copy->verbose();
-
-			$dvd_copy->input_filename($input_filename);
-			$dvd_copy->input_track($tracks_model->ix);
-			$dvd_copy->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
-
-			if($dvd_encoder == 'dvd_copy') {
-
-				require 'dart.dvd_copy.php';
-
-				$dvd_copy->output_filename($filename);
-
-				$dvd_copy_command = $dvd_copy->get_executable_string();
-
-				if($opt_encode_info)
-					echo "$dvd_copy_command\n";
-				else
-					require 'dart.encode_episode.php';
-
-			}
-
-			if($dvd_encoder == 'dvd_remux') {
-
-				require 'dart.dvd_copy.php';
-
-				$dvd_copy->output_filename('-');
-
-				$dvd_copy_command = $dvd_copy->get_executable_string();
-
-				if($opt_encode_info)
-					echo "$dvd_copy_command | $ffmpeg_command\n";
-				else
-					require 'dart.encode_episode.php';
-
-			}
-
-		}
+		if($dvd_encoder == 'ffmpeg')
+			require 'dart.encode_ffmpeg.php';
 
 		/** Blu-rays **/
 
 		// Note that ffmpeg-7.1.1 doesn't copy chapters by default (unlike dvdvideo). If you want
 		// them in there, you'll have to do it another way. Right now, I haven't used chapters in
 		// years, so I'm okay without them.
-		if($disc_type == 'bluray' && ($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'ffpipe')) {
+		if($disc_type == 'bluray' && $dvd_encoder == 'ffmpeg') {
 
 			$episodes_model = new Episodes_Model($episode_id);
 
@@ -367,6 +308,9 @@ if($disc_indexed && ($opt_encode_info || $opt_scan || $opt_encode || $opt_copy |
 
 			$acodec = $series_model->get_acodec();
 			$ffmpeg->set_acodec($acodec);
+
+			if($opt_ffpipe)
+				$dvd_encoder = 'ffpipe';
 
 			if($dvd_encoder == 'ffmpeg') {
 

@@ -2,13 +2,9 @@
 
 /** Encode DVDs with ffmpeg **/
 
-if($opt_ffplay || $opt_ffprobe)
-	goto next_episode;
-
-if($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'ffpipe') {
+if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 
 	$ffmpeg = new FFMpeg();
-	$ffmpeg->set_encoder('ffmpeg');
 
 	if($debug)
 		$ffmpeg->debug();
@@ -19,6 +15,12 @@ if($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'ffpipe') {
 	if($quiet || $opt_encode)
 		$ffmpeg->quiet();
 
+	$ffmpeg->input_filename($input_filename);
+	$ffmpeg->input_track($tracks_model->ix);
+	$starting_chapter = $episodes_model->starting_chapter;
+	if($starting_chapter)
+		$ffmpeg->set_chapters($starting_chapter, null);
+
 	$arr_metadata = array();
 
 	if($arg_vcodec == 'x264' || $arg_vcodec == 'libx264')
@@ -28,37 +30,10 @@ if($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'ffpipe') {
 	elseif($arg_vcodec == 'hevc' || $arg_vcodec == 'h265')
 		$vcodec = 'hevc';
 
-}
-
-if($disc_type == 'dvd' && ($opt_encode_info || $opt_encode) && ($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'ffpipe')) {
-
-	if($dvd_encoder == 'ffmpeg') {
-
-		$ffmpeg->input_filename($input_filename);
-		$ffmpeg->input_track($tracks_model->ix);
-
-	} elseif($dvd_encoder == 'ffpipe') {
-
-		$dvd_copy = new DVDCopy();
-
-		if($debug)
-			$dvd_copy->debug();
-
-		if($verbose)
-			$dvd_copy->verbose();
-
-		$dvd_copy->input_filename($input_filename);
-		$dvd_copy->output_filename('-');
-		$dvd_copy->input_track($tracks_model->ix);
-		$dvd_copy->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
-
-		$dvd_copy_command = $dvd_copy->get_executable_string();
-
-		$ffmpeg->disc_type = 'dvdcopy';
-		$ffmpeg->generate_pts();
-		$ffmpeg->input_filename('-');
-
-	}
+	$video_deint = $series_model->bwdif;
+	$dvd_deint = $dvds_model->get_deint();
+	if($dvd_deint)
+		$video_deint = $dvd_deint;
 
 	if($opt_test_existing)
 		$ffmpeg->overwrite(false);
@@ -121,11 +96,6 @@ if($disc_type == 'dvd' && ($opt_encode_info || $opt_encode) && ($dvd_encoder == 
 		$ffmpeg->set_preset('ultrafast');
 
 	// Set video filters based on frame info
-	/*
-	$crop = $episodes_model->crop;
-	if($crop != null && $opt_crop && $crop != '720:480:0:0')
-		$ffmpeg->add_video_filter("crop=$crop");
-	*/
 
 	$deint_filter = "bwdif=deint=$video_deint";
 	$ffmpeg->add_video_filter($deint_filter);
@@ -200,8 +170,8 @@ if($disc_type == 'dvd' && ($opt_encode_info || $opt_encode) && ($dvd_encoder == 
 
 	if($denoise)
 		$arr_metadata[] = "hqdn3d";
-	if($dvd_encoder == 'ffpipe')
-		$arr_metadata[] = "ffipe=$ffmpeg_version";
+	if($opt_ffpipe)
+		$arr_metadata[] = "ffpipe=$ffmpeg_version";
 	else
 		$arr_metadata[] = "ffmpeg=$ffmpeg_version";
 
@@ -212,14 +182,52 @@ if($disc_type == 'dvd' && ($opt_encode_info || $opt_encode) && ($dvd_encoder == 
 
 	$ffmpeg->output_filename($filename);
 
-	$ffmpeg_command = $ffmpeg->get_executable_string();
+	$ffmpeg_command = $ffmpeg->get_ffmpeg_command();
+
+	if($opt_ffpipe) {
+
+		$ffmpeg->input_filename('-');
+
+		$dvd_copy = new DVDCopy();
+
+		$dvd_copy->input_filename($input_filename);
+		$dvd_copy->output_filename('-');
+		$dvd_copy->input_track($tracks_model->ix);
+
+		$dvd_copy_command = $dvd_copy->get_executable_string();
+
+		$dvd_copy_command .= ' 2> /dev/null';
+
+		$ffmpeg_command = $ffmpeg->get_ffmpeg_command(true, false);
+
+		$ffmpeg_command = "$dvd_copy_command | $ffmpeg_command";
+
+	}
+
+	if($opt_remux) {
+
+		if($opt_ffpipe) {
+			$ffmpeg_command = $ffmpeg->get_ffmpeg_command(true, true);
+			$ffmpeg_command = "$dvd_copy_command | $ffmpeg_command";
+		} else {
+			$ffmpeg_command = $ffmpeg->get_ffmpeg_command(false, true);
+		}
+
+	}
+
+	if($opt_ffprobe) {
+
+		if($opt_ffpipe) {
+			$ffmpeg_command = $ffmpeg->get_ffmpeg_command(true, false, 'ffprobe');
+			$ffmpeg_command = "$dvd_copy_command | $ffmpeg_command";
+		} else {
+			$ffmpeg_command = $ffmpeg->get_ffmpeg_command(false, false, 'ffprobe');
+		}
+
+	}
 
 	if($opt_log_progress)
 		$ffmpeg_command .= " -progress /tmp/$episode_id.txt";
-
-	if($dvd_encoder == 'ffpipe') {
-		$ffmpeg_command = "$dvd_copy_command 2> /dev/null | $ffmpeg_command";
-	}
 
 	if($opt_time)
 		$ffmpeg_command = "tout $ffmpeg_command";
@@ -227,37 +235,9 @@ if($disc_type == 'dvd' && ($opt_encode_info || $opt_encode) && ($dvd_encoder == 
 	if($opt_encode) {
 		$encode_command = $ffmpeg_command;
 		require 'dart.encode_episode.php';
-	} else {
-		echo "$ffmpeg_command\n";
 	}
 
-}
-
-/**
- * Remux titles using dvd_copy + ffmpeg
- */
-if($disc_type == 'dvd' && $dvd_encoder == 'dvd_remux') {
-
-	$dvd_remux_command = "$dvd_copy_command 2> /dev/null";
-
-	if($encode_subtitles)
-		$codec_copy = '-codec copy';
-	else
-		$codec_copy = '-vcodec copy -acodec copy';
-
-	$ffmpeg_command = "ffmpeg -fflags +genpts -i - $codec_copy -y $filename";
-
 	if($opt_encode_info)
-		echo "$dvd_remux_command | $ffmpeg_command\n";
-
-	if($opt_time)
-		$dvd_remux_command = "tout $dvd_remux_command";
-
-	$encode_command = "$dvd_remux_command | $ffmpeg_command";
-
-	if(!$opt_encode_info)
-		require 'dart.encode_episode.php';
+		echo "$ffmpeg_command\n";
 
 }
-
-next_episode:

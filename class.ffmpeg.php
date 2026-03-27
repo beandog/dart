@@ -470,4 +470,183 @@
 
 		}
 
+		// Disc type variable plus ffpipe and remux booleans are passed directly here, and the class handles all the heavy lifting
+		public function get_ffmpeg_command($ffpipe = false, $remux = false, $program = 'ffmpeg') {
+
+			$disc_type = $this->disc_type;
+
+			if($remux && $program != 'ffmpeg')
+				$program = 'ffmpeg';
+
+			if($program == 'ffmpeg')
+				$cmd[] = 'ffmpeg';
+			elseif($program == 'ffprobe')
+				$cmd[] = 'ffprobe';
+			elseif($program == 'ffplay')
+				$cmd[] = 'ffplay';
+
+			if($this->debug) {
+				$cmd[] = "-report";
+				$cmd[] = "-loglevel 'debug'";
+			} elseif($this->verbose) {
+				$cmd[] = "-report";
+				$cmd[] = "-loglevel 'verbose'";
+			} elseif($this->quiet) {
+				$cmd[] = "-v 'quiet'";
+				$cmd[] = '-stats';
+			}
+
+			if($ffpipe && $program == 'ffmpeg')
+				$cmd[] = "-fflags +genpts";
+
+			if($disc_type == 'dvd' && !$ffpipe)
+				$cmd[] = "-f 'dvdvideo'";
+
+			if($this->input_opts)
+				$cmd[] = $this->input_opts;
+
+			if($disc_type == 'dvd' && $this->dvd_track && !$ffpipe)
+				$cmd[] = "-title '".$this->dvd_track."'";
+
+			if($disc_type == 'bluray' && !$ffpipe)
+				$cmd[] = "-playlist '".$this->dvd_track."'";
+
+			if($disc_type == 'dvd' && $this->start_chapter && !$ffpipe)
+				$cmd[] = "-chapter_start '".$this->start_chapter."'";
+			if($disc_type == 'dvd' && $this->stop_chapter && !$ffpipe && $program != 'ffprobe')
+				$cmd[] = "-chapter_end '".$this->stop_chapter."'";
+
+			if($disc_type == 'bluray' && $this->start_chapter && !$ffpipe)
+				$cmd[] = "-chapter '".$this->start_chapter."'";
+
+			if($ffpipe)
+				$arg_input = "'-'";
+			else
+				$arg_input = escapeshellarg($this->input_filename);
+
+			if($disc_type == 'bluray' && !$ffpipe)
+				$arg_input = "bluray:$arg_input";
+
+			$cmd[] = "-i $arg_input";
+
+			if($program == 'ffprobe') {
+
+				$args = $this->get_ffmpeg_arguments();
+
+				foreach($this->ffmpeg_opts as $str)
+					$cmd[] = $str;
+
+				foreach($this->ffmpeg_args as $key => $value) {
+					$arg_value = escapeshellarg($value);
+					$cmd[] = "-$key $arg_value";
+				}
+
+				$str = implode(' ', $cmd);
+
+				return $str;
+
+			}
+
+			if($disc_type == 'dvd' && $remux) {
+				$cmd[] = "-map 'v'";
+				$cmd[] = "-vcodec 'copy'";
+			}
+
+			if($disc_type == 'bluray') {
+				$cmd[] = "-map 'v:0'";
+				$cmd[] = "-vcodec 'copy'";
+			}
+
+			if(count($this->audio_streams) && $remux) {
+				$cmd[] = "-map 'a'";
+			}
+
+			if(count($this->audio_streams))
+				$cmd[] = "-acodec 'copy'";
+
+			if($disc_type == 'bluray' && !$remux) {
+
+				if(count($this->audio_streams)) {
+					foreach($this->audio_streams as $streamid) {
+						if(is_numeric($streamid[0]))
+							$cmd[] = "-map 'i:$streamid'";
+						else
+							$cmd[] = "-map '$streamid'";
+					}
+				}
+
+				if($this->subtitles && count($this->subtitle_streams)) {
+					foreach($this->subtitle_streams as $streamid) {
+						$cmd[] = "-map 'i:$streamid'";
+					}
+				}
+
+			}
+
+			$cmd[] = "-vcodec '".$this->vcodec."'";
+			$cmd[] = "-acodec '".$this->acodec."'";
+			if($this->subtitles)
+				$cmd[] = "-scodec '".$this->scodec."'";
+
+			// Always set all audio *and* subtitle streams as English
+			// Blu-ray audio streams probed with ffmpeg do not see language code, so this will fix that as well
+			$cmd[] = "-metadata:s 'language=eng'";
+
+			$args = $this->get_ffmpeg_arguments();
+
+			foreach($this->ffmpeg_opts as $str)
+				$cmd[] = $str;
+
+			foreach($this->ffmpeg_args as $key => $value) {
+				$arg_value = escapeshellarg($value);
+				$cmd[] = "-$key $arg_value";
+			}
+
+			// ??? what is this used for?
+			if($this->output_filename == '-')
+				$cmd[] = "-f 'null'";
+
+			foreach($args as $key => $value) {
+				$arg_value = escapeshellarg($value);
+				$cmd[] = "-$key $arg_value";
+			}
+
+			if($this->remove_cc)
+				$cmd[] = "-bsf:v 'filter_units=remove_types=6'";
+
+			foreach($this->metadata as $key => $value)
+				$cmd[] = "-metadata '$key=$value'";
+
+			$str = implode(' ', $cmd);
+
+			if($this->output_filename) {
+				$arg_output = escapeshellarg($this->output_filename);
+				if($this->overwrite === true)
+					$str .= " -y $arg_output";
+				elseif($this->overwrite === false)
+					$str .= " -n $arg_output";
+				else
+					$str .= " $arg_output";
+			}
+
+			return $str;
+
+		}
+
+		public function get_ffprobe_command() {
+
+			$str = get_ffmpeg_command(false, false, 'ffprobe');
+
+			return $str;
+
+		}
+
+		public function get_ffplay_command() {
+
+			$str = get_ffmpeg_command(false, false, 'ffplay');
+
+			return $str;
+
+		}
+
 	}
