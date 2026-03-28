@@ -15,7 +15,7 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 	if($quiet || $opt_encode)
 		$ffmpeg->quiet();
 
-	$ffmpeg->input_filename($input_filename);
+	$ffmpeg->input_filename($device);
 	$ffmpeg->input_track($tracks_model->ix);
 	$starting_chapter = $episodes_model->starting_chapter;
 	if($starting_chapter)
@@ -194,7 +194,7 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 
 		$dvd_copy = new DVDCopy();
 
-		$dvd_copy->input_filename($input_filename);
+		$dvd_copy->input_filename($device);
 		$dvd_copy->output_filename('-');
 		$dvd_copy->input_track($tracks_model->ix);
 

@@ -46,8 +46,6 @@ if($disc_indexed && ($opt_encode_info || $opt_scan || $opt_encode || $opt_copy |
 		}
 	}
 
-	$input_filename = realpath($device);
-
 	if($disc_type == 'dvd' && $opt_copy)
 		$container = 'mpg';
 	elseif($disc_type == 'bluray' && $opt_copy)
@@ -128,7 +126,7 @@ if($disc_indexed && ($opt_encode_info || $opt_scan || $opt_encode || $opt_copy |
 			if($verbose)
 				$dvd_copy->verbose();
 
-			$dvd_copy->input_filename($input_filename);
+			$dvd_copy->input_filename($device);
 			$dvd_copy->output_filename($filename);
 			$dvd_copy->input_track($tracks_model->ix);
 			$dvd_copy->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
@@ -181,7 +179,7 @@ if($disc_indexed && ($opt_encode_info || $opt_scan || $opt_encode || $opt_copy |
 
 				$ffmpeg->set_disc_type('bluray');
 
-				$ffmpeg->input_filename($input_filename);
+				$ffmpeg->input_filename($device);
 
 				$ffmpeg->input_track($tracks_model->ix);
 
@@ -255,9 +253,9 @@ if($disc_indexed && ($opt_encode_info || $opt_scan || $opt_encode || $opt_copy |
 
 		if($disc_type == 'dvd' && $opt_scan) {
 
-			$arg_input_filename = escapeshellarg($input_filename);
+			$arg_device = escapeshellarg($device);
 
-			$handbrake_command = "HandBrakeCLI --input $arg_input_filename";
+			$handbrake_command = "HandBrakeCLI --input $arg_device";
 
 			$tracks_model = new Tracks_Model($episodes_model->track_id);
 
@@ -316,7 +314,7 @@ if($disc_indexed && ($opt_encode_info || $opt_scan || $opt_encode || $opt_copy |
 
 				$ffmpeg->set_encoder('ffmpeg');
 
-				$ffmpeg->input_filename($input_filename);
+				$ffmpeg->input_filename($device);
 
 			} elseif($opt_ffpipe) {
 
@@ -325,14 +323,14 @@ if($disc_indexed && ($opt_encode_info || $opt_scan || $opt_encode || $opt_copy |
 				$ffmpeg->input_filename('-');
 
 				$bluray_copy = new BlurayCopy();
-				$bluray_copy->input_filename($input_filename);
+				$bluray_copy->input_filename($device);
 
 				$bluray_copy->input_track($tracks_model->ix);
 				$bluray_copy->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
 
 				$bluray_chapters = new BlurayChapters();
 
-				$bluray_chapters->input_filename($input_filename);
+				$bluray_chapters->input_filename($device);
 
 				$bluray_chapters->input_track($tracks_model->ix);
 

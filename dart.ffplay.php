@@ -22,8 +22,6 @@ if($disc_indexed && $opt_ffplay) {
 		}
 	}
 
-	$input_filename = realpath($device);
-
 	foreach($dvd_episodes as $episode_id) {
 
 		$ffmpeg = new FFMpeg();
@@ -71,7 +69,7 @@ if($disc_indexed && $opt_ffplay) {
 
 			$dvd_copy = new DVDCopy();
 
-			$dvd_copy->input_filename($input_filename);
+			$dvd_copy->input_filename($device);
 			$dvd_copy->output_filename('-');
 			$dvd_copy->input_track($tracks_model->ix);
 			$dvd_copy->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
@@ -94,7 +92,7 @@ if($disc_indexed && $opt_ffplay) {
 
 			$ffmpeg->set_encoder('ffplay');
 
-			$ffmpeg->input_filename($input_filename);
+			$ffmpeg->input_filename($device);
 
 			$ffmpeg->input_track($tracks_model->ix);
 
@@ -115,7 +113,7 @@ if($disc_indexed && $opt_ffplay) {
 
 			$ffmpeg->set_disc_type('bluray');
 
-			$ffmpeg->input_filename($input_filename);
+			$ffmpeg->input_filename($device);
 
 			$ffmpeg->input_track($tracks_model->ix);
 

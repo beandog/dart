@@ -15,7 +15,7 @@ if($disc_type == 'dvd' && $dvd_encoder == 'handbrake' && ($opt_encode_info || $o
 
 	/** Files **/
 
-	$handbrake->input_filename($input_filename);
+	$handbrake->input_filename($device);
 	$handbrake->input_track($tracks_model->ix);
 
 	/** Video **/

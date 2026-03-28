@@ -55,6 +55,7 @@
 	// Yay, Rip-o-Matic!
 	$rip_rip_hooray = false;
 	if($opt_rip_o_matic && $rippy_rip_rip) {
+		$device = realpath($device);
 		$opt_backup = true;
 		$arg_backup_dir = $rippy_rip_dir;
 		$rip_rip_hooray = true;
