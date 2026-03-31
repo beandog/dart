@@ -184,8 +184,8 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_ffpipe', array(
-		'long_name' => '--ffpipe',
+	$parser->addOption('opt_pipe', array(
+		'long_name' => '--pipe',
 		'description' => 'Use dvd_copy or bluray_copy to pipe to ffmpeg',
 		'action' => 'StoreTrue',
 		'default' => false,

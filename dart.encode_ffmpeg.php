@@ -2,7 +2,7 @@
 
 /** Encode DVDs with ffmpeg **/
 
-if($disc_type == 'dvd' && ($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'ffpipe' || $dvd_encoder == 'remux')) {
+if($disc_type == 'dvd' && ($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'remux')) {
 
 	$ffmpeg = new FFMpeg();
 
@@ -171,12 +171,10 @@ if($disc_type == 'dvd' && ($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'ffpipe' 
 	if($denoise)
 		$arr_metadata[] = "hqdn3d";
 
-	/*
-	if($dvd_encoder == 'ffpipe')
-		$arr_metadata[] = "ffpipe=$ffmpeg_version";
-	else
-		$arr_metadata[] = "ffmpeg=$ffmpeg_version";
-	*/
+	$arr_metadata[] = "ffmpeg=$ffmpeg_version";
+
+	if($use_pipe)
+		$arr_metadata[] = "use_pipe";
 
 	if(count($arr_metadata)) {
 		$str_metadata = implode(',', $arr_metadata);
@@ -187,7 +185,9 @@ if($disc_type == 'dvd' && ($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'ffpipe' 
 
 	$ffmpeg->set_encoder($dvd_encoder);
 
-	if($dvd_encoder == 'ffpipe' || $dvd_encoder == 'remux') {
+	$ffmpeg->use_pipe($use_pipe);
+
+	if($use_pipe) {
 
 		$ffmpeg->input_filename('-');
 
@@ -205,7 +205,7 @@ if($disc_type == 'dvd' && ($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'ffpipe' 
 
 	$ffmpeg_command = $ffmpeg->get_executable_string();
 
-	if($dvd_encoder == 'ffpipe' || $dvd_encoder == 'remux')
+	if($use_pipe)
 		$ffmpeg_command = "$dvd_copy_command | $ffmpeg_command";
 
 	if($opt_log_progress)

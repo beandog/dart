@@ -9,9 +9,9 @@
 		// ffmpeg
 		public $encoder = 'ffmpeg';
 		public $ffmpeg = false;
-		public $ffpipe = false;
 		public $ffprobe = false;
 		public $ffplay = false;
+		public $use_pipe = false;
 		public $ffmpeg_opts = array();
 		public $ffmpeg_args = array();
 		public $metadata = array();
@@ -76,8 +76,6 @@
 
 			if($str == 'ffmpeg')
 				$this->ffmpeg = true;
-			elseif($str == 'ffpipe')
-				$this->ffpipe = true;
 			elseif($str == 'ffprobe')
 				$this->ffprobe = true;
 			elseif($str == 'ffplay')
@@ -85,6 +83,11 @@
 
 			$this->encoder = $str;
 
+		}
+
+		public function use_pipe($bool = true) {
+			$this->use_pipe = boolval($bool);
+			$this->input_filename = '-';
 		}
 
 		public function add_metadata($key, $value) {
@@ -253,7 +256,7 @@
 			elseif($this->verbose)
 				$cmd[] = "-loglevel 'verbose'";
 
-			if($this->encoder != 'ffpipe') {
+			if(!$this->use_pipe) {
 				if($this->disc_type == 'dvd')
 					$cmd[] = "-f 'dvdvideo'";
 				if($this->dvd_track && $this->disc_type == 'dvd')
@@ -331,15 +334,13 @@
 			$encoder = $this->encoder;
 
 			$ffmpeg = false;
-			$ffpipe = false;
 			$ffplay = false;
 			$remux = false;
 
+			$use_pipe = $this->use_pipe;
+
 			if($encoder == 'ffmpeg') {
 				$ffmpeg = true;
-				$cmd[] = 'ffmpeg';
-			} elseif($encoder == 'ffpipe') {
-				$ffpipe = true;
 				$cmd[] = 'ffmpeg';
 			} elseif($encoder == 'remux') {
 				$remux = true;
@@ -360,16 +361,16 @@
 				$cmd[] = '-stats';
 			}
 
-			if($this->genpts && ($ffmpeg || $ffpipe || $remux))
+			if($this->genpts && ($ffmpeg || $remux))
 				$cmd[] = "-fflags +genpts";
 
-			if($this->disc_type == 'dvd' && ($ffmpeg || $remux || $ffplay))
+			if($this->disc_type == 'dvd' && (($ffmpeg || $remux || $ffplay) && !$use_pipe))
 				$cmd[] = "-f 'dvdvideo'";
 
 			if($this->input_opts)
 				$cmd[] = $this->input_opts;
 
-			if($ffmpeg || $remux || $ffplay) {
+			if(($ffmpeg || $remux || $ffplay) && !$use_pipe) {
 
 				if($this->disc_type == 'dvd' && $this->dvd_track)
 					$cmd[] = "-title '".$this->dvd_track."'";
@@ -387,7 +388,10 @@
 
 			}
 
-			$arg_input = escapeshellarg($this->input_filename);
+			if($this->use_pipe)
+				$arg_input = "'-'";
+			else
+				$arg_input = escapeshellarg($this->input_filename);
 
 			if($this->disc_type == 'bluray' && ($ffmpeg || $remux || $ffplay))
 				$arg_input = "bluray:$arg_input";
@@ -432,7 +436,7 @@
 
 			}
 
-			if($ffmpeg || $remux || $ffpipe) {
+			if($ffmpeg || $remux) {
 				$cmd[] = "-vcodec '".$this->vcodec."'";
 				$cmd[] = "-acodec '".$this->acodec."'";
 				if($this->subtitles)
@@ -441,7 +445,7 @@
 
 			// Always set all audio *and* subtitle streams as English
 			// Blu-ray audio streams probed with ffmpeg do not see language code, so this will fix that as well
-			if($ffmpeg || $remux || $ffpipe)
+			if($ffmpeg || $remux)
 				$cmd[] = "-metadata:s 'language=eng'";
 
 			$args = $this->get_ffmpeg_arguments();
@@ -465,7 +469,7 @@
 				$cmd[] = "-$key $arg_value";
 			}
 
-			if($ffmpeg || $remux || $ffpipe) {
+			if($ffmpeg || $remux) {
 
 				if($this->remove_cc)
 					$cmd[] = "-bsf:v 'filter_units=remove_types=6'";

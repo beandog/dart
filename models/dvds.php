@@ -488,8 +488,8 @@
 
 			if(in_array('ffmpeg', $arr))
 				return('ffmpeg');
-			elseif(in_array('ffpipe', $arr))
-				return('ffpipe');
+			elseif(in_array('ffmpeg+pipe', $arr))
+				return('ffmpeg+pipe');
 			elseif(in_array('handbrake', $arr))
 				return('handbrake');
 

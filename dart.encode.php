@@ -14,6 +14,11 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_remux 
 	// Override DVD encoder if disc is flagged with bugs
 	$dvd_encoder = $dvds_model->get_encoder();
 
+	if($dvd_encoder == 'ffmpeg+pipe' || $opt_pipe)
+		$use_pipe = true;
+	else
+		$use_pipe = false;
+
 	if($disc_type == 'dvd' && $dvd_encoder == '')
 		$dvd_encoder = 'handbrake';
 	elseif($disc_type == 'bluray' && $dvd_encoder == '')
@@ -23,8 +28,6 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_remux 
 		$dvd_encoder = 'handbrake';
 	elseif($opt_ffmpeg)
 		$dvd_encoder = 'ffmpeg';
-	elseif($opt_ffpipe)
-		$dvd_encoder = 'ffpipe';
 	elseif($opt_ffplay)
 		$dvd_encoder = 'ffplay';
 	elseif($opt_remux)
@@ -80,8 +83,8 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_remux 
 			$prefix .= "hb-qa-";
 		elseif($opt_qa && $dvd_encoder == 'ffmpeg')
 			$prefix .= "ffmpeg-qa-";
-		elseif($opt_qa && $dvd_encoder == 'ffpipe')
-			$prefix .= "ffpipe-qa-";
+		elseif($opt_qa && $dvd_encoder == 'ffmpeg' && $use_pipe)
+			$prefix .= "ffmpeg+pipe-qa-";
 		elseif($opt_qa && $dvd_encoder == 'remux')
 			$prefix .= "remux-";
 
@@ -249,7 +252,7 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_remux 
 		if($dvd_encoder == 'handbrake')
 			require 'dart.encode_handbrake.php';
 
-		if($disc_type == 'dvd' && ($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'ffpipe' || $dvd_encoder == 'remux' || $dvd_encoder == 'ffplay'))
+		if($disc_type == 'dvd' && ($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'remux' || $dvd_encoder == 'ffplay'))
 			require 'dart.encode_ffmpeg.php';
 
 		/** Blu-rays **/
@@ -277,20 +280,13 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_remux 
 			$acodec = $series_model->get_acodec();
 			$ffmpeg->set_acodec($acodec);
 
-			if($opt_ffpipe)
-				$dvd_encoder = 'ffpipe';
+			$ffmpeg->set_encoder('ffmpeg');
 
-			if(!$opt_ffpipe) {
+			$ffmpeg->input_filename($device);
 
-				$ffmpeg->set_encoder('ffmpeg');
+			$ffmpeg->use_pipe($use_pipe);
 
-				$ffmpeg->input_filename($device);
-
-			} elseif($opt_ffpipe) {
-
-				$ffmpeg->set_encoder('ffpipe');
-
-				$ffmpeg->input_filename('-');
+			if($opt_pipe) {
 
 				$bluray_copy = new BlurayCopy();
 				$bluray_copy->input_filename($device);
@@ -369,7 +365,7 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_remux 
 			if($opt_log_progress)
 				$ffmpeg_command .= " -progress /tmp/$episode_id.txt";
 
-			if($opt_ffpipe)
+			if($use_pipe)
 				$ffmpeg_command = "$bluray_copy_command 2> /dev/null | $ffmpeg_command";
 
 			if($opt_encode) {

@@ -61,11 +61,13 @@ if($disc_indexed && $opt_ffplay) {
 
 		}
 
-		if($disc_type == 'dvd' && $dvd_encoder == 'ffpipe') {
+		$ffmpeg->set_encoder('ffplay');
 
-			$ffmpeg->set_encoder('ffpipe');
+		$ffmpeg->input_filename($device);
 
-			$ffmpeg->input_filename('-');
+		$ffmpeg->use_pipe($use_pipe);
+
+		if($disc_type == 'dvd' && $use_pipe) {
 
 			$dvd_copy = new DVDCopy();
 
@@ -88,11 +90,7 @@ if($disc_indexed && $opt_ffplay) {
 
 		}
 
-		if($disc_type == 'dvd' && $dvd_encoder != 'ffpipe') {
-
-			$ffmpeg->set_encoder('ffplay');
-
-			$ffmpeg->input_filename($device);
+		if($disc_type == 'dvd') {
 
 			$ffmpeg->input_track($tracks_model->ix);
 

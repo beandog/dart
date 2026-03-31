@@ -200,10 +200,10 @@
 		}
 	}
 
-	if($opt_encode_info || $opt_encode || $opt_copy || $opt_ffplay || $opt_ffprobe || $opt_remux || $opt_ffpipe)
+	if($opt_encode_info || $opt_encode || $opt_copy || $opt_ffplay || $opt_ffprobe || $opt_remux)
 		$batch_mode = true;
 
-	if(!count($devices) && ($opt_info || $opt_encode_info || $opt_encode || $opt_copy || $opt_backup || $opt_import || $opt_ffplay || $opt_ffprobe || $opt_remux || $opt_ffpipe))
+	if(!count($devices) && ($opt_info || $opt_encode_info || $opt_encode || $opt_copy || $opt_backup || $opt_import || $opt_ffplay || $opt_ffprobe || $opt_remux))
 		$devices = $all_devices;
 
 	foreach($devices as $device) {
@@ -284,7 +284,7 @@
 
 
 		// Determine whether we are reading the device
-		if($opt_info || $opt_encode_info || $opt_encode || $opt_copy || $opt_import || $opt_backup || $opt_geniso || $opt_ffplay || $opt_ffprobe || $opt_remux || $opt_ffpipe || $opt_rip_o_matic) {
+		if($opt_info || $opt_encode_info || $opt_encode || $opt_copy || $opt_import || $opt_backup || $opt_geniso || $opt_ffplay || $opt_ffprobe || $opt_remux || $opt_rip_o_matic) {
 			if($debug)
 				echo "* Info / Import / Archive / ISO: Enabling device access\n";
 			$access_device = true;
@@ -426,7 +426,7 @@
 				goto next_device;
 
 			if($disc_type == 'bluray' && $opt_remux) {
-				echo "Use --encode-info with --ffmpeg or --ffpipe to copy or remux playlists\n";
+				echo "Use --encode-info with --ffmpeg or --pipe to copy or remux playlists\n";
 				goto next_device;
 			}
 
