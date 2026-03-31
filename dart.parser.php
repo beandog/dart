@@ -93,6 +93,7 @@
 		'default' => false,
 	));
 	$parser->addOption('opt_skip_existing', array(
+		'short_name' => '-n',
 		'long_name' => '--skip-existing',
 		'description' => 'Skip writing to existing files',
 		'action' => 'StoreTrue',
