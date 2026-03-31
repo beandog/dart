@@ -198,12 +198,6 @@
 		'default' => false,
 	));
 	*/
-	$parser->addOption('opt_scan', array(
-		'long_name' => '--scan',
-		'description' => 'Use HandBrake to get DVD information',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
 	$parser->addOption('opt_rip_o_matic', array(
 		'long_name' => '--rip-o-matic',
 		'description' => 'Use Rip-o-Matic',

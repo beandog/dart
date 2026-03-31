@@ -1,7 +1,7 @@
 <?php
 
 // Display encode instructions about a disc
-if($disc_indexed && ($opt_encode_info || $opt_scan || $opt_encode || $opt_copy || $opt_remux || $opt_ffprobe) && !$opt_ffplay) {
+if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_remux || $opt_ffprobe || $opt_ffplay)) {
 
 	// Override in config.local.php
 	if(isset($config_qa_max))
@@ -14,12 +14,7 @@ if($disc_indexed && ($opt_encode_info || $opt_scan || $opt_encode || $opt_copy |
 	// Override DVD encoder if disc is flagged with bugs
 	$dvd_encoder = $dvds_model->get_encoder();
 
-	if($dvd_encoder == 'ffpipe') {
-		$dvd_encoder = 'ffmpeg';
-		$opt_ffpipe = true;
-	}
-
-	elseif($disc_type == 'dvd' && $dvd_encoder == '')
+	if($disc_type == 'dvd' && $dvd_encoder == '')
 		$dvd_encoder = 'handbrake';
 	elseif($disc_type == 'bluray' && $dvd_encoder == '')
 		$dvd_encoder = 'ffmpeg';
@@ -28,10 +23,12 @@ if($disc_indexed && ($opt_encode_info || $opt_scan || $opt_encode || $opt_copy |
 		$dvd_encoder = 'handbrake';
 	elseif($opt_ffmpeg)
 		$dvd_encoder = 'ffmpeg';
-	elseif($opt_copy)
-		$dvd_encoder = 'dvd_copy';
+	elseif($opt_ffpipe)
+		$dvd_encoder = 'ffpipe';
+	elseif($opt_ffplay)
+		$dvd_encoder = 'ffplay';
 	elseif($opt_remux)
-		$dvd_encoder = 'ffmpeg';
+		$dvd_encoder = 'remux';
 
 	$dvd_episodes = $dvds_model->get_episodes();
 
@@ -46,20 +43,17 @@ if($disc_indexed && ($opt_encode_info || $opt_scan || $opt_encode || $opt_copy |
 		}
 	}
 
-	if($disc_type == 'dvd' && $opt_copy)
+	if($disc_type == 'dvd' && $opt_copy) {
+		$dvd_encoder = 'dvd_copy';
 		$container = 'mpg';
-	elseif($disc_type == 'bluray' && $opt_copy)
+	} elseif($disc_type == 'bluray' && $opt_copy) {
+		$dvd_encoder = 'bluray_copy';
 		$container = 'm2ts';
-	else
+	} else {
 		$container = 'mkv';
+	}
 
 	$hardware = 'nvidia';
-
-	if(isset($config_hardware))
-		$hardware = $config_hardware;
-
-	if(isset($arg_hardware))
-		$hardware = $arg_hardware;
 
 	$encode_subtitles = true;
 	if($opt_no_subtitles)
@@ -81,12 +75,16 @@ if($disc_indexed && ($opt_encode_info || $opt_scan || $opt_encode || $opt_copy |
 		$prefix = '';
 		if($arg_prefix)
 			$prefix = "$arg_prefix-";
+
 		if($opt_qa && $dvd_encoder == 'handbrake')
 			$prefix .= "hb-qa-";
-		elseif($opt_qa && $dvd_encoder == 'ffmpeg' && !$opt_pipe)
+		elseif($opt_qa && $dvd_encoder == 'ffmpeg')
 			$prefix .= "ffmpeg-qa-";
-		elseif($opt_qa && $dvd_encoder == 'ffmpeg' && $opt_pipe)
+		elseif($opt_qa && $dvd_encoder == 'ffpipe')
 			$prefix .= "ffpipe-qa-";
+		elseif($opt_qa && $dvd_encoder == 'remux')
+			$prefix .= "remux-";
+
 		if($arg_vcodec)
 			$prefix .= "$arg_vcodec-";
 		if($arg_acodec)
@@ -171,7 +169,7 @@ if($disc_indexed && ($opt_encode_info || $opt_scan || $opt_encode || $opt_copy |
 
 		}
 
-		if($disc_type == 'bluray' && $opt_ffprobe) {
+		if($disc_type == 'bluray' && $dvd_encoder == 'ffprobe') {
 
 			if($disc_type == 'bluray') {
 
@@ -248,38 +246,10 @@ if($disc_indexed && ($opt_encode_info || $opt_scan || $opt_encode || $opt_copy |
 		if($arg_fps)
 			$fps = $arg_fps;
 
-		if($disc_type == 'dvd' && $opt_copy)
-			$container = 'mpg';
-
-		if($disc_type == 'dvd' && $opt_scan) {
-
-			$arg_device = escapeshellarg($device);
-
-			$handbrake_command = "HandBrakeCLI --input $arg_device";
-
-			$tracks_model = new Tracks_Model($episodes_model->track_id);
-
-			$handbrake_command .= " --title '".$tracks_model->ix."'";
-
-			$starting_chapter = $episodes_model->starting_chapter;
-			$ending_chapter = $episodes_model->ending_chapter;
-
-			if($starting_chapter)
-				$handbrake_command .= "--chapters '".$starting_chapter."-";
-			if($ending_chapter)
-				$handbrake_command .= "$ending_chapter";
-			if($starting_chapter || $ending_chapter)
-				$handbrake_command .= "'";
-
-			$handbrake_command .= " --scan 2>&1";
-			echo "$handbrake_command\n";
-
-		}
-
 		if($dvd_encoder == 'handbrake')
 			require 'dart.encode_handbrake.php';
 
-		if($dvd_encoder == 'ffmpeg')
+		if($disc_type == 'dvd' && ($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'ffpipe' || $dvd_encoder == 'remux' || $dvd_encoder == 'ffplay'))
 			require 'dart.encode_ffmpeg.php';
 
 		/** Blu-rays **/

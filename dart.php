@@ -85,17 +85,13 @@
 
 	// Prefix to bend!
 	if($opt_encode) {
-
 		$opt_skip_existing = true;
 		$opt_time = true;
-
 		$opt_encode_info = false;
-		$opt_ffplay = false;
 		$opt_ffprobe = false;
 		$opt_reumx = false;
 		$opt_copy = false;
-		$opt_scan = false;
-
+		$opt_ffplay = false;
 	}
 
 	// Just kept for reference and fun
@@ -204,10 +200,10 @@
 		}
 	}
 
-	if($opt_encode_info || $opt_encode || $opt_copy || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe)
+	if($opt_encode_info || $opt_encode || $opt_copy || $opt_ffplay || $opt_ffprobe || $opt_remux || $opt_ffpipe)
 		$batch_mode = true;
 
-	if(!count($devices) && ($opt_info || $opt_encode_info || $opt_encode || $opt_copy || $opt_backup || $opt_import || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe))
+	if(!count($devices) && ($opt_info || $opt_encode_info || $opt_encode || $opt_copy || $opt_backup || $opt_import || $opt_ffplay || $opt_ffprobe || $opt_remux || $opt_ffpipe))
 		$devices = $all_devices;
 
 	foreach($devices as $device) {
@@ -288,7 +284,7 @@
 
 
 		// Determine whether we are reading the device
-		if($opt_info || $opt_encode_info || $opt_encode || $opt_copy || $opt_import || $opt_backup || $opt_geniso || $opt_ffplay || $opt_ffprobe || $opt_scan || $opt_remux || $opt_ffpipe || $opt_rip_o_matic) {
+		if($opt_info || $opt_encode_info || $opt_encode || $opt_copy || $opt_import || $opt_backup || $opt_geniso || $opt_ffplay || $opt_ffprobe || $opt_remux || $opt_ffpipe || $opt_rip_o_matic) {
 			if($debug)
 				echo "* Info / Import / Archive / ISO: Enabling device access\n";
 			$access_device = true;
@@ -434,11 +430,6 @@
 				goto next_device;
 			}
 
-			if($disc_type == 'bluray' && $opt_scan) {
-				echo "Scanning a Blu-ray with HandBrake not supported\n";
-				goto next_device;
-			}
-
 			if(!$batch_mode)
 				echo "[$disc_name]\n";
 
@@ -509,7 +500,6 @@
 		require 'dart.import.php';
 		require 'dart.info.php';
 		require 'dart.encode.php';
-		require 'dart.ffplay.php';
 		require 'dart.backup.php';
 		require 'dart.geniso.php';
 
