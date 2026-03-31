@@ -315,7 +315,7 @@ foreach($filenames as $filename) {
 				if($opt_tails)
 					echo "# $basename -> dlna:/opt/jfin/libraries/tails/$basename - already running\n";
 				else
-					echo "# $basename -> dlna:/opt/plex/$xfs/$emo_filename - already running\n";
+					echo "# $basename -> dlna:/media/$xfs/$emo_filename - already running\n";
 			}
 
 			if($upload_video) {
@@ -323,8 +323,8 @@ foreach($filenames as $filename) {
 					$cmd = "rsync -q -u --zc none $arg_episode_filename dlna:/opt/jfin/libraries/tails/$basename";
 					echo "# $basename -> dlna:/opt/jfin/libraries/tails/$basename\n";
 				} else {
-					$cmd = "rsync -q -u --zc none --log-file=/tmp/rsync.out $arg_episode_filename dlna:/opt/plex/$xfs/$emo_filename";
-					echo "# $basename -> dlna:/opt/plex/$xfs/$emo_filename\n";
+					$cmd = "rsync -q -u --zc none --log-file=/tmp/rsync.out $arg_episode_filename dlna:/media/$xfs/$emo_filename";
+					echo "# $basename -> dlna:/media/$xfs/$emo_filename\n";
 				}
 				passthru($cmd);
 			}
@@ -348,7 +348,7 @@ foreach($filenames as $filename) {
 		}
 
 		echo "# Fetching $emo_filename ...\n";
-		$cmd = "scp dlna:/opt/plex/*/$emo_filename .";
+		$cmd = "scp dlna:/media/*/$emo_filename .";
 		passthru($cmd);
 
 	}
