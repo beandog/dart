@@ -2,7 +2,7 @@
 
 /** Encode DVDs with ffmpeg **/
 
-if($disc_type == 'dvd' && ($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'remux')) {
+if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 
 	$ffmpeg = new FFMpeg();
 
@@ -176,6 +176,9 @@ if($disc_type == 'dvd' && ($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'remux'))
 	if($use_pipe)
 		$arr_metadata[] = "use_pipe";
 
+	if($remux_video)
+		$arr_metadata[] = "remux";
+
 	if(count($arr_metadata)) {
 		$str_metadata = implode(',', $arr_metadata);
 		$ffmpeg->add_metadata('encoder_settings', $str_metadata);
@@ -186,6 +189,8 @@ if($disc_type == 'dvd' && ($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'remux'))
 	$ffmpeg->set_encoder($dvd_encoder);
 
 	$ffmpeg->use_pipe($use_pipe);
+
+	$ffmpeg->remux_video($remux_video);
 
 	if($use_pipe) {
 

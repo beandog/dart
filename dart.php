@@ -83,6 +83,14 @@
 		exit;
 	}
 
+	// Passing --remux can be a short cut to use ffmpeg
+	if($opt_remux)
+		$opt_ffmpeg = true;
+
+	// Passing --pipe can be a short cut to use ffmpeg
+	if($opt_pipe)
+		$opt_ffmpeg = true;
+
 	// Prefix to bend!
 	if($opt_encode) {
 		$opt_skip_existing = true;

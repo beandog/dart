@@ -1,7 +1,7 @@
 <?php
 
 // Display encode instructions about a disc
-if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_remux || $opt_ffprobe || $opt_ffplay)) {
+if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg || $opt_ffprobe || $opt_ffplay)) {
 
 	// Override in config.local.php
 	if(isset($config_qa_max))
@@ -19,6 +19,11 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_remux 
 	else
 		$use_pipe = false;
 
+	if($opt_remux)
+		$remux_video = true;
+	else
+		$remux_video = false;
+
 	if($disc_type == 'dvd' && $dvd_encoder == '')
 		$dvd_encoder = 'handbrake';
 	elseif($disc_type == 'bluray' && $dvd_encoder == '')
@@ -28,10 +33,10 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_remux 
 		$dvd_encoder = 'handbrake';
 	elseif($opt_ffmpeg)
 		$dvd_encoder = 'ffmpeg';
+	elseif($opt_ffprobe)
+		$dvd_encoder = 'ffprobe';
 	elseif($opt_ffplay)
 		$dvd_encoder = 'ffplay';
-	elseif($opt_remux)
-		$dvd_encoder = 'remux';
 
 	$dvd_episodes = $dvds_model->get_episodes();
 
@@ -85,7 +90,7 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_remux 
 			$prefix .= "ffmpeg-qa-";
 		elseif($opt_qa && $dvd_encoder == 'ffmpeg' && $use_pipe)
 			$prefix .= "ffmpeg+pipe-qa-";
-		elseif($opt_qa && $dvd_encoder == 'remux')
+		elseif($opt_qa && $dvd_encoder == 'ffmpeg' && $remux_video)
 			$prefix .= "remux-";
 
 		if($arg_vcodec)
@@ -252,7 +257,7 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_remux 
 		if($dvd_encoder == 'handbrake')
 			require 'dart.encode_handbrake.php';
 
-		if($disc_type == 'dvd' && ($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'remux' || $dvd_encoder == 'ffplay'))
+		if($disc_type == 'dvd' && ($dvd_encoder == 'ffmpeg' || $dvd_encoder == 'ffplay'))
 			require 'dart.encode_ffmpeg.php';
 
 		/** Blu-rays **/
