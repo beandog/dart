@@ -44,6 +44,13 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_force', array(
+		'short_name' => '-y',
+		'long_name' => '--force',
+		'description' => 'Force overwriting symlinks',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 
 	try { $result = $parser->parse(); }
 	catch(PEAR_Exception $e) {
@@ -58,6 +65,51 @@
 	require_once 'models/dbtable.php';
 	require_once 'models/series.php';
 	require_once 'models/episodes.php';
+
+	if($opt_qa) {
+
+		$cmd = "find /home/beandog/Libraries /home/beandog/Videos -xtype l";
+		exec($cmd, $arr, $retval);
+
+		$num_files = count($arr);
+
+		if($num_files) {
+
+			foreach($arr as $filename) {
+				$arg_filename = escapeshellarg($filename);
+				echo "# !! DEAD SYMLINK !! $arg_filename\n";
+			}
+
+			$cmd .= " -delete";
+			if(!$opt_dry_run)
+				passthru($cmd, $retval);
+		}
+
+		$cmd = "find /home/beandog/Libraries /home/beandog/Videos -empty";
+		exec($cmd, $arr, $retval);
+
+		$num_files = count($arr);
+
+		if($num_files) {
+
+			$cmd .= " -delete";
+
+			foreach($arr as $filename) {
+				$arg_filename = escapeshellarg($filename);
+				if(is_dir($filename))
+					echo "# !! EMPTY DIR !! $arg_filename\n";
+				else
+					echo "# !! EMPTY FILE !! $arg_filename\n";
+			}
+
+			if(!$opt_dry_run)
+				passthru($cmd, $retval);
+
+		}
+
+		exit;
+
+	}
 
 foreach($filenames as $filename) {
 
@@ -127,7 +179,8 @@ foreach($filenames as $filename) {
 
 	$d_info = implode(" : ", $arr_d_info);
 
-	echo "$d_info\n";
+	if(!$opt_symlink)
+		echo "$d_info\n";
 
 	if(!file_exists($filename))
 		goto next_episode;
@@ -459,18 +512,23 @@ foreach($filenames as $filename) {
 		$arg_symlink_filename = escapeshellarg($symlink_filename);
 
 		$retval = 0;
-		if($opt_dry_run)
-			echo "# !! DRY RUN !! $filename : '$symlink_filename'\n";
-		if(!$opt_dry_run && !file_exists($symlink_filename)) {
-			echo "# $filename : '$symlink_filename'\n";
-			$cmd = "ln -s -v $arg_xfs_filename $arg_symlink_filename";
-			exec($cmd, $output, $retval);
-		}
 
-		if($retval != 0) {
-			$str = implode(' ', $output);
-			echo "# FAILED $cmd - $str\n";
-			goto next_episode;
+		if(!file_exists($symlink_filename)) {
+
+			if($opt_dry_run && !file_exists($symlink_filename))
+				echo "# !! DRY RUN !! $filename : '$symlink_filename'\n";
+			if(!$opt_dry_run && !file_exists($symlink_filename)) {
+				echo "# $filename : '$symlink_filename'\n";
+				$cmd = "ln -s -v $arg_xfs_filename $arg_symlink_filename";
+				exec($cmd, $output, $retval);
+			}
+
+			if($retval != 0) {
+				$str = implode(' ', $output);
+				echo "# FAILED $cmd - $str\n";
+				goto next_episode;
+			}
+
 		}
 
 		$retval = 0;
@@ -492,74 +550,3 @@ foreach($filenames as $filename) {
 	next_episode:
 
 }
-
-	if($opt_qa) {
-
-		$arr_dirnames = array(
-			'/opt/jfin',
-			'/home/beandog/Videos',
-			'/home/beandog/Libraries',
-		);
-
-		$arr = array();
-		foreach($arr_dirnames as $dirname) {
-			$arr[] = escapeshellarg($dirname);
-		}
-
-		$arg_find_dirs = implode(' ', $arr);
-
-		$cmd = "find $arg_find_dirs -empty";
-		echo "# $cmd\n";
-		exec($cmd, $output, $retval);
-		sort($output);
-
-		foreach($output as $filename) {
-
-			$arg_filename = escapeshellarg($filename);
-
-			if(is_dir($filename))
-				echo "# Found empty directory $arg_filename\n";
-			else
-				echo "# Found empty filename $arg_filename\n";
-
-		}
-
-		$cmd = "find $arg_find_dirs -empty -delete";
-		echo "# $cmd\n";
-
-		$retval = 0;
-
-		if(!$opt_dry_run)
-			exec($cmd, $output, $retval);
-
-		if($retval != 0)
-			echo "# FAILED - $cmd\n";
-
-		exit;
-
-
-		$cmd = "find $arg_find_dirs -xtype l";
-		echo "# $cmd\n";
-		exec($cmd, $output, $retval);
-		sort($output);
-
-		foreach($output as $filename) {
-
-			$arg_filename = escapeshellarg($filename);
-
-			echo "# Found dead symlink $arg_filename\n";
-
-		}
-
-		$cmd = "$arg_find_dirs -xtype l -delete";
-
-		$retval = 0;
-
-		echo "# $cmd\n";
-		if(!$opt_dry_run)
-			exec($cmd, $output, $retval);
-
-		if($retval != 0)
-			echo "# FAILED - $cmd\n";
-
-	}
