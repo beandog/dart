@@ -293,7 +293,7 @@ foreach($filenames as $filename) {
 				if($opt_tails)
 					echo "# $basename -> dlna:/opt/jfin/libraries/tails/$basename - already running\n";
 				else
-					echo "# $basename -> dlna:/media/$xfs/$emo_filename - already running\n";
+					echo "# $basename -> dlna:/opt/plex/$xfs/$emo_filename - already running\n";
 			}
 
 		}
@@ -366,7 +366,7 @@ foreach($filenames as $filename) {
 
 	if($opt_symlink) {
 
-		if(!str_contains($realpath, '/media') && !str_contains($realpath, '/home/beandog/Videos')) {
+		if(!str_contains($realpath, '/opt/plex') && !str_contains($realpath, '/home/beandog/Videos')) {
 			echo "# $realpath not an XFS filename\n";
 			goto next_episode;
 		}
@@ -434,15 +434,15 @@ foreach($filenames as $filename) {
 		$symlink_filename = "$symlink_dirname/$symlink_series_title - ";
 		$symlink_filename .= "s".str_pad($season, 2, 0, STR_PAD_LEFT)."e".str_pad($episode_number, 2, 0, STR_PAD_LEFT).".$extension";
 
-		echo "# $filename : '$symlink_filename'\n";
 		$arg_xfs_filename = escapeshellarg($xfs_filename);
 		$arg_symlink_filename = escapeshellarg($symlink_filename);
 
-		$cmd = "doas -u jellyfin ln -s -f -v $arg_xfs_filename $arg_symlink_filename";
-
 		$retval = 0;
-		if(!$opt_dry_run)
+		if(!$opt_dry_run && !file_exists($symlink_filename)) {
+			echo "# $filename : '$symlink_filename'\n";
+			$cmd = "doas -u jellyfin ln -s -v $arg_xfs_filename $arg_symlink_filename";
 			exec($cmd, $output, $retval);
+		}
 
 		if($retval != 0) {
 			$str = implode(' ', $output);
@@ -450,12 +450,13 @@ foreach($filenames as $filename) {
 			goto next_episode;
 		}
 
-		$arg_videos_filename = escapeshellarg("/home/beandog/Videos/$basename");
-		$cmd = "doas -u jellyfin ln -s -f -v $arg_xfs_filename $arg_videos_filename";
-
 		$retval = 0;
-		if(!$opt_dry_run)
+		$homedir_filename = "/home/beandog/Videos/$basename";
+		if(!$opt_dry_run && !file_exists($homedir_filename)) {
+			$arg_homedir_filename = escapeshellarg($homedir_filename);
+			$cmd = "doas -u jellyfin ln -s -v $arg_xfs_filename $arg_homedir_filename";
 			exec($cmd, $output, $retval);
+		}
 
 		if($retval != 0) {
 			$str = implode(' ', $output);
