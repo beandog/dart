@@ -90,6 +90,9 @@ foreach($filenames as $filename) {
 		goto next_episode;
 	}
 
+	if($episode_metadata['season'] == 100)
+		$episode_metadata['season'] = '0';
+
 	extract($episode_metadata);
 
 	$d_episode_title = $episodes_model->get_display_name();
@@ -98,7 +101,7 @@ foreach($filenames as $filename) {
 	$arr_d_info[] = "# $basename";
 	$arr_d_info[] = $series_title;
 	$d_season = '';
-	if($season)
+	if(strlen($season))
 		$d_season = "s$season";
 	if($episode_number)
 		$d_season .= "e$episode_number";
