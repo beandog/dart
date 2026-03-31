@@ -18,7 +18,7 @@
 		'default' => false,
 	));
 	$parser->addOption('opt_symlink', array(
-		'long_name' => '--symlink',
+		'long_name' => '--link',
 		'description' => 'Create symlinks',
 		'action' => 'StoreTrue',
 		'default' => false,
@@ -60,6 +60,8 @@
 	require_once 'models/episodes.php';
 
 foreach($filenames as $filename) {
+
+	$filename = realpath($filename);
 
 	$extension = pathinfo($filename, PATHINFO_EXTENSION);
 	if(!in_array($extension, array('mkv', 'mpg', 'mp4')))
@@ -417,7 +419,8 @@ foreach($filenames as $filename) {
 		if(!is_dir($symlink_dirname)) {
 
 			$arg_symlink_dirname = escapeshellarg($symlink_dirname);
-			$cmd = "doas -u jellyfin mkdir -p $arg_symlink_dirname";
+			// $cmd = "doas -u jellyfin mkdir -p $arg_symlink_dirname";
+			$cmd = "mkdir -p $arg_symlink_dirname";
 
 			$retval = 0;
 			if(!$opt_dry_run)
@@ -440,7 +443,8 @@ foreach($filenames as $filename) {
 		$retval = 0;
 		if(!$opt_dry_run && !file_exists($symlink_filename)) {
 			echo "# $filename : '$symlink_filename'\n";
-			$cmd = "doas -u jellyfin ln -s -v $arg_xfs_filename $arg_symlink_filename";
+			// $cmd = "doas -u jellyfin ln -s -v $arg_xfs_filename $arg_symlink_filename";
+			$cmd = "ln -s -v $arg_xfs_filename $arg_symlink_filename";
 			exec($cmd, $output, $retval);
 		}
 
@@ -454,7 +458,8 @@ foreach($filenames as $filename) {
 		$homedir_filename = "/home/beandog/Videos/$basename";
 		if(!$opt_dry_run && !file_exists($homedir_filename)) {
 			$arg_homedir_filename = escapeshellarg($homedir_filename);
-			$cmd = "doas -u jellyfin ln -s -v $arg_xfs_filename $arg_homedir_filename";
+			// $cmd = "doas -u jellyfin ln -s -v $arg_xfs_filename $arg_homedir_filename";
+			$cmd = "ln -s -v $arg_xfs_filename $arg_homedir_filename";
 			exec($cmd, $output, $retval);
 		}
 
@@ -501,7 +506,8 @@ foreach($filenames as $filename) {
 
 		}
 
-		$cmd = "doas find $arg_find_dirs -empty -delete";
+		// $cmd = "doas find $arg_find_dirs -empty -delete";
+		$cmd = "find $arg_find_dirs -empty -delete";
 		echo "# $cmd\n";
 
 		$retval = 0;
@@ -528,7 +534,8 @@ foreach($filenames as $filename) {
 
 		}
 
-		$cmd = "doas find $arg_find_dirs -xtype l -delete";
+		// $cmd = "doas find $arg_find_dirs -xtype l -delete";
+		$cmd = "$arg_find_dirs -xtype l -delete";
 
 		$retval = 0;
 
