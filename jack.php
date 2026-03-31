@@ -470,6 +470,11 @@ foreach($filenames as $filename) {
 		elseif($collection_id == 9)
 			$library = 'Holidays';
 
+		if($has_seasons && intval($episode_number) == 0) {
+			echo "# !! NO EPISODE NUMBER !! $basename - http://dlna.beandog.org:8080/index.php/dvds/episodes/$dvd_id\n";
+			goto next_episode;
+		}
+
 		$xfs_filename = $realpath;
 
 		$symlink_dirname = "/home/beandog/Libraries/$library/";
