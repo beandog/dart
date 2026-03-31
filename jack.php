@@ -106,8 +106,10 @@ foreach($filenames as $filename) {
 	$arr_d_info[] = "# $basename";
 	$arr_d_info[] = $series_title;
 	$d_season = '';
-	if(strlen($season))
+	if($season)
 		$d_season = "s$season";
+	if($season == 100)
+		$d_season = "s00";
 	if($episode_number)
 		$d_season .= "e$episode_number";
 	if($d_season)
@@ -386,12 +388,16 @@ foreach($filenames as $filename) {
 		$prefix = substr($nsix, 0, 2);
 		$provider_id = '';
 
+		$has_seasons = false;
+
 		if($collection_id == 1) {
 			$library = 'Cartoons';
 			$provider_id = 'tvdbid';
+			$has_seasons = true;
 		} elseif($collection_id == 2) {
 			$library = 'TV-Shows';
 			$provider_id = 'tvdbid';
+			$has_seasons = true;
 		} elseif($collection_id == 3)
 			goto next_episode;
 		elseif($collection_id == 4)
@@ -403,6 +409,7 @@ foreach($filenames as $filename) {
 		elseif($collection_id == 7) {
 			$library = 'Two-Player';
 			$provider_id = 'tvdbid';
+			$has_seaons = true;
 		} elseif($collection_id == 8 && $prefix == '4K')
 			$library = '4K-UHD';
 		elseif($collection_id == 8)
@@ -422,12 +429,12 @@ foreach($filenames as $filename) {
 		if($provider_id && $jfin)
 			$symlink_dirname .= " [$provider_id-$jfin]";
 
-		$symlink_dirname .= "/Season ".str_pad($episode_metadata['season'], 2, 0, STR_PAD_LEFT);
+		if($has_seasons)
+			$symlink_dirname .= "/Season ".str_pad($episode_metadata['season'], 2, 0, STR_PAD_LEFT);
 
 		if(!is_dir($symlink_dirname)) {
 
 			$arg_symlink_dirname = escapeshellarg($symlink_dirname);
-			// $cmd = "doas -u jellyfin mkdir -p $arg_symlink_dirname";
 			$cmd = "mkdir -p $arg_symlink_dirname";
 
 			$retval = 0;
@@ -442,16 +449,20 @@ foreach($filenames as $filename) {
 
 		}
 
-		$symlink_filename = "$symlink_dirname/$symlink_series_title - ";
-		$symlink_filename .= "s".str_pad($season, 2, 0, STR_PAD_LEFT)."e".str_pad($episode_number, 2, 0, STR_PAD_LEFT).".$extension";
+		$symlink_filename = "$symlink_dirname/$symlink_series_title";
+		if($has_seasons) {
+			$symlink_filename .= " - s".str_pad($season, 2, 0, STR_PAD_LEFT)."e".str_pad($episode_number, 2, 0, STR_PAD_LEFT);
+		}
+		$symlink_filename .= ".$extension";
 
 		$arg_xfs_filename = escapeshellarg($xfs_filename);
 		$arg_symlink_filename = escapeshellarg($symlink_filename);
 
 		$retval = 0;
+		if($opt_dry_run)
+			echo "# !! DRY RUN !! $filename : '$symlink_filename'\n";
 		if(!$opt_dry_run && !file_exists($symlink_filename)) {
 			echo "# $filename : '$symlink_filename'\n";
-			// $cmd = "doas -u jellyfin ln -s -v $arg_xfs_filename $arg_symlink_filename";
 			$cmd = "ln -s -v $arg_xfs_filename $arg_symlink_filename";
 			exec($cmd, $output, $retval);
 		}
@@ -466,7 +477,6 @@ foreach($filenames as $filename) {
 		$homedir_filename = "/home/beandog/Videos/$basename";
 		if(!$opt_dry_run && !file_exists($homedir_filename)) {
 			$arg_homedir_filename = escapeshellarg($homedir_filename);
-			// $cmd = "doas -u jellyfin ln -s -v $arg_xfs_filename $arg_homedir_filename";
 			$cmd = "ln -s -v $arg_xfs_filename $arg_homedir_filename";
 			exec($cmd, $output, $retval);
 		}
@@ -514,7 +524,6 @@ foreach($filenames as $filename) {
 
 		}
 
-		// $cmd = "doas find $arg_find_dirs -empty -delete";
 		$cmd = "find $arg_find_dirs -empty -delete";
 		echo "# $cmd\n";
 
@@ -542,7 +551,6 @@ foreach($filenames as $filename) {
 
 		}
 
-		// $cmd = "doas find $arg_find_dirs -xtype l -delete";
 		$cmd = "$arg_find_dirs -xtype l -delete";
 
 		$retval = 0;
