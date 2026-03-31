@@ -293,7 +293,7 @@ foreach($filenames as $filename) {
 				if($opt_tails)
 					echo "# $basename -> dlna:/opt/jfin/libraries/tails/$basename - already running\n";
 				else
-					echo "# $basename -> dlna:/opt/plex/$xfs/$emo_filename - already running\n";
+					echo "# $basename -> dlna:/media/$xfs/$emo_filename - already running\n";
 			}
 
 		}
@@ -366,7 +366,7 @@ foreach($filenames as $filename) {
 
 	if($opt_symlink) {
 
-		if(!str_contains($realpath, '/opt/plex') && !str_contains($realpath, '/home/beandog/Videos')) {
+		if(!str_contains($realpath, '/media') && !str_contains($realpath, '/home/beandog/Videos')) {
 			echo "# $realpath not an XFS filename\n";
 			goto next_episode;
 		}
