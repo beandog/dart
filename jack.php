@@ -51,6 +51,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_stats', array(
+		'long_name' => '--stats',
+		'description' => 'Get library statistics',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 
 	try { $result = $parser->parse(); }
 	catch(PEAR_Exception $e) {
@@ -65,6 +71,30 @@
 	require_once 'models/dbtable.php';
 	require_once 'models/series.php';
 	require_once 'models/episodes.php';
+
+	if($opt_stats) {
+
+		$num_media_files = trim(shell_exec("find /media/ -mindepth 2 -maxdepth 2 -type f -name '*.mkv' | wc -l"));
+		echo "# Total Media Files: $num_media_files\n";
+
+		$num_symlinks = trim(shell_exec("find /home/beandog/Libraries/ -mindepth 2 -type l -name '*.mkv' | wc -l"));
+		echo "# Total Episodes / Movies: $num_symlinks\n";
+
+		if($num_media_files != $num_symlinks) {
+			echo "# Missing Libraries symlinks: ".($num_media_files - $num_symlinks)."\n";
+		}
+
+		$num_symlinks = trim(shell_exec("find /home/beandog/Videos/ -type l -name '*.mkv' | wc -l"));
+		echo "# Total Videos: $num_symlinks\n";
+
+		$num_files = trim(shell_exec("find /home/beandog/Libraries/ -mindepth 2 -maxdepth 2 -type d | wc -l"));
+		echo "# Total Series / Movies: $num_files\n";
+
+
+
+		exit;
+
+	}
 
 	if($opt_qa) {
 
