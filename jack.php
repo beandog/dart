@@ -93,6 +93,11 @@ foreach($filenames as $filename) {
 	if($episode_metadata['season'] == 100)
 		$episode_metadata['season'] = '0';
 
+	// An episode can override series title if it is in format (Series Title)
+	if(substr($episode_metadata['title'], 0, 1) == "(") {
+		$episode_metadata['series_title'] = substr($episode_metadata['title'], 1, strpos($episode_metadata['title'], ")"));
+	}
+
 	extract($episode_metadata);
 
 	$d_episode_title = $episodes_model->get_display_name();
