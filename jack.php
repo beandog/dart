@@ -492,7 +492,7 @@ foreach($filenames as $filename) {
 		elseif($collection_id == 7) {
 			$library = 'Two-Player';
 			$provider_id = 'tvdbid';
-			$has_seaons = true;
+			$has_seasons = true;
 		} elseif($collection_id == 8 && $prefix == '4K')
 			$library = '4K-UHD';
 		elseif($collection_id == 8)
@@ -517,8 +517,12 @@ foreach($filenames as $filename) {
 		if($provider_id && $jfin)
 			$symlink_dirname .= " [$provider_id-$jfin]";
 
-		if($has_seasons)
-			$symlink_dirname .= "/Season ".str_pad($episode_metadata['season'], 2, 0, STR_PAD_LEFT);
+		$symlink_season = $season;
+		if($has_seasons) {
+			if(strlen($season) < 3)
+				$symlink_season = str_pad($episode_metadata['season'], 2, 0, STR_PAD_LEFT);
+			$symlink_dirname .= "/Season $symlink_season";
+		}
 
 		if(!is_dir($symlink_dirname)) {
 
@@ -538,9 +542,8 @@ foreach($filenames as $filename) {
 		}
 
 		$symlink_filename = "$symlink_dirname/$symlink_series_title";
-		if($has_seasons) {
-			$symlink_filename .= " - s".str_pad($season, 2, 0, STR_PAD_LEFT)."e".str_pad($episode_number, 2, 0, STR_PAD_LEFT);
-		}
+		if($has_seasons)
+			$symlink_filename .= " - s".$symlink_season."e".str_pad($episode_number, 2, 0, STR_PAD_LEFT);
 		$symlink_filename .= ".$extension";
 
 		$arg_xfs_filename = escapeshellarg($xfs_filename);
