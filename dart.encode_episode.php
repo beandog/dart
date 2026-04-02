@@ -63,12 +63,16 @@ if($disc_type == 'dvd' && ($opt_encode || $opt_copy)) {
 	if($disc_type == 'dvd' && $dvd_encoder == 'dvd_copy')
 		$encode_command = $dvd_copy_command;
 
+	if($dvd_encoder == 'handbrake')
+		$encode_command = $handbrake_command;
+
 	if($verbose)
 		echo "* $encode_command\n";
 
 	if($dvd_encoder == 'handbrake' && !$verbose)
 		$encode_command .= " 2> $arg_logfile";
 
+	$retval = -1;
 	if($encode_command)
 		passthru($encode_command, $retval);
 
