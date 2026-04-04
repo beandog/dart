@@ -534,5 +534,30 @@
 
 		}
 
+		function get_iso_filenames($collection_id = null, $series_id = null, $dvd_id = null, $episode_id = null, $active = true) {
+
+			$active = boolval($active);
+
+			$sql = "SELECT DISTINCT iso_filename FROM view_episodes WHERE";
+			if($active)
+				$sql .= " series_active = 1";
+			else
+				$sql .= " series_active != 1";
+			if($collection_id)
+				$sql .= " AND collection_id = $collection_id";
+			if($series_id)
+				$sql .= " AND series_id = $series_id";
+			if($dvd_id)
+				$sql .= " AND dvd_id = $dvd_id";
+			if($episode_id)
+				$sql .= " AND episode_id = $episode_id";
+			$sql .= " ORDER BY iso_filename;";
+
+			$arr = $this->get_col($sql);
+
+			return $arr;
+
+		}
+
 	}
 ?>
