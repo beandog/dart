@@ -2,10 +2,8 @@
 -- PostgreSQL database dump
 --
 
-\restrict WFHM0xA6jS6fBDTuNmmyAUob5AAgfyevV9JXEo5JHzyFLJ7bFYt0PsgYTlgwHtK
-
--- Dumped from database version 16.13 (Ubuntu 16.13-0ubuntu0.24.04.1)
--- Dumped by pg_dump version 16.13 (Ubuntu 16.13-0ubuntu0.24.04.1)
+-- Dumped from database version 14.10
+-- Dumped by pg_dump version 14.10
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -83,7 +81,7 @@ CREATE SEQUENCE public.audio_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.audio_id_seq OWNER TO steve;
+ALTER TABLE public.audio_id_seq OWNER TO steve;
 
 --
 -- Name: audio_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: steve
@@ -133,7 +131,7 @@ CREATE SEQUENCE public.blurays_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.blurays_id_seq OWNER TO steve;
+ALTER TABLE public.blurays_id_seq OWNER TO steve;
 
 --
 -- Name: blurays_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: steve
@@ -168,7 +166,7 @@ CREATE SEQUENCE public.bugs_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.bugs_id_seq OWNER TO steve;
+ALTER TABLE public.bugs_id_seq OWNER TO steve;
 
 --
 -- Name: bugs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: steve
@@ -205,7 +203,7 @@ CREATE SEQUENCE public.cells_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.cells_id_seq OWNER TO steve;
+ALTER TABLE public.cells_id_seq OWNER TO steve;
 
 --
 -- Name: cells_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: steve
@@ -256,7 +254,7 @@ CREATE SEQUENCE public.chapters_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.chapters_id_seq OWNER TO steve;
+ALTER TABLE public.chapters_id_seq OWNER TO steve;
 
 --
 -- Name: chapters_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: steve
@@ -296,7 +294,7 @@ CREATE SEQUENCE public.collections_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.collections_id_seq OWNER TO steve;
+ALTER TABLE public.collections_id_seq OWNER TO steve;
 
 --
 -- Name: collections_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: steve
@@ -350,7 +348,7 @@ CREATE SEQUENCE public.episodes_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.episodes_id_seq OWNER TO steve;
+ALTER TABLE public.episodes_id_seq OWNER TO steve;
 
 --
 -- Name: episodes; Type: TABLE; Schema: public; Owner: steve
@@ -587,7 +585,7 @@ CREATE VIEW public.dart_series_episodes AS
   ORDER BY c.title, s.title, sd.ix, t.ix, e.ix, e.id;
 
 
-ALTER VIEW public.dart_series_episodes OWNER TO steve;
+ALTER TABLE public.dart_series_episodes OWNER TO steve;
 
 --
 -- Name: dvd_bugs; Type: TABLE; Schema: public; Owner: steve
@@ -614,7 +612,7 @@ CREATE SEQUENCE public.dvd_bugs_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.dvd_bugs_id_seq OWNER TO steve;
+ALTER TABLE public.dvd_bugs_id_seq OWNER TO steve;
 
 --
 -- Name: dvd_bugs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: steve
@@ -635,7 +633,7 @@ CREATE SEQUENCE public.dvds_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.dvds_id_seq OWNER TO steve;
+ALTER TABLE public.dvds_id_seq OWNER TO steve;
 
 --
 -- Name: dvds_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: steve
@@ -690,7 +688,7 @@ CREATE SEQUENCE public.encodes_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.encodes_id_seq OWNER TO steve;
+ALTER TABLE public.encodes_id_seq OWNER TO steve;
 
 --
 -- Name: encodes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: steve
@@ -740,7 +738,7 @@ CREATE SEQUENCE public.presets_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.presets_id_seq OWNER TO steve;
+ALTER TABLE public.presets_id_seq OWNER TO steve;
 
 --
 -- Name: presets_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: steve
@@ -773,7 +771,7 @@ CREATE SEQUENCE public.ripping_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.ripping_id_seq OWNER TO steve;
+ALTER TABLE public.ripping_id_seq OWNER TO steve;
 
 --
 -- Name: ripping_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: steve
@@ -794,7 +792,7 @@ CREATE SEQUENCE public.series_dvds_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.series_dvds_id_seq OWNER TO steve;
+ALTER TABLE public.series_dvds_id_seq OWNER TO steve;
 
 --
 -- Name: series_dvds_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: steve
@@ -835,7 +833,7 @@ CREATE SEQUENCE public.series_presets_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.series_presets_id_seq OWNER TO steve;
+ALTER TABLE public.series_presets_id_seq OWNER TO steve;
 
 --
 -- Name: series_presets_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: steve
@@ -856,7 +854,7 @@ CREATE SEQUENCE public.sets_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.sets_id_seq OWNER TO steve;
+ALTER TABLE public.sets_id_seq OWNER TO steve;
 
 --
 -- Name: sets_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: steve
@@ -891,7 +889,7 @@ CREATE SEQUENCE public.specs_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.specs_id_seq OWNER TO steve;
+ALTER TABLE public.specs_id_seq OWNER TO steve;
 
 --
 -- Name: specs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: steve
@@ -937,7 +935,7 @@ CREATE SEQUENCE public.subp_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.subp_id_seq OWNER TO steve;
+ALTER TABLE public.subp_id_seq OWNER TO steve;
 
 --
 -- Name: subp_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: steve
@@ -958,7 +956,7 @@ CREATE SEQUENCE public.tracks_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.tracks_id_seq OWNER TO steve;
+ALTER TABLE public.tracks_id_seq OWNER TO steve;
 
 --
 -- Name: tracks_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: steve
@@ -995,7 +993,7 @@ CREATE VIEW public.view_episode_eng_subs AS
   ORDER BY s.title, t.dvd_id, e.id;
 
 
-ALTER VIEW public.view_episode_eng_subs OWNER TO steve;
+ALTER TABLE public.view_episode_eng_subs OWNER TO steve;
 
 --
 -- Name: view_episodes; Type: VIEW; Schema: public; Owner: steve
@@ -1030,7 +1028,9 @@ CREATE VIEW public.view_episodes AS
     sd.season AS series_dvds_season,
     sd.ix AS series_dvds_ix,
     sd.volume AS series_dvds_volume,
-    COALESCE(NULLIF(e.season, 0), sd.season) AS season
+    COALESCE(NULLIF(e.season, 0), sd.season) AS season,
+    (((((((((s.collection_id || '.'::text) || lpad((s.id)::text, 3, '0'::text)) || '.'::text) || lpad((t.dvd_id)::text, 4, '0'::text)) || '.'::text) || lpad((e.id)::text, 5, '0'::text)) || '.'::text) || (s.nsix)::text) || '.mkv'::text) AS episode_filename,
+    (((((((s.collection_id || '.'::text) || lpad((s.id)::text, 3, '0'::text)) || '.'::text) || lpad((t.dvd_id)::text, 4, '0'::text)) || '.'::text) || (s.nsix)::text) || '.iso'::text) AS iso_filename
    FROM ((((public.episodes e
      JOIN public.tracks t ON ((e.track_id = t.id)))
      JOIN public.dvds d ON ((t.dvd_id = d.id)))
@@ -1038,7 +1038,7 @@ CREATE VIEW public.view_episodes AS
      JOIN public.series s ON ((s.id = sd.series_id)));
 
 
-ALTER VIEW public.view_episodes OWNER TO steve;
+ALTER TABLE public.view_episodes OWNER TO steve;
 
 --
 -- Name: view_series_dvds; Type: VIEW; Schema: public; Owner: steve
@@ -1063,7 +1063,7 @@ CREATE VIEW public.view_series_dvds AS
   ORDER BY s.collection_id, sd.series_id, sd.dvd_id;
 
 
-ALTER VIEW public.view_series_dvds OWNER TO steve;
+ALTER TABLE public.view_series_dvds OWNER TO steve;
 
 --
 -- Name: audio id; Type: DEFAULT; Schema: public; Owner: steve
@@ -1485,6 +1485,4 @@ ALTER TABLE ONLY public.tracks
 --
 -- PostgreSQL database dump complete
 --
-
-\unrestrict WFHM0xA6jS6fBDTuNmmyAUob5AAgfyevV9JXEo5JHzyFLJ7bFYt0PsgYTlgwHtK
 
