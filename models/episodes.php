@@ -266,5 +266,24 @@
 
 		}
 
+		function get_episode_filenames($collection_id = null, $series_id = null, $dvd_id = null, $episode_id = null) {
+
+			$sql = "SELECT episode_filename FROM view_episodes WHERE series_active = 1 AND episode_skip = 0";
+			if($collection_id)
+				$sql .= " AND collection_id = $collection_id";
+			if($series_id)
+				$sql .= " AND series_id = $series_id";
+			if($dvd_id)
+				$sql .= " AND dvd_id = $dvd_id";
+			if($episode_id)
+				$sql .= " AND episode_id = $episode_id";
+			$sql .= " ORDER BY episode_filename;";
+
+			$arr = $this->get_col($sql);
+
+			return $arr;
+
+		}
+
 	}
 ?>
