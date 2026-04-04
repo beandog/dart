@@ -14,10 +14,15 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg
 	// Override DVD encoder if disc is flagged with bugs
 	$dvd_encoder = $dvds_model->get_encoder();
 
-	if($dvd_encoder == 'ffmpeg+pipe' || $opt_pipe)
+	$use_pipe = false;
+
+	if($dvd_encoder == 'ffmpeg+pipe') {
+		$dvd_encoder = 'ffmpeg';
 		$use_pipe = true;
-	else
-		$use_pipe = false;
+	}
+
+	if($opt_pipe)
+		$use_pipe = true;
 
 	if($opt_remux)
 		$remux_video = true;
