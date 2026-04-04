@@ -33,6 +33,11 @@
 
 			$dvd_id = abs(intval($this->id));
 
+			// Check for DVD filesize
+			$sql = "SELECT filesize FROM dvds WHERE id = $dvd_id;";
+			if(!$this->get_one($sql))
+				return true;
+
 			// Check if the DVD doesn't have the side set
 			$sql = "SELECT COUNT(1) FROM dvds WHERE id = $dvd_id AND bluray = 0 AND side IS NULL;";
 			$count = abs(intval($this->get_one($sql)));
