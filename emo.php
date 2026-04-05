@@ -3,6 +3,7 @@
 
 	$hostname = php_uname('n');
 
+	require_once 'dart.functions.php';
 	require_once 'Console/CommandLine.php';
 
 	$parser = new Console_CommandLine();
@@ -103,7 +104,10 @@ foreach($filenames as $filename) {
 
 	extract($episode_metadata);
 
-	$d_episode_title = $episodes_model->get_display_name();
+	if(str_contains($episode_title, '(') && str_contains($episode_title, ')')) {
+		$arr_episode_titles = get_episode_titles($series_title, $episode_title, $episode_part, $provider_id);
+		extract($arr_episode_titles);
+	}
 
 	$arr_d_info = array();
 	$arr_d_info[] = "# $basename";
@@ -115,9 +119,9 @@ foreach($filenames as $filename) {
 		$d_season .= "e$episode_number";
 	if($d_season)
 		$arr_d_info[] = "$d_season";
-	if($part)
-		$title .= " ($part)";
-	$arr_d_info[] = "$title";
+	if($episode_part)
+		$episode_title .= " ($episode_part)";
+	$arr_d_info[] = "$episode_title";
 
 	if(file_exists($filename)) {
 		$filesize = filesize($filename);
