@@ -105,30 +105,30 @@ foreach($filenames as $filename) {
 
 	$d_episode_title = $episodes_model->get_display_name();
 
-		$arr_d_info = array();
-		$arr_d_info[] = "# $basename";
-		$arr_d_info[] = $series_title;
-		$d_season = '';
-		if($season)
-			$d_season = "s$season";
-		if($episode_number)
-			$d_season .= "e$episode_number";
-		if($d_season)
-			$arr_d_info[] = "$d_season";
-		if($part)
-			$title .= " ($part)";
-		$arr_d_info[] = "$title";
+	$arr_d_info = array();
+	$arr_d_info[] = "# $basename";
+	$arr_d_info[] = $series_title;
+	$d_season = '';
+	if($season)
+		$d_season = "s$season";
+	if($episode_number)
+		$d_season .= "e$episode_number";
+	if($d_season)
+		$arr_d_info[] = "$d_season";
+	if($part)
+		$title .= " ($part)";
+	$arr_d_info[] = "$title";
 
-		if(file_exists($filename)) {
-			$filesize = filesize($filename);
-			$mbs = number_format(ceil($filesize / 1048576));
-			if($filesize)
-				$arr_d_info[] = "$mbs MBs";
-		}
+	if(file_exists($filename)) {
+		$filesize = filesize($filename);
+		$mbs = number_format(ceil($filesize / 1048576));
+		if($filesize)
+			$arr_d_info[] = "$mbs MBs";
+	}
 
-		$d_info = implode(" : ", $arr_d_info);
+	$d_info = implode(" : ", $arr_d_info);
 
-		echo "$d_info\n";
+	echo "$d_info\n";
 
 	if(!file_exists($filename))
 		goto next_episode;
