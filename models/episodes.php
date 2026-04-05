@@ -65,6 +65,40 @@
 
 		}
 
+		function get_legacy_indexing() {
+
+			$sql = "SELECT DISTINCT collection_id, series_title, dvd_id, episode_skip FROM view_episodes WHERE collection_id IN (1, 2, 6) AND (season = 0 OR (episode_number = 0 OR episode_number IS NULL)) AND episode_skip = 0 ORDER BY collection_id, series_title;";
+
+			$arr = $this->get_all($sql);
+
+			return $arr;
+
+		}
+
+		function get_view_episodes($collection_id = null, $series_id = null, $dvd_id = null, $episode_id = null, $active = null) {
+
+			if(!is_null($active))
+				$active = boolval($active);
+
+			$sql = "SELECT * FROM view_episodes WHERE 1 = 1";
+			if($active)
+				$sql .= " AND series_active = $active";
+			if($collection_id)
+				$sql .= " AND collection_id = $collection_id";
+			if($series_id)
+				$sql .= " AND series_id = $series_id";
+			if($dvd_id)
+				$sql .= " AND dvd_id = $dvd_id";
+			if($episode_id)
+				$sql .= " AND episode_id = $episode_id";
+			$sql .= " ORDER BY episode_filename;";
+
+			$arr = $this->get_all($sql);
+
+			return $arr;
+
+		}
+
 		public function get_episode_titles() {
 
 			$arr = $this->get_metadata();
