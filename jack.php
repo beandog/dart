@@ -175,17 +175,13 @@ foreach($filenames as $filename) {
 	if($episode_metadata['season'] == 100)
 		$episode_metadata['season'] = '0';
 
-	// An episode can override series title if it is in format (Series Title)
-	if(substr($episode_metadata['title'], 0, 1) == "(") {
-		$episode_metadata['series_title'] = substr($episode_metadata['title'], 1, strpos($episode_metadata['title'], ")"));
-	}
-
 	extract($episode_metadata);
 
 	$arr_episode_titles = $episodes_model->get_episode_titles();
 
 	$espiode_title = $arr_episode_titles['episode_title'];
 	$series_title = $arr_episode_titles['series_title'];
+	$episode_part = $arr_episode_titles['episode_part'];
 
 	$arr_d_info = array();
 	$arr_d_info[] = "# $basename";
@@ -199,8 +195,8 @@ foreach($filenames as $filename) {
 		$d_season .= "e$episode_number";
 	if($d_season)
 		$arr_d_info[] = "$d_season";
-	if($part)
-		$title .= " ($part)";
+	if($episode_part)
+		$episode_title .= " ($episode_part)";
 	$arr_d_info[] = "$episode_title";
 
 	if(file_exists($filename)) {
@@ -472,17 +468,16 @@ foreach($filenames as $filename) {
 		$library = '';
 
 		$prefix = substr($nsix, 0, 2);
-		$provider_id = '';
 
 		$has_seasons = false;
 
 		if($collection_id == 1) {
 			$library = 'Cartoons';
-			$provider_id = 'tvdbid';
+			$provider_title = 'tvdbid';
 			$has_seasons = true;
 		} elseif($collection_id == 2) {
 			$library = 'TV-Shows';
-			$provider_id = 'tvdbid';
+			$provider_title = 'tvdbid';
 			$has_seasons = true;
 		} elseif($collection_id == 3)
 			goto next_episode;
@@ -494,7 +489,7 @@ foreach($filenames as $filename) {
 			goto next_episode;
 		elseif($collection_id == 7) {
 			$library = 'Two-Player';
-			$provider_id = 'tvdbid';
+			$provider_title = 'tvdbid';
 			$has_seasons = true;
 		} elseif($collection_id == 8 && $prefix == '4K')
 			$library = '4K-UHD';
@@ -517,8 +512,8 @@ foreach($filenames as $filename) {
 			$symlink_dirname .= " ($production_year)";
 		}
 
-		if($provider_id && $jfin)
-			$symlink_dirname .= " [$provider_id-$jfin]";
+		if($provider_title && $provider_id)
+			$symlink_dirname .= " [$provider_title-$provider_id]";
 
 		$symlink_season = $season;
 		if($has_seasons) {
