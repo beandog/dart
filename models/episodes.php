@@ -54,138 +54,70 @@
 
 		}
 
-		public function get_display_name() {
-
-			$episode_id = intval($this->id);
-
-			$sql = "SELECT series_title, episode_title, episode_part FROM view_episodes WHERE episode_id = $episode_id;";
-
-			$arr = $this->get_row($sql);
-
-			$title = current($arr).": ";
-			if($arr['episode_title'])
-				$title .= $arr['episode_title'];
-
-			if($arr['episode_part'])
-				$title .= ", Part ".$arr['episode_part'];
-
-			return $title;
-
-		}
-
-		public function get_number() {
-
-			// Check to see if it is manually set
-			$sql = "SELECT episode_number FROM episodes WHERE id = ".$this->id.";";
-			$var = $this->get_one($sql);
-
-			if($var)
-				return $var;
-
-			/**
-			 * I'm taking a different approach here. Instead of trying to write one
-			 * massive query that checks all conditions, this one looks at three
-			 * separate conditions to get # episodes on PREVIOUS DISCS. Then it
-			 * just adds them up and gets the count from the unique set of values.
-			 *
-			 * This is simpler because the queries can have overlapping results.
-			 *
-			 */
-
-			// Same season, same volume, other discs
-			$sql = "SELECT DISTINCT e1.episode_id ".
-				"FROM view_episodes e1 INNER JOIN view_episodes e2 ON ".
-				// Same series
-				"e1.series_id = e2.series_id ".
-				// Same season
-				"AND e1.season = e2.season ".
-				// Same volume
-				"AND e1.series_dvds_volume = e2.series_dvds_volume ".
-				// Not the same DVD
-// 				"AND e1.dvd_id != e2.dvd_id ".
-				// Previous DVD index or same index and other side
-				"AND ( (e1.series_dvds_ix < e2.series_dvds_ix ) OR ((e1.series_dvds_ix = e2.series_dvds_ix) AND (e1.series_dvds_side < e2.series_dvds_side))) ".
-				"WHERE e2.episode_id = ".$this->id.
-				" ORDER BY e1.episode_id;";
-
-			$episodes = $this->get_col($sql);
-
-			$i = count($episodes);
-
-			// Earlier seasons
-			/** For the life of me, on a re-edit, where I fixed things so
-			that the volume and season are always the same (set to zero, to avoid
-			the extra conditional checks for null values), I cannot now remember
-			why in the world this query is in here.
-			*/
-// 			$sql = "SELECT DISTINCT e1.episode_id
-// 				FROM view_episodes e1 INNER JOIN view_episodes e2 ON e1.series_id = e2.series_id
-// 				AND e1.dvd_id != e2.dvd_id
-// 				AND e1.season < e2.season
-// 				WHERE e2.episode_id = ".$this->id."
-// 				ORDER BY e1.episode_id;";
-//
-// 			$episodes = array_unique(array_merge($episodes, $this->get_col($sql)));
-//
-// 			$i = count($episodes);
-//
-// 			echo ("count: $i\n");
-
-			// Earlier volumes, same SEASON
-			// Fetching this because a SEASON can go across many VOLUMEs
-			$sql = "SELECT DISTINCT e1.episode_id
-				FROM view_episodes e1 INNER JOIN view_episodes e2 ON e1.series_id = e2.series_id
-				AND e1.season = e2.season
-				AND e1.dvd_id != e2.dvd_id
-				AND e1.series_dvds_volume < e2.series_dvds_volume
-				WHERE e2.episode_id = ".$this->id."
-				ORDER BY e1.episode_id;";
-
-			$episodes = array_merge($episodes, $this->get_col($sql));
-
-			$count1 = count(array_unique($episodes));
-
-			// Find the # of episodes ON THE CURRENT DISC before this episode
-			// TESTING Added a check for complete-series DVDs, where the query
-			// looks at the volume as well, not just the season.
-
-			$sql = "SELECT COUNT(1) FROM view_episodes e1 ".
-				"INNER JOIN view_episodes e2 ON e1.dvd_id = e2.dvd_id ".
-				// Same series
-				"AND e1.series_id = e2.series_id ".
-				// Same season
-				"AND e1.season = e2.season ".
-				// Same volume
-				"AND e2.series_dvds_volume = e2.series_dvds_volume ".
-				// Same DVD
-				"AND e2.dvd_id = e2.dvd_id ".
-				// Same side
-				"AND e1.series_dvds_side = e2.series_dvds_side ".
-				// Lesser episode IF they are not the same (zero)
- 				"AND ((e1.episode_ix != e2.episode_ix AND e1.episode_ix < e2.episode_ix)".
- 					"OR (e1.episode_ix = e2.episode_ix AND e1.episode_id < e2.episode_id)) ".
- 				// Not the same episode
-				"AND e1.episode_id != e2.episode_id ".
-				"WHERE e2.episode_id = ".$this->id.
-				";";
-			$count2 = $this->get_one($sql);
-
- 			// Add one because we start counting at 1, not 0
- 			$count = $count1 + $count2 + 1;
-
-			return $count;
-
-		}
-
-		// FIXME get rid of this old view
 		public function get_metadata() {
 
 			$episode_id = intval($this->id);
 
-			$sql = "SELECT * FROM dart_series_episodes WHERE id = $episode_id;";
+			$sql = "SELECT * FROM view_episodes WHERE episode_id = $episode_id;";
 			$arr = $this->get_row($sql);
 
 			return $arr;
+
+		}
+
+		public function get_episode_titles() {
+
+			$arr = $this->get_metadata();
+
+			$series_title = $arr['series_title'];
+			$episode_title = $arr['episode_title'];
+			$episode_part = $arr['episode_part'];
+			$provider_id = $arr['provider_id'];
+
+			$arr_episode_titles = array(
+				'series_title' => $series_title,
+				'episode_title' => $episode_title,
+				'episode_part' => $episode_part,
+				'provider_id' => $provider_id,
+				'display_title' => '',
+			);
+
+			if(str_contains($episode_title, '(') && str_contains($episode_title, ')')) {
+
+				$arr = explode(')', $episode_title);
+				$str = current($arr);
+				$episode_title = end($arr);
+				$episode_title = trim($episode_title);
+
+				$str = substr($str, 1);
+
+				$series_title = $str;
+
+				if(str_contains($series_title, '|')) {
+
+					$arr = explode('|', $series_title);
+
+					$series_title = current($arr);
+					$provider_id = end($arr);
+
+				}
+
+				$arr_episode_titles['series_title'] = $series_title;
+				$arr_episode_titles['episode_title'] = $episode_title;
+
+			}
+
+			$display_title = "$series_title: ";
+
+			if($episode_title)
+				$display_title .= "$episode_title";
+
+			if($episode_part)
+				$display_title .= ", Part $episode_part";
+
+			$arr_episode_titles['display_title'] = $display_title;
+
+			return $arr_episode_titles;
 
 		}
 
