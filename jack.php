@@ -184,6 +184,11 @@ foreach($filenames as $filename) {
 
 	$d_episode_title = $episodes_model->get_display_name();
 
+	$arr_episode_titles = $episodes_model->get_episode_titles();
+
+	$espiode_title = $arr_episode_titles['episode_title'];
+	$series_title = $arr_episode_titles['series_title'];
+
 	$arr_d_info = array();
 	$arr_d_info[] = "# $basename";
 	$arr_d_info[] = $series_title;
@@ -198,7 +203,7 @@ foreach($filenames as $filename) {
 		$arr_d_info[] = "$d_season";
 	if($part)
 		$title .= " ($part)";
-	$arr_d_info[] = "$title";
+	$arr_d_info[] = "$episode_title";
 
 	if(file_exists($filename)) {
 		$filesize = filesize($filename);
