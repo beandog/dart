@@ -287,7 +287,7 @@ foreach($filenames as $filename) {
 				$xfs = "tv";
 			elseif($collection_id == 4)
 				$xfs = "tv";
-			elseif($collection_id == 7)
+			elseif($collection_id == 6)
 				$xfs = "sd";
 			if(str_contains($emo_filename, ".HD"))
 				$xfs = "hd";
