@@ -133,6 +133,7 @@
 
 					$series_title = current($arr);
 					$provider_id = end($arr);
+					$arr_episode_titles['provider_id'] = $provider_id;
 
 				}
 
