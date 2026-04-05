@@ -182,8 +182,6 @@ foreach($filenames as $filename) {
 
 	extract($episode_metadata);
 
-	$d_episode_title = $episodes_model->get_display_name();
-
 	$arr_episode_titles = $episodes_model->get_episode_titles();
 
 	$espiode_title = $arr_episode_titles['episode_title'];
