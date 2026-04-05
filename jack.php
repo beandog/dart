@@ -179,9 +179,7 @@ foreach($filenames as $filename) {
 
 	$arr_episode_titles = $episodes_model->get_episode_titles();
 
-	$espiode_title = $arr_episode_titles['episode_title'];
-	$series_title = $arr_episode_titles['series_title'];
-	$episode_part = $arr_episode_titles['episode_part'];
+	extract($arr_episode_titles);
 
 	$arr_d_info = array();
 	$arr_d_info[] = "# $basename";
