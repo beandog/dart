@@ -153,6 +153,55 @@
 
 	}
 
+	function get_episode_titles($series_title, $episode_title, $episode_part, $provider_id) {
+
+		$arr_episode_titles = array(
+			'series_title' => $series_title,
+			'episode_title' => $episode_title,
+			'episode_part' => $episode_part,
+			'provider_id' => $provider_id,
+			'display_title' => '',
+		);
+
+		if(str_contains($episode_title, '(') && str_contains($episode_title, ')')) {
+
+			$arr = explode(')', $episode_title);
+			$str = current($arr);
+			$episode_title = end($arr);
+			$episode_title = trim($episode_title);
+
+			$str = substr($str, 1);
+
+			$series_title = $str;
+
+			if(str_contains($series_title, '|')) {
+
+				$arr = explode('|', $series_title);
+
+				$series_title = current($arr);
+				$provider_id = end($arr);
+
+			}
+
+			$arr_episode_titles['series_title'] = $series_title;
+			$arr_episode_titles['episode_title'] = $episode_title;
+
+		}
+
+		$display_title = "$series_title: ";
+
+		if($episode_title)
+			$display_title .= "$episode_title";
+
+		if($episode_part)
+			$display_title .= ", Part $episode_part";
+
+		$arr_episode_titles['display_title'] = $display_title;
+
+		return $arr_episode_titles;
+
+	}
+
 	// File_Find class from PEAR
 	// https://pear.php.net/package/File_Find
 
