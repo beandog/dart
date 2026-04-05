@@ -82,6 +82,9 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg
 		if($episodes_model->skip)
 			continue;
 
+		$arr_episode_titles = $episodes_model->get_episode_titles();
+		$episode_display_title = $arr_episode_titles['display_title'];
+
 		$filename = $episodes_model->get_filename($container);
 
 		// Filename overrides
@@ -153,26 +156,8 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg
 
 			$arg_filename = escapeshellarg($filename);
 
-			// Stolen from emo :D
-			$episode_metadata = $episodes_model->get_metadata();
-			$title = $episode_metadata['title'];
-			$d_episode_title = $episodes_model->get_display_name();
-			$arr_d_info = array();
-			$arr_d_info[] = $episode_metadata['series_title'];
-			$d_season = '';
-			if($episode_metadata['season'])
-				$d_season = "s${episode_metadata['season']}";
-			if($episode_metadata['episode_number'])
-				$d_season .= "e${episode_metadata['episode_number']}";
-			if($d_season)
-				$arr_d_info[] = "$d_season";
-			if($episode_metadata['part'])
-				$title .= " (".$episode_metadata['part'].")";
-			$arr_d_info[] = $title;
-			$d_info = implode(" : ", $arr_d_info);
-
 			echo "[Copying]\n";
-			echo "* $d_info\n";
+			echo "* $episode_display_title\n";
 			echo "* Source: $arg_device\n";
 			echo "* Target: $arg_filename\n";
 

@@ -17,11 +17,11 @@
 		// Display the episode names
 		foreach($dvd_episodes as $episode_id) {
 			$episodes_model = new Episodes_Model($episode_id);
-			$display_name = $episodes_model->get_display_name();
+			$arr_episode_titles = $episodes_model->get_episode_titles();
 			if($episodes_model->skip)
-				$skip_episodes[$episode_id] = $display_name;
+				$skip_episodes[$episode_id] = $arr_episode_titles['display_title'];
 			else
-				echo "* $display_name\n";
+				echo "* ".$arr_episode_titles['display_title']."\n";
 		}
 
 		if(count($skip_episodes)) {

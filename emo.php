@@ -104,10 +104,8 @@ foreach($filenames as $filename) {
 
 	extract($episode_metadata);
 
-	if(str_contains($episode_title, '(') && str_contains($episode_title, ')')) {
-		$arr_episode_titles = get_episode_titles($series_title, $episode_title, $episode_part, $provider_id);
-		extract($arr_episode_titles);
-	}
+	$arr_episode_titles = get_episode_titles($series_title, $episode_title, $episode_part, $provider_id);
+	extract($arr_episode_titles);
 
 	$arr_d_info = array();
 	$arr_d_info[] = "# $basename";
