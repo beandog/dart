@@ -485,11 +485,13 @@ foreach($filenames as $filename) {
 		} elseif($collection_id == 5) {
 			goto next_episode;
 		} elseif($collection_id == 6) {
-			$library = 'Two-Player';
+			$library = 'Watch-Later';
 			$provider_title = 'tvdbid';
 			$has_seasons = true;
 		} elseif($collection_id == 7) {
-			goto next_episode;
+			$library = 'Shorts';
+			$provider_title = 'tvdbid';
+			$has_seasons = true;
 		} elseif($collection_id == 8 && $prefix == '4K') {
 			$library = '4K-UHD';
 		} elseif($collection_id == 8) {
