@@ -58,6 +58,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_verbose', array(
+		'short_name' => '-v',
+		'description' => 'Verbose output',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 
 	try { $result = $parser->parse(); }
 	catch(PEAR_Exception $e) {
@@ -325,7 +331,10 @@ foreach($filenames as $filename) {
 					$cmd = "rsync -q -u --zc none --whole-file $arg_episode_filename dlna:/opt/jfin/libraries/tails/$basename";
 					echo "# $basename -> dlna:/opt/jfin/libraries/tails/$basename\n";
 				} else {
-					$cmd = "rsync -q -u --zc none --whole-file $arg_episode_filename dlna:/media/$xfs/$emo_filename";
+					if($opt_verbose)
+						$cmd = "rsync -q -u --zc none --whole-file -v --progress $arg_episode_filename dlna:/media/$xfs/$emo_filename";
+					else
+						$cmd = "rsync -q -u --zc none --whole-file $arg_episode_filename dlna:/media/$xfs/$emo_filename";
 					echo "# $basename -> dlna:/media/$xfs/$emo_filename\n";
 				}
 				passthru($cmd);
