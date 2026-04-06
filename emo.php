@@ -51,7 +51,7 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('dry_run', array(
+	$parser->addOption('opt_dry_run', array(
 		'short_name' => '-n',
 		'long_name' => '--dry-run',
 		'description' => 'Do a dry run and don\'t overwrite files',
@@ -332,12 +332,15 @@ foreach($filenames as $filename) {
 					echo "# $basename -> dlna:/opt/jfin/libraries/tails/$basename\n";
 				} else {
 					if($opt_verbose)
-						$cmd = "rsync -q -u --zc none --whole-file -v --progress $arg_episode_filename dlna:/media/$xfs/$emo_filename";
+						$cmd = "rsync -v -u --zc none --whole-file --progress $arg_episode_filename dlna:/media/$xfs/$emo_filename";
 					else
 						$cmd = "rsync -q -u --zc none --whole-file $arg_episode_filename dlna:/media/$xfs/$emo_filename";
 					echo "# $basename -> dlna:/media/$xfs/$emo_filename\n";
 				}
-				passthru($cmd);
+				if($opt_dry_run)
+					echo "$cmd\n";
+				else
+					passthru($cmd);
 			}
 
 		}
@@ -376,7 +379,7 @@ foreach($filenames as $filename) {
 
 		$arg_new_filename = escapeshellarg($new_filename);
 		echo "$arg_episode_filename -> $arg_new_filename\n";
-		if(!$dry_run)
+		if(!$opt_dry_run)
 			rename($realpath, $new_filename);
 
 	}
