@@ -464,6 +464,7 @@ foreach($filenames as $filename) {
 		}
 
 		$library = '';
+		$provider_title = '';
 
 		$prefix = substr($nsix, 0, 2);
 
