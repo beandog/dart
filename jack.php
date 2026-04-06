@@ -478,24 +478,25 @@ foreach($filenames as $filename) {
 			$library = 'TV-Shows';
 			$provider_title = 'tvdbid';
 			$has_seasons = true;
-		} elseif($collection_id == 3)
+		} elseif($collection_id == 3) {
 			goto next_episode;
-		elseif($collection_id == 4)
+		} elseif($collection_id == 4) {
 			$library = 'Movies';
-		elseif($collection_id == 5)
+		} elseif($collection_id == 5) {
 			goto next_episode;
-		elseif($collection_id == 6)
-			goto next_episode;
-		elseif($collection_id == 7) {
+		} elseif($collection_id == 6) {
 			$library = 'Two-Player';
 			$provider_title = 'tvdbid';
 			$has_seasons = true;
-		} elseif($collection_id == 8 && $prefix == '4K')
+		} elseif($collection_id == 7) {
+			goto next_episode;
+		} elseif($collection_id == 8 && $prefix == '4K') {
 			$library = '4K-UHD';
-		elseif($collection_id == 8)
+		} elseif($collection_id == 8) {
 			$library = 'Blu-rays';
-		elseif($collection_id == 9)
+		} elseif($collection_id == 9) {
 			$library = 'Holidays';
+		}
 
 		if($has_seasons && intval($episode_number) == 0) {
 			echo "# !! NO EPISODE NUMBER !! $basename - http://dlna.beandog.org:8080/index.php/dvds/episodes/$dvd_id\n";
