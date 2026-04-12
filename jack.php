@@ -57,6 +57,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('verbose', array(
+		'short_name' => '-v',
+		'description' => 'Add verbosity',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 
 	try { $result = $parser->parse(); }
 	catch(PEAR_Exception $e) {
@@ -550,6 +556,9 @@ foreach($filenames as $filename) {
 		$arg_symlink_filename = escapeshellarg($symlink_filename);
 
 		$retval = 0;
+
+		if($verbose)
+			echo "# Checking $symlink_filename\n";
 
 		if(!file_exists($symlink_filename)) {
 
