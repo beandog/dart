@@ -501,7 +501,7 @@ foreach($filenames as $filename) {
 		}
 
 		if($has_seasons && intval($episode_number) == 0) {
-			echo "# !! NO EPISODE NUMBER !! $basename - http://dlna.beandog.org:8080/index.php/dvds/episodes/$dvd_id\n";
+			echo "# !! NO EPISODE NUMBER !! $basename - http://dlna.beandog.org/index.php/dvds/episodes/$dvd_id\n";
 			goto next_episode;
 		}
 
