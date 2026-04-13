@@ -79,10 +79,6 @@
 	require_once 'models/series.php';
 	require_once 'models/episodes.php';
 
-	// Go ahead and import new encode if uploading
-	if($opt_upload)
-		$opt_import = true;
-
 foreach($filenames as $filename) {
 
 	$extension = pathinfo($filename, PATHINFO_EXTENSION);
