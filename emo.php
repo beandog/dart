@@ -293,9 +293,19 @@ foreach($filenames as $filename) {
 				$xfs = "sd";
 			elseif($collection_id == 2)
 				$xfs = "tv";
+			elseif($collection_id == 3)
+				$xfs = "tv";
 			elseif($collection_id == 4)
 				$xfs = "tv";
+			elseif($collection_id == 5)
+				$xfs = "sd";
 			elseif($collection_id == 6)
+				$xfs = "sd";
+			elseif($collection_id == 7)
+				$xfs = "sd";
+			elseif($collection_id == 8)
+				$xfs = "bd";
+			elseif($collection_id == 9)
 				$xfs = "sd";
 			if(str_contains($emo_filename, ".HD"))
 				$xfs = "hd";
