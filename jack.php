@@ -83,17 +83,17 @@
 		$num_media_files = trim(shell_exec("find /media/ -mindepth 2 -maxdepth 2 -type f -name '*.mkv' | wc -l"));
 		echo "# Total Media Files: $num_media_files\n";
 
-		$num_symlinks = trim(shell_exec("find /home/jellyfin/Libraries/ -mindepth 2 -type l -name '*.mkv' | wc -l"));
+		$num_symlinks = trim(shell_exec("find /home/beandog/Libraries/ -mindepth 2 -type l -name '*.mkv' | wc -l"));
 		echo "# Total Episodes / Movies: $num_symlinks\n";
 
 		if($num_media_files != $num_symlinks) {
 			echo "# Missing Libraries symlinks: ".($num_media_files - $num_symlinks)."\n";
 		}
 
-		$num_symlinks = trim(shell_exec("find /home/jellyfin/Videos/ -type l -name '*.mkv' | wc -l"));
+		$num_symlinks = trim(shell_exec("find /home/beandog/Videos/ -type l -name '*.mkv' | wc -l"));
 		echo "# Total Videos: $num_symlinks\n";
 
-		$num_files = trim(shell_exec("find /home/jellyfin/Libraries/ -mindepth 2 -maxdepth 2 -type d | wc -l"));
+		$num_files = trim(shell_exec("find /home/beandog/Libraries/ -mindepth 2 -maxdepth 2 -type d | wc -l"));
 		echo "# Total Series / Movies: $num_files\n";
 
 
@@ -104,7 +104,7 @@
 
 	if($opt_qa) {
 
-		$cmd = "find /home/jellyfin/Libraries /home/jellyfin/Videos -xtype l";
+		$cmd = "find /home/beandog/Libraries /home/beandog/Videos -xtype l";
 		exec($cmd, $arr, $retval);
 
 		$num_files = count($arr);
@@ -121,7 +121,7 @@
 				passthru($cmd, $retval);
 		}
 
-		$cmd = "find /home/jellyfin/Libraries /home/jellyfin/Videos -empty";
+		$cmd = "find /home/beandog/Libraries /home/beandog/Videos -empty";
 		exec($cmd, $arr, $retval);
 
 		$num_files = count($arr);
@@ -464,7 +464,7 @@ foreach($filenames as $filename) {
 
 	if($opt_symlink) {
 
-		if(!str_contains($realpath, '/media') && !str_contains($realpath, '/home/jellyfin/Videos')) {
+		if(!str_contains($realpath, '/media') && !str_contains($realpath, '/home/beandog/Videos')) {
 			echo "# $realpath not an XFS filename\n";
 			goto next_episode;
 		}
@@ -513,7 +513,7 @@ foreach($filenames as $filename) {
 
 		$xfs_filename = $realpath;
 
-		$symlink_dirname = "/home/jellyfin/Libraries/$library/";
+		$symlink_dirname = "/home/beandog/Libraries/$library/";
 		$symlink_series_title = preg_replace("/[^0-9A-Za-z \-_.]/", '', $series_title);
 		$symlink_dirname .= $symlink_series_title;
 		if($production_year) {
@@ -579,7 +579,7 @@ foreach($filenames as $filename) {
 		}
 
 		$retval = 0;
-		$homedir_filename = "/home/jellyfin/Videos/$basename";
+		$homedir_filename = "/home/beandog/Videos/$basename";
 		if(!$opt_dry_run && !file_exists($homedir_filename)) {
 			$arg_homedir_filename = escapeshellarg($homedir_filename);
 			$cmd = "ln -s -v $arg_xfs_filename $arg_homedir_filename";
