@@ -142,6 +142,16 @@
 
 		}
 
+		function get_library_name() {
+
+			$sql = "SELECT l.name FROM series s INNER JOIN libraries l ON s.library_id = l.id WHERE s.id = ".$this->id.";";
+
+			$var = $this->get_one($sql);
+
+			return $var;
+
+		}
+
 	}
 
 ?>

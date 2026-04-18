@@ -78,6 +78,8 @@
 	require_once 'models/series.php';
 	require_once 'models/episodes.php';
 
+	$series_model = new Series_Model();
+
 	if($opt_stats) {
 
 		$num_media_files = trim(shell_exec("find /media/ -mindepth 2 -maxdepth 2 -type f -name '*.mkv' | wc -l"));
@@ -491,7 +493,7 @@ foreach($filenames as $filename) {
 		} elseif($collection_id == 5) {
 			goto next_episode;
 		} elseif($collection_id == 6) {
-			$library = 'Watch-Later';
+			$library = '';
 			$provider_title = 'tvdbid';
 			$has_seasons = true;
 		} elseif($collection_id == 7) {
@@ -504,6 +506,11 @@ foreach($filenames as $filename) {
 			$library = 'Blu-rays';
 		} elseif($collection_id == 9) {
 			$library = 'Holidays';
+		}
+
+		if($library_id || $collection_id == 6) {
+			$series_model->load($series_id);
+			$library = $series_model->get_library_name();
 		}
 
 		if($has_seasons && intval($episode_number) == 0) {
