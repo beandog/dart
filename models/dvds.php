@@ -551,6 +551,7 @@
 				$sql .= " AND dvd_id = $dvd_id";
 			if($episode_id)
 				$sql .= " AND episode_id = $episode_id";
+			$sql .= " AND episode_skip = 0";
 			$sql .= " ORDER BY iso_filename;";
 
 			$arr = $this->get_col($sql);
