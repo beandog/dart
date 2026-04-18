@@ -222,6 +222,21 @@
 		if(is_file($dvd_filename))
 			$bytes = filesize($dvd_filename);
 
+		if(dirname($dvd_filename) == '/dev') {
+
+			$str = shell_exec("udfinfo $dvd_filename 2> /dev/null");
+			$str = trim($str);
+
+			$arr = explode("\n", $str);
+			$arr = preg_grep('/^blocks=/', $arr);
+			$str = current($arr);
+
+			$blocks = substr($str, 7);
+			$blocks = intval($blocks);
+			$bytes = $blocks * 2048;
+
+		}
+
 		if(is_dir($dvd_filename)) {
 
 			global $file_find;
