@@ -6,7 +6,6 @@
 
 	$hostname = php_uname('n');
 
-	require_once 'dart.functions.php';
 	require_once 'Console/CommandLine.php';
 
 	$parser = new Console_CommandLine();
