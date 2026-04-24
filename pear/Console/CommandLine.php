@@ -748,6 +748,8 @@ class Console_CommandLine
                 // exact match
                 return $opt;
             }
+            if(is_null($opt->long_name))
+                continue;
             if (substr($opt->long_name, 0, strlen($str)) === $str) {
                 // abbreviated long option
                 $matches[] = $opt;
