@@ -14,7 +14,6 @@
 		public $title;
 		public $title_tracks;
 		public $longest_track;
-		public $size;
 		public $side;
 		public $region;
 
@@ -99,7 +98,6 @@
 			$this->title_tracks = $this->title_tracks();
 			$this->title_track_index = $this->title_track_index();
 			$this->longest_track = $this->longest_track();
-			$this->size = $this->size();
 			$this->side = $this->side();
 			$this->region = $this->region();
 
@@ -322,35 +320,6 @@
 			}
 
 			return $longest_track;
-
-		}
-
-		/**
-		 * Get the size of the filesystem on the device
-		 */
-		public function size() {
-
-			if($this->is_iso) {
-				$stat = stat($this->device);
-				$b_size = $stat['size'];
-			} else {
-
-				if(PHP_OS == "FreeBSD")
-					return 0;
-
-				$block_device = basename($this->device, "/dev/");
-				$num_sectors = intval(file_get_contents("/sys/block/$block_device/size"));
-				$b_size = $num_sectors * 512;
-
-			}
-
-			if(!$b_size)
-				return 0;
-
-			$kb_size = $b_size / 1024;
-			$mb_size = intval($kb_size / 1024);
-
-			return $mb_size;
 
 		}
 

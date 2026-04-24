@@ -80,7 +80,7 @@
 			$blurays_model->bdj_titles = $dvd->bdj_titles;
 		}
 
-		$dvd_filesize = $dvd->size;
+		$dvd_filesize = disc_filesize($device);
 		if($access_device && $dvds_model->filesize != $dvd_filesize) {
 			echo "* Filesize: $dvd_filesize\n";
 			$dvds_model->filesize = $dvd_filesize;
