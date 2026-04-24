@@ -78,9 +78,9 @@
 	extract($result->options);
 
 	require_once 'config.local.php';
-	require_once 'models/dbtable.php';
-	require_once 'models/series.php';
-	require_once 'models/episodes.php';
+	require_once 'models/pdo.dbtable.php';
+	require_once 'models/pdo.series.php';
+	require_once 'models/pdo.episodes.php';
 
 foreach($filenames as $filename) {
 
@@ -399,7 +399,7 @@ foreach($filenames as $filename) {
 
 	if($opt_import) {
 
-		require_once 'models/encodes.php';
+		require_once 'models/pdo.encodes.php';
 
 		$encodes_model = new Encodes_Model();
 
