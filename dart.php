@@ -1,6 +1,9 @@
 #!/usr/bin/env php
 <?php
 
+	error_reporting(E_ALL);
+	set_include_path(get_include_path() .':'. __DIR__ . '/pear/');
+
 	// Defaults
 	$all_devices = array('/dev/sr0');
 	if(PHP_OS == "FreeBSD")

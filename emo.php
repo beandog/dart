@@ -1,9 +1,11 @@
 #!/usr/bin/env php
 <?php
 
+	error_reporting(E_ALL);
+	set_include_path(get_include_path() .':'. __DIR__ . '/pear/');
+
 	$hostname = php_uname('n');
 
-	require_once 'config.local.php';
 	require_once 'dart.functions.php';
 	require_once 'Console/CommandLine.php';
 
