@@ -210,27 +210,6 @@
 
 	}
 
-	if($opt_episode_filenames) {
-
-		if(!count($devices))
-			$devices = $all_devices;
-
-		foreach($devices as $device) {
-
-			$arr = get_episode_filenames($device, $opt_skip_existing);
-
-			foreach($arr as $filename) {
-				if($opt_skip_existing && file_exists($filename))
-					continue;
-				echo "$filename\n";
-			}
-
-		}
-
-		exit(0);
-
-	}
-
 	if($opt_encode && $arg_export_dir) {
 		if(!is_dir($arg_export_dir)) {
 			$d_arg_export_dir = escapeshellarg($arg_export_dir);
