@@ -3,6 +3,7 @@
 
 	$hostname = php_uname('n');
 
+	require_once 'config.local.php';
 	require_once 'dart.functions.php';
 	require_once 'Console/CommandLine.php';
 
