@@ -6,11 +6,11 @@
 	require_once 'dart.functions.php';
 	require_once 'class.dvd.php';
 
-	require_once 'models/dbtable.php';
-	require_once 'models/dvds.php';
-	require_once 'models/episodes.php';
-	require_once 'models/tracks.php';
-	require_once 'models/series.php';
+	require_once 'models/pdo.dbtable.php';
+	require_once 'models/pdo.dvds.php';
+	require_once 'models/pdo.episodes.php';
+	require_once 'models/pdo.tracks.php';
+	require_once 'models/pdo.series.php';
 
 	require_once 'Console/CommandLine.php';
 

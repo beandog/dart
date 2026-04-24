@@ -38,8 +38,8 @@
 		$disc_type = get_disc_type($source);
 
 		require_once 'class.dvd.php';
-		require_once 'models/dvds.php';
-		require_once 'models/series.php';
+		require_once 'models/pdo.dvds.php';
+		require_once 'models/pdo.series.php';
 
 		$dvds_model = new Dvds_Model();
 
@@ -53,7 +53,7 @@
 		} elseif($disc_type == 'bluray') {
 
 			require_once 'class.bluray.php';
-			require_once 'models/blurays.php';
+			require_once 'models/pdo.blurays.php';
 
 			$bluray = new Bluray($source);
 			$blurays_model = new Blurays_Model();
@@ -108,7 +108,7 @@
 		if($disc_type == 'dvd') {
 
 			require_once 'class.dvd.php';
-			require_once 'models/dvds.php';
+			require_once 'models/pdo.dvds.php';
 
 			$dvds_model = new Dvds_Model();
 			$dvd = new DVD($source);
@@ -118,7 +118,7 @@
 		} elseif($disc_type == 'bluray') {
 
 			require_once 'class.bluray.php';
-			require_once 'models/blurays.php';
+			require_once 'models/pdo.blurays.php';
 
 			$dvd = new Bluray($source);
 			$dvds_model = new Blurays_Model();
