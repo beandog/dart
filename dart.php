@@ -148,33 +148,61 @@
 
 	}
 
-	if($opt_iso_filename) {
+	if($opt_iso_filename || $opt_rename_iso) {
+
+		$dvds_model = new Dvds_Model;
+		$series_dvds_model = new Series_Dvds_Model;
 
 		if(!count($devices))
 			$devices = $all_devices;
 
 		foreach($devices as $device) {
-			$iso_filename = get_dvd_iso_filename($device);
-			if($iso_filename) {
-				echo "$iso_filename\n";
+
+			$device = realpath($device);
+
+			if($opt_rename_iso && substr($device, 0, 5) == '/dev/')
+				continue;
+
+			$disc_type = get_disc_type($device);
+
+			if($disc_type == 'dvd') {
+
+				$dvd = new DVD($device);
+				if(is_null($dvd->dvd_info))
+					continue;
+
+				$dvdread_id = $dvd->dvdread_id;
+
+			} elseif($disc_type == 'bluray') {
+
+				$bluray = new Bluray($device);
+				if(is_null($bluray->dvd_info))
+					continue;
+
+				$dvdread_id = $bluray->dvdread_id;
+
 			}
-		}
 
-		exit(0);
+			$iso_filename = $series_dvds_model->get_dvdread_id_iso_filename($dvdread_id);
 
-	}
+			if(!$iso_filename)
+				$iso_filename = "$dvdread_id.iso";
 
-	if($opt_rename_iso) {
+			if($opt_iso_filename)
+				echo "$iso_filename\n";
 
-		foreach($devices as $device) {
+			if($opt_rename_iso) {
 
-			$dvd_iso_filename = get_dvd_iso_filename($device);
+				// PHP will complain if source is a directory, so make it look like a file
+				$source = dirname($device)."/".basename($device);
 
-			// PHP will complain if source is a directory, so make it look like a file
-			$source = dirname($device)."/".basename($device);
+				if(!file_exists($iso_filename)) {
+					rename($device, $iso_filename);
+				} else {
+					echo "# $device - target iso filename '$iso_filename' already exists\n";
+				}
 
-			if(!file_exists($dvd_iso_filename))
-				rename($device, $dvd_iso_filename);
+			}
 
 		}
 
