@@ -373,21 +373,21 @@ foreach($filenames as $filename) {
 			if(str_contains($str, $basename)) {
 				$upload_video = false;
 				if($opt_tails)
-					echo "# $basename -> dlna:/opt/jfin/libraries/tails/$basename - already running\n";
+					echo "# $basename -> dlna /opt/jfin/libraries/tails/$basename - already running\n";
 				else
-					echo "# $basename -> dlna:/media/$xfs/$emo_filename - already running\n";
+					echo "# $basename -> dlna /media/$xfs/$emo_filename - already running\n";
 			}
 
 			if($upload_video) {
 				if($opt_tails) {
 					$cmd = "rsync -q -u --zc none --whole-file $arg_episode_filename dlna:/opt/jfin/libraries/tails/$basename";
-					echo "# $basename -> dlna:/opt/jfin/libraries/tails/$basename\n";
+					echo "# $basename -> dlna /opt/jfin/libraries/tails/$basename\n";
 				} else {
 					if($opt_verbose)
 						$cmd = "rsync -v -u --zc none --whole-file --progress $arg_episode_filename dlna:/media/$xfs/$emo_filename";
 					else
 						$cmd = "rsync -q -u --zc none --whole-file $arg_episode_filename dlna:/media/$xfs/$emo_filename";
-					echo "# $basename -> dlna:/media/$xfs/$emo_filename\n";
+					echo "# $basename -> dlna /media/$xfs/$emo_filename\n";
 				}
 				if($opt_dry_run)
 					echo "$cmd\n";
