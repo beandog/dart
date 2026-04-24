@@ -29,7 +29,6 @@
 	require_once 'class.dvdrip.php';
 	require_once 'class.ffmpeg.php';
 	require_once 'class.mkvmerge.php';
-	require_once 'class.udf.php';
 
 	require_once 'models/pdo.dbtable.php';
 	require_once 'models/pdo.dvds.php';
@@ -431,15 +430,9 @@
 			if(!$batch_mode)
 				echo "[$disc_name]\n";
 
-			$udf_info = array();
-
 			if($disc_type == "dvd") {
 				$dvd = new DVD($device, $debug);
 			} elseif($disc_type == "bluray") {
-				if($device_is_hardware) {
-					$udf = new UDF($device, $debug);
-					$udf_info = $udf->udf_info;
-				}
 				$dvd = new Bluray($device, $debug);
 			}
 
