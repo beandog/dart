@@ -16,7 +16,8 @@
 	// Overrides to defaults
 	require_once 'config.local.php';
 
-	require_once 'dart.functions.php';
+	require_once 'dart.device.php';
+	require_once 'dart.pcntl.php';
 
 	require_once 'class.dvd.php';
 	require_once 'class.bluray.php';
@@ -110,27 +111,6 @@
 		// system("beep -f 1000 -n -f 2000 -n -f 1500 -n -f 1750 -n -f 1750 -n -f 1750")
 		// Stole this from beep manpage
 		// system("beep -f 1000 -r 2 -n -r 5 -l 10 --new");
-	}
-
-	function get_disc_type($source) {
-
-		$source = realpath($source);
-
-		if(is_dir($source) && is_dir("$source/VIDEO_TS"))
-			return 'dvd';
-
-		if(is_dir($source) && is_dir("$source/BDMV"))
-			return 'bluray';
-
-		$arg_device = escapeshellarg($source);
-
-		$str = trim(shell_exec("disc_type $arg_device 2> /dev/null"));
-
-		if($str == 'dvd' || $str == 'bluray')
-			return $str;
-
-		return $str;
-
 	}
 
 	// Backing up with MakeMKV, don't do any disc access
