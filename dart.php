@@ -419,7 +419,10 @@
 				$disc_name = "DVD";
 			elseif($disc_type == "bluray")
 				$disc_name = "Blu-ray";
-			else
+			elseif($disc_type == 'cd') {
+				require_once 'dart.cd.php';
+				goto next_device;
+			} else
 				goto next_device;
 
 			if($disc_type == 'bluray' && $opt_remux) {
