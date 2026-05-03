@@ -92,9 +92,8 @@
 			}
 
 			$sql = "SELECT title FROM dvds WHERE id = $dvd_id;";
-			$row = $this->get_row($sql);
-
-			if(count($row) && is_null($row['title']))
+			$title = $this->get_one($sql);
+			if(!$title)
 				return true;
 
 			$sql = "SELECT bdinfo_titles FROM blurays WHERE dvd_id = $dvd_id;";
