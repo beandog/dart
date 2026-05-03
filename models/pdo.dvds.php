@@ -31,6 +31,17 @@
 
 			$dvd_id = $this->id;
 
+			// Check for missing disc title
+			$sql = "SELECT title FROM dvds WHERE id = $dvd_id AND title = '';";
+			$title = $this->get_one($sql);
+			var_dump($count);
+
+			if($debug && $count)
+				echo "* DVD $dvd_id disc title IS NULL\n";
+
+			if(!$title)
+				return true;
+
 			// Check for DVD filesize
 			$sql = "SELECT filesize FROM dvds WHERE id = $dvd_id;";
 			if(!$this->get_one($sql))
