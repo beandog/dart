@@ -142,7 +142,6 @@
 			}
 
 			$sql = "DELETE FROM $table WHERE $column = $var;";
-			var_dump($sql);
 
 			$retval = $pg->exec($sql);
 
