@@ -27,12 +27,6 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_force', array(
-		'long_name' => '--force',
-		'description' => 'Force import of new Blu-ray',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
 	$parser->addOption('opt_info', array(
 		'long_name' => '--info',
 		'description' => 'Display metadata about a DVD',
