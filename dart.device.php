@@ -43,6 +43,8 @@
 
 	}
 
+	// Unused -- TODO use VideoLan's libudfread to get data in dvd_info / bluray_info
+	/*
 	function udfinfo($device) {
 
 		$device = realpath($device);
@@ -81,6 +83,7 @@
 		return $udf_info;
 
 	}
+	*/
 
 	// Get DVD total filesize, rounding up to megabytes, so unless it's not a file it will always be 1+
 	function disc_filesize($device) {
