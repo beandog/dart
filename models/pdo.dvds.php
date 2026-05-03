@@ -32,10 +32,10 @@
 			$dvd_id = $this->id;
 
 			// Check for missing disc title
-			$sql = "SELECT title FROM dvds WHERE id = $dvd_id AND title = '';";
+			$sql = "SELECT title FROM dvds WHERE id = $dvd_id;";
 			$title = $this->get_one($sql);
 
-			if($debug && $count)
+			if($debug && !$title)
 				echo "* DVD $dvd_id disc title IS NULL\n";
 
 			if(!$title)
