@@ -20,10 +20,6 @@
 		public function find_track_id($dvd_id, $ix) {
 
 			$dvd_id = abs(intval($dvd_id));
-			if($dvd_id == 0) {
-				trigger_error("DVD id is zero", E_USER_ERROR);
-				exit(1);
-			}
 
 			$sql = "SELECT id FROM tracks WHERE dvd_id = $dvd_id AND ix = $ix;";
 

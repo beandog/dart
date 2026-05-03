@@ -25,10 +25,6 @@
 		public function find_subp_id($track_id, $ix) {
 
 			$track_id = abs(intval($track_id));
-			if($track_id) {
-				trigger_error("Track number is zero", E_USER_ERROR);
-				exit(1);
-			}
 
 			$sql = "SELECT id FROM subp WHERE track_id = $track_id AND ix = $ix;";
 

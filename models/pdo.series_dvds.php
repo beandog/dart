@@ -13,10 +13,6 @@
 		function load_dvdread_id($dvdread_id) {
 
 			$dvdread_id = trim(strval($dvdread_id));
-			if($dvdread_id === '') {
-				trigger_error("dvdread id is empty", E_USER_ERROR);
-				exit(1);
-			}
 
 			$dvdread_id = $this->quote($dvdread_id);
 

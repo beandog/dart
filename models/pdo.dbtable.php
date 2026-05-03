@@ -100,11 +100,6 @@
 
 			$var = $pdo->fetchColumn();
 
-			if($var === false) {
-				trigger_error("Query failed: $sql", E_USER_ERROR);
-				exit(1);
-			}
-
 			$this->id = $var;
 
 			return $var;
@@ -119,11 +114,6 @@
 
 			$retval = $pg->exec($sql);
 
-			if($retval === false) {
-				trigger_error("Query failed: $sql", E_USER_ERROR);
-				exit(1);
-			}
-
 			return true;
 
 		}
@@ -136,19 +126,9 @@
 			$column = trim(strval($column));
 			$var = $pg->quote($var);
 
-			if($table === '' || $column === '') {
-				trigger_error("Query failed: $sql", E_USER_ERROR);
-				exit(1);
-			}
-
 			$sql = "DELETE FROM $table WHERE $column = $var;";
 
 			$retval = $pg->exec($sql);
-
-			if($retval === false) {
-				trigger_error("Query failed: $sql", E_USER_ERROR);
-				exit(1);
-			}
 
 			return true;
 
@@ -168,11 +148,6 @@
 
 			$var = $pdo->fetchColumn();
 
-			if($var === false) {
-				trigger_error("Query failed: $sql", E_USER_ERROR);
-				exit(1);
-			}
-
 			return $var;
 
 		}
@@ -184,11 +159,6 @@
 			$pdo = $pg->query($sql);
 
 			$arr = $pdo->fetchAll(PDO::FETCH_COLUMN, 0);
-
-			if($arr === false) {
-				trigger_error("Query failed: $sql", E_USER_ERROR);
-				exit(1);
-			}
 
 			return $arr;
 
@@ -202,11 +172,6 @@
 
 			$arr = $pdo->fetchAll();
 
-			if($arr === false) {
-				trigger_error("Query failed:\n\t$sql\n", E_USER_ERROR);
-				exit(1);
-			}
-
 			return $arr;
 
 		}
@@ -218,11 +183,6 @@
 			$pdo = $pg->query($sql, PDO::FETCH_ASSOC);
 
 			$arr = $pdo->fetch();
-
-			if($arr === false) {
-				trigger_error("Query failed:\n\t$sql\n", E_USER_ERROR);
-				exit(1);
-			}
 
 			return $arr;
 
