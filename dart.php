@@ -127,6 +127,18 @@
 
 	}
 
+	if($opt_cd) {
+
+		if(!count($devices))
+			$devices = $all_devices;
+
+		foreach($devices as $device)
+			require 'dart.cd.php';
+
+		exit;
+
+	}
+
 	if($opt_iso_filename || $opt_rename_iso) {
 
 		$dvds_model = new Dvds_Model;

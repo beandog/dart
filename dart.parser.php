@@ -278,6 +278,18 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_cd', array(
+		'long_name' => '--cd',
+		'description' => 'Process device as a CD',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
+	$parser->addOption('opt_export', array(
+		'long_name' => '--export',
+		'description' => 'Organize CD tracks into directories',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('opt_tag', array(
 		'long_name' => '--tag',
 		'description' => 'Tag CD tracks',
