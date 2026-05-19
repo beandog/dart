@@ -135,6 +135,7 @@
 	if($opt_qa) {
 
 		$cmd = "find /home/beandog/Libraries /home/beandog/Videos -xtype l";
+		$arr = array(); // array needs to be empty first
 		exec($cmd, $arr, $retval);
 
 		$num_files = count($arr);
@@ -152,6 +153,7 @@
 		}
 
 		$cmd = "find /home/beandog/Libraries /home/beandog/Videos -empty";
+		$arr = array();
 		exec($cmd, $arr, $retval);
 
 		$num_files = count($arr);
@@ -525,8 +527,10 @@ foreach($filenames as $filename) {
 			$cmd = "mkdir -p $arg_symlink_dirname";
 
 			$retval = 0;
-			if(!$opt_dry_run)
+			if(!$opt_dry_run) {
+				$output = array();
 				exec($cmd, $output, $retval);
+			}
 
 			if($retval != 0) {
 				$str = implode(' ', $output);
@@ -556,6 +560,7 @@ foreach($filenames as $filename) {
 			if(!$opt_dry_run && !file_exists($symlink_filename)) {
 				echo "# $filename : '$symlink_filename'\n";
 				$cmd = "ln -s -v $arg_xfs_filename $arg_symlink_filename";
+				$output = array();
 				exec($cmd, $output, $retval);
 			}
 
@@ -572,6 +577,7 @@ foreach($filenames as $filename) {
 		if(!$opt_dry_run && !file_exists($homedir_filename)) {
 			$arg_homedir_filename = escapeshellarg($homedir_filename);
 			$cmd = "ln -s -v $arg_xfs_filename $arg_homedir_filename";
+			$output = array();
 			exec($cmd, $output, $retval);
 		}
 
