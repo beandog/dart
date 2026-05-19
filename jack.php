@@ -23,6 +23,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_cron', array(
+		'long_name' => '--cron',
+		'description' => 'Execute cron job to do libraries maintenance',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('opt_qa', array(
 		'long_name' => '--qa',
 		'description' => 'Delete broken symlinks and empty directories',
@@ -79,6 +85,28 @@
 	require_once 'models/pdo.episodes.php';
 
 	$series_model = new Series_Model();
+
+	if($opt_cron) {
+
+		$verbose = true;
+		$opt_qa = true;
+		$opt_symlink = true;
+
+		$filenames = array();
+
+		$cmd = "find /media -type f -name '*.mkv' -mtime -1";
+
+		$str = shell_exec($cmd);
+		$str = trim($str);
+
+		$arr = explode("\n", $str);
+
+		if(is_array($arr) && count($arr))
+			$filenames = $arr;
+		else
+			exit;
+
+	}
 
 	if($opt_stats) {
 
@@ -145,7 +173,8 @@
 
 		}
 
-		exit;
+		if(!$opt_cron)
+			exit;
 
 	}
 
