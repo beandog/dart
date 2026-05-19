@@ -105,8 +105,8 @@ foreach($filenames as $filename) {
 	$emo_filename = $episodes_model->get_filename();
 
 	$episode_metadata = $episodes_model->get_metadata();
-	if(!count($episode_metadata)) {
-		echo "* $basename - cannot find episode '$episode_id' in database\n";
+	if(!is_array($episode_metadata) || !count($episode_metadata)) {
+		echo "* !!! $basename - cannot find episode '$episode_id' in database\n";
 		goto next_episode;
 	}
 
