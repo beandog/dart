@@ -384,53 +384,6 @@ foreach($filenames as $filename) {
 
 	if($opt_import) {
 
-		if($opt_upload) {
-
-			$xfs = "";
-
-			if($collection_id == 1)
-				$xfs = "sd";
-			elseif($collection_id == 2)
-				$xfs = "tv";
-			elseif($collection_id == 4)
-				$xfs = "tv";
-			elseif($collection_id == 7)
-				$xfs = "sd";
-			if(str_contains($emo_filename, ".HD"))
-				$xfs = "hd";
-			elseif(str_contains($emo_filename, ".BD"))
-				$xfs = "bd";
-			elseif(str_contains($emo_filename, ".4K"))
-				$xfs = "bd";
-
-			if(!$xfs)
-				goto next_episode;
-
-			$upload_video = true;
-
-			$cmd = "pgrep -l '^(HandBrakeCLI|ffmpeg)' -a";
-			$str = trim(shell_exec($cmd));
-			if(str_contains($str, $basename)) {
-				$upload_video = false;
-				echo "# $basename - video already encoding\n";
-			}
-
-			$cmd = "pgrep -l '^rsync' -a";
-			$str = trim(shell_exec($cmd));
-			if(str_contains($str, $basename)) {
-				$upload_video = false;
-				if($opt_tails)
-					echo "# $basename -> dlna:/opt/jfin/libraries/tails/$basename - already running\n";
-				else
-					echo "# $basename -> dlna:/media/$xfs/$emo_filename - already running\n";
-			}
-
-		}
-
-	}
-
-	if($opt_import) {
-
 		require_once 'models/pdo.encodes.php';
 
 		$encodes_model = new Encodes_Model();
