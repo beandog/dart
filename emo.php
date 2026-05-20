@@ -452,8 +452,10 @@ foreach($filenames as $filename) {
 		$duration = intval($duration);
 		$framerate = floatval($framerate);
 		$episode_mbs = ceil($episode_mbs);
-		$video_mbs = ceil($video_mbs);
-		$audio_mbs = ceil($audio_mbs);
+		if(!is_null($video_mbs))
+			$video_mbs = ceil($video_mbs);
+		if(!is_null($audio_mbs))
+			$audio_mbs = ceil($audio_mbs);
 
 		$encodes_model->episode_id = $episode_id;
 		$encodes_model->filename = $basename;
