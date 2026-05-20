@@ -10,7 +10,7 @@
 		if(is_dir($device))
 			return 'directory';
 
-		if(is_file($iso) && filesize($device))
+		if(is_file($device) && filesize($device))
 			return 'iso';
 
 		return '';
