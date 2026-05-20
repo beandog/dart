@@ -33,7 +33,7 @@ if($disc_type == 'dvd' && ($opt_encode || $opt_copy)) {
 	$episode_display_title = $arr_episode_titles['display_title'];
 
 	echo "[Encoding]\n";
-	echo "* $epiosde_display_title\n";
+	echo "* $episode_display_title\n";
 	echo "* Source: $arg_device\n";
 	echo "* Target: $arg_filename\n";
 
