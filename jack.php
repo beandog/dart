@@ -546,6 +546,8 @@ foreach($filenames as $filename) {
 		$symlink_filename = "$symlink_dirname/$symlink_series_title";
 		if($has_seasons)
 			$symlink_filename .= " - s".$symlink_season."e".str_pad($episode_number, 2, 0, STR_PAD_LEFT);
+		if($episode_part && in_array($collection_id, array(4, 5, 8, 9)))
+			$symlink_filename .= "-disc-$episode_part";
 		$symlink_filename .= ".$extension";
 
 		$arg_xfs_filename = escapeshellarg($xfs_filename);
