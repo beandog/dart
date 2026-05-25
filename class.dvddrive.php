@@ -244,7 +244,10 @@
 				echo "* drive::close(".$this->device.")\n";
 
 			$arg_device = escapeshellarg($this->device);
-			$cmd = "dvd_eject -t $arg_device";
+			if(file_exists('/usr/bin/dvd_eject') || file_exists('/usr/local/bin/dvd_eject'))
+				$cmd = "dvd_eject -t $arg_device";
+			else
+				$cmd = "eject -t $arg_device";
 			passthru($cmd, $retval);
 
 			if($retval === 0)
