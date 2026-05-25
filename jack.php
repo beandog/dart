@@ -473,6 +473,8 @@ foreach($filenames as $filename) {
 			$provider_title = 'tvdbid';
 			$has_seasons = true;
 		} elseif($collection_id == 3) {
+			$library = 'Mormon';
+			$provider_title = 'tvdbid';
 			goto next_episode;
 		} elseif($collection_id == 4) {
 			$provider_title = 'tmdbid';
