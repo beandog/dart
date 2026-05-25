@@ -32,6 +32,13 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_eject', array(
+		'short_name' => '-j',
+		'long_name' => '--eject',
+		'description' => 'Eject disc when finished',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('opt_batch', array(
 		'long_name' => '--batch',
 		'description' => 'Combine common encoding options when testing',

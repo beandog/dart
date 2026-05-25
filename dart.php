@@ -512,19 +512,22 @@
 		// dart calls failed to acess the DVD or device, and it needs to move on.
 		next_device:
 
+		$ejected = false;
+
 		// If archiving, everything would have happened by now,
 		// so eject the drive.
 		if($opt_import && $new_dvd && $device_is_hardware && $drive->is_closed()) {
 			if(!$batch_mode)
 				echo "* Ready to archive next disc, opening tray!\n";
-			$drive->eject();
+			if(!$ejected)
+				$drive->eject();
 		}
 
 		if($opt_rip_o_matic && $rippy_rip_rip && $rip_rip_hooray) {
 			$cmd_ogg = "/usr/bin/ogg123 /usr/share/sounds/freedesktop/stereo/service-logout.oga &> /dev/null &";
 			shell_exec($cmd_ogg);
 
-			if($backup_passed === true) {
+			if($backup_passed === true && !$ejected) {
 				$drive->eject();
 			} elseif($backup_passed === false) {
 				$cmd_ogg = "/usr/bin/ogg123 /usr/share/sounds/freedesktop/stereo/trash-empty.oga &> /dev/null &";
@@ -532,6 +535,9 @@
 			}
 
 		}
+
+		if($device_is_hardware && $opt_eject && !$ejected)
+			$drive->eject();
 
 	}
 
