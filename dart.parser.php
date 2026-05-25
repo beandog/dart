@@ -21,7 +21,6 @@
 		'default' => false,
 	));
 	$parser->addOption('quiet', array(
-		'short_name' => '-q',
 		'long_name' => '--quiet',
 		'description' => 'Minimal display output when encoding',
 		'action' => 'StoreTrue',
@@ -213,6 +212,7 @@
 		'default' => '',
 	));
 	$parser->addOption('arg_crf', array(
+		'short_name' => '-q',
 		'long_name' => '--crf',
 		'description' => 'Set encoding CRF',
 		'action' => 'StoreString',
