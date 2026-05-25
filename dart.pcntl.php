@@ -16,11 +16,16 @@
 		if($dart_status == 'encode_episode') {
 
 			global $filename;
+			global $device;
+			global $opt_eject;
 
 			$arg_filename = escapeshellarg($filename);
 			echo "* Removing $arg_filename\n";
 			if(file_exists($filename))
 				unlink($filename);
+
+			if(($device == '/dev/sr0' || $device == '/dev/sr1') && $opt_eject)
+				passthru("eject $device");
 
 		}
 

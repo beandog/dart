@@ -57,6 +57,13 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_drip', array(
+		'short_name' => '-r',
+		'long_name' => '--rip',
+		'description' => 'Batch rip episodes (same as \'drip\')',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('arg_export_dir', array(
 		'long_name' => '--export-dir',
 		'description' => 'Rip episodes into directory',

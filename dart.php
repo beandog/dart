@@ -72,6 +72,18 @@
 		$access_device = true;
 	}
 
+	// Same as running 'drip' to do automated rips
+	$ionice = '';
+	if($opt_drip) {
+		$verbose = true;
+		$opt_encode = true;
+		$opt_skip_existing = true;
+		$opt_test_existing = true;
+		$opt_time = true;
+		$opt_log_progress = true;
+		$ionice = 'ionice -c 2 -n 7';
+	}
+
 	// Make my life simpler
 	if($opt_batch) {
 		$opt_time = true;

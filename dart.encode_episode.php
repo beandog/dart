@@ -42,14 +42,20 @@ if($disc_type == 'dvd' && ($opt_encode || $opt_copy)) {
 
 	$encode_command = '';
 
-	if($dvd_encoder == 'ffmpeg')
+	if($dvd_encoder == 'ffmpeg') {
 		$encode_command = $ffmpeg_command;
+		if($opt_drip)
+			$encode_command = str_replace("ffmpeg ", "$ionice ffmpeg ", $encode_command);
+	}
 
 	if($disc_type == 'dvd' && $dvd_encoder == 'dvd_copy')
 		$encode_command = $dvd_copy_command;
 
-	if($dvd_encoder == 'handbrake')
+	if($dvd_encoder == 'handbrake') {
 		$encode_command = $handbrake_command;
+		if($opt_drip)
+			$encode_command = "$ionice $encode_command";
+	}
 
 	if($verbose)
 		echo "* $encode_command\n";
