@@ -475,6 +475,7 @@ foreach($filenames as $filename) {
 		} elseif($collection_id == 3) {
 			goto next_episode;
 		} elseif($collection_id == 4) {
+			$provider_title = 'tmdbid';
 			$library = 'Movies';
 		} elseif($collection_id == 5) {
 			goto next_episode;
