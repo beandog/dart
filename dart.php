@@ -304,7 +304,7 @@
 
 
 		// Determine whether we are reading the device
-		if($opt_info || $opt_encode_info || $opt_encode || $opt_copy || $opt_import || $opt_backup || $opt_geniso || $opt_ffplay || $opt_ffprobe || $opt_remux || $opt_rip_o_matic) {
+		if($opt_info || $opt_encode_info || $opt_encode || $opt_drip || $opt_copy || $opt_import || $opt_backup || $opt_geniso || $opt_ffplay || $opt_ffprobe || $opt_remux || $opt_rip_o_matic) {
 			if($debug)
 				echo "* Info / Import / Archive / ISO: Enabling device access\n";
 			$access_device = true;
@@ -549,7 +549,7 @@
 		}
 
 		if($device_is_hardware && $opt_eject && !$ejected)
-			$drive->eject();
+			passthru("eject $device");
 
 	}
 
