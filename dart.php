@@ -273,23 +273,20 @@
 		$disc_name = 'DVD';
 
 		// Check if source filename is a block device or not
-		$device_dirname = dirname(realpath($device));
-		$pathinfo = pathinfo(realpath($device));
+		$device_is_hardware = false;
+		$device_is_iso = false;
+		$device_is_image = false;
 		if($device_type == 'device') {
 			$device_is_hardware = true;
-			$device_is_iso = false;
-			$device_is_image = false;
-		} elseif(is_file($device) && (strtolower($pathinfo['extension']) == 'iso')) {
-			$device_is_hardware = false;
+		} elseif($device_type == 'iso') {
 			$device_is_iso = true;
 			$device_is_image = true;
-		} else {
-			$device_is_hardware = false;
-			$device_is_iso = true;
+		} elseif($device_type == 'windows') {
+			$device_is_hardware = true;
 		}
 
 		// Verify file exists
-		if(!file_exists($device)) {
+		if($device_type != 'windows' && !file_exists($device)) {
 			echo "* Couldn't find $device\n";
 			goto next_device;
 		}
