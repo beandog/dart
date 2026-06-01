@@ -1,5 +1,14 @@
 <?php
 
+	function os() {
+
+		if(str_contains(php_uname('r'), 'WSL2'));
+			return 'wsl';
+
+		return 'tux';
+
+	}
+
 	function get_device_type($device) {
 
 		if(str_contains(php_uname('r'), 'WSL2') && $device[1] == ':')
