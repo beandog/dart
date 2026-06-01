@@ -2,6 +2,9 @@
 
 	function get_device_type($device) {
 
+		if(str_contains(php_uname('r'), 'WSL2') && $device[1] == ':')
+			return 'windows';
+
 		$device = realpath($device);
 
 		if(dirname($device) == '/dev')
