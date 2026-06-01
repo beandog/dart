@@ -111,8 +111,11 @@
 		private function dvd_info() {
 
 			$arg_device = escapeshellarg($this->device);
-			if(os() == 'tux')
+			if(os() == 'tux') {
 				$cmd = "dvd_info --json $arg_device 2> /dev/null";
+				if(!$this->debug)
+					$cmd .= " 2> /dev/null";
+			}
 			elseif(os() == 'wsl')
 				$cmd = "dvd_info.exe --json $arg_device";
 
