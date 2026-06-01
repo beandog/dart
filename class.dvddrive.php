@@ -4,26 +4,18 @@
 
 		public $device;
 		public $debug;
-		public $arr_drive_status;
-		public $disc_type;
+		public $disc_type = '';
+		public $arr_drive_status = array("", "CDS_NO_DISC", "CDS_TRAY_OPEN", "CDS_DRIVE_NOT_READY", "CDS_DISK_OK", "CDS_ERR_DEVTYPE", "CDS_ERR_OPEN");
 
-		function __construct($device = "/dev/sr0") {
+		function __construct($device, $debug) {
 
-			$this->device = realpath($device);
+			$this->device = $device;
 
-			$this->debug = false;
-
-			$this->arr_drive_status = array("", "CDS_NO_DISC", "CDS_TRAY_OPEN", "CDS_DRIVE_NOT_READY", "CDS_DISK_OK", "CDS_ERR_DEVTYPE", "CDS_ERR_OPEN");
-
-			$this->disc_type = '';
+			$this->debug = boolval($debug);
 
 		}
 
 		/** Hardware **/
-
-		function set_debug($bool = true) {
-			$this->debug = boolval($bool);
-		}
 
 		/**
 		 * Basic check to see if drive is accessible
