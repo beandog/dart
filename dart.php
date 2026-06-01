@@ -227,9 +227,11 @@
 
 		start:
 
+		$arg_device = escapeshellarg($device);
+
 		if($debug) {
 			echo "[Initialization]\n";
-			echo "* Device: $device\n";
+			echo "* Device: $arg_device\n";
 		}
 
 		clearstatcache();
@@ -286,12 +288,6 @@
 			goto next_device;
 		}
 
-		// Device name to display to stdout
-		$display_device = $device;
-		if($device_is_iso)
-			$display_device = basename($device);
-
-
 		// Determine whether we are reading the device
 		if($opt_info || $opt_encode_info || $opt_encode || $opt_drip || $opt_copy || $opt_import || $opt_backup || $opt_geniso || $opt_ffplay || $opt_ffprobe || $opt_remux || $opt_rip_o_matic) {
 			if($debug)
@@ -299,10 +295,10 @@
 			$access_device = true;
 			if(!$batch_mode) {
 				echo "[Access Device]\n";
-				echo "* Reading $display_device\n";
+				echo "* Reading $arg_device\n";
 			}
 			if($debug)
-				echo "* Reading ".realpath($device)."\n";
+				echo "* Reading $arg_device\n";
 		}
 
 		// Look for any conditions where we there is access to the device, but
@@ -312,7 +308,7 @@
 
 			if($debug) {
 				echo "[Device Hardware]\n";
-				echo "* Drive $device\n";
+				echo "* Drive $arg_device\n";
 			}
 
 			$drive = new DVDDrive($device);
@@ -452,7 +448,7 @@
 			}
 
 			if(!$dvd->opened) {
-				echo "* Opening $device FAILED\n";
+				echo "* Opening $arg_device FAILED\n";
 				goto next_device;
 			}
 
