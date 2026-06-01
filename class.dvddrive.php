@@ -249,10 +249,12 @@
 		 */
 		function access_device() {
 
-			if($this->debug)
-				echo "* drive::access_device(".$this->device.")\n";
+			$arg_device = escapeshellarg($this->device);
 
-			$cmd = "dvd_drive_status ".$this->device." &> /dev/null";
+			if($this->debug)
+				echo "* drive::access_device($arg_device)\n";
+
+			$cmd = "dvd_drive_status $arg_device &> /dev/null";
 			exec($cmd, $output, $retval);
 
 			if($this->debug)
@@ -281,8 +283,10 @@
 		 */
 		function wait_until_ready() {
 
+			$arg_device = escapeshellarg($this->device);
+
 			if($this->debug)
-				echo "* drive::wait_until_ready(".$this->device.")\n";
+				echo "* drive::wait_until_ready($arg_device)\n";
 
 			do {
 				sleep(2);
@@ -297,7 +301,9 @@
 		 */
 		function wait_until_closed() {
 
-			echo "* drive::wait_until_closed(".$this->device.")\n";
+			$arg_device = escapeshellarg($this->device);
+
+			echo "* drive::wait_until_closed($arg_device)\n";
 
 			do {
 				$this->wait_until_ready();
@@ -312,7 +318,9 @@
 		 */
 		function wait_until_open() {
 
-			echo "* drive::wait_until_open(".$this->device.")\n";
+			$arg_device = escapeshellarg($this->device);
+
+			echo "* drive::wait_until_open($arg_device)\n";
 
 			do {
 				$this->wait_until_ready();
@@ -327,18 +335,18 @@
 		 */
 		function get_status() {
 
-			if($this->debug)
-				echo "* drive::get_status(".$this->device.")\n";
-
 			$arg_device = escapeshellarg($this->device);
-			$command = "dvd_drive_status $arg_device";
-			$return = 0;
-			exec($command, $arr, $return);
 
 			if($this->debug)
-				echo "* drive status: ".$this->arr_drive_status[$return]."\n";
+				echo "* drive::get_status($arg_device)\n";
 
-			return $return;
+			$command = "dvd_drive_status $arg_device";
+			exec($command, $arr, $retval);
+
+			if($this->debug)
+				echo "* drive status: ".$this->arr_drive_status[$retval]."\n";
+
+			return $retval;
 		}
 
 		/**
@@ -346,8 +354,10 @@
 		 */
 		function has_media() {
 
+			$arg_device = escapeshellarg($this->device);
+
 			if($this->debug)
-				echo "* drive::has_media(".$this->device.")\n";
+				echo "* drive::has_media($arg_device)\n";
 
 			$this->wait_until_ready();
 
@@ -365,8 +375,10 @@
 		 */
 		function is_open() {
 
+			$arg_device = escapeshellarg($this->device);
+
 			if($this->debug)
-				echo "* drive::is_open(".$this->device.")\n";
+				echo "* drive::is_open($arg_device)\n";
 
 			$this->wait_until_ready();
 
@@ -383,8 +395,10 @@
 		 */
 		function is_closed() {
 
+			$arg_device = escapeshellarg($this->device);
+
 			if($this->debug)
-				echo "* drive::is_closed(".$this->device.")\n";
+				echo "* drive::is_closed($arg_device)\n";
 
 			$this->wait_until_ready();
 
@@ -400,8 +414,10 @@
 		 */
 		function is_ready() {
 
+			$arg_device = escapeshellarg($this->device);
+
 			if($this->debug)
-				echo "* drive::is_ready(".$this->device.")\n";
+				echo "* drive::is_ready($arg_device)\n";
 
 			$status = $this->get_status();
 
@@ -434,7 +450,6 @@
 		function eject_tux_drive() {
 
 			$arg_device = escapeshellarg($this->device);
-
 
 			$cmd = "eject $arg_device";
 
@@ -533,17 +548,18 @@
 		 */
 		function disc_type() {
 
+			$arg_device = escapeshellarg($device);
+
 			if($this->debug)
-				echo "* drive::disc_type(".$this->device.")\n";
+				echo "* drive::disc_type($arg_device)\n";
 
 			if(os() == 'wsl') {
 				echo "* Unsupported on WSL, assuming DVD\n";
 				return 'dvd';
 			}
 
-			$arg_device = escapeshellarg($this->device);
 			$command = "disc_type $arg_device 2> /dev/null";
-			exec($command, $arr, $return);
+			exec($command, $arr, $retval);
 
 			$disc_type = current($arr);
 
