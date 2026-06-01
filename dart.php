@@ -252,9 +252,6 @@
 		// Is the source filename a block device
 		$device_is_hardware = false;
 
-		// Is the source an ISO file with .iso extension
-		$device_is_image = false;
-
 		// Can we poll the file or device
 		$access_device = false;
 
@@ -275,12 +272,10 @@
 		// Check if source filename is a block device or not
 		$device_is_hardware = false;
 		$device_is_iso = false;
-		$device_is_image = false;
 		if($device_type == 'device') {
 			$device_is_hardware = true;
 		} elseif($device_type == 'iso') {
 			$device_is_iso = true;
-			$device_is_image = true;
 		} elseif($device_type == 'windows') {
 			$device_is_hardware = true;
 		}
