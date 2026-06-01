@@ -22,9 +22,11 @@
 
 	function get_disc_type($device) {
 
-		$device = realpath($device);
-
 		$device_type = get_device_type($device);
+
+		// Only support DVDs right now on Windows
+		if($device_type == 'windows')
+			return 'dvd';
 
 		if(!$device_type)
 			return '';
@@ -47,8 +49,6 @@
 	}
 
 	function udfinfo($device) {
-
-		$device = realpath($device);
 
 		if(get_device_type($device) != 'device')
 			return false;
@@ -88,14 +88,16 @@
 	// Get DVD total filesize, rounding up to megabytes, so unless it's not a file it will always be 1+
 	function disc_filesize($device) {
 
-		$device = realpath($device);
-
-		if(!file_exists($device))
-			return 0;
-
 		$device_type = get_device_type($device);
 
+		// FIXME Windows
+		if($device_type == 'windows')
+			return 0;
+
 		if(!$device_type)
+			return 0;
+
+		if(!file_exists($device))
 			return 0;
 
 		$bytes = 0;

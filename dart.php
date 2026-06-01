@@ -55,7 +55,6 @@
 	// Yay, Rip-o-Matic!
 	$rip_rip_hooray = false;
 	if($opt_rip_o_matic && $rippy_rip_rip) {
-		$device = realpath($device);
 		$opt_backup = true;
 		$arg_backup_dir = $rippy_rip_dir;
 		$rip_rip_hooray = true;
@@ -158,7 +157,7 @@
 
 		foreach($devices as $device) {
 
-			$device = realpath($device);
+			$device_type = get_device_type($device);
 
 			if($opt_rename_iso && substr($device, 0, 5) == '/dev/')
 				continue;
