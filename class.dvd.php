@@ -3,11 +3,11 @@
 	class DVD {
 
 		public $device;
-		public $dvd_info;
-		public $is_iso;
+		public $dvd_info = array();
+		public $is_iso = false;
 		public $debug;
 
-		public $opened;
+		public $opened = false;
 
 		// DVD
 		public $dvdread_id;
@@ -69,21 +69,22 @@
 		public $cell_first_sector;
 		public $cell_last_sector;
 
-		function __construct($device = "/dev/sr0", $debug = false) {
+		function __construct($device, $debug = false) {
 
-			$this->device = realpath($device);
-			$this->debug = boolval($debug);
+			$this->device = $device;
 
-			if(!file_exists($this->device)) {
-				$this->opened = false;
-				return null;
+			$device_type = get_device_type($device);
+
+			if($debug) {
+				$this->debug = true;
+				echo "* Device type: $device_type\n";
 			}
 
-			$dirname = dirname($this->device);
-			if($dirname != "/dev")
+			if($device_type == 'iso')
 				$this->is_iso = true;
-			else
-				$this->is_iso = false;
+
+			if($device_type != 'windows' && !file_exists($this->device))
+				return null;
 
 			// Run dvd_info first and return if it passes or not
 			$bool = $this->dvd_info();
@@ -110,7 +111,10 @@
 		private function dvd_info() {
 
 			$arg_device = escapeshellarg($this->device);
-			$cmd = "dvd_info --json $arg_device 2> /dev/null | grep -v ^libdvdread";
+			if(os() == 'tux')
+				$cmd = "dvd_info --json $arg_device 2> /dev/null | grep -v ^libdvdread";
+			elseif(os() == 'wsl')
+				$cmd = "dvd_info.exe --json $arg_device";
 
 			if($this->debug)
 				echo "* Executing: $cmd\n";
