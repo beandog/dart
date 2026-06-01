@@ -341,6 +341,12 @@
 
 				}
 
+				if($opt_eject) {
+					echo "* Drive $arg_device not ready, ejecting\n";
+					$drive->eject();
+					goto next_device;
+				}
+
 				echo "* Drive $arg_device not ready, skipping\n";
 				goto next_device;
 
