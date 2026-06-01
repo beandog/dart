@@ -275,7 +275,7 @@
 		// Check if source filename is a block device or not
 		$device_dirname = dirname(realpath($device));
 		$pathinfo = pathinfo(realpath($device));
-		if($device_dirname == "/dev") {
+		if($device_type == 'device') {
 			$device_is_hardware = true;
 			$device_is_iso = false;
 			$device_is_image = false;
