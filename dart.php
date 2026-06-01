@@ -227,6 +227,8 @@
 
 		start:
 
+		$device_type = get_device_type($device);
+
 		$arg_device = escapeshellarg($device);
 
 		if($debug) {
