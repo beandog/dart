@@ -8,6 +8,7 @@
 		public $device;
 		public $debug;
 		public $disc_type = '';
+		public $has_media = false;
 		public $arr_drive_status = array("", "CDS_NO_DISC", "CDS_TRAY_OPEN", "CDS_DRIVE_NOT_READY", "CDS_DISK_OK", "CDS_ERR_DEVTYPE", "CDS_ERR_OPEN");
 
 		/**
@@ -136,6 +137,9 @@
 
 			}
 
+			if($ready)
+				$this->has_media = true;
+
 			if($ready == true && $this->debug) {
 				echo "* Device $arg_device is ready and loaded!\n";
 				return true;
@@ -220,6 +224,8 @@
 			}
 
 			$arr_json = json_decode($json, true);
+
+			$this->has_media = $arr_json['has_media'];
 
 			if($this->debug && $arr_json['has_media']) {
 				echo "* Device has media\n";
@@ -354,6 +360,9 @@
 		 */
 		function has_media() {
 
+			if(os() == 'wsl')
+				return $this->has_media;
+
 			$arg_device = escapeshellarg($this->device);
 
 			if($this->debug)
@@ -363,10 +372,12 @@
 
 			$status = $this->get_status();
 
-			if($status == 4)
+			if($status == 4) {
+				$this->has_media = true;
 				return true;
-			else
-				return false;
+			}
+
+			return false;
 
 		}
 
