@@ -112,7 +112,7 @@
 
 			$arg_device = escapeshellarg($this->device);
 			if(os() == 'tux')
-				$cmd = "dvd_info --json $arg_device 2> /dev/null | grep -v ^libdvdread";
+				$cmd = "dvd_info --json $arg_device 2> /dev/null";
 			elseif(os() == 'wsl')
 				$cmd = "dvd_info.exe --json $arg_device";
 
