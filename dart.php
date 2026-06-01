@@ -159,7 +159,7 @@
 
 			$device_type = get_device_type($device);
 
-			if($opt_rename_iso && substr($device, 0, 5) == '/dev/')
+			if($opt_rename_iso && $device_type == 'device')
 				continue;
 
 			$disc_type = get_disc_type($device);
