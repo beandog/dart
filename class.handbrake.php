@@ -485,6 +485,9 @@
 
 			$str = "HandBrakeCLI ".implode(" ", $cmd);
 
+			if(str_contains(php_uname('r'), 'WSL2'));
+				$str = str_replace('HandBrakeCLI', 'HandBrakeCLI.exe', $str);
+
 			$arg_input = escapeshellarg($this->input);
 			$arg_output = escapeshellarg($this->output);
 			$str .= " --input $arg_input";
@@ -520,6 +523,9 @@
 
 			$arg_input = escapeshellarg($this->input);
 			$cmd = "HandBrakeCLI --scan --verbose $options --input $arg_input 2>&1";
+
+			if(str_contains(php_uname('r'), 'WSL2'));
+				$cmd = str_replace('HandBrakeCLI', 'HandBrakeCLI.exe', $cmd);
 
 			$output_file = tempnam(sys_get_temp_dir(), "handbrake-scan");
 
