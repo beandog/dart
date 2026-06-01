@@ -313,8 +313,7 @@
 				echo "* Drive $arg_device\n";
 			}
 
-			$drive = new DVDDrive($device);
-			$drive->set_debug($debug);
+			$drive = new DVDDrive($device, $debug);
 
 			// Check for basic access
 			$device_access = $drive->access_device();
