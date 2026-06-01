@@ -14,6 +14,7 @@
 	require_once 'config.local.php';
 
 	require_once 'dart.device.php';
+
 	require_once 'dart.pcntl.php';
 
 	require_once 'class.dvd.php';
@@ -42,6 +43,8 @@
 	require_once 'dart.parser.php';
 
 	/** Start everything **/
+
+	$os = os();
 
 	// Handle parser arguments and options
 	if($debug)
@@ -227,6 +230,9 @@
 
 		start:
 
+		if($os == 'wsl' && strlen($device) == 2 && $device[1] == ':')
+			$device[0] = strtoupper($device[0]);
+
 		$device_type = get_device_type($device);
 
 		$arg_device = escapeshellarg($device);
@@ -306,6 +312,7 @@
 		// Look for any conditions where we there is access to the device, but
 		// we need to skip over it because there is no media. Also open the tray
 		// based on the wait switch that's passed.
+		$has_media = false;
 		if($device_is_hardware && $access_device) {
 
 			if($debug) {
@@ -314,6 +321,30 @@
 			}
 
 			$drive = new DVDDrive($device, $debug);
+			$drive_ready = $drive->load_drive();
+			$has_media = $drive->has_media();
+
+			if($os == 'wsl' && $device_type == 'windows') {
+
+				if($drive_ready && $has_media) {
+
+					$disc_type = get_disc_type($device);
+					goto drive_ready;
+
+				}
+
+				if($drive_ready && !$has_media) {
+
+					echo "* Drive $arg_device does not have any media\n";
+					$drive->eject();
+					goto next_device;
+
+				}
+
+				echo "* Drive $arg_device not ready, skipping\n";
+				goto next_device;
+
+			}
 
 			// Check for basic access
 			$device_access = $drive->access_device();
@@ -325,7 +356,7 @@
 			// Poll the devices as few times as necessary to avoid hardware kernel
 			// complaints. Set defaults.
 			$tray_open = false;
-			$tray_has_media = false;
+			$has_media = false;
 
 			// Check if drive is open.
 			$tray_open = $drive->is_open();
@@ -334,12 +365,14 @@
 				echo "* Tray open: ".($tray_open ? "yes" : "no" )."\n";
 
 			// Check if drive has media if it's closed
-			if(!$tray_open) {
-				$tray_has_media = $drive->has_media();
-			}
+			if(!$tray_open)
+				$has_media = $drive->has_media();
 
 			if($debug)
-				echo "* Has media: ".($tray_has_media ? "yes" : "no" )."\n";
+				echo "* Has media: ".($has_media ? "yes" : "no" )."\n";
+
+			if($has_media)
+				goto drive_ready;
 
 			/**
 			 * Writing all these logic checks independently makes it so my head
@@ -357,7 +390,7 @@
 			// *this device*, then it is intended to have media in it. If there's none
 			// in there, do the courtesy of opening the tray so that the user doesn't
 			// have to eject it manually.
-			if(!$tray_open && !$tray_has_media && $access_device) {
+			if(!$tray_open && !$has_media && $access_device) {
 
 				// The device was included in the main program call, so eject
 				// the tray if there is no media in there.
@@ -375,9 +408,9 @@
 				if($drive->close())
 					$tray_open = false;
 
-				$tray_has_media = $drive->has_media();
+				$has_media = $drive->has_media();
 
-				if($tray_has_media) {
+				if($has_media) {
 					$access_drive = true;
 					if(!$batch_mode)
 						echo "* Found a $disc_name, ready to nom!\n";
@@ -398,6 +431,8 @@
 			}
 
 		}
+
+		drive_ready:
 
 		// Rip-or-skip-o-matic :D
 		if($opt_rip_o_matic && $rippy_rip_rip) {
