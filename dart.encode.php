@@ -82,6 +82,9 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg
 		if($episodes_model->skip)
 			continue;
 
+		$arr_episode_metadata = $episodes_model->get_metadata();
+		$d_episode_details = episode_details($arr_episode_metadata);
+		$d_epix = get_epix($arr_episode_metadata['season'], $arr_episode_metadata['episode_number']);
 		$arr_episode_titles = $episodes_model->get_episode_titles();
 		$episode_display_title = $arr_episode_titles['display_title'];
 

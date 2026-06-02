@@ -563,6 +563,7 @@
 		}
 
 		require 'dart.import.php';
+		require 'dart.episode.php';
 		require 'dart.info.php';
 		require 'dart.encode.php';
 		require 'dart.backup.php';
