@@ -1,6 +1,5 @@
 <?php
 
-	require_once 'File/Find.php';
 	require_once 'Console/CommandLine.php';
 
 	$parser = new Console_CommandLine();
