@@ -76,9 +76,9 @@
 	extract($result->options);
 
 	require_once 'config.local.php';
-	require_once 'models/pdo.dbtable.php';
-	require_once 'models/pdo.series.php';
-	require_once 'models/pdo.episodes.php';
+	require_once 'models/dbtable.php';
+	require_once 'models/series.php';
+	require_once 'models/episodes.php';
 
 foreach($filenames as $filename) {
 
