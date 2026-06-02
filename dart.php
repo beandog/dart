@@ -52,15 +52,14 @@
 	if($debug)
 		$verbose = true;
 
-	$skip = 0;
-
-	// I don't use 'dart --import' anymore, but it is still used
+	// Track if device needs imported into database
 	$opt_import = false;
 
 	// Yay, Rip-o-Matic!
 	$rip_rip_hooray = false;
 	if($opt_rip_o_matic && $rippy_rip_rip) {
 		$opt_backup = true;
+		$opt_eject = true;
 		$arg_backup_dir = $rippy_rip_dir;
 		$rip_rip_hooray = true;
 	}
@@ -69,20 +68,23 @@
 	// setting it in batch mode so it will eject the disc after finished.
 	// Designed for use with a udev trigger so that discs will auto-rip
 	if($opt_backup) {
-		$opt_import = true;
-		$batch_mode = true;
 		$access_device = true;
+		$opt_close_tray = true;
+		$opt_eject = true;
+		$opt_import = true;
 	}
 
 	// Same as running 'drip' to do automated rips
 	$ionice = '';
 	if($opt_drip) {
 		$verbose = true;
+		$opt_close_tray = true;
+		$opt_eject = true;
 		$opt_encode = true;
+		$opt_log_progress = true;
 		$opt_skip_existing = true;
 		$opt_test_existing = true;
 		$opt_time = true;
-		$opt_log_progress = true;
 		$ionice = 'ionice -c 2 -n 7';
 	}
 
@@ -109,13 +111,13 @@
 
 	// Prefix to bend!
 	if($opt_encode) {
-		$opt_skip_existing = true;
-		$opt_time = true;
+		$opt_copy = false;
 		$opt_encode_info = false;
+		$opt_ffplay = false;
 		$opt_ffprobe = false;
 		$opt_reumx = false;
-		$opt_copy = false;
-		$opt_ffplay = false;
+		$opt_skip_existing = true;
+		$opt_time = true;
 	}
 
 	// Windows doesn't have 'tout' custom script
@@ -132,6 +134,11 @@
 	// Backing up with MakeMKV, don't do any disc access
 	if($opt_makemkv) {
 
+		if($os != 'tux') {
+			echo "Using MakeMKV only supported on Linux\n";
+			exit;
+		}
+
 		if(!count($devices))
 			$devices = $all_devices;
 
@@ -140,11 +147,16 @@
 		foreach($devices as $device)
 			require 'dart.backup.php';
 
-		exit(0);
+		exit;
 
 	}
 
 	if($opt_cd) {
+
+		if($os != 'tux') {
+			echo "Ripping CDs only supported on Linux\n";
+			exit;
+		}
 
 		if(!count($devices))
 			$devices = $all_devices;
@@ -214,10 +226,11 @@
 
 		}
 
-		exit(0);
+		exit;
 
 	}
 
+	// Used by rip-o-matic
 	if($opt_encode && $arg_export_dir) {
 		if(!is_dir($arg_export_dir)) {
 			$d_arg_export_dir = escapeshellarg($arg_export_dir);
@@ -225,9 +238,6 @@
 			exit;
 		}
 	}
-
-	if($opt_encode_info || $opt_encode || $opt_copy || $opt_ffplay || $opt_ffprobe || $opt_remux)
-		$batch_mode = true;
 
 	if(!count($devices) && ($opt_info || $opt_encode_info || $opt_encode || $opt_copy || $opt_backup || $opt_import || $opt_ffplay || $opt_ffprobe || $opt_remux))
 		$devices = $all_devices;
@@ -303,11 +313,8 @@
 		}
 
 		// Determine whether we are reading the device
-		if($opt_info || $opt_encode_info || $opt_encode || $opt_drip || $opt_copy || $opt_import || $opt_backup || $opt_geniso || $opt_ffplay || $opt_ffprobe || $opt_remux || $opt_rip_o_matic) {
-			if($verbose)
-				echo "* Info / Import / Archive / ISO: Enabling device access\n";
+		if($opt_info || $opt_encode_info || $opt_encode || $opt_drip || $opt_copy || $opt_import || $opt_backup || $opt_geniso || $opt_ffplay || $opt_ffprobe || $opt_remux || $opt_rip_o_matic)
 			$access_device = true;
-		}
 
 		// Look for any conditions where we there is access to the device, but
 		// we need to skip over it because there is no media. Also open the tray
@@ -315,7 +322,7 @@
 		$has_media = false;
 		if($device_is_hardware && $access_device) {
 
-			if($debug) {
+			if($verbose) {
 				echo "[Device Hardware]\n";
 				echo "* Drive $arg_device\n";
 			}
