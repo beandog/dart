@@ -188,7 +188,7 @@
 			if($this->debug)
 				echo "* Drive status: $status\n";
 
-			if($message)
+			if($this->debug && $message)
 				echo "* $message\n";
 
 			return false;
