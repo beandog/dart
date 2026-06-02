@@ -132,7 +132,7 @@
 
 		if($device_type == 'directory') {
 
-			require_once 'pear/File/Find.php';
+			require_once 'File/Find.php';
 			$file_find = new File_Find;
 
 			$arr_maptree = $file_find->maptree($device);
