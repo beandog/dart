@@ -50,7 +50,7 @@
 
 	// Handle parser arguments and options
 	if($debug)
-		$verbose = 10;
+		$verbose = true;
 
 	$skip = 0;
 
