@@ -2,8 +2,10 @@
 
 	function os() {
 
-		if(str_contains(php_uname('r'), 'WSL2'));
+		if(str_contains(php_uname('r'), 'WSL2'))
 			return 'wsl';
+		if(str_contains(php_uname('s'), 'Windows NT'))
+			return 'windows';
 
 		return 'tux';
 
