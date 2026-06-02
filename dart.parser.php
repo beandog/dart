@@ -51,6 +51,7 @@
 		'default' => false,
 	));
 	$parser->addOption('opt_encode', array(
+		'short_name' => '-e',
 		'long_name' => '--encode',
 		'description' => 'Rip episodes from a DVD',
 		'action' => 'StoreTrue',
