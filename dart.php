@@ -1,8 +1,14 @@
 #!/usr/bin/env php
 <?php
 
+	require_once 'dart.device.php';
+	$os = os();
+
 	// Defaults
-	$all_devices = array('/dev/sr0');
+	if($os == 'tux')
+		$all_devices = array('/dev/sr0');
+	elseif($os == 'wsl' || $os == 'windows')
+		$all_devices = array('E:');
 	$export_dir = getenv('HOME').'/dvds/';
 	$hostname = php_uname('n');
 	$batch_mode = false;
@@ -11,7 +17,6 @@
 	// Overrides to defaults
 	require_once 'config.local.php';
 
-	require_once 'dart.device.php';
 
 	require_once 'dart.pcntl.php';
 
