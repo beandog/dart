@@ -511,7 +511,7 @@
 		 * If the tray is closed and has media, dvd_eject will
 		 * return a status of 2.
 		 */
-		function close() {
+		function close_tray() {
 
 			$arg_device = escapeshellarg($this->device);
 
@@ -525,7 +525,6 @@
 
 			if($os == 'wsl' || $os == 'windows')
 				return $this->close_wsl_tray();
-
 
 		}
 
