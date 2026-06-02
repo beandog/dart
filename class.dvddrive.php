@@ -92,7 +92,7 @@
 			if($this->debug)
 				echo "* Loading Linux optical drive $arg_device\n";
 
-			$retval = get_tux_drive_status();
+			$retval = $this->get_tux_drive_status();
 
 			$message = '';
 			$ready = false;
