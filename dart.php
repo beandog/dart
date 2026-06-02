@@ -228,7 +228,7 @@
 
 		start:
 
-		if($os == 'wsl' && strlen($device) == 2 && $device[1] == ':')
+		if(($os == 'wsl' || $os == 'windows') && strlen($device) == 2 && $device[1] == ':')
 			$device[0] = strtoupper($device[0]);
 
 		$device_type = get_device_type($device);
@@ -322,7 +322,7 @@
 			$drive_ready = $drive->load_drive();
 			$has_media = $drive->has_media();
 
-			if($os == 'wsl' && $device_type == 'windows') {
+			if(($os == 'wsl' || $os == 'windows') && $device_type == 'windows') {
 
 				if($drive_ready && $has_media) {
 
