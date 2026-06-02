@@ -1,5 +1,7 @@
 <?php
 
+	require_once 'dart.device.php';
+
 	class DVD {
 
 		public $device;
