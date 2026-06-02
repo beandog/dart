@@ -43,7 +43,7 @@ if(extension_loaded('posix')) {
 
 	function sig_handler($signo) {
 
-		echo "Handling signals not supported on WSL or Windows for PHP\n";
+		echo "Handling signals not supported on Windows for PHP\n";
 		exit;
 
 	}
