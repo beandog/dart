@@ -13,7 +13,9 @@
 
 	function get_device_type($device) {
 
-		if(str_contains(php_uname('r'), 'WSL2') && $device[1] == ':')
+		$os = os();
+
+		if(($os == 'wsl' || $os == 'windows') && $device[1] == ':')
 			return 'windows';
 
 		$device = realpath($device);
