@@ -18,6 +18,7 @@
 	require_once 'config.local.php';
 
 	require_once 'dart.pcntl.php';
+	require_once 'dart.episode_functions.php';
 
 	require_once 'class.dvd.php';
 	require_once 'class.bluray.php';
@@ -563,7 +564,6 @@
 		}
 
 		require 'dart.import.php';
-		require 'dart.episode.php';
 		require 'dart.info.php';
 		require 'dart.encode.php';
 		require 'dart.backup.php';
