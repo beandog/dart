@@ -1,5 +1,7 @@
 <?php
 
+if(extension_loaded('posix')) {
+
 	// Allow cleanly killing running encodes
 	pcntl_async_signals(true);
 
@@ -36,4 +38,15 @@
 	}
 
 	pcntl_signal(SIGINT, "sig_handler");
+
+} else {
+
+	function sig_handler($signo) {
+
+		echo "Handling signals not supported on WSL or Windows for PHP\n";
+		exit;
+
+	}
+
+}
 
