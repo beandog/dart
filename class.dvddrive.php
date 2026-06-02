@@ -111,7 +111,7 @@
 
 				case 2:
 					$status = 'tray open';
-					$message = 'Try is open, close the tray manually\n';
+					$message = 'Tray is open';
 					break;
 
 				case 3:
