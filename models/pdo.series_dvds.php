@@ -36,6 +36,17 @@
 
 		}
 
+		function get_metadata() {
+
+			$id = $this->id;
+
+			$sql = "SELECT * FROM series_dvds WHERE id = $id;";
+			$arr = $this->get_row($sql);
+
+			return $arr;
+
+		}
+
 	}
 
 ?>
