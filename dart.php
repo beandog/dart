@@ -118,6 +118,10 @@
 		$opt_ffplay = false;
 	}
 
+	// Windows doesn't have 'tout' custom script
+	if($opt_time && $os == 'windows')
+		$opt_time = false;
+
 	// Just kept for reference and fun
 	function beep_error() {
 		// system("beep -f 1000 -n -f 2000 -n -f 1500 -n -f 1750 -n -f 1750 -n -f 1750")
