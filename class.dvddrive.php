@@ -154,7 +154,7 @@
 
 				$max_retries = 5;
 
-				if($debug)
+				if($this->debug)
 					echo "* Waiting for drive to be ready ... max $max_retries tries\n";
 				$num_retries = 0;
 
@@ -535,7 +535,7 @@
 
 			$cmd = "eject -t $arg_device";
 
-			if($debug)
+			if($this->debug)
 				echo "* Executing $cmd\n";
 
 			passthru($cmd, $retval);
