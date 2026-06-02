@@ -205,7 +205,13 @@
 			$arg_device = escapeshellarg($this->device);
 
 			$ps1_filename = $ps1_dirname."dvd_drive_status.ps1";
-			$cmd = "powershell.exe -File '$ps1_filename' $arg_device";
+
+			$os = os();
+
+			if($os == 'wsl')
+				$cmd = "powershell.exe -File '$ps1_filename' $arg_device";
+			elseif($os == 'windows')
+				$cmd = "powershell.exe -InputFormat none -File $ps1_filename $arg_device";
 
 			if($this->debug)
 				echo "* Running $cmd\n";
