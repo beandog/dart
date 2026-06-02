@@ -39,14 +39,4 @@ if(extension_loaded('posix')) {
 
 	pcntl_signal(SIGINT, "sig_handler");
 
-} else {
-
-	function sig_handler($signo) {
-
-		echo "Handling signals not supported on Windows for PHP\n";
-		exit;
-
-	}
-
 }
-
