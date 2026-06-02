@@ -327,6 +327,8 @@
 			}
 
 			$drive = new DVDDrive($device, $debug);
+			if($opt_close_tray)
+				$drive->close();
 			$drive_ready = $drive->load_drive();
 			$has_media = $drive->has_media();
 

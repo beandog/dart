@@ -38,6 +38,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_close_tray', array(
+		'short_name' => '-t',
+		'description' => 'Close drive tray',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('opt_batch', array(
 		'long_name' => '--batch',
 		'description' => 'Combine common encoding options when testing',
