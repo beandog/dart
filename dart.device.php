@@ -18,12 +18,10 @@
 		if(($os == 'wsl' || $os == 'windows') && $device[1] == ':')
 			return 'windows';
 
-		$device = realpath($device);
-
-		if(dirname($device) == '/dev')
+		if(dirname(realpath($device)) == '/dev')
 			return 'device';
 
-		if(is_dir($device))
+		if(is_dir(realpath($device)))
 			return 'directory';
 
 		if(is_file($device) && filesize($device))
