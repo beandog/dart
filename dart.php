@@ -17,7 +17,6 @@
 	// Overrides to defaults
 	require_once 'config.local.php';
 
-
 	require_once 'dart.pcntl.php';
 
 	require_once 'class.dvd.php';
