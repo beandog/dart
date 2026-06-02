@@ -51,9 +51,11 @@
 
 		function load_drive() {
 
-			if(os() == 'tux')
+			$os = os();
+
+			if($os == 'tux')
 				return $this->load_tux_drive();
-			elseif(os() == 'wsl')
+			elseif($os == 'wsl' || $os == 'windows')
 				return $this->load_wsl_drive();
 			else
 				return false;
@@ -360,7 +362,8 @@
 		 */
 		function has_media() {
 
-			if(os() == 'wsl')
+			$os = os();
+			if($os == 'wsl' || $os == 'windows')
 				return $this->has_media;
 
 			$arg_device = escapeshellarg($this->device);
@@ -448,10 +451,12 @@
 			if($this->debug)
 				echo "* Ejecting drive $arg_device\n";
 
-			if(os() == 'tux')
+			$os = os();
+
+			if($os == 'tux')
 				return $this->eject_tux_drive();
 
-			if(os() == 'wsl')
+			if($os == 'wsl' || $os == 'windows')
 				return $this->eject_wsl_drive();
 
 			return false;
@@ -507,10 +512,12 @@
 			if($this->debug)
 				echo "* Trying to close $arg_device\n";
 
-			if(os() == 'tux')
+			$os = os();
+
+			if($os == 'tux')
 				return $this->close_tux_tray();
 
-			if(os() == 'wsl')
+			if($os == 'wsl' || $os == 'windows')
 				return $this->close_wsl_tray();
 
 
@@ -564,7 +571,9 @@
 			if($this->debug)
 				echo "* drive::disc_type($arg_device)\n";
 
-			if(os() == 'wsl') {
+			$os = os();
+
+			if($os == 'wsl' || $os == 'windows') {
 				echo "* Unsupported on WSL, assuming DVD\n";
 				return 'dvd';
 			}
