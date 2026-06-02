@@ -1,12 +1,10 @@
 <?php
 
-	require_once(dirname(__FILE__)."/dbtable.php");
-
 	class Audio_Model extends DBTable {
 
 		function __construct($id = null) {
 
-			$table = "audio";
+			$table = 'audio';
 
 			$this->id = parent::__construct($table, $id);
 
@@ -27,6 +25,11 @@
 		public function find_audio_id($track_id, $ix) {
 
 			$track_id = abs(intval($track_id));
+			if($track_id == 0) {
+				trigger_error("Track number is zero", E_USER_ERROR);
+				exit(1);
+			}
+
 			$ix = abs(intval($ix));
 
 			$sql = "SELECT id FROM audio WHERE track_id = $track_id AND ix = $ix;";
@@ -36,4 +39,5 @@
 		}
 
 	}
+
 ?>

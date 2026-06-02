@@ -1,12 +1,10 @@
 <?php
 
-	require_once(dirname(__FILE__)."/dbtable.php");
-
 	class Subp_Model extends DBTable {
 
 		function __construct($id = null) {
 
-			$table = "subp";
+			$table = 'subp';
 
 			$this->id = parent::__construct($table, $id);
 
@@ -26,11 +24,16 @@
 		 */
 		public function find_subp_id($track_id, $ix) {
 
+			$track_id = abs(intval($track_id));
+
 			$sql = "SELECT id FROM subp WHERE track_id = $track_id AND ix = $ix;";
+
 			$var = $this->get_one($sql);
 
 			return $var;
+
 		}
 
 	}
+
 ?>

@@ -1,12 +1,10 @@
 <?php
 
-	require_once(dirname(__FILE__)."/dbtable.php");
-
 	class Cells_Model extends DBTable {
 
 		function __construct($id = null) {
 
-			$table = "cells";
+			$table = 'cells';
 
 			$this->id = parent::__construct($table, $id);
 
@@ -21,6 +19,8 @@
 		 */
 		public function find_cells_id($track_id, $ix) {
 
+			$track_id = abs(intval($track_id));
+
 			$sql = "SELECT id FROM cells WHERE track_id = $track_id AND ix = $ix;";
 			$var = $this->get_one($sql);
 
@@ -28,4 +28,5 @@
 		}
 
 	}
+
 ?>

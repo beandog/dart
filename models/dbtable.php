@@ -1,30 +1,30 @@
 <?php
+
 	class DBTable {
 
 		protected $id;
-		protected $db;
 		protected $table;
-		protected $pg;
 
 		public function __construct($table, $id = null) {
 
-			$this->table = $table;
+			$table = trim(strval($table));
 
-			global $db4;
-			$this->db = pg_connect($db4);
-
-			if($this->db === false) {
-				trigger_error("Cannot connect to DB using credentials: $db4", E_USER_ERROR);
-				return null;
+			if($table === '') {
+				trigger_error("Table name is empty", E_USER_ERROR);
+				exit(1);
 			}
+
+			$this->table = $table;
 
 			return $this->id = $id;
 
 		}
 
-		public function __get($var) {
+		public function __get($column) {
 
-			$sql = "SELECT $var FROM ".$this->table." WHERE id = ".$this->id.";";
+			global $pg;
+
+			$sql = "SELECT $column FROM {$this->table} WHERE id = {$this->id} LIMIT 1;";
 
 			return $this->get_one($sql);
 
@@ -32,17 +32,19 @@
 
 		public function __set($key, $value) {
 
-			$arr_update = array(
-				$key => $value
-			);
+			global $pg;
 
-			$sql = "UPDATE ".$this->table." SET $key = '".pg_escape_string($value)."' WHERE id = ".$this->id.";";
+			$key = strval($key);
 
-			$rs = pg_query($sql);
+			$value = $pg->quote($value);
 
-			if($rs === false) {
+			$sql = "UPDATE {$this->table} SET $key = $value WHERE id = {$this->id};";
+
+			$retval = $pg->exec($sql);
+
+			if($retval === false) {
 				trigger_error("Query failed: $sql", E_USER_ERROR);
-				return false;
+				exit(1);
 			}
 
 			return true;
@@ -51,22 +53,20 @@
 
 		public function __call($str, $args) {
 
-			$arr = explode("_", $str);
+			$arr = explode('_', $str);
 			$function_call = current($arr);
 			array_shift($arr);
-			$function_value = implode("_", $arr);
+			$function_value = implode('_', $arr);
 
 			// Check to see if they are setting a column
-			if($function_call === "set" && strlen($function_value) && count($args)) {
+			if($function_call === 'set' && strlen($function_value) && count($args)) {
 				$value = current($args);
 				$this->__set($function_value, $value);
 			}
 
 			// Otherwise check if they are fetching a column
-			elseif($function_call === "get" && strlen($function_value)) {
-
+			elseif($function_call === 'get' && strlen($function_value)) {
 				return $this->__get($function_value);
-
 			}
 
 			else
@@ -76,30 +76,57 @@
 
 		public function __toString() {
 
-			return (string)$this->id;
+			return strval($this->id);
+
+		}
+
+		public function quote($str) {
+
+			global $pg;
+
+			return $pg->quote($str);
 
 		}
 
 		public function create_new() {
 
-			$sql = "INSERT INTO ".$this->table." DEFAULT VALUES RETURNING id;";
+			global $pg;
 
-			$this->id = $this->get_one($sql);
+			$sql = "INSERT INTO {$this->table} DEFAULT VALUES RETURNING id;";
 
-			return $this->id;
+			$pdo = $pg->query($sql);
+
+			$var = $pdo->fetchColumn();
+
+			$this->id = $var;
+
+			return $var;
 
 		}
 
 		public function delete() {
 
-			$sql = "DELETE FROM ".$this->table." WHERE id = ".$this->id.";";
+			global $pg;
 
-			$rs = pg_query($sql);
+			$sql = "DELETE FROM {$this->table} WHERE id = {$this->id};";
 
-			if($rs === false) {
-				trigger_error("Query failed: $sql", E_USER_ERROR);
-				return false;
-			}
+			$retval = $pg->exec($sql);
+
+			return true;
+
+		}
+
+		public function delete_from_table_where($table, $column, $var) {
+
+			global $pg;
+
+			$table = trim(strval($table));
+			$column = trim(strval($column));
+			$var = $pg->quote($var);
+
+			$sql = "DELETE FROM $table WHERE $column = $var;";
+
+			$retval = $pg->exec($sql);
 
 			return true;
 
@@ -113,18 +140,11 @@
 
 		public function get_one($sql) {
 
-			$rs = pg_query($sql);
-			if($rs === false) {
-				trigger_error("Query failed: $sql", E_USER_ERROR);
-				return array();
-			}
+			global $pg;
 
-			$arr = pg_fetch_array($rs, null, PGSQL_ASSOC);
+			$pdo = $pg->query($sql);
 
-			if($arr === false)
-				return '';
-
-			$var = current($arr);
+			$var = $pdo->fetchColumn();
 
 			return $var;
 
@@ -132,16 +152,11 @@
 
 		public function get_col($sql) {
 
-			$rs = pg_query($sql);
-			if($rs === false) {
-				trigger_error("Query failed: $sql", E_USER_ERROR);
-				return array();
-			}
+			global $pg;
 
-			$arr = array();
+			$pdo = $pg->query($sql);
 
-			while($row = pg_fetch_array($rs, null, PGSQL_NUM))
-				$arr[] = current($row);
+			$arr = $pdo->fetchAll(PDO::FETCH_COLUMN, 0);
 
 			return $arr;
 
@@ -149,16 +164,11 @@
 
 		public function get_all($sql) {
 
-			$rs = pg_query($sql);
-			if($rs === false) {
-				trigger_error("Query failed: $sql", E_USER_ERROR);
-				return array();
-			}
+			global $pg;
 
-			$arr = array();
+			$pdo = $pg->query($sql, PDO::FETCH_ASSOC);
 
-			while($row = pg_fetch_array($rs, null, PGSQL_ASSOC))
-				$arr[] = $row;
+			$arr = $pdo->fetchAll();
 
 			return $arr;
 
@@ -166,20 +176,16 @@
 
 		public function get_row($sql) {
 
-			$rs = pg_query($sql);
-			if($rs === false) {
-				trigger_error("Query failed: $sql", E_USER_ERROR);
-				return array();
-			}
+			global $pg;
 
-			$arr = pg_fetch_array($rs, null, PGSQL_ASSOC);
+			$pdo = $pg->query($sql, PDO::FETCH_ASSOC);
 
-			if($arr === false)
-				return array();
+			$arr = $pdo->fetch();
 
 			return $arr;
 
 		}
 
 	}
+
 ?>

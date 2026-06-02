@@ -1,12 +1,10 @@
 <?php
 
-	require_once(dirname(__FILE__)."/dbtable.php");
-
 	class Episodes_Model extends DBTable {
 
 		function __construct($id = null) {
 
-			$table = "episodes";
+			$table = 'episodes';
 
 			$this->id = parent::__construct($table, $id);
 
@@ -14,14 +12,14 @@
 
 		public function get_iso() {
 
-			$episode_id = intval($this->id);
+			$episode_id = $this->id;
 
 			$sql = "SELECT s.collection_id, sd.series_id, t.dvd_id, e.track_id, s.title FROM episodes e JOIN tracks t ON e.track_id = t.id JOIN dvds d ON t.dvd_id = d.id JOIN series_dvds sd ON d.id = sd.dvd_id JOIN series s ON sd.series_id = s.id WHERE e.id = $episode_id LIMIT 1;";
 
 			$arr = $this->get_row($sql);
 
 			if(!$arr)
-				return "";
+				return '';
 
 			extract($arr);
 
@@ -43,7 +41,7 @@
 
 		public function get_series_id() {
 
-			$episode_id = intval($this->id);
+			$episode_id = $this->id;
 
 			$sql = "SELECT series_id FROM view_episodes WHERE episode_id = $episode_id LIMIT 1;";
 
@@ -56,7 +54,7 @@
 
 		public function get_metadata() {
 
-			$episode_id = intval($this->id);
+			$episode_id = $this->id;
 
 			$sql = "SELECT * FROM view_episodes WHERE episode_id = $episode_id;";
 			$arr = $this->get_row($sql);
@@ -158,7 +156,7 @@
 
 		public function get_chapter_lengths($minimum_length = 0) {
 
-			$episode_id = intval($this->id);
+			$episode_id = $this->id;
 			$minimum_length = abs(floatval($minimum_length));
 
 			// Get the track id
@@ -192,32 +190,18 @@
 
 			return false;
 
-			/*
-			$episode_id = intval($this->id);
-
-			// Check for missing crop detection on episodes
-			$sql = "SELECT crop FROM episodes WHERE id = $episode_id;";
-
-			$crop = $this->get_one($sql);
-
-			if(!strlen($crop))
-				return true;
-
-			return false;
-			*/
-
 		}
 
 		public function get_filename($container = 'mkv') {
 
-			$episode_id = intval($this->id);
+			$episode_id = $this->id;
 
 			$sql = "SELECT s.collection_id, s.nsix, sd.series_id, t.dvd_id FROM episodes e JOIN tracks t ON e.track_id = t.id JOIN dvds d ON t.dvd_id = d.id JOIN series_dvds sd ON d.id = sd.dvd_id JOIN series s ON sd.series_id = s.id WHERE e.id = $episode_id LIMIT 1;";
 
 			$arr = $this->get_row($sql);
 
 			if(!$arr)
-				return "";
+				return '';
 
 			extract($arr);
 
@@ -253,4 +237,5 @@
 		}
 
 	}
+
 ?>

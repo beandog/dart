@@ -1,12 +1,10 @@
 <?php
 
-	require_once(dirname(__FILE__)."/dbtable.php");
-
 	class Tracks_Model extends DBTable {
 
 		function __construct($id = null) {
 
-			$table = "tracks";
+			$table = 'tracks';
 
 			$this->id = parent::__construct($table, $id);
 
@@ -21,15 +19,19 @@
 		 */
 		public function find_track_id($dvd_id, $ix) {
 
+			$dvd_id = abs(intval($dvd_id));
+
 			$sql = "SELECT id FROM tracks WHERE dvd_id = $dvd_id AND ix = $ix;";
+
 			$var = $this->get_one($sql);
 
 			return $var;
+
 		}
 
 		public function get_audio_streams() {
 
-			$sql = "SELECT * FROM audio WHERE track_id = ".$this->id." AND active = 1 ORDER BY langcode = 'en' DESC, channels DESC, format = 'dts' DESC, streamid;";
+			$sql = "SELECT * FROM audio WHERE track_id = {$this->id} AND active = 1 ORDER BY langcode = 'en' DESC, channels DESC, format = 'dts' DESC, streamid;";
 
 			$arr = $this->get_all($sql);
 
@@ -39,7 +41,7 @@
 
 		public function get_best_quality_audio_streamid() {
 
-			$sql = "SELECT COALESCE(streamid, '0x80') FROM audio WHERE track_id = ".$this->id." AND langcode = 'en' AND active = 1 AND channels = (SELECT MAX(channels) FROM audio WHERE track_id = ".$this->id." AND active = 1) ORDER BY CASE WHEN format = 'dts' THEN 0 ELSE 1 END, streamid LIMIT 1;";
+			$sql = "SELECT COALESCE(streamid, '0x80') FROM audio WHERE track_id = {$this->id} AND langcode = 'en' AND active = 1 AND channels = (SELECT MAX(channels) FROM audio WHERE track_id = {$this->id} AND active = 1) ORDER BY CASE WHEN format = 'dts' THEN 0 ELSE 1 END, streamid LIMIT 1;";
 
 			$var = $this->get_one($sql);
 
@@ -52,9 +54,9 @@
 		public function get_best_quality_audio_ix($disc_type = 'dvd') {
 
 			if($disc_type == 'dvd')
-				$sql = "SELECT COALESCE(ix, 1) FROM audio WHERE track_id = ".$this->id." AND langcode = 'en' AND active = 1 AND channels = (SELECT MAX(channels) FROM audio WHERE track_id = ".$this->id." AND active = 1) ORDER BY CASE WHEN format = 'dts' THEN 0 ELSE 1 END, streamid LIMIT 1;";
+				$sql = "SELECT COALESCE(ix, 1) FROM audio WHERE track_id = {$this->id} AND langcode = 'en' AND active = 1 AND channels = (SELECT MAX(channels) FROM audio WHERE track_id = {$this->id} AND active = 1) ORDER BY CASE WHEN format = 'dts' THEN 0 ELSE 1 END, streamid LIMIT 1;";
 			elseif($disc_type == 'bluray')
-				$sql = "SELECT COALESCE(ix, 1) FROM audio WHERE track_id = ".$this->id." AND langcode = 'eng' AND active = 1 ORDER BY format = 'lpcm' DESC, format = 'truhd' DESC, format = 'dtshd-ma' DESC, format = 'dtshd' DESC, format = 'dts' DESC, format = 'ac3' DESC, ix;";
+				$sql = "SELECT COALESCE(ix, 1) FROM audio WHERE track_id = {$this->id} AND langcode = 'eng' AND active = 1 ORDER BY format = 'lpcm' DESC, format = 'truhd' DESC, format = 'dtshd-ma' DESC, format = 'dtshd' DESC, format = 'dts' DESC, format = 'ac3' DESC, ix;";
 
 			$var = $this->get_one($sql);
 
@@ -65,9 +67,9 @@
 		public function get_first_english_streamid($disc_type = 'dvd') {
 
 			if($disc_type == 'dvd')
-				$sql = "SELECT COALESCE(streamid, '0x80') FROM audio WHERE track_id = ".$this->id." AND langcode = 'en' AND active = 1 ORDER BY streamid LIMIT 1;";
+				$sql = "SELECT COALESCE(streamid, '0x80') FROM audio WHERE track_id = {$this->id} AND langcode = 'en' AND active = 1 ORDER BY streamid LIMIT 1;";
 			elseif($disc_type == 'bluray')
-				$sql = "SELECT COALESCE(streamid, '0x1100') FROM audio WHERE track_id = ".$this->id." AND langcode = 'eng' AND active = 1 ORDER BY streamid LIMIT 1;";
+				$sql = "SELECT COALESCE(streamid, '0x1100') FROM audio WHERE track_id = {$this->id} AND langcode = 'eng' AND active = 1 ORDER BY streamid LIMIT 1;";
 			else
 				return '';
 
@@ -79,7 +81,7 @@
 
 		public function get_first_english_ix() {
 
-			$sql = "SELECT ix FROM audio WHERE track_id = ".$this->id." AND (langcode = 'en' OR langcode = 'eng') AND active = 1 ORDER BY ix LIMIT 1;";
+			$sql = "SELECT ix FROM audio WHERE track_id = {$this->id} AND (langcode = 'en' OR langcode = 'eng') AND active = 1 ORDER BY ix LIMIT 1;";
 
 			$var = $this->get_one($sql);
 
@@ -87,27 +89,13 @@
 
 		}
 
-		public function get_bluray_hb_track() {
-
-			$sql = "SELECT dvd_id, ix FROM tracks WHERE id = ".$this->id.";";
-			$row = $this->get_row($sql);
-			extract($row);
-
-			$sql = "SELECT ix FROM tracks WHERE dvd_id = $dvd_id ORDER BY ix;";
-			$arr = $this->get_col($sql);
-
-			$hb_track_number = array_search($ix, $arr);
-			$hb_track_number++;
-
-			return $hb_track_number;
-
-		}
-
 		public function get_num_active_audio_tracks($lang = '') {
 
-			$sql = "SELECT COUNT(1) FROM audio WHERE track_id = ".$this->id." AND active = 1";
+			$lang = $this->quote($lang);
+
+			$sql = "SELECT COUNT(1) FROM audio WHERE track_id = {$this->id} AND active = 1";
 			if(strlen($lang) == 2)
-				$sql .= " AND langcode = '".pg_escape_string($lang)."'";
+				$sql .= " AND langcode = $lang";
 
 			$sql .= ";";
 			$var = $this->get_one($sql);
@@ -117,7 +105,7 @@
 
 		public function has_closed_captioning() {
 
-			$sql = "SELECT closed_captioning FROM tracks WHERE id = ".$this->id.";";
+			$sql = "SELECT closed_captioning FROM tracks WHERE id = {$this->id};";
 			$var = $this->get_one($sql);
 			if($var)
 				return true;
@@ -128,9 +116,11 @@
 
 		public function get_num_subp_tracks($lang = '') {
 
-			$sql = "SELECT COUNT(1) FROM subp WHERE track_id = ".$this->id;
+			$lang = $this->quote($lang);
+
+			$sql = "SELECT COUNT(1) FROM subp WHERE track_id = {$this->id}";
 			if(strlen($lang) == 2)
-				$sql .= " AND langcode = '".pg_escape_string($lang)."'";
+				$sql .= " AND langcode = $lang";
 
 			$sql .= ";";
 			$var = $this->get_one($sql);
@@ -140,9 +130,11 @@
 
 		public function get_num_active_subp_tracks($lang = '') {
 
-			$sql = "SELECT COUNT(1) FROM subp WHERE track_id = ".$this->id." AND active = 1";
+			$lang = $this->quote($lang);
+
+			$sql = "SELECT COUNT(1) FROM subp WHERE track_id = {$this->id} AND active = 1";
 			if(strlen($lang) == 2)
-				$sql .= " AND langcode = '".pg_escape_string($lang)."'";
+				$sql .= " AND langcode = $lang";
 
 			$sql .= ";";
 			$var = $this->get_one($sql);
@@ -152,7 +144,7 @@
 
 		public function get_first_english_subp() {
 
-			$sql = "SELECT ix FROM subp WHERE track_id = ".$this->id." AND (langcode = 'en' OR langcode = 'eng') AND active = 1 ORDER BY ix LIMIT 1;";
+			$sql = "SELECT ix FROM subp WHERE track_id = {$this->id} AND (langcode = 'en' OR langcode = 'eng') AND active = 1 ORDER BY ix LIMIT 1;";
 
 			$var = $this->get_one($sql);
 
@@ -162,7 +154,7 @@
 
 		public function get_num_chapters() {
 
-			$sql = "SELECT COUNT(1) FROM chapters WHERE track_id = ".$this->id.";";
+			$sql = "SELECT COUNT(1) FROM chapters WHERE track_id = {$this->id};";
 			$var = $this->get_one($sql);
 			return $var;
 
@@ -190,4 +182,5 @@
 		}
 
 	}
+
 ?>

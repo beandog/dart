@@ -1,12 +1,10 @@
 <?php
 
-	require_once(dirname(__FILE__)."/dbtable.php");
-
 	class Chapters_Model extends DBTable {
 
 		function __construct($id = null) {
 
-			$table = "chapters";
+			$table = 'chapters';
 
 			$this->id = parent::__construct($table, $id);
 
@@ -20,6 +18,8 @@
 		 * @params int $ix chapters.ix
 		 */
 		public function find_chapters_id($track_id, $ix) {
+
+			$track_id = abs(intval($track_id));
 
 			$sql = "SELECT id FROM chapters WHERE track_id = $track_id AND ix = $ix;";
 			$var = $this->get_one($sql);
