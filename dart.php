@@ -505,9 +505,13 @@
 
 			if($dvds_model_id) {
 
+				$disc_indexed = true;
+
 				$dvds_model->load($dvds_model_id);
 
 				$series_id = $dvds_model->get_series_id();
+
+				$series_dvds_id = null;
 
 				if($series_id) {
 
@@ -517,9 +521,27 @@
 					$series_title = $series_model->get_title();
 
 					echo "* $disc_name ID:\t$dvds_model_id\n";
-					echo "* Series:\t$series_title\n";
 
-					$disc_indexed = true;
+					$series_dvds_model = new Series_Dvds_Model;
+					$series_dvds_model->load_dvdread_id($dvdread_id);
+
+					$arr_metadata = $series_dvds_model->get_metadata();
+
+					$arr_d_series_info = array();
+					$d_series_info = '';
+
+					if($arr_metadata['season'])
+						$arr_d_series_info[] = 'Season '.$arr_metadata['season'];
+					if($arr_metadata['volume'])
+						$arr_d_series_info[] = 'Volume '.$arr_metadata['volume'];
+					if(strlen(trim($arr_metadata['side'])))
+						$arr_d_series_info[] = 'Side '.$arr_metadata['side'];
+
+					$d_series_info = implode(', ', $arr_d_series_info);
+					if($d_series_info)
+						$d_series_info = "($d_series_info)";
+
+					echo "* Series:\t$series_title $d_series_info\n";
 
 				}
 
@@ -527,6 +549,7 @@
 
 			// Found a new disc if it's not in the database!
 			if(!$dvds_model_id) {
+				$disc_indexed = false;
 				echo "* $disc_name not found, ready to import!\n";
 			}
 
