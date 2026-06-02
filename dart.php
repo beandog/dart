@@ -304,15 +304,9 @@
 
 		// Determine whether we are reading the device
 		if($opt_info || $opt_encode_info || $opt_encode || $opt_drip || $opt_copy || $opt_import || $opt_backup || $opt_geniso || $opt_ffplay || $opt_ffprobe || $opt_remux || $opt_rip_o_matic) {
-			if($debug)
+			if($verbose)
 				echo "* Info / Import / Archive / ISO: Enabling device access\n";
 			$access_device = true;
-			if(!$batch_mode) {
-				echo "[Access Device]\n";
-				echo "* Reading $arg_device\n";
-			}
-			if($debug)
-				echo "* Reading $arg_device\n";
 		}
 
 		// Look for any conditions where we there is access to the device, but
@@ -417,7 +411,7 @@
 			// Close the tray if not waiting
 			if($tray_open && $access_device) {
 
-				if(!$batch_mode)
+				if($verbose)
 					echo "* Drive is open, closing tray\n";
 				if($drive->close_tray())
 					$tray_open = false;
@@ -426,11 +420,9 @@
 
 				if($has_media) {
 					$access_drive = true;
-					if(!$batch_mode)
-						echo "* Found a $disc_name, ready to nom!\n";
+					echo "* Found a $disc_name, ready to nom!\n";
 				} else {
-					if(!$batch_mode)
-						echo "* Expected media, didn't find any!?\n";
+					echo "* Expected media, didn't find any!?\n";
 					$tray_open = $drive->eject();
 					$access_device = false;
 
@@ -488,8 +480,7 @@
 				goto next_device;
 			}
 
-			if(!$batch_mode)
-				echo "[$disc_name]\n";
+			echo "[$disc_name]\n";
 
 			if($disc_type == "dvd") {
 				$dvd = new DVD($device, $debug);
@@ -506,45 +497,37 @@
 			$dvdread_id = $dvd->dvdread_id;
 			$dvd_title = $dvd->title;
 
-			if(!$batch_mode) {
-				echo "* Title:\t$dvd_title\n";
-				echo "* dvdread id:\t$dvdread_id\n";
+			echo "* Title:\t$dvd_title\n";
+			echo "* dvdread id:\t$dvdread_id\n";
 
-				// Lookup the database dvds.id
-				echo "[Database]\n";
-			}
+			// Lookup the database dvds.id
 			$dvds_model_id = $dvds_model->find_dvdread_id($dvdread_id);
-
-			// Found a new disc if it's not in the database!
-			if(!$dvds_model_id && !$batch_mode) {
-				echo "* $disc_name not found, ready to import!\n";
-			}
 
 			if($dvds_model_id) {
 
 				$dvds_model->load($dvds_model_id);
 
-				$series_title = $dvds_model->get_series_title();
+				$series_id = $dvds_model->get_series_id();
 
-				if(!$batch_mode) {
+				if($series_id) {
+
+					$series_model = new Series_Model;
+					$series_model->load($series_id);
+
+					$series_title = $series_model->get_title();
+
 					echo "* $disc_name ID:\t$dvds_model_id\n";
 					echo "* Series:\t$series_title\n";
-				}
 
-				$disc_indexed = true;
+					$disc_indexed = true;
+
+				}
 
 			}
 
-			// Only need to display if it's imported if requesting import or
-			// getting DVD info.
-			if($opt_import || $opt_info || $opt_encode_info || $opt_encode || $opt_copy || $opt_remux) {
-				if(!$batch_mode) {
-					if($disc_indexed) {
-						echo "* Imported:\tYes\n";
-					} else {
-						echo "* Imported:\tNo\n";
-					}
-				}
+			// Found a new disc if it's not in the database!
+			if(!$dvds_model_id) {
+				echo "* $disc_name not found, ready to import!\n";
 			}
 
 		}
@@ -564,8 +547,7 @@
 		// If archiving, everything would have happened by now,
 		// so eject the drive.
 		if($opt_import && $new_dvd && $device_is_hardware && $drive->is_closed()) {
-			if(!$batch_mode)
-				echo "* Ready to archive next disc, opening tray!\n";
+			echo "* Ready to archive next disc, opening tray!\n";
 			if(!$ejected)
 				$drive->eject();
 		}
