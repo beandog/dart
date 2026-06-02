@@ -1,8 +1,6 @@
 #!/usr/bin/env php
 <?php
 
-	set_include_path(get_include_path() .':'. __DIR__ . '/pear/');
-
 	// Defaults
 	$all_devices = array('/dev/sr0');
 	$export_dir = getenv('HOME').'/dvds/';
