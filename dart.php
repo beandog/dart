@@ -8,7 +8,7 @@
 	if($os == 'tux')
 		$all_devices = array('/dev/sr0');
 	elseif($os == 'wsl' || $os == 'windows')
-		$all_devices = array('E:');
+		$all_devices = array('D:');
 	$export_dir = getenv('HOME').'/dvds/';
 	$hostname = php_uname('n');
 	$batch_mode = false;
