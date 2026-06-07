@@ -150,6 +150,7 @@
 			if($ready == true)
 				return true;
 
+			/*
 			if($retry == true) {
 
 				$max_retries = 5;
@@ -184,6 +185,7 @@
 				}
 
 			}
+			*/
 
 			if($this->debug)
 				echo "* Drive status: $status\n";
@@ -473,7 +475,7 @@
 
 			$arg_device = escapeshellarg($this->device);
 
-			$cmd = "eject $arg_device";
+			$cmd = "dvd_eject $arg_device";
 
 			if($this->debug)
 				echo "* Executing $cmd\n";
@@ -505,12 +507,6 @@
 
 		}
 
-		/**
-		 * Close the tray
-		 *
-		 * If the tray is closed and has media, dvd_eject will
-		 * return a status of 2.
-		 */
 		function close_tray() {
 
 			$arg_device = escapeshellarg($this->device);
@@ -528,11 +524,20 @@
 
 		}
 
+		/**
+		 * Close the tray
+		 *
+		 * Use dvd_eject to close the tray, wait to see if it can be opened,
+		 * and test with dvdread.
+		 *
+		 * If the tray is closed and has media, dvd_eject will return a
+		 * status of 2.
+		 */
 		function close_tux_tray() {
 
 			$arg_device = escapeshellarg($this->device);
 
-			$cmd = "eject -t $arg_device";
+			$cmd = "dvd_eject -t -w -d $arg_device";
 
 			if($this->debug)
 				echo "* Executing $cmd\n";

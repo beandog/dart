@@ -597,7 +597,7 @@
 		}
 
 		if($device_is_hardware && $opt_eject && !$ejected)
-			passthru("eject $device");
+			passthru("dvd_eject $device");
 
 	}
 
