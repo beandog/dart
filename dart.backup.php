@@ -51,8 +51,8 @@
 		$target_iso .= ".iso";
 
 		$isos_dir = $backup_dir;
-		$target_iso = realpath($isos_dir).'/'.$target_iso;
-		$target_rip = realpath($isos_dir).'/'.basename($target_iso, '.iso').".R1p";
+		$target_iso = "$isos_dir/$target_iso";
+		$target_rip = "$isos_dir/".basename($target_iso, '.iso').".R1p";
 
 		$display_iso = basename($target_iso);
 		echo "* Filename: $display_iso\n";
@@ -231,7 +231,7 @@
 			$makemkv_backup_command = "tout $makemkv_backup_command";
 
 		echo "$makemkv_backup_command\n";
-		echo "dart --rename-iso ".escapeshellarg(realpath(getcwd())."/".$backup_dir)."\n";
+		echo "dart --rename-iso ".escapeshellarg(getcwd()."/".$backup_dir)."\n";
 
 		goto next_disc;
 

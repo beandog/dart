@@ -175,7 +175,7 @@ if($disc_type == 'dvd' && $dvd_encoder == 'handbrake' && ($opt_encode_info || $o
 	}
 
 	if($arg_export_dir) {
-		$export_dir = realpath($arg_export_dir);
+		$export_dir = $arg_export_dir;
 		$filename = "$export_dir/$filename";
 	}
 

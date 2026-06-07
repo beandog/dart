@@ -69,7 +69,7 @@
 
 		function __construct($device = "/dev/bluray", $debug = false) {
 
-			$this->device = realpath($device);
+			$this->device = $device;
 			$this->debug = boolval($debug);
 
 			if(!file_exists($this->device)) {
@@ -521,8 +521,6 @@
 
 			if(!file_exists($filename))
 				return false;
-
-			$filename = realpath($filename);
 
 			$arg_device = escapeshellarg($this->device);
 			$arg_keydb = escapeshellarg($filename);

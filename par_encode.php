@@ -99,7 +99,6 @@
 
 	$arr_encodes = array();
 	foreach($arr_filenames as $filename) {
-		$filename = realpath($filename);
 		$arg_filename = escapeshellarg($filename);
 		$reencode_mkv_cmd = "reencode_mkv --batch $arg_filename";
 		$arr_output = array();

@@ -115,7 +115,7 @@
 			if($src == '-')
 				$this->input_filename = '-';
 			else
-				$this->input_filename = realpath($src);
+				$this->input_filename = $src;
 		}
 
 		public function output_filename($str) {

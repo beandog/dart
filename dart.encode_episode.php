@@ -25,7 +25,7 @@ if($disc_type == 'dvd' && ($opt_encode || $opt_copy)) {
 	if(str_contains($str, $filename))
 		goto next_episode;
 
-	$arg_device = escapeshellarg(realpath($device));
+	$arg_device = escapeshellarg($device);
 
 	$arg_filename = escapeshellarg($filename);
 

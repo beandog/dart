@@ -203,8 +203,6 @@
 			if(!$this->opened)
 				return null;
 
-			$logfile = realpath($logfile);
-
 			if($this->debug) {
 				echo "* dvd->dvdbackup($filename)\n";
 				echo "* Logging to $logfile\n";

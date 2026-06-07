@@ -155,7 +155,7 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg
 				continue;
 			}
 
-			$arg_device = escapeshellarg(realpath($device));
+			$arg_device = escapeshellarg($device);
 
 			$arg_filename = escapeshellarg($filename);
 

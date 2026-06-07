@@ -84,7 +84,7 @@
 
 	$episode = array_shift($episodes);
 	$arg_episode = escapeshellarg($episode);
-	$pathinfo = pathinfo(realpath($episode));
+	$pathinfo = pathinfo($episode);
 
 	if(!(in_array($pathinfo['extension'], array('iso', 'mkv', 'mp4')))) {
 		goto next_episode;
