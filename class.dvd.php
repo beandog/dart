@@ -143,6 +143,17 @@
 				return false;
 			}
 
+			if($os == 'wsl' || $os == 'windows') {
+				$output= array();
+				// Get-Volume uses 'D' not 'D:'
+				$drive_letter = $this->device[0];
+				$cmd = "powershell.exe -c \"(Get-Volume $drive_letter).FileSystemLabel\"";
+				exec($cmd, $output, $retval);
+				$title = current($output);
+				$title = trim($title);
+				$json['dvd']['title'] = $title;
+			}
+
 			$this->dvd_info = $json;
 
 			return true;
