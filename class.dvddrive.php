@@ -7,9 +7,8 @@
 
 		public $device;
 		public $debug;
-		public $disc_type = '';
 		public $has_media = false;
-		public $arr_drive_status = array("", "CDS_NO_DISC", "CDS_TRAY_OPEN", "CDS_DRIVE_NOT_READY", "CDS_DISK_OK", "CDS_ERR_DEVTYPE", "CDS_ERR_OPEN");
+		public $arr_drive_status = array('', 'CDS_NO_DISC', 'CDS_TRAY_OPEN', 'CDS_DRIVE_NOT_READY', 'CDS_DISK_OK', 'CDS_ERR_DEVTYPE', 'CDS_ERR_OPEN');
 
 		/**
 		 * Load the class. Assume it's a device, and return false otherwise.
@@ -29,9 +28,6 @@
 			$this->debug = boolval($debug);
 
 			$arg_device = escapeshellarg($device);
-
-			if($debug)
-				echo "* Accessing DVD drive $arg_device\n";
 
 			if($device_type == 'windows')
 				return true;
@@ -79,121 +75,6 @@
 				echo "* Drive status: $d_drive_status";
 
 			return $retval;
-
-		}
-
-		/**
-		 * Do everything to get drive ready, including retrying if busy, and return result
-		 */
-		function load_tux_drive() {
-
-			$arg_device = escapeshellarg($this->device);
-
-			if($this->debug)
-				echo "* Loading Linux optical drive $arg_device\n";
-
-			$retval = $this->get_tux_drive_status();
-
-			$message = '';
-			$ready = false;
-			$retry = false;
-
-			switch($retval) {
-
-				case 0:
-					$status = 'device ready';
-					$message = 'Drive is ready but there is has media';
-					break;
-
-				case 1:
-					$status = 'no disc';
-					break;
-
-				case 2:
-					$status = 'tray open';
-					$message = 'Tray is open';
-					break;
-
-				case 3:
-					$status = 'drive not ready';
-					$mesage = "Drive isn't ready, sleeping two seconds and trying again ...";
-					$retry = true;
-					break;
-
-				case 4:
-					$status = 'loaded';
-					$message = 'Drive is ready and has media';
-					$ready = true;
-					break;
-
-				case 5:
-					$status = 'wrong device type';
-					$message = "Device is not an optical drive!";
-					break;
-
-				case 6:
-					$status = 'error opening';
-					$message = "Drive couldn't be opened, sleeping two seconds and ttrying again";
-					$retry = true;
-					break;
-
-			}
-
-			if($ready)
-				$this->has_media = true;
-
-			if($ready == true && $this->debug) {
-				echo "* Device $arg_device is ready and loaded!\n";
-				return true;
-			}
-
-			if($ready == true)
-				return true;
-
-			/*
-			if($retry == true) {
-
-				$max_retries = 5;
-
-				if($this->debug)
-					echo "* Waiting for drive to be ready ... max $max_retries tries\n";
-				$num_retries = 0;
-
-				while($num_retries < $max_retries) {
-
-					if($this->debug)
-						echo "* Attempt # ".($num_retries + 1)." ...\n";
-
-					$num_retries++;
-					sleep(1);
-
-					$retval = $this->get_tux_drive_status();
-
-					if($retval == 3) {
-						$ready = true;
-						break;
-					}
-
-				}
-
-				if($ready && $this->debug)
-					echo "* Tried $num_tries total\n";
-
-				if(!$ready) {
-					echo "* Waiting for drive to be ready failed, quitting\n";
-					return false;
-				}
-
-			}
-			*/
-
-			if($this->debug)
-				echo "* Drive status: $status\n";
-
-			if($this->debug && $message)
-				echo "* $message\n";
-
-			return false;
 
 		}
 
@@ -261,192 +142,62 @@
 		/** Hardware **/
 
 		/**
-		 * Basic check to see if drive is accessible
-		 */
-		function access_device() {
-
-			$arg_device = escapeshellarg($this->device);
-
-			if($this->debug)
-				echo "* drive::access_device($arg_device)\n";
-
-			$cmd = "dvd_drive_status $arg_device &> /dev/null";
-			exec($cmd, $output, $retval);
-
-			if($this->debug)
-				echo "* drive::dvd_drive_status: ".current($output)."\n";
-
-			if($retval == 5) {
-				if($this->debug)
-					echo "* drive::access_device: device exists, but is not a DVD drive\n";
-				return false;
-			} elseif($retval == 6) {
-				if($this->debug)
-					echo "* drive::access_device: cannot access device\n";
-				return false;
-			} elseif($retval == 7) {
-				if($this->debug)
-					echo "* drive::access_device: cannot find a device\n";
-				return false;
-			}
-
-			return true;
-
-		}
-
-		/**
-		 * Sleep until the drive is ready to access
-		 */
-		function wait_until_ready() {
-
-			$arg_device = escapeshellarg($this->device);
-
-			if($this->debug)
-				echo "* drive::wait_until_ready($arg_device)\n";
-
-			do {
-				sleep(2);
-			} while($this->is_ready() === false);
-
-			return true;
-
-		}
-
-		/**
-		 * Sleep until the drive is closed
-		 */
-		function wait_until_closed() {
-
-			$arg_device = escapeshellarg($this->device);
-
-			echo "* drive::wait_until_closed($arg_device)\n";
-
-			do {
-				$this->wait_until_ready();
-			} while(!$this->is_closed());
-
-			return true;
-
-		}
-
-		/**
-		 * Sleep until the drive is open
-		 */
-		function wait_until_open() {
-
-			$arg_device = escapeshellarg($this->device);
-
-			echo "* drive::wait_until_open($arg_device)\n";
-
-			do {
-				$this->wait_until_ready();
-			} while(!$this->is_open());
-
-			return true;
-
-		}
-
-		/**
 		 * Get the status of a DVD drive
 		 */
 		function get_status() {
 
 			$arg_device = escapeshellarg($this->device);
 
-			if($this->debug)
-				echo "* drive::get_status($arg_device)\n";
+			echo "* Checking drive status ... ";
 
 			$command = "dvd_drive_status $arg_device";
 			exec($command, $arr, $retval);
 
-			if($this->debug)
-				echo "* drive status: ".$this->arr_drive_status[$retval]."\n";
+			switch($retval) {
 
-			return $retval;
-		}
+				case 0:
+					$status = 'device ready';
+					$message = 'Drive is ready but there is no media';
+					break;
 
-		/**
-		 * Check if the drive has a DVD inside the tray
-		 */
-		function has_media() {
+				case 1:
+					$status = 'no disc';
+					break;
 
-			$os = os();
-			if($os == 'wsl' || $os == 'windows')
-				return $this->has_media;
+				case 2:
+					$status = 'tray open';
+					$message = 'Tray is open';
+					break;
 
-			$arg_device = escapeshellarg($this->device);
+				case 3:
+					$status = 'drive not ready';
+					$mesage = "Drive isn't ready, sleeping two seconds and trying again ...";
+					$retry = true;
+					break;
 
-			if($this->debug)
-				echo "* drive::has_media($arg_device)\n";
+				case 4:
+					$status = 'has media :D';
+					$message = 'Drive is ready and has media';
+					$ready = true;
+					break;
 
-			$this->wait_until_ready();
+				case 5:
+					$status = 'wrong device type';
+					$message = "Device is not an optical drive!";
+					break;
 
-			$status = $this->get_status();
+				case 6:
+					$status = 'error opening';
+					$message = "Drive couldn't be opened, sleeping two seconds and ttrying again";
+					$retry = true;
+					break;
 
-			if($status == 4) {
-				$this->has_media = true;
-				return true;
 			}
 
-			return false;
+			echo "$status\n";
 
-		}
+			return $retval;
 
-		/**
-		 * Check if a tray is open
-		 */
-		function is_open() {
-
-			$arg_device = escapeshellarg($this->device);
-
-			if($this->debug)
-				echo "* drive::is_open($arg_device)\n";
-
-			$this->wait_until_ready();
-
-			$status = $this->get_status();
-			if($status == 2)
-				return true;
-			else
-				return false;
-
-		}
-
-		/**
-		 * Check if a tray is closed
-		 */
-		function is_closed() {
-
-			$arg_device = escapeshellarg($this->device);
-
-			if($this->debug)
-				echo "* drive::is_closed($arg_device)\n";
-
-			$this->wait_until_ready();
-
-			$status = $this->get_status();
-			if($status == 1 || $status == 4)
-				return true;
-			else
-				return false;
-		}
-
-		/**
-		 * Check if the drive is ready to access
-		 */
-		function is_ready() {
-
-			$arg_device = escapeshellarg($this->device);
-
-			if($this->debug)
-				echo "* drive::is_ready($arg_device)\n";
-
-			$status = $this->get_status();
-
-			if($status != 3)
-				return true;
-			else
-				return false;
 		}
 
 		/**
@@ -479,11 +230,10 @@
 
 			if($this->debug)
 				echo "* Executing $cmd\n";
+			else
+				$cmd .= " &> /dev/null";
 
 			exec($cmd, $arr, $retval);
-
-			if($this->debug)
-				echo "* eject retval: $retval\n";
 
 			if($retval === 0 || $retval === 2)
 				return true;
@@ -511,9 +261,6 @@
 
 			$arg_device = escapeshellarg($this->device);
 
-			if($this->debug)
-				echo "* Trying to close $arg_device\n";
-
 			$os = os();
 
 			if($os == 'tux')
@@ -527,20 +274,24 @@
 		/**
 		 * Close the tray
 		 *
-		 * Use dvd_eject to close the tray, wait to see if it can be opened,
-		 * and test with dvdread.
+		 * Use dvd_eject to close the tray and wait until it can be opened
 		 *
 		 * If the tray is closed and has media, dvd_eject will return a
 		 * status of 2.
 		 */
-		function close_tux_tray() {
+		function close_tux_tray($disc_type = '') {
 
 			$arg_device = escapeshellarg($this->device);
 
-			$cmd = "dvd_eject -t -w -d $arg_device";
+			if($disc_type == 'dvd')
+				$cmd = "dvd_eject -t -w -d $arg_device";
+			else
+				$cmd = "dvd_eject -t -w $arg_device";
 
 			if($this->debug)
 				echo "* Executing $cmd\n";
+			else
+				$cmd .= " &> /dev/null";
 
 			passthru($cmd, $retval);
 
@@ -551,7 +302,7 @@
 
 		}
 
-		function close_wsl_tray() {
+		function close_wsl_tray($disc_type = '') {
 
 			$arg_device = escapeshellarg($this->device);
 
@@ -566,42 +317,6 @@
 			return true;
 
 		}
-
-		/**
-		 * Get the optical disc type - DVD or Blu-ray
-		 *
-		 * Currently unused, dart.functions.php has get_disc_type, but keeping this here
-		 * if needed.
-		 *
-		 */
-		function disc_type() {
-
-			$arg_device = escapeshellarg($device);
-
-			if($this->debug)
-				echo "* drive::disc_type($arg_device)\n";
-
-			$os = os();
-
-			if($os == 'wsl' || $os == 'windows') {
-				echo "* Unsupported on WSL, assuming DVD\n";
-				return 'dvd';
-			}
-
-			$command = "disc_type $arg_device 2> /dev/null";
-			exec($command, $arr, $retval);
-
-			$disc_type = current($arr);
-
-			if($retval || $disc_type == '') {
-				if($this->debug)
-					echo "* disc_type returned no type\n";
-				return '';
-			}
-
-			return $disc_type;
-
-		 }
 
 	}
 

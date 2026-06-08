@@ -323,132 +323,34 @@
 		$has_media = false;
 		if($device_is_hardware && $access_device) {
 
-			if($verbose) {
-				echo "[Device Hardware]\n";
-				echo "* Drive $arg_device\n";
-			}
-
+			echo "[Device Hardware]\n";
+			echo "* Drive $arg_device\n";
 			$drive = new DVDDrive($device, $debug);
+
 			if($opt_close_tray)
-				$drive->close_tray();
-			$drive_ready = $drive->load_drive();
-			$has_media = $drive->has_media();
+				$drive->close_tray($disc_type);
 
-			if(($os == 'wsl' || $os == 'windows') && $device_type == 'windows') {
+			$drive_status = $drive->get_status();
 
-				if($drive_ready && $has_media) {
-
-					$disc_type = get_disc_type($device);
-					goto drive_ready;
-
-				}
-
-				if($drive_ready && !$has_media) {
-
-					echo "* Drive $arg_device does not have any media\n";
-					$drive->eject();
-					goto next_device;
-
-				}
-
-				if($opt_eject) {
-					echo "* Drive $arg_device not ready, ejecting\n";
-					$drive->eject();
-					goto next_device;
-				}
-
-				echo "* Drive $arg_device not ready, skipping\n";
-				goto next_device;
-
-			}
-
-			// Check for basic access
-			$device_access = $drive->access_device();
-			if($device_access == false) {
-				echo "* Access device failed\n";
-				goto next_device;
-			}
-
-			// Poll the devices as few times as necessary to avoid hardware kernel
-			// complaints. Set defaults.
-			$tray_open = false;
-			$has_media = false;
-
-			// Check if drive is open.
-			$tray_open = $drive->is_open();
-
-			if($debug)
-				echo "* Tray open: ".($tray_open ? "yes" : "no" )."\n";
-
-			// Check if drive has media if it's closed
-			if(!$tray_open)
-				$has_media = $drive->has_media();
-
-			if($debug)
-				echo "* Has media: ".($has_media ? "yes" : "no" )."\n";
-
-			if($has_media)
+			if($drive_status == 4) {
+				$has_media = true;
 				goto drive_ready;
-
-			/**
-			 * Writing all these logic checks independently makes it so my head
-			 * doesn't hurt while trying to parse multiple conditions. However, each
-			 * conditional check needs to see if access to the device is disabled at
-			 * that point, since it's the one variable that is changed by the previous
-			 * checks.
-			 */
-
-			// What happens in a scenario where the user passes a command (rip, info,
-			// iso, etc.) but there is no media in the tray? Should the program assume
-			// that the user wants to put something in there, and so it opens up? Or
-			// should it only quietly continue and ignore the device? I'm going to go
-			// with the assumption for now that if dart is specifically told to access
-			// *this device*, then it is intended to have media in it. If there's none
-			// in there, do the courtesy of opening the tray so that the user doesn't
-			// have to eject it manually.
-			if(!$tray_open && !$has_media && $access_device) {
-
-				// The device was included in the main program call, so eject
-				// the tray if there is no media in there.
+			} else {
+				$has_media = false;
+				echo "* Drive $arg_device does not have any media\n";
 				$drive->eject();
-				$access_device = false;
-				if($debug)
-					echo "* Opening drive: Disabling device access\n";
+				goto next_device;
 			}
 
-			// Close the tray if not waiting
-			if($tray_open && $access_device) {
-
-				if($verbose)
-					echo "* Drive is open, closing tray\n";
-				if($drive->close_tray())
-					$tray_open = false;
-
-				$has_media = $drive->has_media();
-
-				if($has_media) {
-					$access_drive = true;
-					echo "* Found a $disc_name, ready to nom!\n";
-				} else {
-					echo "* Expected media, didn't find any!?\n";
-					$tray_open = $drive->eject();
-					$access_device = false;
-
-					// This is *possibly* a case where the DVD drive is closed,
-					// with media physically present, but the drive doesn't see
-					// it for whatever reason. If that's the case, alert the
-					// user to the anomaly.
-					beep_error();
-
-				}
-
-			}
+			echo "* Drive $arg_device not ready, skipping\n";
+			goto next_device;
 
 		}
 
 		drive_ready:
 
 		// Rip-or-skip-o-matic :D
+		/*
 		if($opt_rip_o_matic && $rippy_rip_rip) {
 
 			echo "[Rip-o-Matic!]\n";
@@ -468,15 +370,16 @@
 			$cmd_ogg = "/usr/bin/ogg123 /usr/share/sounds/freedesktop/stereo/service-login.oga &> /dev/null &";
 			shell_exec($cmd_ogg);
 		}
+		*/
 
 		if($access_device) {
 
 			$disc_type = get_disc_type($device);
 
-			if($disc_type == "dvd")
-				$disc_name = "DVD";
-			elseif($disc_type == "bluray")
-				$disc_name = "Blu-ray";
+			if($disc_type == 'dvd')
+				$disc_name = 'DVD';
+			elseif($disc_type == 'bluray')
+				$disc_name = 'Blu-ray';
 			elseif($disc_type == 'cd') {
 				require_once 'dart.cd.php';
 				goto next_device;
@@ -490,9 +393,9 @@
 
 			echo "[$disc_name]\n";
 
-			if($disc_type == "dvd") {
+			if($disc_type == 'dvd') {
 				$dvd = new DVD($device, $debug);
-			} elseif($disc_type == "bluray") {
+			} elseif($disc_type == 'bluray') {
 				$dvd = new Bluray($device, $debug);
 			}
 
@@ -577,12 +480,18 @@
 
 		// If archiving, everything would have happened by now,
 		// so eject the drive.
-		if($opt_import && $new_dvd && $device_is_hardware && $drive->is_closed()) {
+		if($opt_import && $new_dvd && $device_is_hardware) {
 			echo "* Ready to archive next disc, opening tray!\n";
-			if(!$ejected)
+			if(!$ejected) {
 				$drive->eject();
+				$ejected = true;
+			}
 		}
 
+		if($device_is_hardware && $opt_eject && !$ejected)
+			passthru("dvd_eject $device &> /dev/null");
+
+		/*
 		if($opt_rip_o_matic && $rippy_rip_rip && $rip_rip_hooray) {
 			$cmd_ogg = "/usr/bin/ogg123 /usr/share/sounds/freedesktop/stereo/service-logout.oga &> /dev/null &";
 			shell_exec($cmd_ogg);
@@ -595,9 +504,8 @@
 			}
 
 		}
+		*/
 
-		if($device_is_hardware && $opt_eject && !$ejected)
-			passthru("dvd_eject $device");
 
 	}
 
