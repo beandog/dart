@@ -147,6 +147,7 @@
 		function get_status() {
 
 			global $os;
+			global $ps1_dirname;
 
 			$arg_device = escapeshellarg($this->device);
 
@@ -154,7 +155,11 @@
 
 			if($os == 'wsl' || $os == 'windows') {
 
-				$cmd = "powershell.exe -ExecutionPolicy Bypass -File /usr/local/bin/dvd_drive_status.ps1 $arg_device";
+				$ps1_filename = $ps1_dirname."dvd_drive_status.ps1";
+				if($os == 'wsl')
+					$cmd = "powershell.exe -File '$ps1_filename' $arg_device";
+				elseif($os == 'windows')
+					$cmd = "powershell.exe -InputFormat none -File $ps1_filename $arg_device";
 
 				exec($cmd, $arr);
 
