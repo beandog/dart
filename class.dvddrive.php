@@ -146,51 +146,78 @@
 		 */
 		function get_status() {
 
+			global $os;
+
 			$arg_device = escapeshellarg($this->device);
 
 			echo "* Checking drive status ... ";
 
-			$command = "dvd_drive_status $arg_device";
-			exec($command, $arr, $retval);
+			if($os == 'wsl' || $os == 'windows') {
 
-			switch($retval) {
+				$cmd = "powershell.exe -ExecutionPolicy Bypass -File /usr/local/bin/dvd_drive_status.ps1 $arg_device";
 
-				case 0:
-					$status = 'device ready';
-					$message = 'Drive is ready but there is no media';
-					break;
+				exec($cmd, $arr);
 
-				case 1:
-					$status = 'no disc';
-					break;
+				$str = implode("\n", $arr);
 
-				case 2:
-					$status = 'tray open';
-					$message = 'Tray is open';
-					break;
+				$json = json_decode($str, true);
 
-				case 3:
-					$status = 'drive not ready';
-					$mesage = "Drive isn't ready, sleeping two seconds and trying again ...";
-					$retry = true;
-					break;
-
-				case 4:
+				if($json['has_media'] == 1) {
 					$status = 'has media :D';
 					$message = 'Drive is ready and has media';
 					$ready = true;
-					break;
+					$retval = 4;
+				} else {
+					$status = 'device ready';
+					$message = 'Drive is ready but there is no media';
+					$retval = 0;
+				}
 
-				case 5:
-					$status = 'wrong device type';
-					$message = "Device is not an optical drive!";
-					break;
+			} elseif($os == 'tux') {
 
-				case 6:
-					$status = 'error opening';
-					$message = "Drive couldn't be opened, sleeping two seconds and ttrying again";
-					$retry = true;
-					break;
+				$command = "dvd_drive_status $arg_device";
+				exec($command, $arr, $retval);
+
+				switch($retval) {
+
+					case 0:
+						$status = 'device ready';
+						$message = 'Drive is ready but there is no media';
+						break;
+
+					case 1:
+						$status = 'no disc';
+						break;
+
+					case 2:
+						$status = 'tray open';
+						$message = 'Tray is open';
+						break;
+
+					case 3:
+						$status = 'drive not ready';
+						$mesage = "Drive isn't ready, sleeping two seconds and trying again ...";
+						$retry = true;
+						break;
+
+					case 4:
+						$status = 'has media :D';
+						$message = 'Drive is ready and has media';
+						$ready = true;
+						break;
+
+					case 5:
+						$status = 'wrong device type';
+						$message = "Device is not an optical drive!";
+						break;
+
+					case 6:
+						$status = 'error opening';
+						$message = "Drive couldn't be opened, sleeping two seconds and ttrying again";
+						$retry = true;
+						break;
+
+				}
 
 			}
 
