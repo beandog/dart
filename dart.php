@@ -65,7 +65,9 @@
 		$opt_close_tray = true;
 		$opt_eject = true;
 		$opt_skip_existing = true;
+		$opt_time = true;
 		$arg_export_dir = $rippy_rip_dir;
+		chdir($arg_export_dir);
 
 		// Testing
 		/*
