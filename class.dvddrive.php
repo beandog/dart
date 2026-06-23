@@ -289,20 +289,6 @@
 
 		}
 
-		function close_tray() {
-
-			$arg_device = escapeshellarg($this->device);
-
-			$os = os();
-
-			if($os == 'tux')
-				return $this->close_tux_tray();
-
-			if($os == 'wsl' || $os == 'windows')
-				return $this->close_wsl_tray();
-
-		}
-
 		/**
 		 * Close the tray
 		 *
@@ -311,42 +297,50 @@
 		 * If the tray is closed and has media, dvd_eject will return a
 		 * status of 2.
 		 */
-		function close_tux_tray($disc_type = '') {
+		function close_tray($disc_type = '') {
 
 			$arg_device = escapeshellarg($this->device);
 
-			if($disc_type == 'dvd')
-				$cmd = "dvd_eject -t -w -d $arg_device";
-			else
-				$cmd = "dvd_eject -t -w $arg_device";
+			$os = os();
 
-			if($this->debug)
-				echo "* Executing $cmd\n";
-			else
-				$cmd .= " &> /dev/null";
+			if($os == 'tux') {
 
-			passthru($cmd, $retval);
+				$arg_device = escapeshellarg($this->device);
 
-			if($retval === 0)
+				if($disc_type == 'dvd')
+					$cmd = "dvd_eject -t -w -d $arg_device";
+				else
+					$cmd = "dvd_eject -t -w $arg_device";
+
+				if($this->debug)
+					echo "* Executing $cmd\n";
+				else
+					$cmd .= " &> /dev/null";
+
+				passthru($cmd, $retval);
+
+				if($retval === 0)
+					return true;
+
+				return false;
+
+			}
+
+			if($os == 'wsl' || $os == 'windows') {
+
+				$arg_device = escapeshellarg($this->device);
+
+				$powershell_script_file = $powershell_scripts_dir."dvd_eject.ps1";
+				$cmd = "powershell.exe -File $powershell_script_file $arg_device";
+
+				if($this->debug)
+					echo "* Running $cmd\n";
+
+				exec($cmd, $output, $retval);
+
 				return true;
 
-			return false;
-
-		}
-
-		function close_wsl_tray($disc_type = '') {
-
-			$arg_device = escapeshellarg($this->device);
-
-			$powershell_script_file = $powershell_scripts_dir."dvd_eject.ps1";
-			$cmd = "powershell.exe -File $powershell_script_file $arg_device";
-
-			if($this->debug)
-				echo "* Running $cmd\n";
-
-			exec($cmd, $output, $retval);
-
-			return true;
+			}
 
 		}
 
