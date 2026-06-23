@@ -59,12 +59,22 @@
 	$opt_import = false;
 
 	// Yay, Rip-o-Matic!
-	$rip_rip_hooray = false;
 	if($opt_rip_o_matic && $rippy_rip_rip) {
-		$opt_backup = true;
+		echo "[ DVD Rip-o-Matic! ]\n";
+		$opt_encode = true;
+		$opt_close_tray = true;
 		$opt_eject = true;
-		$arg_backup_dir = $rippy_rip_dir;
-		$rip_rip_hooray = true;
+		$opt_skip_existing = true;
+		$arg_export_dir = $rippy_rip_dir;
+
+		// Testing
+		/*
+		$opt_one = true;
+		$opt_qa = true;
+		$arg_prefix = 'rip-o-matic';
+		*/
+	} elseif($opt_rip_o_matic && !$rippy_rip_rip) {
+		echo "[ DVD Rip-o-Matic disabled in config ]\n";
 	}
 
 	// --backup is basically a shortcut for ripping an ISO and importing it plus
