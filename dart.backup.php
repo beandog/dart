@@ -50,6 +50,10 @@
 		$target_iso .= ".$nsix";
 		$target_iso .= ".iso";
 
+		$backup_dir = '.';
+		if($arg_backup_dir)
+			$backup_dir = $arg_backup_dir;
+
 		$isos_dir = $backup_dir;
 		$target_iso = "$isos_dir/$target_iso";
 		$target_rip = "$isos_dir/".basename($target_iso, '.iso').".R1p";
