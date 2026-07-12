@@ -346,6 +346,7 @@
 			if($encoder == 'ffmpeg') {
 				$ffmpeg = true;
 				$cmd[] = 'ffmpeg';
+				$cmd[] = '-hide_banner';
 			} elseif($encoder == 'ffplay') {
 				$ffplay = true;
 				$cmd[] = 'ffplay';
