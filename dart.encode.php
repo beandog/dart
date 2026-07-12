@@ -129,6 +129,9 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg
 		$vcodec = $series_model->get_vcodec();
 		$video_format = strtolower($tracks_model->format);
 
+		if($os == 'bsd')
+			$vcodec = 'x264';
+
 		if($disc_type == 'dvd' && $dvd_encoder == 'dvd_copy') {
 
 			// Skip existing output files

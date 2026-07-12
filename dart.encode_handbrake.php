@@ -34,6 +34,8 @@ if($disc_type == 'dvd' && $dvd_encoder == 'handbrake' && ($opt_encode_info || $o
 		$video_quality = intval($series_model->get_crf());
 		if(isset($arg_crf))
 			$video_quality = intval($arg_crf);
+		if($os == 'bsd')
+			$video_quality = 22;
 		$handbrake->set_video_quality($video_quality);
 
 		$x264_preset = $series_model->x264_preset;
