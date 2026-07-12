@@ -17,7 +17,7 @@
 		public $disc_type = 'dvd';
 
 		// DVD source
-		public $dvd;
+		public $device;
 		public $dvd_num_audio_tracks;
 		public $dvd_num_subtitles;
 
@@ -80,7 +80,7 @@
 
 		/** Filename **/
 		public function input_filename($src) {
-			$this->input = $src;
+			$this->device = $src;
 		}
 
 		public function output_filename($str) {
@@ -488,7 +488,7 @@
 			if(str_contains(php_uname('r'), 'WSL2') || str_contains(php_uname('s'), 'Windows NT'))
 				$str = str_replace('HandBrakeCLI', 'HandBrakeCLI.exe', $str);
 
-			$arg_input = escapeshellarg($this->input);
+			$arg_input = escapeshellarg($this->device);
 			$arg_output = escapeshellarg($this->output);
 			$str .= " --input $arg_input";
 			$str .= " --output $arg_output";
@@ -521,7 +521,7 @@
 			if($this->track)
 				$options = "--title ".$this->track;
 
-			$arg_input = escapeshellarg($this->input);
+			$arg_input = escapeshellarg($this->device);
 			$cmd = "HandBrakeCLI --scan --verbose $options --input $arg_input 2>&1";
 
 			if(str_contains(php_uname('r'), 'WSL2') || str_contains(php_uname('s'), 'Windows NT'))
