@@ -7,6 +7,8 @@
 	// Defaults
 	if($os == 'tux')
 		$all_devices = array('/dev/sr0');
+	elseif($os == 'bsd')
+		$all_devices = array('/dev/cd0');
 	elseif($os == 'wsl' || $os == 'windows') {
 		$all_devices = array('D:');
 		$debug = true;
@@ -346,7 +348,7 @@
 
 			$drive_status = $drive->get_status();
 
-			if($drive_status == 4) {
+			if(($os == 'tux' && $drive_status == 4) || (($os == 'wsl' || $os == 'windows') && $drive_status == 0) || ($os == 'bsd' && $drive_status == 2)) {
 				$has_media = true;
 				goto drive_ready;
 			} else {

@@ -153,32 +153,7 @@
 
 			echo "* Checking drive status ... ";
 
-			if($os == 'wsl' || $os == 'windows') {
-
-				$ps1_filename = $ps1_dirname."dvd_drive_status.ps1";
-				if($os == 'wsl')
-					$cmd = "powershell.exe -File '$ps1_filename' $arg_device";
-				elseif($os == 'windows')
-					$cmd = "powershell.exe -InputFormat none -File $ps1_filename $arg_device";
-
-				exec($cmd, $arr);
-
-				$str = implode("\n", $arr);
-
-				$json = json_decode($str, true);
-
-				if($json['has_media'] == 1) {
-					$status = 'has media :D';
-					$message = 'Drive is ready and has media';
-					$ready = true;
-					$retval = 4;
-				} else {
-					$status = 'device ready';
-					$message = 'Drive is ready but there is no media';
-					$retval = 0;
-				}
-
-			} elseif($os == 'tux') {
+			if($os == 'tux') {
 
 				$command = "dvd_drive_status $arg_device";
 				exec($command, $arr, $retval);
@@ -221,7 +196,46 @@
 						$message = "Drive couldn't be opened, sleeping two seconds and ttrying again";
 						$retry = true;
 						break;
+				}
 
+			}
+
+			if($os == 'wsl' || $os == 'windows') {
+
+				$ps1_filename = $ps1_dirname."dvd_drive_status.ps1";
+				if($os == 'wsl')
+					$cmd = "powershell.exe -File '$ps1_filename' $arg_device";
+				elseif($os == 'windows')
+					$cmd = "powershell.exe -InputFormat none -File $ps1_filename $arg_device";
+
+				exec($cmd, $arr);
+
+				$str = implode("\n", $arr);
+
+				$json = json_decode($str, true);
+
+				if($json['has_media'] == 1) {
+					$status = 'has media :D';
+					$message = 'Drive is ready and has media';
+					$ready = true;
+					$retval = 0;
+				} else {
+					$status = 'device ready';
+					$message = 'Drive is ready but there is no media';
+					$retval = 1;
+				}
+
+			}
+
+			if($os == 'bsd') {
+
+				$command = "dvd_drive_status $arg_device";
+				exec($command, $arr, $retval);
+
+				if($retval == 2) {
+					$status = 'has media :D';
+					$message = 'Drive is ready and has media';
+					$ready = true;
 				}
 
 			}
