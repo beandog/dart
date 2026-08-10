@@ -386,7 +386,7 @@ foreach($filenames as $filename) {
 
 	if($opt_import) {
 
-		require_once 'models/pdo.encodes.php';
+		require_once 'models/encodes.php';
 
 		$encodes_model = new Encodes_Model();
 
