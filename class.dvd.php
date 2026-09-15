@@ -115,7 +115,7 @@
 			$arg_device = escapeshellarg($this->device);
 
 			$os = os();
-			if($os == 'tux' || $os == 'bsd') {
+			if(($os == 'tux' || $os == 'bsd') || $this->is_iso) {
 				$cmd = "dvd_info --json $arg_device 2> /dev/null";
 				if(!$this->debug)
 					$cmd .= " 2> /dev/null";
