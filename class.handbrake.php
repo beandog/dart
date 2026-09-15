@@ -485,7 +485,7 @@
 
 			$str = "HandBrakeCLI ".implode(" ", $cmd);
 
-			if(str_contains(php_uname('r'), 'WSL2') || str_contains(php_uname('s'), 'Windows NT'))
+			if(str_contains(php_uname('s'), 'Windows NT'))
 				$str = str_replace('HandBrakeCLI', 'HandBrakeCLI.exe', $str);
 
 			$arg_input = escapeshellarg($this->device);
