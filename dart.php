@@ -323,6 +323,15 @@
 			$device_is_hardware = true;
 		}
 
+		if($debug) {
+
+			echo "# device: ".realpath($device)."\n";
+			echo "# device type: $device_type\n";
+			echo "# device is hardware: ".($device_is_hardware ? "true" : "false")."\n";
+			echo "# device is iso: ".($device_is_iso ? "true" : "false")."\n";
+
+		}
+
 		// Verify file exists
 		if($device_type != 'windows' && !file_exists($device)) {
 			echo "* Couldn't find $device\n";
@@ -332,6 +341,8 @@
 		// Determine whether we are reading the device
 		if($opt_info || $opt_encode_info || $opt_encode || $opt_drip || $opt_copy || $opt_import || $opt_backup || $opt_geniso || $opt_ffplay || $opt_ffprobe || $opt_remux || $opt_rip_o_matic)
 			$access_device = true;
+
+		echo "# access device: ".($access_device ? "true" : "false")."\n";
 
 		// Look for any conditions where we there is access to the device, but
 		// we need to skip over it because there is no media. Also open the tray
@@ -391,6 +402,9 @@
 		if($access_device) {
 
 			$disc_type = get_disc_type($device);
+
+			if($debug)
+				echo "# disc type: $disc_type\n";
 
 			if($disc_type == 'dvd')
 				$disc_name = 'DVD';
