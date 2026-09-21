@@ -346,7 +346,7 @@
 		if($opt_info || $opt_encode_info || $opt_encode || $opt_drip || $opt_copy || $opt_import || $opt_backup || $opt_geniso || $opt_ffplay || $opt_ffprobe || $opt_remux || $opt_rip_o_matic)
 			$access_device = true;
 
-		echo "# access device: ".($access_device ? "true" : "false")."\n";
+		// echo "# access device: ".($access_device ? "true" : "false")."\n";
 
 		// Look for any conditions where we there is access to the device, but
 		// we need to skip over it because there is no media. Also open the tray
