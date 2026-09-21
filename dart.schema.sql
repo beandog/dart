@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict 8koWJ1zgdPiLvUNKbrsiUd4faraF7IEsVWvGB806LaMLknt7mSRFaqUphOwxyPo
+\restrict fEuVQP4jtCXzXQn3KlkxuK8cTVfiHS9zNKBP3eTJI0frMgX378nWz5AzIXN2G3t
 
 -- Dumped from database version 17.10
 -- Dumped by pg_dump version 17.10
@@ -619,9 +619,6 @@ CREATE TABLE public.presets (
     x264_tune character varying(255) DEFAULT ''::character varying NOT NULL,
     fps character varying DEFAULT '30'::character varying,
     vcodec character varying(16) DEFAULT 'x264'::character varying NOT NULL,
-    denoise character varying(255) DEFAULT ''::character varying NOT NULL,
-    sharpen character varying(255) DEFAULT ''::character varying NOT NULL,
-    sharpen_tune character varying(255) DEFAULT ''::character varying NOT NULL,
     legacy_crf smallint
 );
 
@@ -1627,5 +1624,5 @@ ALTER TABLE ONLY public.tracks
 -- PostgreSQL database dump complete
 --
 
-\unrestrict 8koWJ1zgdPiLvUNKbrsiUd4faraF7IEsVWvGB806LaMLknt7mSRFaqUphOwxyPo
+\unrestrict fEuVQP4jtCXzXQn3KlkxuK8cTVfiHS9zNKBP3eTJI0frMgX378nWz5AzIXN2G3t
 
