@@ -426,7 +426,9 @@
 				goto next_device;
 			}
 
-			echo "[$disc_name]\n";
+			if(!($opt_encode || $opt_encode_info)) {
+				echo "[$disc_name]\n";
+			}
 
 			if($disc_type == 'dvd') {
 				$dvd = new DVD($device, $debug);
@@ -443,8 +445,10 @@
 			$dvdread_id = $dvd->dvdread_id;
 			$dvd_title = $dvd->title;
 
-			echo "* Title:\t$dvd_title\n";
-			echo "* dvdread id:\t$dvdread_id\n";
+			if(!($opt_encode || $opt_encode_info)) {
+				echo "* Title:\t$dvd_title\n";
+				echo "* dvdread id:\t$dvdread_id\n";
+			}
 
 			// Lookup the database dvds.id
 			$dvds_model_id = $dvds_model->find_dvdread_id($dvdread_id);
@@ -466,7 +470,9 @@
 
 					$series_title = $series_model->get_title();
 
-					echo "* $disc_name ID:\t$dvds_model_id\n";
+					if(!($opt_encode || $opt_encode_info)) {
+						echo "* $disc_name ID:\t$dvds_model_id\n";
+					}
 
 					$series_dvds_model = new Series_Dvds_Model;
 					$series_dvds_model->load_dvdread_id($dvdread_id);
@@ -487,7 +493,9 @@
 					if($d_series_info)
 						$d_series_info = "($d_series_info)";
 
-					echo "* Series:\t$series_title $d_series_info\n";
+					if(!($opt_encode || $opt_encode_info)) {
+						echo "* Series:\t$series_title $d_series_info\n";
+					}
 
 				}
 
