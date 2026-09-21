@@ -151,8 +151,6 @@
 		}
 
 		public function set_chapters($start, $stop) {
-			$start = abs(intval($start));
-			$stop = abs(intval($stop));
 			if($start)
 				$this->start_chapter = $start;
 			if($stop)
@@ -344,7 +342,6 @@
 				if($this->disc_type == 'bluray' && $this->dvd_track)
 					$cmd[] = "-playlist '".$this->dvd_track."'";
 
-				/*
 				if($this->start_chapter && $this->disc_type == 'dvd')
 					$cmd[] = "-chapter_start '".$this->start_chapter."'";
 				if($this->stop_chapter && $this->disc_type == 'dvd')
@@ -352,7 +349,6 @@
 
 				if($this->start_chapter && $this->disc_type == 'bluray')
 					$cmd[] = "-chapter '".$this->start_chapter."'";
-				*/
 
 			}
 
