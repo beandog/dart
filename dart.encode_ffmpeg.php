@@ -97,10 +97,11 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 		if(!$subp_ix && ($tracks_model->get_num_active_subp_tracks() == 1))
 			$subp_ix = 1;
 
-		$subp_model = new Subp_Model;
-		$subp_model->find_subp_id($tracks_model->id, $subp_ix);
-
 		if($subp_ix) {
+
+			$subp_model = new Subp_Model;
+			$subp_model->find_subp_id($tracks_model->id, $subp_ix);
+
 			$subp_streamid = $subp_model->streamid;
 			$ffmpeg->add_argument('scodec', 'copy');
 			$ffmpeg->add_argument('map', "i:$subp_streamid?");
