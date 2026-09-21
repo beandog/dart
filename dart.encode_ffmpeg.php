@@ -47,12 +47,12 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 	if(!$use_pipe) {
 		$starting_chapter = $episodes_model->starting_chapter;
 		if($starting_chapter && $disc_type == 'dvd')
-			$ffmpeg->add_argument('chapter_start', $starting_chapter);
-		if($starting_chapter && $disc_type == 'bluray')
-			$ffmpeg->add_argument('chapter', $starting_chapter);
+			$ffmpeg->set_chapters($starting_chapter, NULL);
 		$ending_chapter = $episodes_model->ending_chapter;
 		if($ending_chapter && $disc_type == 'dvd')
-			$ffmpeg->add_argument('chapter_end', $ending_chapter);
+			$ffmpeg->set_chapters(NULL, $ending_chapter);
+		if($starting_chapter && $disc_type == 'bluray')
+			$ffmpeg->set_chapters($starting_chapter, NULL);
 	}
 
 	$ffmpeg->add_argument('vf', $vf);
