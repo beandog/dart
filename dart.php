@@ -15,6 +15,7 @@
 	}
 	$export_dir = getenv('HOME').'/dvds/';
 	$hostname = php_uname('n');
+	$hostname = str_replace('.beandog.org', '', $hostname);
 	$batch_mode = false;
 	$dart_status = '';
 
