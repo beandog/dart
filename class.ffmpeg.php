@@ -42,7 +42,6 @@
 		public $cq = 0;
 		public $tune = '';
 		public $preset = '';
-		public $rc_lookahead = 0;
 
 		// Audio
 		public $acodec = 'copy';
@@ -188,10 +187,6 @@
 			$this->video_filters[] = $str;
 		}
 
-		public function set_rc_lookahead($int) {
-			$this->rc_lookahead = intval($int);
-		}
-
 		public function set_acodec($str) {
 			if($str == 'mp3')
 				$str = 'libmp3lame';
@@ -325,9 +320,6 @@
 			if($this->cq)
 				$args['cq'] = $this->cq;
 
-			if($this->rc_lookahead)
-				$args['rc-lookahead'] = $this->rc_lookahead;
-
 			if($this->container == 'mp4')
 				$args['movflags'] = '+faststart';
 
@@ -365,9 +357,6 @@
 				$cmd[] = "-loglevel 'verbose'";
 			} elseif($this->quiet) {
 				$cmd[] = "-v 'quiet'";
-				$cmd[] = '-stats';
-			} else {
-				$cmd[] = "-v 'warning'";
 				$cmd[] = '-stats';
 			}
 
