@@ -78,11 +78,11 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 	if($acodec == 'mp3' || $arg_acodec == 'mp3') {
 		$ffmpeg->add_argument('acodec', 'libmp3lame');
 		$ffmpeg->add_argument('q:a', '0');
-	}
-
-	if($acodec == 'aac' || $arg_acodec == 'aac') {
+	} elseif($acodec == 'aac' || $arg_acodec == 'aac') {
 		$ffmpeg->add_argument('acodec', 'aac');
 		$ffmpeg->add_argument('vbr', '5');
+	} else {
+		$ffmpeg->add_argument('acodec', 'copy');
 	}
 
 	/** Subtitles **/
@@ -114,25 +114,17 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 	if($opt_experimental)
 		$filename = "alpha-$filename";
 
-	$arr_metadata = array(
-		'language=eng',
-		"ffmpeg=$ffmpeg_version",
-	);
-
+	$str_metadata = "encoder_settings=ffmpeg=$ffmpeg_version";
 	if($use_pipe)
-		$arr_metadata[] = "use_pipe";
-
+		$str_metadata .= ',use_pipe';
 	if($remux_video)
-		$arr_metadata[] = "remux";
-
-	if(count($arr_metadata)) {
-		$str_metadata = implode(',', $arr_metadata);
-	}
-	// $ffmpeg->add_argument('metadata:s', 'language=eng');
-	$ffmpeg->add_argument('metadata', "encoder_settings=$str_metadata");
+		$str_metadata .= ',remux';
+	$ffmpeg->add_argument('metadata', $str_metadata);
 
 	if($opt_qa)
 		$ffmpeg->add_argument('t', '30');
+
+	$ffmpeg->add_argument('metadata:s', 'language=eng');
 
 	$ffmpeg->output_filename($filename);
 
