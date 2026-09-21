@@ -65,10 +65,12 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 	$ffmpeg->add_argument('maxrate:v', '0');
 	$ffmpeg->add_argument('rc-lookahead', '32');
 	$ffmpeg->add_argument('spatial_aq', '1');
-	$ffmpeg->add_argument('temporal_aq', '1');
 	$ffmpeg->add_argument('aq-strength', '10');
-	$ffmpeg->add_argument('bf', '3');
-	$ffmpeg->add_argument('b_ref_mode', 'middle');
+	if($hostname != 'tobe') {
+		$ffmpeg->add_argument('temporal_aq', '1');
+		$ffmpeg->add_argument('bf', '3');
+		$ffmpeg->add_argument('b_ref_mode', 'middle');
+	}
 	$ffmpeg->add_argument('multipass', 'fullres');
 	$ffmpeg->add_argument('map', 'v');
 
