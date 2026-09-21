@@ -320,10 +320,6 @@
 			if($this->cfr)
 				$options[] = '--cfr';
 
-			// MP4
-			if($this->container == 'mp4')
-				$options[] = '--optimize';
-
 			// Filtering
 			if($this->denoise)
 				$options[] = '--hqdn3d';

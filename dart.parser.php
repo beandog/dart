@@ -286,12 +286,6 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_mp4', array(
-		'long_name' => '--mp4',
-		'description' => 'Use MP4 container',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
 	$parser->addOption('opt_experimental', array(
 		'long_name' => '--alpha',
 		'description' => 'Test using experimental encoding settings',
