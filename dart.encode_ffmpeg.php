@@ -62,12 +62,12 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 		$ffmpeg->set_rc_lookahead(32);
 		$ffmpeg->add_argument('preset', 'p7');
 
-		if(!$opt_experimental)
+		if(!$opt_experimental || $video_format == 'pal')
 			$arr_metadata[] = "cq=$cq";
 
 		$ffmpeg->set_crf(null);
 
-		if(!$opt_experimental)
+		if(!$opt_experimental || $video_format == 'pal')
 			$ffmpeg->set_cq($cq);
 
 	}
@@ -100,7 +100,7 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 	// Set video filters based on frame info
 
 	$deint_filter = "bwdif=deint=$video_deint";
-	if(!$opt_experimental)
+	if(!$opt_experimental || $video_format == 'pal')
 		$ffmpeg->add_video_filter($deint_filter);
 
 	if($video_format == 'pal')
@@ -108,13 +108,13 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 	else
 		$fps = 59.94;
 
-	if(!$opt_experimental)
+	if(!$opt_experimental || $video_filter == 'pal')
 		$ffmpeg->add_video_filter("fps=$fps");
 
-	if($arg_vf && !$opt_experimental)
+	if($arg_vf && (!$opt_experimental || $video_format == 'pal')
 		$ffmpeg->add_video_filter($arg_vf);
 
-	if($denoise && !$opt_experimental)
+	if($denoise && (!$opt_experimental || $video_format == 'pal')
 		$ffmpeg->add_video_filter('hqdn3d');
 
 	/** Audio **/
@@ -176,7 +176,7 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 	if($opt_experimental)
 		$filename = "alpha-$filename";
 
-	if($denoise && !$opt_experimental)
+	if($denoise && (!$opt_experimental || $video_filter == 'pal')
 		$arr_metadata[] = "hqdn3d";
 
 	$arr_metadata[] = "ffmpeg=$ffmpeg_version";
@@ -216,7 +216,7 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 
 	}
 
-	if($opt_experimental) {
+	if($opt_experimental && $video_format == 'ntsc') {
 
 		if(!isset($config_experimental)) {
 			echo "# experimental config not found!\n";

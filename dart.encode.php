@@ -250,7 +250,7 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg
 		if($arg_fps)
 			$fps = $arg_fps;
 
-		if($opt_experimental && $dvd_encoder == 'handbrake')
+		if($opt_experimental && $video_format == 'ntsc' && $dvd_encoder == 'handbrake')
 			$dvd_encoder = 'ffmpeg';
 
 		if($dvd_encoder == 'handbrake')
