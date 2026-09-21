@@ -219,6 +219,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('arg_track', array(
+		'long_name' => '--track',
+		'description' => 'Limit to track number',
+		'action' => 'StoreString',
+		'default' => '',
+	));
 	$parser->addOption('arg_vcodec', array(
 		'long_name' => '--vcodec',
 		'description' => 'Use video codec',

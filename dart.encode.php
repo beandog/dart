@@ -56,6 +56,21 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg
 		}
 	}
 
+	if($arg_track) {
+		$arr = array();
+		$arg_track = intval($arg_track);
+		foreach($dvd_episodes as $episode_id) {
+			$episodes_model = new Episodes_Model($episode_id);
+			$tracks_model = new Tracks_Model($episodes_model->track_id);
+			$track_ix = intval($tracks_model->ix);
+			if($arg_track == $track_ix) {
+				$arr = array($episode_id);
+				break;
+			}
+		}
+		$dvd_episodes = $arr;
+	}
+
 	if($disc_type == 'dvd' && $opt_copy) {
 		$dvd_encoder = 'dvd_copy';
 		$container = 'mpg';
