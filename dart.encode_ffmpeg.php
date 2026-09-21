@@ -9,7 +9,7 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 	if($debug)
 		$ffmpeg->debug();
 
-	if($verbose)
+	if($verbose || ($opt_experimental && $video_format == 'ntsc'))
 		$ffmpeg->verbose();
 
 	if($quiet || $opt_encode)
@@ -59,7 +59,7 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 		elseif($vcodec == 'hevc')
 			$ffmpeg->set_vcodec('hevc_nvenc');
 
-		$ffmpeg->set_rc_lookahead(32);
+		$ffmpeg->add_argument('rc-lookahead', 32);
 		$ffmpeg->add_argument('preset', 'p7');
 
 		if(!$opt_experimental || $video_format == 'pal')
@@ -217,13 +217,10 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 	}
 
 	if($opt_experimental && $video_format == 'ntsc') {
-
-		if(!isset($config_experimental)) {
-			echo "# experimental config not found!\n";
-		} else {
-			$ffmpeg->output_opts($config_experimental);
-		}
-
+		// $ffmpeg->output_opts($config_experimental);
+		foreach($config_arr_experimental as $key => $value)
+			$ffmpeg->add_argument($key, $value);
+		$ffmpeg->add_argument('max_interleave_delta', '0');
 	}
 
 	$ffmpeg_command = $ffmpeg->get_executable_string();
