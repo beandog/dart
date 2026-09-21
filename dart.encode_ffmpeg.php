@@ -112,8 +112,9 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 		// Another reason they are being removed is that ffmpeg garbles them, they do not play
 		// at the correct index time.
 		// See 'view_episode_eng_subs' database view
+		// https://trac.ffmpeg.org/wiki/HowToExtractAndRemoveClosedCaptions
 		if($tracks_model->has_closed_captioning())
-			$ffmpeg->add_argument('bsf:v', 'filter_units=remove_types=6');
+			$ffmpeg->add_argument('bsf:v', 'filter_units=remove_types=39');
 
 	}
 
