@@ -60,6 +60,10 @@
 	// Track if device needs imported into database
 	$opt_import = false;
 
+	// Turn on some fun stuff to try!
+	if($opt_experimental)
+		$opt_time = true;
+
 	// Yay, Rip-o-Matic!
 	if($opt_rip_o_matic && $rippy_rip_rip) {
 		echo "[ DVD Rip-o-Matic! ]\n";
