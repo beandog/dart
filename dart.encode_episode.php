@@ -57,8 +57,8 @@ if($disc_type == 'dvd' && ($opt_encode || $opt_copy)) {
 			$encode_command = "$ionice $encode_command";
 	}
 
-	if($verbose)
-		echo "* $encode_command\n";
+	if($verbose || $opt_experimental)
+		echo "# $encode_command\n";
 
 	if($dvd_encoder == 'handbrake' && !$verbose)
 		$encode_command .= " 2> $arg_logfile";

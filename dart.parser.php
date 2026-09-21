@@ -292,6 +292,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_experimental', array(
+		'long_name' => '--alpha',
+		'description' => 'Test using experimental encoding settings',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('opt_cd', array(
 		'long_name' => '--cd',
 		'description' => 'Process device as a CD',

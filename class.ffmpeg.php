@@ -17,6 +17,7 @@
 		public $ffmpeg_args = array();
 		public $metadata = array();
 		public $input_opts = '';
+		public $output_opts = '';
 		public $duration = 0;
 		public $fullscreen = false;
 		public $disc_type = 'dvd';
@@ -129,6 +130,10 @@
 
 		public function input_opts($str) {
 			$this->input_opts = $str;
+		}
+
+		public function output_opts($str) {
+			$this->output_opts = $str;
 		}
 
 		public function input_track($str) {
@@ -361,6 +366,9 @@
 			} elseif($this->quiet) {
 				$cmd[] = "-v 'quiet'";
 				$cmd[] = '-stats';
+			} else {
+				$cmd[] = "-v 'warning'";
+				$cmd[] = '-stats';
 			}
 
 			if($this->genpts && $ffmpeg)
@@ -451,6 +459,9 @@
 				$cmd[] = "-metadata:s 'language=eng'";
 
 			$args = $this->get_ffmpeg_arguments();
+
+			if($this->output_opts)
+				$cmd[] = $this->output_opts;
 
 			foreach($this->ffmpeg_opts as $str)
 				$cmd[] = $str;

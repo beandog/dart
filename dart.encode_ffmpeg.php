@@ -62,11 +62,13 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 		$ffmpeg->set_rc_lookahead(32);
 		$ffmpeg->add_argument('preset', 'p7');
 
-		$arr_metadata[] = "cq=$cq";
+		if(!$opt_experimental)
+			$arr_metadata[] = "cq=$cq";
 
 		$ffmpeg->set_crf(null);
 
-		$ffmpeg->set_cq($cq);
+		if(!$opt_experimental)
+			$ffmpeg->set_cq($cq);
 
 	}
 
@@ -98,19 +100,21 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 	// Set video filters based on frame info
 
 	$deint_filter = "bwdif=deint=$video_deint";
-	$ffmpeg->add_video_filter($deint_filter);
+	if(!$opt_experimental)
+		$ffmpeg->add_video_filter($deint_filter);
 
 	if($video_format == 'pal')
 		$fps = 50;
 	else
 		$fps = 59.94;
 
-	$ffmpeg->add_video_filter("fps=$fps");
+	if(!$opt_experimental)
+		$ffmpeg->add_video_filter("fps=$fps");
 
-	if($arg_vf)
+	if($arg_vf && !$opt_experimental)
 		$ffmpeg->add_video_filter($arg_vf);
 
-	if($denoise)
+	if($denoise && !$opt_experimental)
 		$ffmpeg->add_video_filter('hqdn3d');
 
 	/** Audio **/
@@ -165,10 +169,14 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 
 	}
 
+
 	if($prefix)
 		$filename = $prefix.$filename;
 
-	if($denoise)
+	if($opt_experimental)
+		$filename = "alpha-$filename";
+
+	if($denoise && !$opt_experimental)
 		$arr_metadata[] = "hqdn3d";
 
 	$arr_metadata[] = "ffmpeg=$ffmpeg_version";
@@ -205,6 +213,16 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 		$dvd_copy_command = $dvd_copy->get_executable_string();
 
 		$dvd_copy_command .= ' 2> /dev/null';
+
+	}
+
+	if($opt_experimental) {
+
+		if(!isset($config_experimental)) {
+			echo "# experimental config not found!\n";
+		} else {
+			$ffmpeg->output_opts($config_experimental);
+		}
 
 	}
 
