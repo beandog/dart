@@ -61,8 +61,10 @@
 	$opt_import = false;
 
 	// Turn on some fun stuff to try!
-	if($opt_experimental)
-		$opt_time = true;
+	if($opt_experimental) {
+		// $opt_time = true;
+		// $opt_log_progress = true;
+	}
 
 	// Yay, Rip-o-Matic!
 	if($opt_rip_o_matic && $rippy_rip_rip) {
