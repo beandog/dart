@@ -1,7 +1,5 @@
 <?php
 
-var_dump($opt_encode);
-
 if($disc_type == 'dvd' && ($opt_encode || $opt_copy)) {
 
 	$dart_status = 'encode_episode';
