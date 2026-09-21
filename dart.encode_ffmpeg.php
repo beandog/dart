@@ -9,7 +9,7 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 	if($debug)
 		$ffmpeg->debug();
 
-	if($verbose || ($opt_experimental && $video_format == 'ntsc'))
+	if($verbose)
 		$ffmpeg->verbose();
 
 	if($quiet || $opt_encode)
@@ -22,13 +22,6 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 		$ffmpeg->set_chapters($starting_chapter, null);
 
 	$arr_metadata = array();
-
-	if($arg_vcodec == 'x264' || $arg_vcodec == 'libx264')
-		$vcodec = 'x264';
-	elseif($arg_vcodec == 'avc' || $arg_vcodec == 'h264')
-		$vcodec = 'avc';
-	elseif($arg_vcodec == 'hevc' || $arg_vcodec == 'h265')
-		$vcodec = 'hevc';
 
 	$video_deint = $series_model->bwdif;
 	$dvd_deint = $dvds_model->get_deint();
@@ -47,52 +40,24 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 
 	$rate_control = '';
 
-	if($vcodec == 'avc' || $vcodec == 'hevc') {
+	$cq = $series_model->get_crf();
 
-		$cq = $series_model->get_crf();
+	if($arg_crf)
+		$cq = $arg_crf;
 
-		if($arg_crf)
-			$cq = $arg_crf;
+	// Only supporting HEVC NVENC
+	$ffmpeg->set_vcodec('hevc_nvenc');
 
-		if($vcodec == 'avc')
-			$ffmpeg->set_vcodec('h264_nvenc');
-		elseif($vcodec == 'hevc')
-			$ffmpeg->set_vcodec('hevc_nvenc');
+	$ffmpeg->add_argument('rc-lookahead', 32);
+	$ffmpeg->add_argument('preset', 'p7');
 
-		$ffmpeg->add_argument('rc-lookahead', 32);
-		$ffmpeg->add_argument('preset', 'p7');
+	if(!$opt_experimental || $video_format == 'pal')
+		$arr_metadata[] = "cq=$cq";
 
-		if(!$opt_experimental || $video_format == 'pal')
-			$arr_metadata[] = "cq=$cq";
+	$ffmpeg->set_crf(null);
 
-		$ffmpeg->set_crf(null);
-
-		if(!$opt_experimental || $video_format == 'pal')
-			$ffmpeg->set_cq($cq);
-
-	}
-
-	if($vcodec == 'x264') {
-
-		$ffmpeg->set_vcodec('libx264');
-		$ffmpeg->set_tune($series_model->get_x264_tune());
-		$x264_preset = $series_model->x264_preset;
-		if($x264_preset)
-			$ffmpeg->set_preset($x264_preset);
-
-		if($opt_slow)
-			$ffmpeg->set_preset('veryslow');
-
-		$ffmpeg->set_cq(null);
-
-		$video_quality = intval($series_model->get_crf());
-
-		if($arg_crf)
-			$video_quality = intval($arg_crf);
-
-		$ffmpeg->set_crf($video_quality);
-
-	}
+	if(!$opt_experimental || $video_format == 'pal')
+		$ffmpeg->set_cq($cq);
 
 	if($opt_fast)
 		$ffmpeg->set_preset('ultrafast');
@@ -100,9 +65,10 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 	// Set video filters based on frame info
 
 	$deint_filter = "bwdif=deint=$video_deint";
-	if(!$opt_experimental || $video_format == 'pal')
-		$ffmpeg->add_video_filter($deint_filter);
+	$ffmpeg->add_video_filter($deint_filter);
 
+	/* don't override fps */
+	/*
 	if($video_format == 'pal')
 		$fps = 50;
 	else
@@ -110,12 +76,10 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 
 	if(!$opt_experimental || $video_format == 'pal')
 		$ffmpeg->add_video_filter("fps=$fps");
+	*/
 
 	if($arg_vf && (!$opt_experimental || $video_format == 'pal'))
 		$ffmpeg->add_video_filter($arg_vf);
-
-	if($denoise && (!$opt_experimental || $video_format == 'pal'))
-		$ffmpeg->add_video_filter('hqdn3d');
 
 	/** Audio **/
 	$audio_streamid = $tracks_model->get_first_english_streamid();
@@ -169,15 +133,11 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 
 	}
 
-
 	if($prefix)
 		$filename = $prefix.$filename;
 
 	if($opt_experimental)
 		$filename = "alpha-$filename";
-
-	if($denoise && (!$opt_experimental || $video_filter == 'pal'))
-		$arr_metadata[] = "hqdn3d";
 
 	$arr_metadata[] = "ffmpeg=$ffmpeg_version";
 
@@ -217,7 +177,6 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 	}
 
 	if($opt_experimental && $video_format == 'ntsc') {
-		// $ffmpeg->output_opts($config_experimental);
 		foreach($config_arr_experimental as $key => $value)
 			$ffmpeg->add_argument($key, $value);
 		$ffmpeg->add_argument('max_interleave_delta', '0');
