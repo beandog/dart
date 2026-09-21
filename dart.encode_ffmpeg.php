@@ -183,7 +183,7 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 		$ffmpeg_command = "tout $ffmpeg_command";
 
 	if(!$opt_encode && $opt_encode_info)
-		echo "# ".escapeshellarg($filename)."\n";
+		fprintf(STDERR, "# ".escapeshellarg($filename)."\n");
 	if($verbose || $opt_encode_info)
 		echo "$ffmpeg_command\n";
 
