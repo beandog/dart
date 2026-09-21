@@ -323,6 +323,8 @@
 			} elseif($this->quiet) {
 				$cmd[] = "-v 'quiet'";
 				$cmd[] = '-stats';
+			} else {
+				$cmd[] = "-loglevel 'warning' -stats";
 			}
 
 			if($this->genpts && $ffmpeg)
