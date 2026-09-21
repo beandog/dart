@@ -80,16 +80,6 @@ if($disc_type == 'dvd' && $dvd_encoder == 'handbrake' && ($opt_encode_info || $o
 
 	$handbrake->enable_bwdif();
 
-	/** Frame and fields **/
-
-	// Set framerate
-	if($video_format == 'pal')
-		$fps = 50;
-	else
-		$fps = 59.94;
-	$handbrake->set_video_framerate($fps);
-	$handbrake->enable_cfr();
-
 	/** Audio **/
 
 	$handbrake->add_audio_track($tracks_model->audio_ix);

@@ -244,12 +244,6 @@
 		'action' => 'StoreString',
 		'default' => null,
 	));
-	$parser->addOption('arg_fps', array(
-		'long_name' => '--fps',
-		'description' => 'Set encoding FPS',
-		'action' => 'StoreString',
-		'default' => '',
-	));
 	$parser->addOption('arg_vf', array(
 		'long_name' => '--vf',
 		'description' => 'Add custom vf settings to ffmpeg / ffplay',

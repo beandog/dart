@@ -238,21 +238,6 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg
 		if($disc_type == 'bluray' && substr($nsix, 0, 2) == '4K')
 			$uhd = true;
 
-		// A note about setting fps with ffmpeg: use 'vf=fps' to set it, instead of '-r fps'. See
-		// https://trac.ffmpeg.org/wiki/ChangingFrameRate for reasoning.
-		// "For variable frame rate formats, like Matroska, the -r value acts as a ceiling, so that a lower frame rate input stream will pass through, and a higher frame rate stream, will have frames dropped, in order to match the target rate."
-		// "The -r value also acts as an indication to the encoder of how long each frame is, and can affect the ratecontrol decisions made by the encoder."
-		// "fps, as a filter, needs to be inserted in a filtergraph, and will always generate a CFR stream. It offers five rounding modes that affect which source frames are dropped or duplicated in order to achieve the target framerate. See the documentation of the fps filter for details."
-		// https://ffmpeg.org/ffmpeg-filters.html#fps
-		// bwdif bob will cause stuttering on playback on Sony 4K TV with original FPS
-		if($video_format == 'pal')
-			$fps = 25;
-		else
-			$fps = 29.97;
-
-		if($arg_fps)
-			$fps = $arg_fps;
-
 		if($opt_experimental && $video_format == 'ntsc' && $dvd_encoder == 'handbrake')
 			$dvd_encoder = 'ffmpeg';
 
