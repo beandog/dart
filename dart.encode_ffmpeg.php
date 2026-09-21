@@ -108,13 +108,13 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 	else
 		$fps = 59.94;
 
-	if(!$opt_experimental || $video_filter == 'pal')
+	if(!$opt_experimental || $video_format == 'pal')
 		$ffmpeg->add_video_filter("fps=$fps");
 
-	if($arg_vf && (!$opt_experimental || $video_format == 'pal')
+	if($arg_vf && (!$opt_experimental || $video_format == 'pal'))
 		$ffmpeg->add_video_filter($arg_vf);
 
-	if($denoise && (!$opt_experimental || $video_format == 'pal')
+	if($denoise && (!$opt_experimental || $video_format == 'pal'))
 		$ffmpeg->add_video_filter('hqdn3d');
 
 	/** Audio **/
@@ -176,7 +176,7 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 	if($opt_experimental)
 		$filename = "alpha-$filename";
 
-	if($denoise && (!$opt_experimental || $video_filter == 'pal')
+	if($denoise && (!$opt_experimental || $video_filter == 'pal'))
 		$arr_metadata[] = "hqdn3d";
 
 	$arr_metadata[] = "ffmpeg=$ffmpeg_version";
