@@ -135,7 +135,6 @@
 	// Prefix to bend!
 	if($opt_encode) {
 		$opt_copy = false;
-		$opt_encode_info = false;
 		$opt_ffplay = false;
 		$opt_ffprobe = false;
 		$opt_reumx = false;
