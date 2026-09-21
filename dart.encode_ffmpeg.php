@@ -35,6 +35,9 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 	// Only supporting HEVC NVENC
 
 	$vf = "fieldmatch=order=tff:combpel=100:combmatch=full,bwdif=deint=$video_deint";
+	$vf_crop = $episodes_model->crop;
+	if($vf_crop)
+		$vf .= ",crop=$vf_crop";
 	if($arg_vf)
 		$vf .= ",$arg_vf";
 
