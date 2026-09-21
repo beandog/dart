@@ -17,9 +17,6 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 
 	$ffmpeg->input_filename($device);
 	$ffmpeg->input_track($tracks_model->ix);
-	$starting_chapter = $episodes_model->starting_chapter;
-	if($starting_chapter)
-		$ffmpeg->set_chapters($starting_chapter, null);
 
 	$arr_metadata = array();
 
@@ -33,93 +30,71 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 	else
 		$ffmpeg->overwrite(true);
 
-	if($opt_qa)
-		$ffmpeg->set_duration($qa_max);
-
 	/** Video **/
 
-	$rate_control = '';
-
-	$cq = $series_model->get_crf();
-
-	if($arg_crf)
-		$cq = $arg_crf;
-
 	// Only supporting HEVC NVENC
-	$ffmpeg->set_vcodec('hevc_nvenc');
 
-	$ffmpeg->add_argument('rc-lookahead', 32);
+	$vf = "fieldmatch=order=tff:combpel=100:combmatch=full,bwdif=deint=$video_deint";
+	if($arg_vf)
+		$vf .= ",$arg_vf";
+
+	// Can use chapters when not piping
+	if(!$use_pipe) {
+		$starting_chapter = $episodes_model->starting_chapter;
+		if($starting_chapter && $disc_type == 'dvd')
+			$ffmpeg->add_argument('chapter_start', $starting_chapter);
+		if($starting_chapter && $disc_type == 'bluray')
+			$ffmpeg->add_argument('chapter', $starting_chapter);
+		$ending_chapter = $episodes_model->ending_chapter;
+		if($ending_chapter && $disc_type == 'dvd')
+			$ffmpeg->add_argument('chapter_end', $ending_chapter);
+	}
+
+	$ffmpeg->add_argument('vf', $vf);
+	$ffmpeg->add_argument('vcodec', 'hevc_nvenc');
 	$ffmpeg->add_argument('preset', 'p7');
-
-	if(!$opt_experimental || $video_format == 'pal')
-		$arr_metadata[] = "cq=$cq";
-
-	$ffmpeg->set_crf(null);
-
-	if(!$opt_experimental || $video_format == 'pal')
-		$ffmpeg->set_cq($cq);
-
-	if($opt_fast)
-		$ffmpeg->set_preset('ultrafast');
-
-	// Set video filters based on frame info
-
-	$deint_filter = "bwdif=deint=$video_deint";
-	$ffmpeg->add_video_filter($deint_filter);
-
-	/* don't override fps */
-	/*
-	if($video_format == 'pal')
-		$fps = 50;
-	else
-		$fps = 59.94;
-
-	if(!$opt_experimental || $video_format == 'pal')
-		$ffmpeg->add_video_filter("fps=$fps");
-	*/
-
-	if($arg_vf && (!$opt_experimental || $video_format == 'pal'))
-		$ffmpeg->add_video_filter($arg_vf);
+	$ffmpeg->add_argument('tune', 'hq');
+	$ffmpeg->add_argument('rc', 'vbr');
+	$ffmpeg->add_argument('cq', '18');
+	$ffmpeg->add_argument('b:v', '0');
+	$ffmpeg->add_argument('maxrate:v', '0');
+	$ffmpeg->add_argument('rc-lookahead', '32');
+	$ffmpeg->add_argument('spatial_aq', '1');
+	$ffmpeg->add_argument('temporal_aq', '1');
+	$ffmpeg->add_argument('aq-strength', '10');
+	$ffmpeg->add_argument('bf', '3');
+	$ffmpeg->add_argument('b_ref_mode', 'middle');
+	$ffmpeg->add_argument('multipass', 'fullres');
+	$ffmpeg->add_argument('map', 'v');
 
 	/** Audio **/
 	$audio_streamid = $tracks_model->get_first_english_streamid();
 	if(!$audio_streamid)
 		$audio_streamid = '0x80';
-	$ffmpeg->add_audio_stream($audio_streamid);
+	$ffmpeg->add_argument('map', "i:$audio_streamid?");
 
 	$acodec = $series_model->get_acodec();
 
-	if($arg_acodec && ($arg_acodec == 'aac' || $arg_acodec == 'mp3'))
-		$acodec = $arg_acodec;
+	if($acodec == 'mp3' || $arg_acodec == 'mp3') {
+		$ffmpeg->add_argument('acodec', 'libmp3lame');
+		$ffmpeg->add_argument('q:a', '0');
+	}
 
-	if($acodec == 'aac')
-		$acodec = 'aac';
-
-	if($acodec == 'mp3')
-		$acodec = 'libmp3lame';
-
-	$ffmpeg->set_acodec($acodec);
-
-	/** Chapters **/
-	$starting_chapter = $episodes_model->starting_chapter;
-	$ending_chapter = $episodes_model->ending_chapter;
-	if($starting_chapter || $ending_chapter) {
-		$ffmpeg->set_chapters($starting_chapter, $ending_chapter);
+	if($acodec == 'aac' || $arg_acodec == 'aac') {
+		$ffmpeg->add_argument('acodec', 'aac');
+		$ffmpeg->add_argument('vbr', '5');
 	}
 
 	/** Subtitles **/
 	if($encode_subtitles) {
-
-		$ffmpeg->enable_subtitles();
 
 		$subp_ix = $tracks_model->get_first_english_subp();
 		if(!$subp_ix && ($tracks_model->get_num_active_subp_tracks() == 1))
 			$subp_ix = '0x20';
 
 		if($subp_ix) {
-			// Not sure if I need this now that I'm pulling straight from dvdvideo format
-			// $ffmpeg->input_opts("-probesize '67108864' -analyzeduration '60000000'");
-			$ffmpeg->add_subtitle_stream($subp_ix);
+			$ffmpeg->add_argument('scodec', 'copy');
+			$ffmpeg->add_argument('map', "i:$subp_ix?");
 		}
 
 		// Remove closed captioning. There are only 367 cartoon episodes that have CC and *not* vobsub
@@ -129,7 +104,7 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 		// at the correct index time.
 		// See 'view_episode_eng_subs' database view
 		if($tracks_model->has_closed_captioning())
-			$ffmpeg->remove_closed_captioning();
+			$ffmpeg->add_argument('-bsf:v', 'filter_units=remove_types=6');
 
 	}
 
@@ -139,7 +114,10 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 	if($opt_experimental)
 		$filename = "alpha-$filename";
 
-	$arr_metadata[] = "ffmpeg=$ffmpeg_version";
+	$arr_metadata = array(
+		'language=eng',
+		"ffmpeg=$ffmpeg_version",
+	);
 
 	if($use_pipe)
 		$arr_metadata[] = "use_pipe";
@@ -149,8 +127,12 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 
 	if(count($arr_metadata)) {
 		$str_metadata = implode(',', $arr_metadata);
-		$ffmpeg->add_metadata('encoder_settings', $str_metadata);
 	}
+	// $ffmpeg->add_argument('metadata:s', 'language=eng');
+	$ffmpeg->add_argument('metadata', "encoder_settings=$str_metadata");
+
+	if($opt_qa)
+		$ffmpeg->add_argument('t', '30');
 
 	$ffmpeg->output_filename($filename);
 
@@ -176,11 +158,8 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 
 	}
 
-	if($opt_experimental && $video_format == 'ntsc') {
-		foreach($config_arr_experimental as $key => $value)
-			$ffmpeg->add_argument($key, $value);
-		$ffmpeg->add_argument('max_interleave_delta', '0');
-	}
+	// Might need this, disabling for now
+	// $ffmpeg->add_argument('max_interleave_delta', '0');
 
 	$ffmpeg_command = $ffmpeg->get_executable_string();
 

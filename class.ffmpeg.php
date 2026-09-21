@@ -220,7 +220,7 @@
 		}
 
 		public function add_argument($key, $value) {
-			$this->ffmpeg_args[$key] = $value;
+			$this->ffmpeg_opts[] = "-$key ".escapeshellarg($value);
 		}
 
 		public function cropdetect() {
@@ -288,43 +288,8 @@
 
 			$args = array();
 
-			if($this->vcodec == 'x264')
-				$this->vcodec = 'libx264';
-
-			if($this->vcodec_opts)
-				$args['vcodec_opts'] = $this->vcodec_opts;
-
-			if($this->crf)
-				$args['crf'] = $this->crf;
-
-			if($this->tune)
-				$args['tune'] = $this->tune;
-
-			if($this->preset)
-				$args['preset'] = $this->preset;
-
-			if($this->acodec_opts)
-				$args['acodec_opts'] = $this->acodec_opts;
-
-			if($this->acodec == 'aac')
-				$args['vbr'] = 5;
-
-			if($this->acodec == 'libmp3lame')
-				$args['q:a'] = 0;
-
-			if(count($this->video_filters)) {
-				$vf = implode(",", $this->video_filters);
-				$args['vf'] = $vf;
-			}
-
-			if($this->cq)
-				$args['cq'] = $this->cq;
-
 			if($this->container == 'mp4')
 				$args['movflags'] = '+faststart';
-
-			if($this->duration)
-				$args['t'] = $this->duration;
 
 			return $args;
 
@@ -377,6 +342,7 @@
 				if($this->disc_type == 'bluray' && $this->dvd_track)
 					$cmd[] = "-playlist '".$this->dvd_track."'";
 
+				/*
 				if($this->start_chapter && $this->disc_type == 'dvd')
 					$cmd[] = "-chapter_start '".$this->start_chapter."'";
 				if($this->stop_chapter && $this->disc_type == 'dvd')
@@ -384,6 +350,7 @@
 
 				if($this->start_chapter && $this->disc_type == 'bluray')
 					$cmd[] = "-chapter '".$this->start_chapter."'";
+				*/
 
 			}
 
@@ -397,6 +364,7 @@
 
 			$cmd[] = "-i $arg_input";
 
+			/*
 			if(($this->disc_type == 'dvd'|| $this->disc_type == 'dvdcopy') && $ffmpeg) {
 
 				$cmd[] = "-map 'v'";
@@ -413,7 +381,9 @@
 				}
 
 			}
+			*/
 
+			/*
 			if($this->disc_type == 'bluray' && $ffmpeg) {
 
 				$cmd[] = "-map 'v:0'";
@@ -434,18 +404,7 @@
 				}
 
 			}
-
-			if($ffmpeg) {
-				$cmd[] = "-vcodec '".$this->vcodec."'";
-				$cmd[] = "-acodec '".$this->acodec."'";
-				if($this->subtitles)
-					$cmd[] = "-scodec '".$this->scodec."'";
-			}
-
-			// Always set all audio *and* subtitle streams as English
-			// Blu-ray audio streams probed with ffmpeg do not see language code, so this will fix that as well
-			if($ffmpeg)
-				$cmd[] = "-metadata:s 'language=eng'";
+			*/
 
 			$args = $this->get_ffmpeg_arguments();
 
@@ -472,13 +431,9 @@
 			}
 
 			if($ffmpeg) {
-
-				if($this->remove_cc)
-					$cmd[] = "-bsf:v 'filter_units=remove_types=6'";
-
-				foreach($this->metadata as $key => $value)
+				foreach($this->metadata as $key => $value) {
 					$cmd[] = "-metadata '$key=$value'";
-
+				}
 			}
 
 			$str = implode(' ', $cmd);
