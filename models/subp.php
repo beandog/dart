@@ -30,6 +30,8 @@
 
 			$var = $this->get_one($sql);
 
+			$this->id = $var;
+
 			return $var;
 
 		}
