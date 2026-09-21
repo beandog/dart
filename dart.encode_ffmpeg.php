@@ -66,6 +66,7 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 	$ffmpeg->add_argument('rc-lookahead', '32');
 	$ffmpeg->add_argument('spatial_aq', '1');
 	$ffmpeg->add_argument('aq-strength', '10');
+	// Disable features not available on GTX 1060
 	if($hostname != 'tobe') {
 		$ffmpeg->add_argument('temporal_aq', '1');
 		$ffmpeg->add_argument('bf', '3');
