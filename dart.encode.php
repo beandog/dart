@@ -30,7 +30,7 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg
 		$remux_video = false;
 
 	if($disc_type == 'dvd' && $dvd_encoder == '')
-		$dvd_encoder = 'handbrake';
+		$dvd_encoder = 'ffmpeg';
 	elseif($disc_type == 'bluray' && $dvd_encoder == '')
 		$dvd_encoder = 'ffmpeg';
 
