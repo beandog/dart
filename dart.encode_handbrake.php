@@ -80,14 +80,6 @@ if($disc_type == 'dvd' && $dvd_encoder == 'handbrake' && ($opt_encode_info || $o
 
 	$handbrake->enable_bwdif();
 
-	if($denoise)
-		$handbrake->denoise();
-
-	if($sharpen)
-		$handbrake->sharpen($sharpen);
-	if($sharpen_tune)
-		$handbrake->sharpen_tune($sharpen_tune);
-
 	/** Frame and fields **/
 
 	// Set framerate
@@ -155,20 +147,6 @@ if($disc_type == 'dvd' && $dvd_encoder == 'handbrake' && ($opt_encode_info || $o
 	if($opt_batch) {
 		$arr_prefix = array();
 		$arr_prefix[] = "cq-$cq";
-		if($denoise) {
-			if($denoise == 'medium')
-				$arr_prefix[] = "denoise";
-			else
-				$arr_prefix[] = "denoise-$denoise";
-		}
-		if($sharpen) {
-			if($sharpen == 'medium')
-				$arr_prefix[] = "sharpen";
-			else
-				$arr_prefix[] = "sharpen-$sharpen";
-		}
-		if($sharpen_tune)
-			$arr_prefix[] = $sharpen_tune;
 		if($opt_slow)
 			$arr_prefix[] = 'vslow';
 		$arr_prefix[] = "hb";

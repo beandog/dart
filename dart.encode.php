@@ -238,18 +238,6 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg
 		if($disc_type == 'bluray' && substr($nsix, 0, 2) == '4K')
 			$uhd = true;
 
-		$denoise = $series_model->get_denoise();
-		if($opt_denoise)
-			$denoise = true;
-
-		// For now, only testing on cartoons and TV shows
-		$sharpen = $series_model->get_sharpen();
-		if($opt_sharpen && $collection_id == 1)
-			$sharpen = 'animation';
-		if($opt_sharpen && $collection_id == 2)
-			$sharpen = 'film';
-		$sharpen_tune = $series_model->get_sharpen_tune();
-
 		// A note about setting fps with ffmpeg: use 'vf=fps' to set it, instead of '-r fps'. See
 		// https://trac.ffmpeg.org/wiki/ChangingFrameRate for reasoning.
 		// "For variable frame rate formats, like Matroska, the -r value acts as a ceiling, so that a lower frame rate input stream will pass through, and a higher frame rate stream, will have frames dropped, in order to match the target rate."

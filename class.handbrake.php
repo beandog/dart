@@ -37,9 +37,6 @@
 		public $x264_tune;
 		public $x264 = array();
 		public $encopts = '';
-		public $denoise = false;
-		public $sharpen = '';
-		public $sharpen_tune = '';
 
 		// Audio
 		public $audio = true;
@@ -126,18 +123,6 @@
 
 		public function enable_subtitles() {
 			$this->subtitles = true;
-		}
-
-		public function denoise($bool = true) {
-			$this->denoise = boolval($bool);
-		}
-
-		public function sharpen($str) {
-			$this->sharpen = $str;
-		}
-
-		public function sharpen_tune($str) {
-			$this->sharpen_tune = $str;
 		}
 
 		/**
@@ -319,10 +304,6 @@
 			// Set constant framerate
 			if($this->cfr)
 				$options[] = '--cfr';
-
-			// Filtering
-			if($this->denoise)
-				$options[] = '--hqdn3d';
 
 			return $options;
 

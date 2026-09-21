@@ -256,18 +256,6 @@
 		'action' => 'StoreString',
 		'default' => '',
 	));
-	$parser->addOption('opt_denoise', array(
-		'long_name' => '--denoise',
-		'description' => 'Add filter to denoise video',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
-	$parser->addOption('opt_sharpen', array(
-		'long_name' => '--sharpen',
-		'description' => 'Add filter to sharpen video',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
 	$parser->addOption('arg_prefix', array(
 		'long_name' => '--prefix',
 		'description' => 'Add prefix string to episode filenames',
