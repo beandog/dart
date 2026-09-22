@@ -40,7 +40,6 @@
 		public $video_filters = array();
 		public $crf = 0;
 		public $cq = 0;
-		public $tune = '';
 		public $preset = '';
 
 		// Audio
@@ -171,10 +170,6 @@
 
 		public function set_cq($int) {
 			$this->cq = $int;
-		}
-
-		public function set_tune($str) {
-			$this->tune = $str;
 		}
 
 		public function set_preset($str) {
