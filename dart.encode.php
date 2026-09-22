@@ -126,8 +126,9 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg
 			$prefix .= "$arg_vcodec-";
 		if($arg_acodec)
 			$prefix .= "$arg_acodec-";
-		if($arg_crf)
-			$prefix .= "q-$arg_crf-";
+		if($arg_crf) {
+			$prefix .= "q-".str_pad($arg_crf, 2, '0', STR_PAD_LEFT)."-";
+		}
 		if($arg_vf) {
 			$vf_name = current(explode('=', $arg_vf));
 			$prefix .= "vf-$vf_name-";
