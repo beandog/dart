@@ -40,6 +40,16 @@
 
 		}
 
+		function get_preset_digital() {
+
+			$sql = "SELECT presets.digital FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->id.";";
+
+			$var = $this->get_one($sql);
+
+			return $var;
+
+		}
+
 		function get_preset_ivtc() {
 
 			$sql = "SELECT presets.ivtc FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->id.";";
