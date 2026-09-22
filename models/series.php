@@ -100,16 +100,6 @@
 
 		}
 
-		function get_preset_fps() {
-
-			$sql = "SELECT presets.fps FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->id.";";
-
-			$var = $this->get_one($sql);
-
-			return $var;
-
-		}
-
 		function get_library_name() {
 
 			$sql = "SELECT l.name FROM series s INNER JOIN libraries l ON s.library_id = l.id WHERE s.id = ".$this->id.";";
