@@ -78,7 +78,10 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 	$ffmpeg->add_argument('maxrate:v', '0');
 	$ffmpeg->add_argument('rc-lookahead', '32');
 	$ffmpeg->add_argument('spatial-aq', '1');
-	$ffmpeg->add_argument('aq-strength', '10');
+	if($arg_crf)
+		$ffmpeg->add_argument('aq-strength', $arg_crf);
+	else
+		$ffmpeg->add_argument('aq-strength', '10');
 	// Disable features not available on GTX 1060
 	if($hostname != 'tobe') {
 		$ffmpeg->add_argument('temporal-aq', '1');
@@ -148,6 +151,8 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 	$str_metadata = "encoder_settings=ffmpeg=$ffmpeg_version";
 	$str_metadata .= ",ivtc=".intval($ivtc_video);
 	$str_metadata .= ",deint=$video_deint";
+	if($arg_crf)
+		$str_metadata .= ",aq=$arg_crf";
 	if($crop_video)
 		$str_metadata .= ",crop=$vf_crop";
 	else

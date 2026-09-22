@@ -9,6 +9,9 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg
 	else
 		$qa_max = 90;
 
+	if(isset($arg_crf))
+		$arg_crf = abs(intval($arg_crf));
+
 	$collection_id = $dvds_model->get_collection_id();
 
 	// Override DVD encoder if disc is flagged with bugs
