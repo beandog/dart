@@ -100,15 +100,6 @@
 
 		}
 
-		function get_x264_tune() {
-
-		$sql = "SELECT presets.x264_tune FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->id.";";
-			$var = $this->get_one($sql);
-
-			return $var;
-
-		}
-
 		function get_preset_fps() {
 
 			$sql = "SELECT presets.fps FROM presets INNER JOIN series_presets ON series_presets.preset_id = presets.id AND series_presets.series_id = ".$this->id.";";

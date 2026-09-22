@@ -196,10 +196,6 @@
 			$this->x264_preset = $str;
 		}
 
-		public function set_x264_tune($str) {
-			$this->x264_tune = $str;
-		}
-
 		public function set_preset($preset) {
 			$this->preset = $preset;
 		}
@@ -359,11 +355,6 @@
 			// Set x264 preset
 			if($this->x264_preset) {
 				$args['--encoder-preset'] = $this->x264_preset;
-			}
-
-			// Set x264 tune option
-			if($this->x264_tune) {
-				$args['--encoder-tune'] = $this->x264_tune;
 			}
 
 			// Video filters

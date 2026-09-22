@@ -50,10 +50,6 @@ if($disc_type == 'dvd' && $dvd_encoder == 'handbrake' && ($opt_encode_info || $o
 		elseif($opt_slow)
 			$handbrake->set_x264_preset('veryslow');
 
-		$x264_tune = $series_model->get_x264_tune();
-		if($x264_tune)
-			$handbrake->set_x264_tune($x264_tune);
-
 	}
 
 	if($vcodec == 'h264' || $vcodec == 'avc' || $vcodec == 'h265' || $vcodec == 'hevc') {
