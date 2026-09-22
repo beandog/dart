@@ -34,7 +34,6 @@
 		public $height;
 		public $width;
 		public $x264_preset;
-		public $x264_tune;
 		public $x264 = array();
 		public $encopts = '';
 
