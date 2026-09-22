@@ -32,8 +32,6 @@ if($disc_type == 'dvd' && $dvd_encoder == 'handbrake' && ($opt_encode_info || $o
 		$handbrake->set_vcodec($vcodec);
 
 		$video_quality = intval($series_model->get_crf());
-		if(isset($arg_crf))
-			$video_quality = intval($arg_crf);
 		if($os == 'bsd')
 			$video_quality = 22;
 		$handbrake->set_video_quality($video_quality);
@@ -60,8 +58,6 @@ if($disc_type == 'dvd' && $dvd_encoder == 'handbrake' && ($opt_encode_info || $o
 			$handbrake->set_vcodec('nvenc_h264');
 
 		$cq = $series_model->get_crf();
-		if($arg_crf)
-			$cq = $arg_crf;
 
 		$handbrake->set_preset('slowest');
 

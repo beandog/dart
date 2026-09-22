@@ -9,9 +9,6 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg
 	else
 		$qa_max = 90;
 
-	if(isset($arg_crf))
-		$arg_crf = abs(intval($arg_crf));
-
 	$collection_id = $dvds_model->get_collection_id();
 
 	// Override DVD encoder if disc is flagged with bugs
@@ -126,9 +123,6 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg
 			$prefix .= "$arg_vcodec-";
 		if($arg_acodec)
 			$prefix .= "$arg_acodec-";
-		if($arg_crf) {
-			$prefix .= "q-".str_pad($arg_crf, 2, '0', STR_PAD_LEFT)."-";
-		}
 		if($arg_vf) {
 			$vf_name = current(explode('=', $arg_vf));
 			$prefix .= "vf-$vf_name-";

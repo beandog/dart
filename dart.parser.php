@@ -237,13 +237,6 @@
 		'action' => 'StoreString',
 		'default' => '',
 	));
-	$parser->addOption('arg_crf', array(
-		'short_name' => '-q',
-		'long_name' => '--crf',
-		'description' => 'Set encoding CRF',
-		'action' => 'StoreString',
-		'default' => null,
-	));
 	$parser->addOption('arg_vf', array(
 		'long_name' => '--vf',
 		'description' => 'Add custom vf settings to ffmpeg / ffplay',
