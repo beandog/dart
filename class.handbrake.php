@@ -357,13 +357,6 @@
 				$args['--encoder-preset'] = $this->x264_preset;
 			}
 
-			// Video filters
-			if($this->sharpen) {
-				$args['--lapsharp'] = $this->sharpen;
-			}
-			if($this->sharpen && $this->sharpen_tune)
-				$args['--lapsharp-tune'] = $this->sharpen_tune;
-
 			// Set duration for QA
 			if($this->duration) {
 				$args['--stop-at'] = "duration:".$this->duration;
