@@ -32,14 +32,27 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 
 	/** Video **/
 
+	$ivtc_video = boolval($series_model->get_preset_ivtc());
+	$crop_video = boolval($series_model->get_preset_crop_video());
+
 	// Only supporting HEVC NVENC
 
-	$vf = "fieldmatch=order=tff:combpel=100:combmatch=full,bwdif=deint=$video_deint";
+	$vf = '';
+
+	if($ivtc_video)
+		$vf = "fieldmatch=order=tff:combpel=100:combmatch=full,bwdif=deint=$video_deint";
+	else
+		$vf = "bwdif=deint=$video_deint";
+
 	if($video_format == 'pal')
 		$vf = "bwdif=deint=$video_deint";
-	$vf_crop = $episodes_model->crop;
-	if($vf_crop)
-		$vf .= ",crop=$vf_crop";
+
+	if($crop_video) {
+		$vf_crop = $episodes_model->crop;
+		if($vf_crop)
+			$vf .= ",crop=$vf_crop";
+	}
+
 	if($arg_vf)
 		$vf .= ",$arg_vf";
 
@@ -133,6 +146,12 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 		$filename = "alpha-$filename";
 
 	$str_metadata = "encoder_settings=ffmpeg=$ffmpeg_version";
+	$str_metadata .= ",ivtc=".intval($ivtc_video);
+	$str_metadata .= ",deint=$video_deint";
+	if($crop_video)
+		$str_metadata .= ",crop=$vf_crop";
+	else
+		$str_metadata .= ",crop=no";
 	if($use_pipe)
 		$str_metadata .= ',use_pipe';
 	if($remux_video)
