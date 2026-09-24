@@ -113,18 +113,17 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 	/** Subtitles **/
 	if($encode_subtitles) {
 
-		$subp_ix = $tracks_model->get_first_english_subp();
-		if(!$subp_ix && ($tracks_model->get_num_active_subp_tracks() == 1))
-			$subp_ix = 1;
+		// ffmpeg doesn't always have indexing properly from DVD, and it looks like there are
+		// some off by one (see MOTU2), so keep it simple. If there is *any* English one, then
+		// map them. Normally there is only one, of course, but this will net all of them.
+		if($tracks_model->get_num_active_subp_tracks('en')) {
 
-		if($subp_ix) {
-
-			$subp_model = new Subp_Model;
-			$subp_model->find_subp_id($tracks_model->id, $subp_ix);
-
-			$subp_streamid = $subp_model->streamid;
 			$ffmpeg->add_argument('scodec', 'copy');
-			$ffmpeg->add_argument('map', "i:$subp_streamid?");
+
+			// MOTU2 is one I've run into that has two English ones. One is labeled as
+			// 'Widescreen' and another as 'Letterbox'.
+			$ffmpeg->add_argument('map', 's:m:language:eng');
+
 		}
 
 		// Remove closed captioning. There are only 367 cartoon episodes that have CC and *not* vobsub
