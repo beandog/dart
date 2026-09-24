@@ -76,17 +76,24 @@
 		$acodec = $json['streams'][1]['codec_name'];
 
 		$filename = basename($json['format']['filename']);
-		$duration = $json['format']['duration'];
 
-		$hours = floor($duration / 3600);
-		$minutes = floor($duration / 60);
-		$seconds = floor($duration % 60);
+		$duration = 0;
+		$d_time = '';
+		if(array_key_exists('duration', $json['format'])) {
 
-		$d_hours = str_pad($hours, 2, 0, STR_PAD_LEFT);
-		$d_minutes = str_pad($minutes, 2, 0, STR_PAD_LEFT);
-		$d_seconds = str_pad($seconds, 2, 0, STR_PAD_LEFT);
+			$duration = $json['format']['duration'];
 
-		$d_time = "$d_hours:$d_minutes:$d_seconds";
+			$hours = floor($duration / 3600);
+			$minutes = floor($duration / 60);
+			$seconds = floor($duration % 60);
+
+			$d_hours = str_pad($hours, 2, 0, STR_PAD_LEFT);
+			$d_minutes = str_pad($minutes, 2, 0, STR_PAD_LEFT);
+			$d_seconds = str_pad($seconds, 2, 0, STR_PAD_LEFT);
+
+			$d_time = "$d_hours:$d_minutes:$d_seconds";
+
+		}
 
 		if($opt_vcodec)
 			$str = $vcodec;
