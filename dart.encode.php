@@ -147,6 +147,9 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg
 
 		if($disc_type == 'dvd' && $dvd_encoder == 'dvd_copy') {
 
+			if($arg_prefix)
+				$filename = "$arg_prefix-$filename";
+
 			// Skip existing output files
 			if(file_exists($filename) && $opt_skip_existing)
 				continue;
