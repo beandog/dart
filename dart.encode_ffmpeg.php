@@ -138,8 +138,7 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 
 	}
 
-	// Change matroska muxer to write to header faster and avoid muxing errors (possibly) by
-	// making sure they are all interleaved correctly
+	// Add additional check to make sure timing from DVD is good to go
 	$ffmpeg->add_metadata('max_interleave_delta', '0');
 
 	if($prefix)
