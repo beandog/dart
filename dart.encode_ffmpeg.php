@@ -148,8 +148,11 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 		$filename = "alpha-$filename";
 
 	$str_metadata = "encoder_settings=ffmpeg=$ffmpeg_version";
-	$str_metadata .= ",ivtc=".intval($ivtc_video);
-	$str_metadata .= ",deint=$video_deint";
+	if($ivtc_video)
+		$str_metadata .= ",ivtc=yes";
+	else
+		$str_metadata .= ",ivtc=no";
+	$str_metadata .= ",bwdif=$video_deint";
 	if($crop_video)
 		$str_metadata .= ",crop=$vf_crop";
 	else
