@@ -196,6 +196,8 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 
 	$ffmpeg->add_argument('metadata:s', 'language=eng');
 
+	if($arg_export_dir)
+		$filename = $arg_export_dir.'/'.$filename;
 	$ffmpeg->output_filename($filename);
 
 	$ffmpeg->set_encoder($dvd_encoder);

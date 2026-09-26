@@ -150,6 +150,9 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg
 			if($arg_prefix)
 				$filename = "$arg_prefix-$filename";
 
+			if($arg_export_dir)
+				$filename = "$arg_export_dir/$filename";
+
 			// Skip existing output files
 			if(file_exists($filename) && $opt_skip_existing)
 				continue;
