@@ -57,7 +57,7 @@
 			continue;
 
 		$arg_video = escapeshellarg($video);
-		$cmd_json = "ffprobe -print_format json -show_format -show_streams $arg_video 2> /dev/null";
+		$cmd_json = "ffprobe -hide_banner -loglevel quiet -print_format json -show_format -show_streams $arg_video 2> /dev/null";
 
 		$arr = array();
 		exec($cmd_json, $arr, $retval);
