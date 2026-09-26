@@ -54,9 +54,8 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 			$vf .= ",crop=$vf_crop";
 	}
 
-	// Set pixel format directly to match the correct source every time and prevent possible
-	// anomalies. Set for both NTSC and PAL
-	$vf .= ',format=yuv420p';
+	// Change from 8 bit color depth to 10 bit to reduce banding possibly added by other filters
+	$vf .= ',format=p010le';
 
 	if($arg_vf)
 		$vf .= ",$arg_vf";
@@ -109,6 +108,10 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 		$ffmpeg->add_argument('color_trc', 'bt470bg');
 		$ffmpeg->add_argument('colorspace', 'bt470bg');
 	}
+
+	// Set video profile for 10-bit
+	$ffmpeg->add_argument('profile', 'main10');
+	$ffmpeg->add_argument('level', '4.1');
 
 	$ffmpeg->add_argument('map', 'v');
 
