@@ -126,17 +126,18 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 
 		}
 
-		// Remove closed captioning. There are only 367 cartoon episodes that have CC and *not* vobsub
-		// TMNT '87 (208), TMNT 2012 (119), Droopy, and Scooby-Doo Show
-		// It adds an extra step to encoding because they have to be extracted first.
-		// Another reason they are being removed is that ffmpeg garbles them, they do not play
-		// at the correct index time.
-		// See 'view_episode_eng_subs' database view
-		// https://trac.ffmpeg.org/wiki/HowToExtractAndRemoveClosedCaptions
-		if($tracks_model->has_closed_captioning())
-			$ffmpeg->add_argument('bsf:v', 'filter_units=remove_types=39');
 
 	}
+
+	// Remove closed captioning. There are only 367 cartoon episodes that have CC and *not* vobsub
+	// TMNT '87 (208), TMNT 2012 (119), Droopy, and Scooby-Doo Show
+	// It adds an extra step to encoding because they have to be extracted first.
+	// Another reason they are being removed is that ffmpeg garbles them, they do not play
+	// at the correct index time.
+	// See 'view_episode_eng_subs' database view
+	// https://trac.ffmpeg.org/wiki/HowToExtractAndRemoveClosedCaptions
+	if($tracks_model->has_closed_captioning())
+		$ffmpeg->add_argument('bsf:v', 'filter_units=remove_types=39');
 
 	// Add additional check to make sure timing from DVD is good to go
 	$ffmpeg->add_metadata('max_interleave_delta', '0');
