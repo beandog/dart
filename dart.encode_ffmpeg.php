@@ -54,6 +54,10 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 			$vf .= ",crop=$vf_crop";
 	}
 
+	// Set pixel format directly to match the correct source every time and prevent possible
+	// anomalies. Set for both NTSC and PAL
+	$vf .= ',format=yuv420p';
+
 	if($arg_vf)
 		$vf .= ",$arg_vf";
 
