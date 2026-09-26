@@ -94,6 +94,18 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 		$ffmpeg->add_argument('b_ref_mode', 'middle');
 	}
 	$ffmpeg->add_argument('multipass', 'fullres');
+
+	// Set color metadata to match same as source
+	if($video_format == 'ntsc') {
+		$ffmpeg->add_argument('color_primaries', 'smpte170m');
+		$ffmpeg->add_argument('color_trc', 'smpte170m');
+		$ffmpeg->add_argument('colorspace', 'smpte170m');
+	} elseif($video_format == 'pal') {
+		$ffmpeg->add_argument('color_primaries', 'bt470bg');
+		$ffmpeg->add_argument('color_trc', 'bt470bg');
+		$ffmpeg->add_argument('colorspace', 'bt470bg');
+	}
+
 	$ffmpeg->add_argument('map', 'v');
 
 	/** Audio **/
