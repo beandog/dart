@@ -1,1 +1,4 @@
-ffprobe -hide_banner -probesize 67108864 -analyzeduration 60000000 -i "$1" -show_format -of json -show_streams 2> /dev/null | jq
+#!/bin/bash
+for video in "$@"; do
+	ffprobe -hide_banner -loglevel quiet -probesize 67108864 -analyzeduration 60000000 -i "$video" -show_format -of json -show_streams 2> /dev/null | jq
+done
