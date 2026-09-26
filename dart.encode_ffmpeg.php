@@ -48,7 +48,8 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 	if($video_format == 'pal')
 		$vf = "bwdif=deint=$video_deint";
 
-	if($crop_video) {
+	$vf_crop = '';
+	if($crop_video && !$opt_no_crop) {
 		$vf_crop = $episodes_model->crop;
 		if($vf_crop)
 			$vf .= ",crop=$vf_crop";

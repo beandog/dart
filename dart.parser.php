@@ -193,14 +193,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	/*
-	$parser->addOption('opt_crop', array(
-		'long_name' => '--crop',
+	$parser->addOption('opt_no_crop', array(
+		'long_name' => '--no-crop',
 		'description' => 'Crop video with ffmpeg',
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	*/
 	$parser->addOption('opt_rip_o_matic', array(
 		'long_name' => '--rip-o-matic',
 		'description' => 'Use Rip-o-Matic',
