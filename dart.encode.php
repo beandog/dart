@@ -83,9 +83,9 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg
 
 	$hardware = 'nvidia';
 
-	$encode_subtitles = true;
-	if($opt_no_subtitles)
-		$encode_subtitles = false;
+	$encode_subtitles = false;
+	if($opt_subtitles)
+		$encode_subtitles = true;
 
 	$ffmpeg_version = trim(shell_exec("ffmpeg -version | head -n 1 | cut -d ' ' -f 3"));
 
