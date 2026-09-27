@@ -25,6 +25,9 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 	if($dvd_deint)
 		$video_deint = $dvd_deint;
 
+	if(!$video_deint)
+		$video_deint = 'interlaced';
+
 	if($opt_test_existing)
 		$ffmpeg->overwrite(false);
 	else
