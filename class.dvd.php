@@ -7,6 +7,7 @@
 		public $device;
 		public $dvd_info = array();
 		public $is_iso = false;
+		public $is_wsl_mount = false;
 		public $debug;
 
 		public $opened = false;
@@ -85,6 +86,9 @@
 			if($device_type == 'iso')
 				$this->is_iso = true;
 
+			if(str_contains($this->device, '/mnt/wsl'))
+				$this->is_wsl_mount = true;
+
 			if($device_type != 'windows' && !file_exists($this->device))
 				return null;
 
@@ -115,7 +119,8 @@
 			$arg_device = escapeshellarg($this->device);
 
 			$os = os();
-			if(($os == 'tux' || $os == 'bsd') || $this->is_iso) {
+
+			if(($os == 'tux' || $os == 'bsd') || $this->is_iso || $this->is_wsl_mount) {
 				$cmd = "dvd_info --json $arg_device 2> /dev/null";
 				if(!$this->debug)
 					$cmd .= " 2> /dev/null";
