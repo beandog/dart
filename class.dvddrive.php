@@ -65,7 +65,13 @@
 			if($this->debug)
 				echo "* Getting Linux optical drive status for $arg_device\n";
 
-			$cmd = "dvd_drive_status $arg_device &> /dev/null";
+			$cmd = "dvd_drive_status $arg_device";
+
+			if($this->debug)
+				echo "* Executing $cmd\n";
+			else
+				$cmd .= " &> /dev/null";
+
 			exec($cmd, $output, $retval);
 
 			$drive_status = $this->arr_drive_status[$retval];
@@ -155,8 +161,14 @@
 
 			if($os == 'tux') {
 
-				$command = "dvd_drive_status $arg_device";
-				exec($command, $arr, $retval);
+				$cmd = "dvd_drive_status $arg_device";
+
+				if($this->debug)
+					echo "* Executing $cmd\n";
+				else
+					$cmd .= " 2> /dev/null";
+
+				exec($cmd, $arr, $retval);
 
 				switch($retval) {
 
@@ -208,6 +220,9 @@
 				elseif($os == 'windows')
 					$cmd = "powershell.exe -InputFormat none -File $ps1_filename $arg_device";
 
+				if($this->debug)
+					echo "* Executing $cmd\n";
+
 				exec($cmd, $arr);
 
 				$str = implode("\n", $arr);
@@ -229,8 +244,14 @@
 
 			if($os == 'bsd') {
 
-				$command = "dvd_drive_status $arg_device";
-				exec($command, $arr, $retval);
+				$cmd = "dvd_drive_status $arg_device";
+
+				if($this->debug)
+					echo "* Executing $cmd\n";
+				else
+					$cmd .= " 2> /dev/null";
+
+				exec($cmd, $arr, $retval);
 
 				if($retval == 2) {
 					$status = 'has media :D';
