@@ -44,7 +44,7 @@
 
 			$cmd = "disc_type.exe $device";
 
-			if($this->debug)
+			if($debug)
 				echo "* Executing command: $cmd\n";
 
 			$str = trim(shell_exec($cmd));
@@ -66,7 +66,7 @@
 
 		$cmd = "disc_type $arg_device";
 
-		if($this->debug)
+		if($debug)
 			echo "* Executing: $cmd\n";
 		else
 			$cmd .= " 2> /dev/null";
@@ -80,7 +80,7 @@
 
 	}
 
-	function udfinfo($device) {
+	function udfinfo($device, $debug = false) {
 
 		if(get_device_type($device) != 'device')
 			return false;
@@ -89,7 +89,7 @@
 
 		$cmd = "udfinfo $arg_device";
 
-		if($this->debug)
+		if($debug)
 			echo "* Executing: $cmd\n";
 		else
 			$cmd .= " 2> /dev/null";
