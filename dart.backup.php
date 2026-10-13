@@ -77,6 +77,8 @@
 			// Check if the drive is already ripping
 			$is_ripping = false;
 			$cmd = "pgrep -l '^(dvd_backup|bluray_backup)' -a";
+			if($this->debug)
+				echo "* Executing command: $cmd\n";
 			$str = trim(shell_exec($cmd));
 			if(str_contains($str, $device)) {
 				echo "* Backup in progress for $device to ".basename($target_rip)."\n";
