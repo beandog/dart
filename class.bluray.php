@@ -110,11 +110,13 @@
 
 			// Get bluray_id
 			$cmd = "bluray_id $arg_device";
-			if(!$this->debug)
-				$cmd .= " 2> /dev/null";
 
 			if($this->debug)
 				echo "* Executing: $cmd\n";
+			else
+				$cmd .= " 2> /dev/null";
+
+			$output = array();
 
 			exec($cmd, $output, $retval);
 
@@ -134,13 +136,14 @@
 
 			// Get bluray_json
 			$cmd = "bluray_info --json $arg_device";
-			if(!$this->debug)
-				$cmd .= " 2> /dev/null";
 
 			if($this->debug)
 				echo "* Executing: $cmd\n";
+			else
+				$cmd .= " 2> /dev/null";
 
 			$output = array();
+
 			exec($cmd, $output, $retval);
 
 			if($retval !== 0 || !count($output)) {
@@ -312,7 +315,16 @@
 
 			} elseif(is_dir($this->device)) {
 
-				exec("du -s ".escapeshellarg($this->device), $output, $retval);
+				$arg_device = escapeshellarg($this->device);
+
+				$cmd = "du -s $arg_device";
+
+				if($this->debug)
+					echo "* Executing: $cmd\n";
+
+				$output = array();
+
+				exec($cmd, $output, $retval);
 
 				if($retval == 0)
 					$kb_size = intval(current(preg_split("/\s/", current($output))));
@@ -526,6 +538,11 @@
 			$arg_keydb = escapeshellarg($filename);
 
 			$cmd = "bluray_info -m -k $arg_keydb $arg_device 2>&1 | grep -q 'aacs_open() failed'";
+
+			if($this->debug)
+				echo "* Executing: $cmd\n";
+
+			$output = array();
 
 			exec($cmd, $output, $retval);
 
