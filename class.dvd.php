@@ -131,6 +131,8 @@
 			if($this->debug)
 				echo "* Executing: $cmd\n";
 
+			$output = array();
+
 			exec($cmd, $output, $retval);
 
 			if($retval !== 0 || !count($output)) {
@@ -153,6 +155,9 @@
 				// Get-Volume uses 'D' not 'D:'
 				$drive_letter = $this->device[0];
 				$cmd = "powershell.exe -c \"(Get-Volume $drive_letter).FileSystemLabel\"";
+				$output = array();
+				if($this->debug)
+					echo "* Executing: $cmd\n";
 				exec($cmd, $output, $retval);
 				$title = current($output);
 				$title = trim($title);
