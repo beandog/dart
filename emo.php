@@ -59,9 +59,15 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_verbose', array(
+	$parser->addOption('verbose', array(
 		'short_name' => '-v',
 		'description' => 'Verbose output',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
+	$parser->addOption('debug', array(
+		'short_name' => '-z',
+		'description' => 'Debugging output',
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
@@ -74,6 +80,9 @@
 
 	extract($result->args);
 	extract($result->options);
+
+	if($debug)
+		$verbose = true;
 
 	require_once 'config.local.php';
 	require_once 'models/dbtable.php';
@@ -194,6 +203,10 @@ foreach($filenames as $filename) {
 		$preset = '';
 
 		$cmd_json = "mediainfo --Output=JSON $arg_episode_filename";
+
+		if($debug)
+			echo "* Executing: $cmd_json\n";
+
 		$str_json = trim(shell_exec($cmd_json));
 
 		$json = json_decode($str_json, true);
@@ -361,6 +374,8 @@ foreach($filenames as $filename) {
 			$upload_video = true;
 
 			$cmd = "pgrep -l '^(HandBrakeCLI|ffmpeg)' -a";
+			if($debug)
+				echo "* Executing: $cmd\n";
 			$str = trim(shell_exec($cmd));
 			if(str_contains($str, $basename)) {
 				$upload_video = false;
@@ -368,6 +383,8 @@ foreach($filenames as $filename) {
 			}
 
 			$cmd = "pgrep -l '^rsync' -a";
+			if($debug)
+				echo "* Executing: $cmd\n";
 			$str = trim(shell_exec($cmd));
 			if(str_contains($str, $basename)) {
 				$upload_video = false;
@@ -382,7 +399,7 @@ foreach($filenames as $filename) {
 					$cmd = "rsync -q -u --zc none --whole-file $arg_episode_filename dlna:/opt/jfin/libraries/tails/$basename";
 					echo "# $basename -> dlna /opt/jfin/libraries/tails/$basename\n";
 				} else {
-					if($opt_verbose)
+					if($verbose)
 						$cmd = "rsync -v -u --zc none --whole-file --progress $arg_episode_filename dlna:/media/$xfs/$emo_filename";
 					else
 						$cmd = "rsync -q -u --zc none --whole-file $arg_episode_filename dlna:/media/$xfs/$emo_filename";
