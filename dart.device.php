@@ -33,16 +33,28 @@
 
 	}
 
-	function get_disc_type($device) {
+	function get_disc_type($device, $debug = false) {
 
 		$device_type = get_device_type($device);
 
-		// Only support DVDs right now on Windows
-		if($device_type == 'windows')
-			return 'dvd';
-
 		if(!$device_type)
 			return '';
+
+		if($device_type == 'windows') {
+
+			$cmd = "disc_type.exe $device";
+
+			if($this->debug)
+				echo "* Executing command: $cmd\n";
+
+			$str = trim(shell_exec($cmd));
+
+			if($str == 'dvd' || $str == 'bluray' || $str == 'cd')
+				return $str;
+
+			return '';
+
+		}
 
 		if(is_dir($device) && is_dir("$device/VIDEO_TS"))
 			return 'dvd';
@@ -52,7 +64,14 @@
 
 		$arg_device = escapeshellarg($device);
 
-		$str = trim(shell_exec("disc_type $arg_device 2> /dev/null"));
+		$cmd = "disc_type $arg_device";
+
+		if($this->debug)
+			echo "* Executing: $cmd\n";
+		else
+			$cmd .= " 2> /dev/null";
+
+		$str = trim(shell_exec($cmd));
 
 		if($str == 'dvd' || $str == 'bluray' || $str == 'cd')
 			return $str;
@@ -67,7 +86,15 @@
 			return false;
 
 		$arg_device = escapeshellarg($device);
-		$cmd = "udfinfo $arg_device 2> /dev/null";
+
+		$cmd = "udfinfo $arg_device";
+
+		if($this->debug)
+			echo "* Executing: $cmd\n";
+		else
+			$cmd .= " 2> /dev/null";
+
+		$output = array();
 
 		exec($cmd, $output, $retval);
 
