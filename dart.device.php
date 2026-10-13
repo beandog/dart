@@ -126,7 +126,7 @@
 	}
 
 	// Get DVD total filesize, rounding up to megabytes, so unless it's not a file it will always be 1+
-	function disc_filesize($device) {
+	function disc_filesize($device, $debug = false) {
 
 		$device_type = get_device_type($device);
 
@@ -148,7 +148,7 @@
 
 		if($device_type == 'device') {
 
-			$arr_udf_info = udfinfo($device);
+			$arr_udf_info = udfinfo($device, $debug);
 
 			if(!$arr_udf_info)
 				return 0;

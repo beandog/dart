@@ -37,7 +37,7 @@
 			$dvds_model->title = $dvd_title;
 		}
 
-		$dvd_filesize = disc_filesize($device);
+		$dvd_filesize = disc_filesize($device, $debug);
 		if($dvd_filesize && ($dvds_model->filesize != $dvd_filesize)) {
 			echo "* Filesize: $dvd_filesize\n";
 			$dvds_model->filesize = $dvd_filesize;

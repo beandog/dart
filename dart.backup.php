@@ -219,7 +219,7 @@
 		elseif($device == "/dev/sr1")
 			$makemkv_disc = 0;
 
-		$disc_type = get_disc_type($device);
+		$disc_type = get_disc_type($device, $debug);
 
 		// Dump to current directory by default -- not scanning device to get name
 		$backup_dir = "makemkv.$disc_type.".basename($device).".iso";

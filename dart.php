@@ -206,7 +206,7 @@
 			if($opt_rename_iso && $device_type == 'device')
 				continue;
 
-			$disc_type = get_disc_type($device);
+			$disc_type = get_disc_type($device, $debug);
 
 			if($disc_type == 'dvd') {
 
@@ -407,7 +407,7 @@
 
 		if($access_device) {
 
-			$disc_type = get_disc_type($device);
+			$disc_type = get_disc_type($device, $debug);
 
 			if($debug)
 				echo "# disc type: $disc_type\n";
