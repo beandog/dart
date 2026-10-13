@@ -42,7 +42,9 @@
 
 		if($device_type == 'windows') {
 
-			$cmd = "disc_type.exe $device";
+			$device = $device[0];
+
+			$cmd = "disc_type.exe '$device:\\'";
 
 			if($debug)
 				echo "* Executing command: $cmd\n";
