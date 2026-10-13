@@ -86,7 +86,7 @@
 			if($device_type == 'iso')
 				$this->is_iso = true;
 
-			if(str_contains($this->device, '/mnt/wsl'))
+			if(str_contains(realpath($this->device), '/mnt/wsl'))
 				$this->is_wsl_mount = true;
 
 			if($device_type != 'windows' && !file_exists($this->device))
