@@ -150,7 +150,7 @@
 				return false;
 			}
 
-			if(($os == 'wsl' || $os == 'windows') && !$this->is_iso) {
+			if(($os == 'wsl' || $os == 'windows') && !$this->is_iso && !$this->is_wsl_mount) {
 				$output= array();
 				// Get-Volume uses 'D' not 'D:'
 				$drive_letter = $this->device[0];
