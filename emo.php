@@ -241,6 +241,8 @@ foreach($filenames as $filename) {
 			$arr_info['framerate'] = $json['media']['track'][0]['FrameRate'];
 		if(array_key_exists('Encoded_Date', $json['media']['track'][0]))
 			$arr_info['encoded_date'] = $json['media']['track'][0]['Encoded_Date'];
+		elseif(array_key_exists('File_Modified_Date_Local', $json['media']['track'][0]))
+			$arr_info['encoded_date'] = $json['media']['track'][0]['File_Modified_Date_Local'];
 		if(array_key_exists('FrameCount', $json['media']['track'][0]))
 			$arr_info['frame_count'] = $json['media']['track'][0]['FrameCount'];
 		if(array_key_exists('Encoded_Application', $json['media']['track'][0]))
