@@ -122,6 +122,7 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 	// This for 10-bit, so adding it is redundant, but safe
 	// The nvidia encoder takes p010le as an argument, but it is the same
 	// as yuv420p10le when using ffprobe
+	// See 'ffmpeg -h encoder=hevc_nvenc' to display pixel formats it takes as arguments
 	$ffmpeg->add_argument('pix_fmt', 'p010le');
 
 	$ffmpeg->add_argument('map', 'v');
