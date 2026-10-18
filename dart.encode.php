@@ -43,6 +43,9 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg
 	elseif($opt_ffplay)
 		$dvd_encoder = 'ffplay';
 
+	if($opt_ffmpeg && !$opt_pipe)
+		$use_pipe = false;
+
 	$dvd_episodes = $dvds_model->get_episodes();
 
 	// On QA run, only encode the first one
