@@ -249,9 +249,9 @@
 			$cmd[] = 'ffprobe';
 
 			if($this->debug)
-				$cmd[] = "-loglevel 'debug'";
-			elseif($this->verbose)
 				$cmd[] = "-loglevel 'verbose'";
+			elseif($this->verbose)
+				$cmd[] = "-loglevel 'info'";
 
 			if(!$this->use_pipe) {
 				if($this->disc_type == 'dvd')
@@ -309,10 +309,10 @@
 
 			if($this->debug) {
 				$cmd[] = "-report";
-				$cmd[] = "-loglevel 'debug'";
+				$cmd[] = "-loglevel 'verbose'";
 			} elseif($this->verbose) {
 				$cmd[] = "-report";
-				$cmd[] = "-loglevel 'verbose'";
+				$cmd[] = "-loglevel 'info'";
 			} elseif($this->quiet) {
 				$cmd[] = "-v 'quiet'";
 				$cmd[] = '-stats';
