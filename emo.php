@@ -402,9 +402,9 @@ foreach($filenames as $filename) {
 					echo "# $basename -> dlna /opt/jfin/libraries/tails/$basename\n";
 				} else {
 					if($verbose)
-						$cmd = "rsync -v -u --zc none --whole-file --progress $arg_episode_filename dlna:/media/$xfs/$emo_filename";
+						$cmd = "rsync -v -u -t --zc none --whole-file --progress $arg_episode_filename rsync://dlna:/media/$xfs/$emo_filename";
 					else
-						$cmd = "rsync -q -u --zc none --whole-file $arg_episode_filename dlna:/media/$xfs/$emo_filename";
+						$cmd = "rsync -q -u -t --zc none --whole-file $arg_episode_filename rsync://dlna:/media/$xfs/$emo_filename";
 					echo "# $basename -> dlna /media/$xfs/$emo_filename\n";
 				}
 				if($opt_dry_run)
