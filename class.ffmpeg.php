@@ -352,9 +352,6 @@
 			else
 				$arg_input = escapeshellarg($this->input_filename);
 
-			if($this->disc_type == 'bluray' && ($ffmpeg || $ffplay))
-				$arg_input = "bluray:$arg_input";
-
 			$cmd[] = "-i $arg_input";
 
 			/*

@@ -74,14 +74,14 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg
 		$dvd_episodes = $arr;
 	}
 
+	$container = 'mkv';
+
 	if($disc_type == 'dvd' && $opt_copy) {
 		$dvd_encoder = 'dvd_copy';
 		$container = 'mpg';
 	} elseif($disc_type == 'bluray' && $opt_copy) {
 		$dvd_encoder = 'bluray_copy';
 		$container = 'm2ts';
-	} else {
-		$container = 'mkv';
 	}
 
 	$hardware = 'nvidia';
@@ -281,11 +281,17 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg
 
 			$ffmpeg->set_encoder('ffmpeg');
 
-			$ffmpeg->input_filename($device);
+			$ffmpeg->input_filename("bluray:$device");
 
 			$ffmpeg->use_pipe($use_pipe);
 
-			if($opt_pipe) {
+			$ffmpeg->add_argument('map', 'v');
+			$ffmpeg->add_argument('vcodec', 'copy');
+
+			if($use_pipe || $opt_pipe) {
+
+				$ffmpeg->input_filename('-');
+				$ffmpeg->add_argument('map', 'a:m:language:eng');
 
 				$bluray_copy = new BlurayCopy();
 				$bluray_copy->input_filename($device);
@@ -301,7 +307,7 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg
 
 				$bluray_chapters->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
 
-				$bluray_copy->output_filename("-");
+				$bluray_copy->output_filename('-');
 
 				$bluray_copy_command = $bluray_copy->get_executable_string();
 
@@ -326,6 +332,8 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg
 
 			}
 
+			$ffmpeg->add_argument('acodec', 'copy');
+
 			$ffmpeg->output_filename($filename);
 
 			$ffmpeg->input_track($tracks_model->ix);
@@ -338,11 +346,14 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg
 
 			// HD Blu-rays, first PGS is 0x1200
 			// UHD Blu-rays, first PGS is 0x12a0 (usually, 4KSAN has 1200)
+			/*
 			if($encode_subtitles) {
 				$ffmpeg->enable_subtitles();
 				$ffmpeg->add_subtitle_stream('0x1200?');
 				$ffmpeg->add_subtitle_stream('0x12a0?');
 			}
+			*/
+			$ffmpeg->add_option('-sn');
 
 			$starting_chapter = $episodes_model->starting_chapter;
 			if($starting_chapter)
