@@ -285,13 +285,12 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg
 
 			$ffmpeg->use_pipe($use_pipe);
 
-			$ffmpeg->add_argument('map', 'v');
+			$ffmpeg->add_argument('map', 'v:0');
 			$ffmpeg->add_argument('vcodec', 'copy');
 
 			if($use_pipe || $opt_pipe) {
 
 				$ffmpeg->input_filename('-');
-				$ffmpeg->add_argument('map', 'a:m:language:eng');
 
 				$bluray_copy = new BlurayCopy();
 				$bluray_copy->input_filename($device);
@@ -332,8 +331,6 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg
 
 			}
 
-			$ffmpeg->add_argument('acodec', 'copy');
-
 			$ffmpeg->output_filename($filename);
 
 			$ffmpeg->input_track($tracks_model->ix);
@@ -342,7 +339,9 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg
 			if($uhd)
 				$ffmpeg->add_audio_stream('a:0');
 			else
-				$ffmpeg->add_audio_stream($audio_streamid);
+				$ffmpeg->add_argument('map', "i:$audio_streamid");
+
+			$ffmpeg->add_argument('acodec', 'copy');
 
 			// HD Blu-rays, first PGS is 0x1200
 			// UHD Blu-rays, first PGS is 0x12a0 (usually, 4KSAN has 1200)
@@ -354,6 +353,8 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg
 			}
 			*/
 			$ffmpeg->add_option('-sn');
+
+			$ffmpeg->add_argument('metadata:s', 'language=eng');
 
 			$starting_chapter = $episodes_model->starting_chapter;
 			if($starting_chapter)

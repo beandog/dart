@@ -317,7 +317,7 @@
 				$cmd[] = "-v 'quiet'";
 				$cmd[] = '-stats';
 			} else {
-				$cmd[] = "-loglevel 'info' -stats";
+				$cmd[] = "-loglevel 'quiet' -stats";
 			}
 
 			if($this->genpts && $ffmpeg)

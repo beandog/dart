@@ -1,6 +1,6 @@
 <?php
 
-if($disc_type == 'dvd' && ($opt_encode || $opt_copy)) {
+if($opt_encode || $opt_copy) {
 
 	$dart_status = 'encode_episode';
 
@@ -32,10 +32,13 @@ if($disc_type == 'dvd' && ($opt_encode || $opt_copy)) {
 	$arr_episode_titles = $episodes_model->get_episode_titles();
 	$episode_display_title = $arr_episode_titles['display_title'];
 
-	echo "[Encoding]\n";
+	if($verbose)
+		echo "[Encoding]\n";
 	echo "* $episode_display_title\n";
-	echo "* Source: $arg_device\n";
-	echo "* Target: $arg_filename\n";
+	if($verbose) {
+		echo "* Source: $arg_device\n";
+		echo "* Target: $arg_filename\n";
+	}
 
 	$logfile = "/tmp/".basename($filename).".log";
 	$arg_logfile = escapeshellarg($logfile);
