@@ -120,6 +120,7 @@
 
 			$os = os();
 
+			/*
 			if(($os == 'tux' || $os == 'bsd') || $this->is_iso || $this->is_wsl_mount) {
 				$cmd = "dvd_info --json $arg_device 2> /dev/null";
 				if(!$this->debug)
@@ -127,6 +128,10 @@
 			} elseif($os == 'wsl' || $os == 'windows') {
 				$cmd = "dvd_info.exe --json $arg_device";
 			}
+			*/
+			$cmd = "dvd_info --json $arg_device";
+			if(!$this->debug)
+				$cmd .= " 2> /dev/null";
 
 			if($this->debug)
 				echo "* Executing: $cmd\n";
