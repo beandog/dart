@@ -10,7 +10,7 @@
 	elseif($os == 'bsd')
 		$all_devices = array('/dev/cd0');
 	elseif($os == 'wsl' || $os == 'windows') {
-		$all_devices = array('D:');
+		$all_devices = array('/mnt/d');
 		$debug = true;
 	}
 	$export_dir = getenv('HOME').'/dvds/';
