@@ -78,7 +78,7 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 	$ffmpeg->add_argument('vcodec', 'h264_nvenc');
 	$ffmpeg->add_argument('preset', 'p7');
 	$ffmpeg->add_argument('tune', 'hq');
-	$ffmpeg->add_argument('rc', 'constqp');
+	$ffmpeg->add_argument('rc', 'vbr');
 	$ffmpeg->add_argument('cq', '18');
 	$ffmpeg->add_argument('b:v', '0');
 	$ffmpeg->add_argument('maxrate:v', '0');
