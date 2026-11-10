@@ -231,20 +231,13 @@ foreach($filenames as $filename) {
 		$arr_info['channels'] = null;
 		$arr_info['scodec'] = null;
 
-		$arr_info['uuid'] = $json['media']['track'][1]['UniqueID'];
 		$arr_info['episode_mbs'] = (filesize($realpath) / 1048576);
 		if(array_key_exists('Duration', $json['media']['track'][0]))
 			$arr_info['duration'] = $json['media']['track'][0]['Duration'];
-		if(array_key_exists('OverallBitRate', $json['media']['track'][0]))
-			 $arr_info['bitrate'] = $json['media']['track'][0]['OverallBitRate'];
-		if(array_key_exists('FrameRate', $json['media']['track'][0]))
-			$arr_info['framerate'] = $json['media']['track'][0]['FrameRate'];
 		if(array_key_exists('Encoded_Date', $json['media']['track'][0]))
 			$arr_info['encoded_date'] = $json['media']['track'][0]['Encoded_Date'];
 		elseif(array_key_exists('File_Modified_Date_Local', $json['media']['track'][0]))
 			$arr_info['encoded_date'] = $json['media']['track'][0]['File_Modified_Date_Local'];
-		if(array_key_exists('FrameCount', $json['media']['track'][0]))
-			$arr_info['frame_count'] = $json['media']['track'][0]['FrameCount'];
 		if(array_key_exists('Encoded_Application', $json['media']['track'][0]))
 			$arr_info['application'] = $json['media']['track'][0]['Encoded_Application'];
 		if(array_key_exists('Encoded_Library', $json['media']['track'][0]))
@@ -253,10 +246,6 @@ foreach($filenames as $filename) {
 			$arr_info['encode_settings'] = $json['media']['track'][0]['Encoded_Library_Settings'];
 		if(array_key_exists('Encoded_Library_Settings', $json['media']['track'][1]))
 			$arr_info['encode_settings'] = $json['media']['track'][1]['Encoded_Library_Settings'];
-		if(array_key_exists('StreamSize', $json['media']['track'][1]))
-			$arr_info['video_mbs'] = ($json['media']['track'][1]['StreamSize'] / 1048576);
-		if(array_key_exists('StreamSize', $json['media']['track'][2]))
-			$arr_info['audio_mbs'] = ($json['media']['track'][2]['StreamSize'] / 1048576);
 		if(array_key_exists('Format', $json['media']['track'][1]))
 			$arr_info['vcodec'] = strtolower($json['media']['track'][1]['Format']);
 		if($arr_info['vcodec'] == 'mpeg video')
@@ -477,16 +466,11 @@ foreach($filenames as $filename) {
 
 		$encodes_model->episode_id = $episode_id;
 		$encodes_model->filename = $basename;
-		$encodes_model->uuid = $uuid;
 		$encodes_model->filesize = $filesize;
 		if($encoded_date)
 			$encodes_model->encoded_date = $encoded_date;
 		if($duration)
 			$encodes_model->duration = $duration;
-		if($bitrate)
-			$encodes_model->bitrate = $bitrate;
-		if($frame_count)
-			$encodes_model->frame_count = $frame_count;
 		if($application)
 			$encodes_model->application = $application;
 		if($library)
@@ -495,20 +479,8 @@ foreach($filenames as $filename) {
 			$encodes_model->encode_settings = $encode_settings;
 		if($encoded_date)
 			$encodes_model->encoded_date = $encoded_date;
-		if($x264_version)
-			$encodes_model->x264_version = $x264_version;
-		if($x264_preset)
-			$encodes_model->x264_preset = $x264_preset;
-		if($crf)
-			$encodes_model->x264_crf = $crf;
-		if($framerate)
-			$encodes_model->framerate = $framerate;
 		if($episode_mbs)
 			$encodes_model->episode_mbs = $episode_mbs;
-		if($video_mbs)
-			$encodes_model->video_mbs = $video_mbs;
-		if($audio_mbs)
-			$encodes_model->audio_mbs = $audio_mbs;
 		if($vcodec)
 			$encodes_model->vcodec = $vcodec;
 		if($acodec)
