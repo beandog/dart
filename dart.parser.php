@@ -161,14 +161,6 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	/*
-	$parser->addOption('opt_dvdrip', array(
-		'long_name' => '--dvdrip',
-		'description' => 'Use dvd_rip to rip DVDs',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
-	*/
 	$parser->addOption('opt_ffmpeg', array(
 		'long_name' => '--ffmpeg',
 		'description' => 'Use ffmpeg to rip DVDs',
