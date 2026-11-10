@@ -571,19 +571,9 @@ foreach($filenames as $filename) {
 
 		}
 
-		$retval = 0;
 		$homedir_filename = "/home/beandog/Videos/$basename";
 		if(!$opt_dry_run && !file_exists($homedir_filename)) {
-			$arg_homedir_filename = escapeshellarg($homedir_filename);
-			$cmd = "ln -s -v $arg_xfs_filename $arg_homedir_filename";
-			$output = array();
-			exec($cmd, $output, $retval);
-		}
-
-		if($retval != 0) {
-			$str = implode(' ', $output);
-			echo "# FAILED $cmd - $str\n";
-			goto next_episode;
+			symlink($xfs_filename, $homedir_filename);
 		}
 
 	}
