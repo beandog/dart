@@ -110,7 +110,7 @@ foreach($filenames as $filename) {
 
 	$episodes_model = new Episodes_Model($episode_id);
 
-	$emo_filename = $episodes_model->get_filename();
+	$emo_filename = $episodes_model->get_filename($extension);
 
 	$episode_metadata = $episodes_model->get_metadata();
 	if(!is_array($episode_metadata) || !count($episode_metadata)) {
@@ -358,6 +358,9 @@ foreach($filenames as $filename) {
 				$xfs = "bd";
 			elseif(str_contains($emo_filename, ".4K"))
 				$xfs = "bd";
+
+			if($xfs && $extension == 'mp4')
+				$xfs .= "/v2";
 
 			if(!$xfs)
 				goto next_episode;
