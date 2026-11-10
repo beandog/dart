@@ -74,7 +74,7 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg
 		$dvd_episodes = $arr;
 	}
 
-	$container = 'mkv';
+	$container = 'mp4';
 
 	if($disc_type == 'dvd' && $opt_copy) {
 		$dvd_encoder = 'dvd_copy';
@@ -122,10 +122,6 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg
 		elseif($opt_qa && $dvd_encoder == 'ffmpeg' && $remux_video)
 			$prefix .= "remux-";
 
-		if($arg_vcodec)
-			$prefix .= "$arg_vcodec-";
-		if($arg_acodec)
-			$prefix .= "$arg_acodec-";
 		if($arg_vf) {
 			$vf_name = current(explode('=', $arg_vf));
 			$prefix .= "vf-$vf_name-";
@@ -276,9 +272,6 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg
 
 			$ffmpeg->set_disc_type('bluray');
 
-			$acodec = $series_model->get_acodec();
-			$ffmpeg->set_acodec($acodec);
-
 			$ffmpeg->set_encoder('ffmpeg');
 
 			$ffmpeg->input_filename("bluray:$device");
@@ -286,7 +279,9 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg
 			$ffmpeg->use_pipe($use_pipe);
 
 			$ffmpeg->add_argument('map', 'v:0');
-			$ffmpeg->add_argument('vcodec', 'copy');
+			$ffmpeg->add_argument('c:v', 'copy');
+			$ffmpeg->add_argument('c:a', 'libfdk_aac');
+			$ffmpeg->add_argument('vbr', '5');
 
 			if($use_pipe || $opt_pipe) {
 
@@ -341,7 +336,8 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg
 			else
 				$ffmpeg->add_argument('map', "i:$audio_streamid");
 
-			$ffmpeg->add_argument('acodec', 'copy');
+			$ffmpeg->add_argument('c:a', 'libfdk_aac');
+			$ffmpeg->add_argument('vbr', '5');
 
 			// HD Blu-rays, first PGS is 0x1200
 			// UHD Blu-rays, first PGS is 0x12a0 (usually, 4KSAN has 1200)

@@ -43,8 +43,6 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 	else
 		$crop_video = boolval($series_model->get_preset_crop_video());
 
-	// Only supporting HEVC NVENC
-
 	$vf = '';
 
 	if($ivtc_video)
@@ -60,9 +58,6 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 		if($vf_crop)
 			$vf .= ",crop=$vf_crop";
 	}
-
-	// Change from 8 bit color depth to 10 bit to reduce banding possibly added by other filters
-	$vf .= ',format=p010le';
 
 	if($arg_vf)
 		$vf .= ",$arg_vf";
@@ -80,10 +75,10 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 	}
 
 	$ffmpeg->add_argument('vf', $vf);
-	$ffmpeg->add_argument('vcodec', 'hevc_nvenc');
+	$ffmpeg->add_argument('vcodec', 'h264_nvenc');
 	$ffmpeg->add_argument('preset', 'p7');
 	$ffmpeg->add_argument('tune', 'hq');
-	$ffmpeg->add_argument('rc', 'vbr');
+	$ffmpeg->add_argument('rc', 'constqp');
 	$ffmpeg->add_argument('cq', '18');
 	$ffmpeg->add_argument('b:v', '0');
 	$ffmpeg->add_argument('maxrate:v', '0');
@@ -116,14 +111,8 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 		$ffmpeg->add_argument('colorspace', 'bt470bg');
 	}
 
-	// Set video profile for 10-bit
-	$ffmpeg->add_argument('profile:v', 'main10');
-	$ffmpeg->add_argument('level:v', '4.1');
-	// This for 10-bit, so adding it is redundant, but safe
-	// The nvidia encoder takes p010le as an argument, but it is the same
-	// as yuv420p10le when using ffprobe
-	// See 'ffmpeg -h encoder=hevc_nvenc' to display pixel formats it takes as arguments
-	$ffmpeg->add_argument('pix_fmt', 'p010le');
+	$ffmpeg->add_argument('profile:v', 'high');
+	$ffmpeg->add_argument('pix_fmt', 'yuv420p');
 
 	$ffmpeg->add_argument('map', 'v');
 
@@ -133,17 +122,8 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 		$audio_streamid = '0x80';
 	$ffmpeg->add_argument('map', "i:$audio_streamid?");
 
-	$acodec = $series_model->get_acodec();
-
-	if($acodec == 'mp3' || $arg_acodec == 'mp3') {
-		$ffmpeg->add_argument('acodec', 'libmp3lame');
-		$ffmpeg->add_argument('q:a', '0');
-	} elseif($acodec == 'aac' || $arg_acodec == 'aac') {
-		$ffmpeg->add_argument('acodec', 'aac');
-		$ffmpeg->add_argument('vbr', '5');
-	} else {
-		$ffmpeg->add_argument('acodec', 'copy');
-	}
+	$ffmpeg->add_argument('c:a', 'libfdk_aac');
+	$ffmpeg->add_argument('vbr', '5');
 
 	/** Subtitles **/
 	if($encode_subtitles) {
@@ -160,7 +140,6 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 			$ffmpeg->add_argument('map', 's:m:language:eng');
 
 		}
-
 
 	}
 
@@ -229,9 +208,6 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 		$dvd_copy_command .= ' 2> /dev/null';
 
 	}
-
-	// Might need this, disabling for now
-	// $ffmpeg->add_argument('max_interleave_delta', '0');
 
 	$ffmpeg_command = $ffmpeg->get_executable_string();
 

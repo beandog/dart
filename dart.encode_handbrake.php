@@ -20,55 +20,10 @@ if($disc_type == 'dvd' && $dvd_encoder == 'handbrake' && ($opt_encode_info || $o
 
 	/** Video **/
 
-	if($arg_vcodec == 'x264' || $arg_vcodec == 'libx264')
-		$vcodec = 'x264';
-	elseif($arg_vcodec == 'avc' || $arg_vcodec == 'h264')
-		$vcodec = 'avc';
-	elseif($arg_vcodec == 'hevc' || $arg_vcodec == 'h265')
-		$vcodec = 'hevc';
-
-	if($vcodec == 'x264') {
-
-		$handbrake->set_vcodec($vcodec);
-
-		$video_quality = intval($series_model->get_crf());
-		if($os == 'bsd')
-			$video_quality = 22;
-		$handbrake->set_video_quality($video_quality);
-
-		$x264_preset = $series_model->x264_preset;
-
-		if($x264_preset == 'fast')
-			$handbrake->set_x264_preset('fast');
-		elseif($x264_preset == 'slow' || $x264_preset == 'veryslow')
-			$handbrake->set_x264_preset('veryslow');
-
-		if($opt_fast)
-			$handbrake->set_x264_preset('fast');
-		elseif($opt_slow)
-			$handbrake->set_x264_preset('veryslow');
-
-	}
-
-	if($vcodec == 'h264' || $vcodec == 'avc' || $vcodec == 'h265' || $vcodec == 'hevc') {
-
-		if($vcodec == 'h265' || $vcodec == 'hevc')
-			$handbrake->set_vcodec('nvenc_h265');
-		else
-			$handbrake->set_vcodec('nvenc_h264');
-
-		$cq = $series_model->get_crf();
-
-		$handbrake->set_preset('slowest');
-
-		if($opt_fast)
-			$handbrake->set_preset('fast');
-		elseif($opt_slow)
-			$handbrake->set_preset('slowest');
-
-		$handbrake->set_video_quality($cq);
-
-	}
+	$handbrake->set_vcodec('nvenc_h264');
+	$handbrake->set_preset('slowest');
+	$cq = $series_model->get_crf();
+	$handbrake->set_video_quality($cq);
 
 	$handbrake->enable_bwdif();
 
@@ -76,19 +31,8 @@ if($disc_type == 'dvd' && $dvd_encoder == 'handbrake' && ($opt_encode_info || $o
 
 	$handbrake->add_audio_track($tracks_model->audio_ix);
 
-	$acodec = $series_model->get_acodec();
-
-	if($arg_acodec && ($arg_acodec == 'aac' || $arg_acodec == 'mp3'))
-		$acodec = $arg_acodec;
-
-	if($acodec == 'aac') {
-		$acodec = 'av_aac';
-		$handbrake->set_audio_vbr(5);
-	} elseif($acodec == 'mp3') {
-		$handbrake->set_audio_vbr(0);
-	}
-
-	$handbrake->add_acodec($acodec);
+	$handbrake->add_acodec('fdk_aac');
+	$handbrake->set_audio_vbr(5);
 
 	/** Subtitles **/
 
