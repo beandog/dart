@@ -215,18 +215,6 @@
 		'action' => 'StoreString',
 		'default' => '',
 	));
-	$parser->addOption('arg_vcodec', array(
-		'long_name' => '--vcodec',
-		'description' => 'Use video codec',
-		'action' => 'StoreString',
-		'default' => '',
-	));
-	$parser->addOption('arg_acodec', array(
-		'long_name' => '--acodec',
-		'description' => 'Use audio codec',
-		'action' => 'StoreString',
-		'default' => '',
-	));
 	$parser->addOption('arg_vf', array(
 		'long_name' => '--vf',
 		'description' => 'Add custom vf settings to ffmpeg / ffplay',
