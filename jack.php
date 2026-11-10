@@ -566,15 +566,7 @@ foreach($filenames as $filename) {
 				echo "# !! DRY RUN !! $filename : '$symlink_filename'\n";
 			if(!$opt_dry_run && !file_exists($symlink_filename)) {
 				echo "# $filename : '$symlink_filename'\n";
-				$cmd = "ln -s -v $arg_xfs_filename $arg_symlink_filename";
-				$output = array();
-				exec($cmd, $output, $retval);
-			}
-
-			if($retval != 0) {
-				$str = implode(' ', $output);
-				echo "# FAILED $cmd - $str\n";
-				goto next_episode;
+				symlink($xfs_filename, $symlink_filename);
 			}
 
 		}
