@@ -211,6 +211,11 @@ foreach($filenames as $filename) {
 
 		$json = json_decode($str_json, true);
 
+		if(!array_key_exists('Duration', $json['media']['track'][0])) {
+			echo "# $basename - no duration, probably encoding\n";
+			continue;
+		}
+
 		$arr_info = array();
 
 		$arr_info['duration'] = null;
@@ -230,6 +235,7 @@ foreach($filenames as $filename) {
 		$arr_info['acodec'] = null;
 		$arr_info['channels'] = null;
 		$arr_info['scodec'] = null;
+
 
 		$arr_info['episode_mbs'] = (filesize($realpath) / 1048576);
 		if(array_key_exists('Duration', $json['media']['track'][0]))
