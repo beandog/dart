@@ -94,7 +94,7 @@
 
 		$filenames = array();
 
-		$cmd = "find /media -type f -name '*.mkv' -mtime -1";
+		$cmd = "find /media -type f -name '*.m??' -mtime -1";
 
 		$str = shell_exec($cmd);
 		$str = trim($str);
@@ -110,17 +110,17 @@
 
 	if($opt_stats) {
 
-		$num_media_files = trim(shell_exec("find /media/ -mindepth 2 -maxdepth 2 -type f -name '*.mkv' | wc -l"));
+		$num_media_files = trim(shell_exec("find /media/ -mindepth 2 -maxdepth 2 -type f -name '*.m??' | wc -l"));
 		echo "# Total Media Files: $num_media_files\n";
 
-		$num_symlinks = trim(shell_exec("find /home/beandog/Libraries/ -mindepth 2 -type l -name '*.mkv' | wc -l"));
+		$num_symlinks = trim(shell_exec("find /home/beandog/Libraries/ -mindepth 2 -type l -name '*.m??' | wc -l"));
 		echo "# Total Episodes / Movies: $num_symlinks\n";
 
 		if($num_media_files != $num_symlinks) {
 			echo "# Missing Libraries symlinks: ".($num_media_files - $num_symlinks)."\n";
 		}
 
-		$num_symlinks = trim(shell_exec("find /home/beandog/Videos/ -type l -name '*.mkv' | wc -l"));
+		$num_symlinks = trim(shell_exec("find /home/beandog/Videos/ -type l -name '*.m??' | wc -l"));
 		echo "# Total Videos: $num_symlinks\n";
 
 		$num_files = trim(shell_exec("find /home/beandog/Libraries/ -mindepth 2 -maxdepth 2 -type d | wc -l"));
