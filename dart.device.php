@@ -6,8 +6,6 @@
 			return 'wsl';
 		if(str_contains(php_uname('s'), 'Windows NT'))
 			return 'windows';
-		if(PHP_OS == 'FreeBSD')
-			return 'bsd';
 
 		return 'tux';
 

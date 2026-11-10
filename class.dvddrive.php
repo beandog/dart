@@ -242,25 +242,6 @@
 
 			}
 
-			if($os == 'bsd') {
-
-				$cmd = "dvd_drive_status $arg_device";
-
-				if($this->debug)
-					echo "* Executing $cmd\n";
-				else
-					$cmd .= " 2> /dev/null";
-
-				exec($cmd, $arr, $retval);
-
-				if($retval == 2) {
-					$status = 'has media :D';
-					$message = 'Drive is ready and has media';
-					$ready = true;
-				}
-
-			}
-
 			echo "$status\n";
 
 			return $retval;
