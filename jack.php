@@ -565,6 +565,10 @@ foreach($filenames as $filename) {
 			if($opt_dry_run && !file_exists($symlink_filename))
 				echo "# !! DRY RUN !! $filename : '$symlink_filename'\n";
 			if(!$opt_dry_run && !file_exists($symlink_filename)) {
+				$nfo_filename = str_replace(".$extension", '.nfo', $symlink_filename);
+				echo "$nfo_filename\n";
+				if(file_exists($nfo_filename))
+					unlink($nfo_filename);
 				echo "# $filename : '$symlink_filename'\n";
 				symlink($xfs_filename, $symlink_filename);
 			}
