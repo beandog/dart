@@ -91,6 +91,15 @@
 
 foreach($filenames as $filename) {
 
+	$src_filename = $filename;
+
+	if(is_link($filename)) {
+		$src_basename = basename($filename);
+		$src_realpath = realpath($filename);
+		echo "# $src_basename -> $src_realpath\n";
+		$filename = realpath($filename);
+	}
+
 	$extension = pathinfo($filename, PATHINFO_EXTENSION);
 	if(!in_array($extension, array('mkv', 'mpg', 'mp4')))
 		goto next_episode;
