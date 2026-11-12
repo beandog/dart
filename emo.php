@@ -40,6 +40,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_delete', array(
+		'long_name' => '--delete',
+		'description' => 'Delete episode and its realpath',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('opt_rename_episode', array(
 		'long_name' => '--rename-episode',
 		'description' => 'Fix episode filename',
@@ -93,16 +99,16 @@ foreach($filenames as $filename) {
 
 	$src_filename = $filename;
 
+	$extension = pathinfo($filename, PATHINFO_EXTENSION);
+	if(!in_array($extension, array('mkv', 'mpg', 'mp4')))
+		goto next_episode;
+
 	if(is_link($filename)) {
 		$src_basename = basename($filename);
 		$src_realpath = realpath($filename);
 		echo "# $src_basename -> $src_realpath\n";
 		$filename = realpath($filename);
 	}
-
-	$extension = pathinfo($filename, PATHINFO_EXTENSION);
-	if(!in_array($extension, array('mkv', 'mpg', 'mp4')))
-		goto next_episode;
 
 	$dirname = pathinfo($filename, PATHINFO_DIRNAME);
 	$basename = pathinfo($filename, PATHINFO_BASENAME);
@@ -201,6 +207,32 @@ foreach($filenames as $filename) {
 		goto next_episode;
 
 	$realpath = realpath($filename);
+
+	if($opt_delete) {
+
+		$link_basename = basename($src_filename, ".$extension");
+
+		$nfo_filename = "$link_basename.nfo";
+		$jpg_filename = "$link_basename-thumb.jpg";
+
+		if(file_exists($src_basename)) {
+			echo "# Removing '$src_basename'\n";
+			unlink($src_basename);
+			if(file_exists($nfo_filename)) {
+				echo "# Removing '$nfo_filename'\n";
+				unlink($nfo_filename);
+			}
+			if(file_exists($jpg_filename)) {
+				echo "# Removing '$jpg_filename'\n";
+				unlink($jpg_filename);
+			}
+			if(file_exists($realpath)) {
+				echo "# Removing '$realpath'\n";
+				unlink($realpath);
+			}
+		}
+
+	}
 
 	$arg_episode_filename = escapeshellarg($realpath);
 
@@ -461,13 +493,15 @@ foreach($filenames as $filename) {
 
 	}
 
-	if($opt_import) {
+	if($opt_import || $opt_delete) {
 
 		require_once 'models/encodes.php';
 
 		$encodes_model = new Encodes_Model();
 
 		$encodes_model->delete_encodes($basename);
+		if($opt_delete)
+			continue;
 		$encode_id = $encodes_model->create_new();
 
 		extract($arr_info);
