@@ -46,6 +46,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_delete_metadata', array(
+		'long_name' => '--delete-metadata',
+		'description' => 'Delete all metadata in current path',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('opt_rename_episode', array(
 		'long_name' => '--rename-episode',
 		'description' => 'Fix episode filename',
@@ -89,6 +95,34 @@
 
 	if($debug)
 		$verbose = true;
+
+	if($opt_delete_metadata) {
+
+		foreach($filenames as $dirname) {
+
+			$dirname = realpath($dirname);
+
+			if(!is_dir($dirname))
+				continue;
+
+			$dir_contents = scandir($dirname);
+
+			foreach($dir_contents as $dir_filename) {
+
+				$dir_filename = "$dirname/$dir_filename";
+				$dir_filename_extension = pathinfo($dir_filename, PATHINFO_EXTENSION);
+
+				if(in_array($dir_filename_extension, array('jpg', 'png', 'nfo'))) {
+					echo "# !! Removing $dir_filename\n";
+					if(!$opt_dry_run)
+						unlink($dir_filename);
+				}
+
+			}
+
+		}
+
+	}
 
 	require_once 'config.local.php';
 	require_once 'models/dbtable.php';
