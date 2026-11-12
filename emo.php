@@ -210,25 +210,30 @@ foreach($filenames as $filename) {
 
 	if($opt_delete) {
 
-		$link_basename = basename($src_filename, ".$extension");
+		$src_dirname = dirname($src_filename);
+		$link_basename = $src_dirname.'/'.basename($src_filename, ".$extension");
 
 		$nfo_filename = "$link_basename.nfo";
 		$jpg_filename = "$link_basename-thumb.jpg";
 
-		if(file_exists($src_basename)) {
-			echo "# Removing '$src_basename'\n";
-			unlink($src_basename);
+		if(file_exists($filename)) {
+			echo "# !! Removing '$src_basename'\n";
+			if(!$opt_dry_run)
+				unlink($src_filename);
 			if(file_exists($nfo_filename)) {
-				echo "# Removing '$nfo_filename'\n";
-				unlink($nfo_filename);
+				echo "# !! Removing '$nfo_filename'\n";
+				if(!$opt_dry_run)
+					unlink($nfo_filename);
 			}
 			if(file_exists($jpg_filename)) {
-				echo "# Removing '$jpg_filename'\n";
-				unlink($jpg_filename);
+				echo "# !! Removing '$jpg_filename'\n";
+				if(!$opt_dry_run)
+					unlink($jpg_filename);
 			}
 			if(file_exists($realpath)) {
-				echo "# Removing '$realpath'\n";
-				unlink($realpath);
+				echo "# !! Removing '$realpath'\n";
+				if(!$opt_dry_run)
+					unlink($realpath);
 			}
 		}
 
