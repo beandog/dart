@@ -88,7 +88,7 @@
 
 		$filenames = array();
 
-		$cmd = "find /media -type f -name '*.m??' -mtime -1";
+		$cmd = "find /media -mindepth 2 -maxdepth 2 -type f -name '*.m??' -mtime -1";
 
 		$str = shell_exec($cmd);
 		$str = trim($str);
