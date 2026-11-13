@@ -445,9 +445,6 @@ foreach($filenames as $filename) {
 			elseif(str_contains($emo_filename, ".4K"))
 				$xfs = "bd";
 
-			if($xfs && $extension == 'mp4')
-				$xfs .= "/v2";
-
 			if(!$xfs)
 				goto next_episode;
 
