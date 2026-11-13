@@ -374,6 +374,12 @@ foreach($filenames as $filename) {
 
 		}
 
+		if($extension == 'mp4') {
+			$mkv_filename = str_replace(".$extension", '.mkv', $xfs_filename);
+			if(file_exists($xfs_filename) && file_exists($mkv_filename))
+				echo "# !! WOULD DELETE .MKV FILE '$mkv_filename'\n";
+		}
+
 		$homedir_filename = "/home/beandog/Videos/$basename";
 		if(!$opt_dry_run && !file_exists($homedir_filename)) {
 			symlink($xfs_filename, $homedir_filename);
