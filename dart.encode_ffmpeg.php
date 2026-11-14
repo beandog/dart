@@ -88,12 +88,14 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 		$ffmpeg->add_argument('aq-strength', '6');
 	else
 		$ffmpeg->add_argument('aq-strength', '10');
-	// Disable features not available on GTX 1060
+	/*
+	// Features not available on GTX 1060
 	if($hostname != 'tobe') {
 		$ffmpeg->add_argument('temporal-aq', '1');
 		$ffmpeg->add_argument('bf', '3');
 		$ffmpeg->add_argument('b_ref_mode', 'middle');
 	}
+	*/
 	$ffmpeg->add_argument('multipass', 'fullres');
 
 	// Set color metadata to match same as source
