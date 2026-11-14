@@ -33,8 +33,6 @@
 		public $max_width;
 		public $height;
 		public $width;
-		public $x264_preset;
-		public $x264 = array();
 		public $encopts = '';
 
 		// Audio
@@ -191,10 +189,6 @@
 			$this->width = abs(intval($int));
 		}
 
-		public function set_x264_preset($str) {
-			$this->x264_preset = $str;
-		}
-
 		public function set_preset($preset) {
 			$this->preset = $preset;
 		}
@@ -209,13 +203,6 @@
 
 		public function enable_bwdif() {
 			$this->bwdif = true;
-		}
-
-		public function set_x264($key, $value) {
-			if(is_null($value) && array_key_exists($key, $this->x264))
-				unset($this->x264[$key]);
-			elseif(!is_null($value))
-				$this->x264[$key] = $value;
 		}
 
 		public function add_subtitle_track($int) {
@@ -350,11 +337,6 @@
 
 			if($this->video_framerate)
 				$args['--rate'] = $this->video_framerate;
-
-			// Set x264 preset
-			if($this->x264_preset) {
-				$args['--encoder-preset'] = $this->x264_preset;
-			}
 
 			// Set duration for QA
 			if($this->duration) {
