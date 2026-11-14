@@ -299,23 +299,14 @@ foreach($filenames as $filename) {
 		$arr_info = array();
 
 		$arr_info['duration'] = null;
-		$arr_info['bitrate'] = null;
-		$arr_info['frame_count'] = null;
 		$arr_info['application'] = null;
 		$arr_info['library'] = null;
 		$arr_info['encode_settings'] = null;
 		$arr_info['encoded_date'] = null;
-		$arr_info['x264_version'] = null;
-		$arr_info['x264_preset'] = null;
-		$arr_info['framerate'] = null;
 		$arr_info['episode_mbs'] = null;
-		$arr_info['video_mbs'] = null;
-		$arr_info['audio_mbs'] = null;
 		$arr_info['vcodec'] = null;
 		$arr_info['acodec'] = null;
-		$arr_info['channels'] = null;
 		$arr_info['scodec'] = null;
-
 
 		$arr_info['episode_mbs'] = (filesize($realpath) / 1048576);
 		if(array_key_exists('Duration', $json['media']['track'][0]))
@@ -344,8 +335,6 @@ foreach($filenames as $filename) {
 			$arr_info['acodec'] = 'mp3';
 		elseif($json['media']['track'][2]['CodecID'] == 'A_DTS' && $json['media']['track'][2]['Format_Commercial_IfAny'] == 'DTS-HD Master Audio')
 			$arr_info['acodec'] = 'dts-hd';
-		if(array_key_exists('Channels', $json['media']['track'][2]))
-			$arr_info['channels'] = $json['media']['track'][2]['Channels'];
 		foreach($json['media']['track'] as $arr) {
 			if($arr['@type'] == 'Text')
 				$arr_info['scodec'] = 'cc';
