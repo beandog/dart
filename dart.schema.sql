@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict AEPxrXaguTrlwd5F0IMQAA1QSV6mmwbZ05eNUFx1LhS9NusIND0bUsBTCnqIQcM
+\restrict yldJDJJlnFnjX4s4HKFWThsuRcqlCJAPUu0B8yZTxHAbRxCBu1mwYaVko0v9Jl8
 
 -- Dumped from database version 18.6
 -- Dumped by pg_dump version 18.6
@@ -605,9 +605,8 @@ CREATE TABLE public.presets (
     crf smallint DEFAULT 22,
     format character varying DEFAULT 'mkv'::character varying NOT NULL,
     acodec character varying DEFAULT 'copy'::character varying NOT NULL,
-    x264_tune character varying(255) DEFAULT ''::character varying NOT NULL,
     fps character varying DEFAULT '30'::character varying,
-    vcodec character varying(16) DEFAULT 'x264'::character varying NOT NULL,
+    vcodec character varying(16) DEFAULT 'h264_nvenc'::character varying NOT NULL,
     legacy_crf smallint,
     ivtc smallint DEFAULT 1 NOT NULL,
     crop_video smallint DEFAULT 1 NOT NULL,
@@ -1613,5 +1612,5 @@ ALTER TABLE ONLY public.tracks
 -- PostgreSQL database dump complete
 --
 
-\unrestrict AEPxrXaguTrlwd5F0IMQAA1QSV6mmwbZ05eNUFx1LhS9NusIND0bUsBTCnqIQcM
+\unrestrict yldJDJJlnFnjX4s4HKFWThsuRcqlCJAPUu0B8yZTxHAbRxCBu1mwYaVko0v9Jl8
 
