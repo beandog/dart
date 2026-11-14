@@ -531,15 +531,8 @@ foreach($filenames as $filename) {
 
 		extract($arr_info);
 
-		$bitrate = intval($bitrate);
-		$crf = intval($crf);
 		$duration = intval($duration);
-		$framerate = floatval($framerate);
 		$episode_mbs = ceil($episode_mbs);
-		if(!is_null($video_mbs))
-			$video_mbs = ceil($video_mbs);
-		if(!is_null($audio_mbs))
-			$audio_mbs = ceil($audio_mbs);
 
 		$encodes_model->episode_id = $episode_id;
 		$encodes_model->filename = $basename;
@@ -562,8 +555,6 @@ foreach($filenames as $filename) {
 			$encodes_model->vcodec = $vcodec;
 		if($acodec)
 			$encodes_model->acodec = $acodec;
-		if($channels)
-			$encodes_model->channels = $channels;
 		if($scodec)
 			$encodes_model->scodec = $scodec;
 
