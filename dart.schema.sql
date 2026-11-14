@@ -2,10 +2,10 @@
 -- PostgreSQL database dump
 --
 
-\restrict fEuVQP4jtCXzXQn3KlkxuK8cTVfiHS9zNKBP3eTJI0frMgX378nWz5AzIXN2G3t
+\restrict AEPxrXaguTrlwd5F0IMQAA1QSV6mmwbZ05eNUFx1LhS9NusIND0bUsBTCnqIQcM
 
--- Dumped from database version 17.10
--- Dumped by pg_dump version 17.10
+-- Dumped from database version 18.6
+-- Dumped by pg_dump version 18.6
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -481,24 +481,13 @@ CREATE TABLE public.encodes (
     id integer NOT NULL,
     episode_id integer,
     filename character varying(255) DEFAULT ''::character varying NOT NULL,
-    uuid character varying(255) DEFAULT ''::character varying NOT NULL,
-    bitrate integer,
     application character varying(255),
-    library character varying(255),
-    x264_version character varying(255),
-    x264_preset character varying(10),
-    x264_crf smallint,
     filesize bigint,
     duration bigint,
     encoded_date character varying(255),
     encode_settings text,
-    framerate real,
     episode_mbs integer,
-    video_mbs integer,
-    audio_mbs integer,
-    frame_count integer,
     acodec character varying(255),
-    channels smallint,
     scodec character varying(255),
     vcodec character varying(5)
 );
@@ -619,7 +608,10 @@ CREATE TABLE public.presets (
     x264_tune character varying(255) DEFAULT ''::character varying NOT NULL,
     fps character varying DEFAULT '30'::character varying,
     vcodec character varying(16) DEFAULT 'x264'::character varying NOT NULL,
-    legacy_crf smallint
+    legacy_crf smallint,
+    ivtc smallint DEFAULT 1 NOT NULL,
+    crop_video smallint DEFAULT 1 NOT NULL,
+    digital smallint DEFAULT 0 NOT NULL
 );
 
 
@@ -701,15 +693,12 @@ CREATE TABLE public.series (
     tvdb character varying(255) DEFAULT ''::character varying NOT NULL,
     upgrade_id integer,
     active smallint DEFAULT 1 NOT NULL,
-    crf smallint,
     screenshots character varying(255) DEFAULT ''::character varying NOT NULL,
     start_date date,
     ripping_id integer DEFAULT 1 NOT NULL,
-    x264_preset character varying(9) DEFAULT ''::character varying NOT NULL,
     provider_id character varying(255) DEFAULT ''::character varying NOT NULL,
     bwdif character varying(10) DEFAULT ''::character varying NOT NULL,
     denoise character varying(255) DEFAULT ''::character varying NOT NULL,
-    legacy_crf smallint,
     library_id integer
 );
 
@@ -1624,5 +1613,5 @@ ALTER TABLE ONLY public.tracks
 -- PostgreSQL database dump complete
 --
 
-\unrestrict fEuVQP4jtCXzXQn3KlkxuK8cTVfiHS9zNKBP3eTJI0frMgX378nWz5AzIXN2G3t
+\unrestrict AEPxrXaguTrlwd5F0IMQAA1QSV6mmwbZ05eNUFx1LhS9NusIND0bUsBTCnqIQcM
 
