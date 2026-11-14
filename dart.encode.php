@@ -126,10 +126,6 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg
 			$vf_name = current(explode('=', $arg_vf));
 			$prefix .= "vf-$vf_name-";
 		}
-		if($opt_fast)
-			$prefix .= "fast-";
-		elseif($opt_slow)
-			$prefix .= "vslow-";
 
 		// Skip existing output files
 		if(file_exists($filename) && $opt_skip_existing)
@@ -315,11 +311,6 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg
 				$ffmpeg->set_cq($cq);
 
 				$ffmpeg->set_crf(null);
-
-				if($opt_fast)
-					$ffmpeg->set_preset('ultrafast');
-				elseif($opt_slow)
-					$ffmpeg->set_preset('veryslow');
 
 			}
 

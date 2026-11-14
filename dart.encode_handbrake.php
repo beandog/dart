@@ -73,8 +73,6 @@ if($disc_type == 'dvd' && $dvd_encoder == 'handbrake' && ($opt_encode_info || $o
 	if($opt_batch) {
 		$arr_prefix = array();
 		$arr_prefix[] = "cq-$cq";
-		if($opt_slow)
-			$arr_prefix[] = 'vslow';
 		$arr_prefix[] = "hb";
 		$prefix = implode("-", $arr_prefix);
 		$filename = basename($filename, ".$container")."-$prefix.$container";

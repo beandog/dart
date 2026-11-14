@@ -227,18 +227,6 @@
 		'action' => 'StoreString',
 		'default' => '',
 	));
-	$parser->addOption('opt_fast', array(
-		'long_name' => '--fast',
-		'description' => 'Speed up encoding by using ultrafast preset',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
-	$parser->addOption('opt_slow', array(
-		'long_name' => '--slow',
-		'description' => 'Use slow preset for encoding',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
 	$parser->addOption('opt_experimental', array(
 		'long_name' => '--alpha',
 		'description' => 'Test using experimental encoding settings',
