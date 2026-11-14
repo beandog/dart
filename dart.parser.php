@@ -239,12 +239,6 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
-	$parser->addOption('opt_mkv', array(
-		'long_name' => '--mkv',
-		'description' => 'Use Matroska container',
-		'action' => 'StoreTrue',
-		'default' => false,
-	));
 	$parser->addOption('opt_experimental', array(
 		'long_name' => '--alpha',
 		'description' => 'Test using experimental encoding settings',
