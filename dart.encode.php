@@ -306,11 +306,7 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg
 
 				$ffmpeg->set_vcodec('h264_nvenc');
 
-				$cq = $series_model->get_crf();
-
 				$ffmpeg->set_cq($cq);
-
-				$ffmpeg->set_crf(null);
 
 			}
 

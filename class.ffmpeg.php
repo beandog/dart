@@ -38,7 +38,6 @@
 		public $vcodec = 'copy';
 		public $vcodec_opts = '';
 		public $video_filters = array();
-		public $crf = 0;
 		public $cq = 0;
 		public $preset = '';
 
@@ -162,10 +161,6 @@
 
 		public function set_vcodec_opts($str) {
 			$this->vcodec_opts = $str;
-		}
-
-		public function set_crf($int) {
-			$this->crf = $int;
 		}
 
 		public function set_cq($int) {
