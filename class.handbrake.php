@@ -5,15 +5,12 @@
 		// Handbrake
 		public $verbose = false;
 		public $debug = false;
-		public $dvdnav = true;
-		public $preset;
 		public $track;
-		public $flags = array();
-		public $args = array();
+		public $arguments = array();
+		public $options = array();
 		public $scan_complete = false;
 		public $do_not_scan = false;
 		public $output;
-		public $duration = 0;
 		public $disc_type = 'dvd';
 
 		// DVD source
@@ -21,27 +18,10 @@
 		public $dvd_num_audio_tracks;
 		public $dvd_num_subtitles;
 
-		// Video
-		public $container = '';
-		public $vcodec;
-		public $video_quality;
-		public $video_framerate;
-		public $video_format = 'ntsc';
-		public $cfr = false;
-		public $bwdif = false;
-		public $max_height;
-		public $max_width;
-		public $height;
-		public $width;
-		public $encopts = '';
-
 		// Audio
 		public $audio = true;
-		public $acodecs = array();
 		public $audio_tracks = array();
 		public $audio_streams = array();
-		public $audio_bitrate;
-		public $audio_vbr;
 
 		// Container
 		public $add_chapters;
@@ -66,20 +46,9 @@
 			$this->disc_type = $str;
 		}
 
-		public function set_duration($int) {
-			$int = abs(intval($int));
-			if($int)
-				$this->duration = $int;
-		}
-
 		/** Filename **/
 		public function input_filename($src) {
 			$this->device = $src;
-		}
-
-		public function output_filename($str) {
-			$this->output = $str;
-			$this->container = pathinfo($str, PATHINFO_EXTENSION);
 		}
 
 		public function input_track($str) {
@@ -89,27 +58,6 @@
 
 		public function add_chapters($bool = true) {
 			$this->add_chapters = boolval($bool);
-		}
-
-		public function set_audio_bitrate($str) {
-			$this->audio_bitrate = $str;
-		}
-
-		public function set_audio_vbr($int) {
-			$this->audio_vbr = abs(intval($int));
-		}
-
-		public function set_vcodec($str) {
-			$this->vcodec = $str;
-		}
-
-		public function set_video_quality($int) {
-			$int = abs(intval($int));
-			$this->video_quality = $int;
-		}
-
-		public function set_video_framerate($float) {
-			$this->video_framerate = $float;
 		}
 
 		public function add_audio_track($int) {
@@ -152,57 +100,9 @@
 
 		}
 
-		public function add_acodec($str) {
-			if($str == 'ac3' || $str == 'dts' || $str == 'mp3' || $str == 'copy' || $str == 'aac')
-				$this->acodecs[] = $str;
-		}
-
-		public function enable_audio($bool = true) {
-			$this->audio = boolval($bool);
-		}
-
 		public function dvdnav($bool = true) {
-			$this->dvdnav = boolval($bool);
-		}
-
-		public function set_max_height($int) {
-
-			$int = abs(intval($int));
-			if($int)
-				$this->max_height = $int;
-
-		}
-
-		public function set_max_width($int) {
-
-			$int = abs(intval($int));
-			if($int)
-				$this->max_width = $int;
-
-		}
-
-		public function set_height($int) {
-			$this->height = abs(intval($int));
-		}
-
-		public function set_width($int) {
-			$this->width = abs(intval($int));
-		}
-
-		public function set_preset($preset) {
-			$this->preset = $preset;
-		}
-
-		public function set_video_format($str) {
-			$this->video_format = strtolower($str);
-		}
-
-		public function enable_cfr() {
-			$this->cfr = true;
-		}
-
-		public function enable_bwdif() {
-			$this->bwdif = true;
+			if($bool)
+				$this->add_option('no-dvdnav');
 		}
 
 		public function add_subtitle_track($int) {
@@ -259,97 +159,32 @@
 
 		}
 
-		public function set_encopts($str) {
-			$this->encopts = $str;
-		}
-
 		public function get_options() {
-
-			$options = array();
-
-			// Check for muxing chapters
-			if($this->add_chapters)
-				$options[] = "--markers";
-
-			// Check for no-dvdnav
-			if(!$this->dvdnav)
-				$options[] = "--no-dvdnav";
 
 			// If audio is enabled and no tracks have been specifically selected,
 			// then choose the first English one for DVD. For Blu-ray, there can bee
 			// all kinds of channel numbers, just grab them all and select in player.
 			if($this->audio && !count($this->audio_tracks) && $this->disc_type == 'dvd')
-				$options[] = "--first-audio";
+				$this->options[] = 'first-audio';
 			if($this->audio && !count($this->audio_tracks) && $this->disc_type == 'bluray')
-				$options[] = "--all-audio";
+				$this->options[] = 'all-audio';
 
-			// Set constant framerate
-			if($this->cfr)
-				$options[] = '--cfr';
+			return $this->options;
 
-			return $options;
+		}
 
+		public function add_argument($key, $value) {
+			$this->arguments[$key] = $value;
+		}
+
+		public function add_option($str) {
+			$this->options[] = $str;
 		}
 
 		public function get_arguments() {
 
-			$args = array();
-
 			/**
 			 * Handbrake
-			 **/
-
-			// Add preset
-			if($this->preset)
-				$args['--encoder-preset'] = $this->preset;
-
-			// Set track #
-			if($this->track)
-				$args['--title'] = $this->track;
-
-			/**
-			 * Video
-			 **/
-
-			// Set encoder
-			$args['--encoder'] = $this->vcodec;
-
-			// Add video quality
-			if(!is_null($this->video_quality)) {
-				$args['--quality'] = $this->video_quality;
-			}
-
-			// Set max and width and height
-			if(!is_null($this->max_width)) {
-				$args['--maxWidth'] = $this->max_width;
-			}
-			if(!is_null($this->max_height)) {
-				$args['--maxHeight'] = $this->max_height;
-			}
-
-			// Set custom width and height
-			if(!is_null($this->width)) {
-				$args['--width'] = $this->width;
-			}
-			if(!is_null($this->height)) {
-				$args['--height'] = $this->height;
-			}
-
-			if($this->video_framerate)
-				$args['--rate'] = $this->video_framerate;
-
-			// Set duration for QA
-			if($this->duration) {
-				$args['--stop-at'] = "duration:".$this->duration;
-			}
-
-			// Pass in custom encoding options
-			if($this->encopts) {
-				$args['--encopts'] = $this->encopts;
-			}
-
-			/**
-			 * Audio
 			 **/
 
 			// Add audio tracks
@@ -358,22 +193,8 @@
 				// Select audio streams to encode, default to English if no
 				// streams are specified.
 				if(count($this->audio_tracks)) {
-					$str = implode(",", $this->audio_tracks);
-					$args['--audio'] = $str;
-				}
-
-				// Add audio encoders
-				if(count($this->acodecs)) {
-					$str = implode(",", $this->acodecs);
-					$args['--aencoder'] = $str;
-				}
-
-				if($this->audio_bitrate) {
-					$args['--ab'] = $this->audio_bitrate;
-				}
-
-				if(is_integer($this->audio_vbr)) {
-					$args['--aq'] = $this->audio_vbr;
+					$str = implode(',', $this->audio_tracks);
+					$this->arguments['audio'] = $str;
 				}
 
 			}
@@ -382,12 +203,12 @@
 
 			// Add subtitle tracks
 			if(count($this->subtitle_tracks) && $this->subtitles) {
-				$str = implode(",", $this->subtitle_tracks);
-				$args['--subtitle'] = $str;
+				$str = implode(',', $this->subtitle_tracks);
+				$this->arguments['subtitle'] = $str;
 			}
 
 			if(!$this->subtitles) {
-				$args['--subtitle'] = 'none';
+				$this->arguments['subtitle'] = 'none';
 			}
 
 			/**
@@ -396,44 +217,31 @@
 
 			// Add chapters
 			if(!empty($this->starting_chapter)) {
-				$args['--chapters'] = $this->starting_chapter."-";
+				$this->arguments['chapters'] = $this->starting_chapter."-";
 			}
 			if(!empty($this->ending_chapter)) {
-			 	$args['--chapters'] .= $this->ending_chapter;
+				$this->arguments['chapters'] .= $this->ending_chapter;
 			}
 
-			return $args;
+			return $this->arguments;
 
 		}
 
 		public function get_executable_string() {
 
 			$cmd = array();
+			$cmd[] = 'HandBrakeCLI';
+			$cmd[] = '--input '.escapeshellarg($this->device);
 
-			$args = $this->get_arguments();
-
-			foreach($args as $key => $value) {
-				$arg_value = escapeshellarg($value);
-				$cmd[] = "$key $arg_value";
+			foreach($this->arguments as $key => $value) {
+				$value = escapeshellarg($value);
+				$cmd[] = "--$key $value";
 			}
 
-			// Deinterlace video
-			$cmd[] = "'--bwdif=bob'";
+			foreach($this->options as $str)
+				$cmd[] = "--$str";
 
-			$options = $this->get_options();
-
-			foreach($options as $str)
-				$cmd[] = escapeshellarg($str);
-
-			$str = "HandBrakeCLI ".implode(" ", $cmd);
-
-			if(str_contains(php_uname('s'), 'Windows NT'))
-				$str = str_replace('HandBrakeCLI', 'HandBrakeCLI.exe', $str);
-
-			$arg_input = escapeshellarg($this->device);
-			$arg_output = escapeshellarg($this->output);
-			$str .= " --input $arg_input";
-			$str .= " --output $arg_output";
+			$str = implode(' ', $cmd);
 
 			return $str;
 

@@ -11,28 +11,29 @@ if($disc_type == 'dvd' && $dvd_encoder == 'handbrake' && ($opt_encode_info || $o
 	$handbrake->debug($debug);
 
 	if($opt_qa)
-		$handbrake->set_duration($qa_max);
+		$handbrake->add_argument('stop-at', "duration:$qa_max");
 
 	/** Files **/
 
 	$handbrake->input_filename($device);
 	$handbrake->input_track($tracks_model->ix);
+	$handbrake->add_argument('title', $tracks_model->ix);
 
 	/** Video **/
 
-	$handbrake->set_vcodec('nvenc_h264');
-	$handbrake->set_preset('slowest');
-	$cq = $series_model->get_crf();
-	$handbrake->set_video_quality($cq);
-
-	$handbrake->enable_bwdif();
+	$handbrake->add_argument('encoder', 'nvenc_h264');
+	$handbrake->add_argument('quality', '18');
+	$handbrake->add_argument('encoder-preset', 'slowest');
+	$handbrake->add_option('bwdif=bob');
+	$handbrake->add_option('markers');
+	$handbrake->add_option('optimize');
 
 	/** Audio **/
 
 	$handbrake->add_audio_track($tracks_model->audio_ix);
 
-	$handbrake->add_acodec('fdk_aac');
-	$handbrake->set_audio_vbr(5);
+	$handbrake->add_argument('aencoder', 'fdk_aac');
+	$handbrake->add_argument('aq', '5');
 
 	/** Subtitles **/
 
@@ -62,28 +63,17 @@ if($disc_type == 'dvd' && $dvd_encoder == 'handbrake' && ($opt_encode_info || $o
 	$handbrake->set_chapters($episodes_model->starting_chapter, $episodes_model->ending_chapter);
 	$handbrake->add_chapters();
 
-	$handbrake->set_video_format($tracks_model->format);
-
 	/** Final filename */
 
 	if($prefix && !$opt_batch)
 		$filename = $prefix.$filename;
 
-	// Rewrite prefix if doing a batch encode to make it simpler to compare filesizes
-	if($opt_batch) {
-		$arr_prefix = array();
-		$arr_prefix[] = "cq-$cq";
-		$arr_prefix[] = "hb";
-		$prefix = implode("-", $arr_prefix);
-		$filename = basename($filename, ".$container")."-$prefix.$container";
+	if($arg_export_dir != '.') {
+		$export_dir = realpath($arg_export_dir);
+		$filename = $export_dir.'/'.$filename;
 	}
 
-	if($arg_export_dir) {
-		$export_dir = $arg_export_dir;
-		$filename = "$export_dir/$filename";
-	}
-
-	$handbrake->output_filename($filename);
+	$handbrake->add_argument('output', $filename);
 
 	$handbrake_command = $handbrake->get_executable_string();
 
