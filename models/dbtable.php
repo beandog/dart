@@ -1,5 +1,7 @@
 <?php
 
+	require_once 'pdo.config.php';
+
 	class DBTable {
 
 		protected $id;
