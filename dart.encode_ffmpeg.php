@@ -189,6 +189,9 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 		$filename = $arg_export_dir.'/'.$filename;
 	$ffmpeg->output_filename($filename);
 
+	if(str_contains($filename, '.mp4'))
+		$ffmpeg->add_argument('movflags', '+faststart');
+
 	$ffmpeg->set_encoder($dvd_encoder);
 
 	$ffmpeg->use_pipe($use_pipe);
