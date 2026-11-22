@@ -155,9 +155,6 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 	if($tracks_model->has_closed_captioning())
 		$ffmpeg->add_argument('bsf:v', 'filter_units=remove_types=39');
 
-	// Add additional check to make sure timing from DVD is good to go
-	$ffmpeg->add_metadata('max_interleave_delta', '0');
-
 	if($prefix)
 		$filename = $prefix.$filename;
 
