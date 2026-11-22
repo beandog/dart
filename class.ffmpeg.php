@@ -204,7 +204,7 @@
 		}
 
 		public function add_option($str) {
-			$this->ffmpeg_opts[] = $str;
+			$this->ffmpeg_opts[] = "-$str";
 		}
 
 		public function add_argument($key, $value) {
@@ -269,17 +269,6 @@
 			$str = implode(' ', $cmd);
 
 			return $str;
-
-		}
-
-		public function get_ffmpeg_arguments() {
-
-			$args = array();
-
-			if($this->container == 'mp4')
-				$args['movflags'] = '+faststart';
-
-			return $args;
 
 		}
 
@@ -391,7 +380,7 @@
 			}
 			*/
 
-			$args = $this->get_ffmpeg_arguments();
+			$args = array();
 
 			if($this->output_opts)
 				$cmd[] = $this->output_opts;
