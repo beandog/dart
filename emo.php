@@ -2,6 +2,7 @@
 <?php
 
 	require_once 'config.local.php';
+	require_once 'class.ffmpeg.php';
 
 	$hostname = php_uname('n');
 
@@ -71,6 +72,12 @@
 		'action' => 'StoreTrue',
 		'default' => false,
 	));
+	$parser->addOption('opt_reencode', array(
+		'long_name' => '--reencode',
+		'description' => 'Rencode to mp4',
+		'action' => 'StoreTrue',
+		'default' => false,
+	));
 	$parser->addOption('verbose', array(
 		'short_name' => '-v',
 		'description' => 'Verbose output',
@@ -135,6 +142,9 @@ foreach($filenames as $filename) {
 
 	$extension = pathinfo($filename, PATHINFO_EXTENSION);
 	if(!in_array($extension, array('mkv', 'mpg', 'mp4')))
+		goto next_episode;
+
+	if($opt_reencode && $extension == 'mp4')
 		goto next_episode;
 
 	if(is_link($filename)) {
@@ -276,7 +286,7 @@ foreach($filenames as $filename) {
 	$arg_episode_filename = escapeshellarg($realpath);
 
 	// Get JSON
-	if($opt_json || $opt_info || $opt_import) {
+	if($opt_json || $opt_info || $opt_import || $opt_reencode) {
 
 		$vcodec = '';
 		$crf = '';
@@ -335,6 +345,10 @@ foreach($filenames as $filename) {
 			$arr_info['acodec'] = 'mp3';
 		elseif($json['media']['track'][2]['CodecID'] == 'A_DTS' && $json['media']['track'][2]['Format_Commercial_IfAny'] == 'DTS-HD Master Audio')
 			$arr_info['acodec'] = 'dts-hd';
+		elseif($json['media']['track'][2]['Format'] == 'AAC')
+			$arr_info['acodec'] = 'aac';
+		else
+			$arr_info['acodec'] = null;
 		foreach($json['media']['track'] as $arr) {
 			if($arr['@type'] == 'Text')
 				$arr_info['scodec'] = 'cc';
@@ -389,6 +403,42 @@ foreach($filenames as $filename) {
 				$x264_preset = 'veryslow';
 
 			$arr_info['x264_preset'] = $x264_preset;
+
+		}
+
+		if($opt_reencode) {
+
+			if($arr_info['acodec'] == 'aac')
+				goto next_episode;
+
+			$ffmpeg = new FFMpeg;
+			$ffmpeg->set_disc_type('mkv');
+			if($verbose)
+				$ffmpeg->verbose();
+			$ffmpeg->set_encoder('ffmpeg');
+			$ffmpeg->input_filename($filename);
+			$mp4_filename = str_replace('.mkv', '.mp4', $basename);
+			$ffmpeg->output_filename($mp4_filename);
+			$ffmpeg->add_argument('vcodec', 'copy');
+			$ffmpeg->add_argument('acodec', 'libfdk_aac');
+			$ffmpeg->add_argument('vbr', '5');
+			if(!is_null($arr_info['scodec']))
+				$ffmpeg->add_argument('scodec', 'copy');
+			$ffmpeg->add_argument('map_metadata', '0');
+			$ffmpeg->add_argument('movflags', '+faststart');
+			$ffmpeg->add_option('n');
+
+			$ffmpeg_encode_cmd = $ffmpeg->get_executable_string();
+
+			if($opt_dry_run || $verbose) {
+				echo "$ffmpeg_encode_cmd\n";
+			}
+
+			if(!$opt_dry_run) {
+				passthru($ffmpeg_encode_cmd);
+			}
+
+			goto next_episode;
 
 		}
 
