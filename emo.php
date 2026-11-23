@@ -408,9 +408,6 @@ foreach($filenames as $filename) {
 
 		if($opt_reencode) {
 
-			if($arr_info['acodec'] == 'aac')
-				goto next_episode;
-
 			$ffmpeg = new FFMpeg;
 			$ffmpeg->set_disc_type('mkv');
 			if($verbose)
@@ -420,8 +417,12 @@ foreach($filenames as $filename) {
 			$mp4_filename = str_replace('.mkv', '.mp4', $basename);
 			$ffmpeg->output_filename($mp4_filename);
 			$ffmpeg->add_argument('vcodec', 'copy');
-			$ffmpeg->add_argument('acodec', 'libfdk_aac');
-			$ffmpeg->add_argument('vbr', '5');
+			if($arr_info['acodec'] == 'aac') {
+				$ffmpeg->add_argument('acodec', 'copy');
+			} else {
+				$ffmpeg->add_argument('acodec', 'libfdk_aac');
+				$ffmpeg->add_argument('vbr', '5');
+			}
 			if(!is_null($arr_info['scodec']))
 				$ffmpeg->add_argument('scodec', 'copy');
 			$ffmpeg->add_argument('map_metadata', '0');
