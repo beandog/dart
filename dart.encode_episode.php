@@ -13,6 +13,8 @@ if($opt_encode || $opt_copy) {
 		echo "* Executing: $cmd\n";
 	}
 	$str = shell_exec($cmd);
+	if(is_null($str))
+		$str = '';
 	$str = trim($str);
 
 	$arr = explode(' ', $str);
