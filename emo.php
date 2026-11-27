@@ -493,7 +493,9 @@ foreach($filenames as $filename) {
 			$cmd = "pgrep -l '^(HandBrakeCLI|ffmpeg)' -a";
 			if($debug)
 				echo "* Executing: $cmd\n";
-			$str = trim(shell_exec($cmd));
+			$str = shell_exec($cmd);
+			if(is_null($str))
+				$str = '';
 			if(str_contains($str, $basename)) {
 				$upload_video = false;
 				echo "# $basename - video already encoding\n";
@@ -502,7 +504,9 @@ foreach($filenames as $filename) {
 			$cmd = "pgrep -l '^rsync' -a";
 			if($debug)
 				echo "* Executing: $cmd\n";
-			$str = trim(shell_exec($cmd));
+			$str = shell_exec($cmd);
+			if(is_null($str))
+				$str = '';
 			if(str_contains($str, $basename)) {
 				$upload_video = false;
 				if($opt_tails)
