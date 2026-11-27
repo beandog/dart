@@ -420,7 +420,7 @@ foreach($filenames as $filename) {
 			if($arr_info['acodec'] == 'aac') {
 				$ffmpeg->add_argument('acodec', 'copy');
 			} else {
-				$ffmpeg->add_argument('acodec', 'libfdk_aac');
+				$ffmpeg->add_argument('acodec', 'aac');
 				$ffmpeg->add_argument('vbr', '5');
 			}
 			if(!is_null($arr_info['scodec']))
