@@ -273,7 +273,7 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg
 
 			$ffmpeg->add_argument('map', 'v:0');
 			$ffmpeg->add_argument('c:v', 'copy');
-			$ffmpeg->add_argument('c:a', 'aac');
+			$ffmpeg->add_argument('c:a', 'libfdk_aac');
 			$ffmpeg->add_argument('vbr', '5');
 
 			if($use_pipe || $opt_pipe) {
@@ -320,7 +320,7 @@ if($disc_indexed && ($opt_encode_info || $opt_encode || $opt_copy || $opt_ffmpeg
 			else
 				$ffmpeg->add_argument('map', "i:$audio_streamid");
 
-			$ffmpeg->add_argument('c:a', 'aac');
+			$ffmpeg->add_argument('c:a', 'libfdk_aac');
 			$ffmpeg->add_argument('vbr', '5');
 
 			// HD Blu-rays, first PGS is 0x1200

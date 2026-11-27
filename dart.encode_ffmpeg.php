@@ -124,7 +124,7 @@ if($disc_type == 'dvd' && $dvd_encoder == 'ffmpeg') {
 		$audio_streamid = '0x80';
 	$ffmpeg->add_argument('map', "i:$audio_streamid?");
 
-	$ffmpeg->add_argument('c:a', 'aac');
+	$ffmpeg->add_argument('c:a', 'libfdk_aac');
 	$ffmpeg->add_argument('vbr', '5');
 
 	/** Subtitles **/
